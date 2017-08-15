@@ -326,7 +326,7 @@ public class TOSCAExportUtil {
 	 * therefore we take the super type and hope that the caller knows what he
 	 * does.
 	 */
-	private Collection<TOSCAComponentId> getReferencedTOSCAComponentIdOfParentForAnAbstractComponentsWithTypeReferenceResource(TOSCAComponentId id) {
+	private static Collection<TOSCAComponentId> getReferencedTOSCAComponentIdOfParentForAnAbstractComponentsWithTypeReferenceResource(TOSCAComponentId id) {
 		AbstractComponentInstanceResourceWithNameDerivedFromAbstractFinal res = (AbstractComponentInstanceResourceWithNameDerivedFromAbstractFinal) AbstractComponentsResource.getComponentInstaceResource(id);
 		String derivedFrom = res.getInheritanceManagement().getDerivedFrom();
 		if (StringUtils.isEmpty(derivedFrom)) {
@@ -365,7 +365,7 @@ public class TOSCAExportUtil {
 	 *
 	 * @param id the id to search its children for referenced elements
 	 */
-	private Collection<TOSCAComponentId> getReferencedTOSCAComponentIds(TOSCAComponentId id) throws RepositoryCorruptException {
+	public static Collection<TOSCAComponentId> getReferencedTOSCAComponentIds(TOSCAComponentId id) throws RepositoryCorruptException {
 		Collection<TOSCAComponentId> referencedTOSCAComponentIds;
 
 		// first of all, handle the concrete elements
@@ -447,7 +447,7 @@ public class TOSCAExportUtil {
 		// Possibly the current solution, just lazily adding all dependent elements is the better solution.
 	}
 
-	private Collection<TOSCAComponentId> getReferencedTOSCAComponentIds(NodeTypeImplementationId id) {
+	public static Collection<TOSCAComponentId> getReferencedTOSCAComponentIds(NodeTypeImplementationId id) {
 		// We have to use a HashSet to ensure that no duplicate ids are added
 		// There may be multiple DAs/IAs referencing the same type
 		Collection<TOSCAComponentId> ids = new HashSet<>();
@@ -467,7 +467,21 @@ public class TOSCAExportUtil {
 		}
 
 		// IAs
-		return this.getReferencedTOSCAComponentImplementationArtifactIds(ids, res.getNTI().getImplementationArtifacts(), id);
+		TImplementationArtifacts implementationArtifacts = res.getNTI().getImplementationArtifacts();
+		if (implementationArtifacts != null) {
+			for (TImplementationArtifact ia : implementationArtifacts.getImplementationArtifact()) {
+				QName qname;
+				if ((qname = ia.getArtifactRef()) != null) {
+					ids.add(new ArtifactTemplateId(qname));
+				}
+				ids.add(new ArtifactTypeId(ia.getArtifactType()));
+			}
+		}
+
+		// inheritance
+		ids.addAll(getReferencedTOSCAComponentIdOfParentForAnAbstractComponentsWithTypeReferenceResource(id));
+
+		return ids;
 	}
 
 	private Collection<TOSCAComponentId> getReferencedTOSCAComponentIds(RelationshipTypeImplementationId id) {
@@ -478,18 +492,12 @@ public class TOSCAExportUtil {
 		RelationshipTypeImplementationResource res = new RelationshipTypeImplementationResource(id);
 
 		// IAs
-		return this.getReferencedTOSCAComponentImplementationArtifactIds(ids, res.getRTI().getImplementationArtifacts(), id);
-	}
-
-	private Collection<TOSCAComponentId> getReferencedTOSCAComponentImplementationArtifactIds(Collection<TOSCAComponentId> ids, TImplementationArtifacts implementationArtifacts, TOSCAComponentId id) {
-		if (implementationArtifacts != null) {
-			for (TImplementationArtifact ia : implementationArtifacts.getImplementationArtifact()) {
-				QName qname;
-				if ((qname = ia.getArtifactRef()) != null) {
-					ids.add(new ArtifactTemplateId(qname));
-				}
-				ids.add(new ArtifactTypeId(ia.getArtifactType()));
+		for (TImplementationArtifact ia : res.getRTI().getImplementationArtifacts().getImplementationArtifact()) {
+			QName qname;
+			if ((qname = ia.getArtifactRef()) != null) {
+				ids.add(new ArtifactTemplateId(qname));
 			}
+			ids.add(new ArtifactTypeId(ia.getArtifactType()));
 		}
 
 		// inheritance
