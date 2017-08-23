@@ -21,6 +21,7 @@ import {
   Output
 } from '@angular/core';
 import {ButtonsStateModel} from '../models/buttonsState.model';
+import { TNodeTemplate } from '../ttopology-template';
 
 @Component({
   selector: 'winery-node',
@@ -45,7 +46,7 @@ export class NodeComponent implements OnInit, AfterViewInit, DoCheck {
   @Input() nodeImageUrl: string;
   @Output() addNodeToDragSelection: EventEmitter<string>;
   @Output() checkIfNodeInSelection: EventEmitter<string>;
-  @Input() selectedNodes: string[] = [];
+  @Input() selectedNodes: Array<TNodeTemplate> = [];
   @Input() navbarButtonsState: ButtonsStateModel;
   differSelectedNodes: any;
 
@@ -70,16 +71,15 @@ export class NodeComponent implements OnInit, AfterViewInit, DoCheck {
 
   ngDoCheck(): void {
     const selectedNodes = this.differSelectedNodes.diff(this.selectedNodes);
-
     if (selectedNodes) {
       selectedNodes.forEachAddedItem(r => {
-          if (this.title === r.item) {
+          if (this.title === r.item.id) {
             this.makeSelectionVisible = true;
           }
         }
       );
       selectedNodes.forEachRemovedItem(r => {
-          if (this.title === r.item) {
+          if (this.title === r.item.id) {
             this.makeSelectionVisible = false;
           }
         }
