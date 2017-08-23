@@ -40,6 +40,7 @@ export class NodeComponent implements OnInit, AfterViewInit, DoCheck {
   @Input() left: number;
   @Input() top: number;
   @Output() sendId: EventEmitter<string>;
+  @Output() askForRepaint: EventEmitter<string>;
   @Input() nodeColor: string;
   @Input() nodeImageUrl: string;
   @Output() addNodeToDragSelection: EventEmitter<string>;
@@ -54,6 +55,7 @@ export class NodeComponent implements OnInit, AfterViewInit, DoCheck {
 
   constructor(differsSelectedNodes: IterableDiffers) {
     this.sendId = new EventEmitter();
+    this.askForRepaint = new EventEmitter();
     this.addNodeToDragSelection = new EventEmitter();
     this.checkIfNodeInSelection = new EventEmitter();
     this.differSelectedNodes = differsSelectedNodes.find([]).create(null);
@@ -83,6 +85,10 @@ export class NodeComponent implements OnInit, AfterViewInit, DoCheck {
         }
       );
     }
+  }
+
+  private repaint() {
+    setTimeout(() => this.askForRepaint.emit(), 1);
   }
 
   trackTimeOfMouseDown(): void {

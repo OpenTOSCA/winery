@@ -23,6 +23,7 @@
                [navbarButtonsState]="navbarButtonsState"
                (addNodeToDragSelection)="addNodeToDragSelection($event)"
                (checkIfNodeInSelection)="checkIfNodeInSelection($event)"
+               (askForRepaint)="repaintJsPlumb()"
                [selectedNodes]="selectedNodes">
   </winery-node>
 </div>
