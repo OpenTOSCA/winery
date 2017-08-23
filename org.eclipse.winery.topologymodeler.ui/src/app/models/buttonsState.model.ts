@@ -8,8 +8,6 @@
  *
  * Contributors:
  *     Thommy Zelenik - initial API and implementation
- *
- * A PaletteItem represents a node type which was selected from the palette by clicking on the palette item
  */
 export interface ButtonsStateModel {
   buttonsState: {
@@ -20,5 +18,8 @@ export interface ButtonsStateModel {
     propertiesButton?: boolean;
     typesButton?: boolean;
     idsButton?: boolean;
+    layoutButton?: boolean;
+    alignHButton?: boolean;
+    alignVButton?: boolean
   };
 }

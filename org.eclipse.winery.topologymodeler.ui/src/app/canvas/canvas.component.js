@@ -346,7 +346,7 @@ __decorate([
 ], CanvasComponent.prototype, "selectElements", null);
 CanvasComponent = __decorate([
     core_1.Component({
-        selector: 'app-canvas',
+        selector: 'winery-canvas',
         providers: [layout_directive_1.LayoutDirective],
         templateUrl: './canvas.component.html',
         styleUrls: ['./canvas.component.css']

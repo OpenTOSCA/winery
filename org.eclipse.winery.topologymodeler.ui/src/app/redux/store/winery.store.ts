@@ -11,41 +11,26 @@
  */
 import {combineReducers, Reducer} from 'redux';
 import {
-  AppReducer,
-  AppState,
-  INITIAL_APP_STATE
-} from '../reducers/app.reducer';
+  WineryReducer,
+  WineryState,
+  INITIAL_WINERY_STATE
+} from '../reducers/winery.reducer';
 import {
   INITIAL_TOPOLOGY_RENDERER_STATE, TopologyRendererReducer,
   TopologyRendererState
 } from '../reducers/topologyRenderer.reducer';
 
-export interface IAppState {
-  /*
-  paletteItem: PaletteItemState;
-  paletteOpened: PaletteOpenedState;
-  enhanceGrid: EnhanceGridState;
-  */
+export interface IWIneryState {
   topologyRendererState: TopologyRendererState;
-  appState: AppState;
+  wineryState: WineryState;
 }
 
-export const INITIAL_IAPP_STATE: IAppState = {
-  /*
-  paletteItem: INITIAL_PALETTE_ITEM_STATE,
-  paletteOpened: INITIAL_PALETTE_OPENED_STATE,
-  enhanceGrid: INITIAL_ENHANCE_GRID_STATE,
-  */
+export const INITIAL_IWINERY_STATE: IWIneryState = {
   topologyRendererState: INITIAL_TOPOLOGY_RENDERER_STATE,
-  appState: INITIAL_APP_STATE
+  wineryState: INITIAL_WINERY_STATE
 };
 
-export const rootReducer: Reducer<IAppState> = combineReducers<IAppState>({
-  /*
-  paletteItem: PaletteItemReducer,
-  paletteOpened: PaletteOpenedReducer,
-  enhanceGrid: EnhanceGridReducer,
-  */
+export const rootReducer: Reducer<IWIneryState> = combineReducers<IWIneryState>({
   topologyRendererState: TopologyRendererReducer,
-  appState: AppReducer
+  wineryState: WineryReducer
 });

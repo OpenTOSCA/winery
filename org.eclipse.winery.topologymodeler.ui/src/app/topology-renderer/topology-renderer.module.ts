@@ -59,16 +59,17 @@ import { DeploymentArtifactsComponent } from '../node/deployment-artifacts/deplo
   ],
   exports: [
     TopologyRendererComponent
-  ]
+  ],
 })
 export class TopologyRendererModule {
+
   static forRoot(): ModuleWithProviders {
     return {
       ngModule: TopologyRendererModule,
       providers: [
         {provide: ToastOptions, useClass: WineryCustomOption},
         JsPlumbService,
-        JsonService,
+        JsonService
       ]
     };
   }

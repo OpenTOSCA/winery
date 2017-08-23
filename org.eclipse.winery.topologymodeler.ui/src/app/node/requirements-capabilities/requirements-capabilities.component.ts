@@ -12,7 +12,7 @@
 import { Component, OnInit } from '@angular/core';
 
 @Component({
-  selector: 'app-requirements-capabilities',
+  selector: 'winery-requirements-capabilities',
   templateUrl: './requirements-capabilities.component.html',
   styleUrls: ['./requirements-capabilities.component.css']
 })

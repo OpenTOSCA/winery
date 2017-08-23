@@ -5,9 +5,7 @@ import { HttpModule } from '@angular/http';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { AccordionModule } from 'ngx-bootstrap/accordion';
 import { JsPlumbService } from './jsPlumbService';
-
-import { AppComponent } from './app.component';
-
+import { WineryComponent } from './winery.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { WineryAlertModule } from './winery-alert/winery-alert.module';
 import { ToastModule, ToastOptions } from 'ng2-toastr/ng2-toastr';
@@ -23,13 +21,13 @@ import { PoliciesComponent } from './node/policies/policies.component';
 import { PrintViewComponent } from './print-view/print-view.component';
 import { TargetLocationsComponent } from './node/target-locations/target-locations.component';
 import {NgReduxModule, NgRedux, DevToolsExtension} from '@angular-redux/store';
-import {IAppState, INITIAL_IAPP_STATE, rootReducer} from './redux/store/app.store';
-import {AppActions} from './redux/actions/app.actions';
+import {IWIneryState, INITIAL_IWINERY_STATE, rootReducer} from './redux/store/winery.store';
+import {WineryActions} from './redux/actions/winery.actions';
 import {TopologyRendererActions} from './redux/actions/topologyRenderer.actions';
 
 @NgModule({
   declarations: [
-    AppComponent,
+    WineryComponent,
     PaletteComponent,
     SidebarComponent,
     PrintViewComponent,
@@ -50,14 +48,14 @@ import {TopologyRendererActions} from './redux/actions/topologyRenderer.actions'
     {provide: ToastOptions, useClass: WineryCustomOption},
     JsPlumbService,
     JsonService,
-    AppActions,
+    WineryActions,
     TopologyRendererActions
   ],
 
-  bootstrap: [AppComponent]
+  bootstrap: [WineryComponent]
 })
-export class AppModule {
-  constructor(ngRedux: NgRedux<IAppState>,
+export class WineryModule {
+  constructor(ngRedux: NgRedux<IWIneryState>,
               devTools: DevToolsExtension) {
     const storeEnhancers = devTools.isEnabled() ?
       [ devTools.enhancer() ] :
@@ -65,7 +63,7 @@ export class AppModule {
 
     ngRedux.configureStore(
       rootReducer,
-      INITIAL_IAPP_STATE,
+      INITIAL_IWINERY_STATE,
       [],
       storeEnhancers);
   }

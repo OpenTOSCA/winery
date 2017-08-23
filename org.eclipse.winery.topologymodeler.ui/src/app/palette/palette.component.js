@@ -106,7 +106,7 @@ var PaletteComponent = (function () {
 }());
 PaletteComponent = __decorate([
     core_1.Component({
-        selector: 'app-palette-component',
+        selector: 'winery-palette-component',
         templateUrl: './palette.component.html',
         styleUrls: ['./palette.component.css'],
         providers: [palette_service_1.PaletteService],
