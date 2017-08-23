@@ -9,8 +9,15 @@
   user-select: none;
   scroll-padding-top: 1px;
   margin-bottom: 0 !important;
-  background-color: rgba(25,25,25,0.3);
   color: white;
+}
+
+.card-header {
+  background-color: rgba(115,115,115,0.5);
+}
+
+.card {
+  background-color: rgba(255,255,255,0.1);
 }
 
 .panel.accordionGroupPanel .panel-body {
