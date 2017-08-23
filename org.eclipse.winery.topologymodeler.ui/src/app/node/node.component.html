@@ -55,7 +55,7 @@
            [ngClass]="{'fa-chevron-down': propertiesgroup?.isOpen, 'fa-chevron-right': !propertiesgroup?.isOpen}"
            ></i>
       </div>
-      <app-properties></app-properties>
+      <winery-properties></winery-properties>
     </accordion-group>
 
     <!-- DEPLOYMENT ARTIFACTS -->
@@ -70,7 +70,7 @@
            'fa-chevron-right': !deploymentartifactsgroup?.isOpen}"
         ></i>
       </div>
-      <app-deployment-artifacts></app-deployment-artifacts>
+      <winery-deployment-artifacts></winery-deployment-artifacts>
     </accordion-group>
 
     <!-- REQUIREMENTS & CAPABILITIES -->
@@ -85,7 +85,7 @@
            'fa-chevron-right': !requirementscapabilitiesgroup?.isOpen}"
         ></i>
       </div>
-      <app-requirements-capabilities></app-requirements-capabilities>
+      <winery-requirements-capabilities></winery-requirements-capabilities>
     </accordion-group>
 
     <!-- POLICIES -->
@@ -99,7 +99,7 @@
            [ngClass]="{'fa-chevron-down': policiesgroup?.isOpen, 'fa-chevron-right': !policiesgroup?.isOpen}">
         </i>
       </div>
-      <app-policies></app-policies>
+      <winery-policies></winery-policies>
     </accordion-group>
 
     <!-- TARGET LOCATIONS -->
@@ -114,9 +114,10 @@
            'fa-chevron-right': !targetlocationsgroup?.isOpen}">
         </i>
       </div>
-      <app-target-locations></app-target-locations>
+      <winery-target-locations></winery-target-locations>
     </accordion-group>
   </accordion>
+
 </div>
 <!--
 <div class="old-container-style" [style.top]="top" [style.left]="left"
