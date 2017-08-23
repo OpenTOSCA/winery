@@ -29,12 +29,12 @@ export class CanvasComponent implements OnInit, DoCheck, OnDestroy {
   allRelationshipTemplates: Array<TRelationshipTemplate> = [];
   relationshipTemplates: Array<TRelationshipTemplate> = [];
   nodeTypes: any[] = [];
-  selectedNodes: string[] = [];
+  selectedNodes: Array<TNodeTemplate> = [];
   newJsPlumbInstance: any;
   visuals: any[];
   @Input() pressedNavBarButton: any;
   nodeSelected = false;
-  nodeArrayEmpty = false;
+
   pageX: Number;
   pageY: Number;
   selectionActive: boolean;
@@ -144,7 +144,7 @@ export class CanvasComponent implements OnInit, DoCheck, OnDestroy {
   @HostListener('click', ['$event'])
   onClick($event) {
     if (this._eref.nativeElement.contains($event.target) && this.longPress === false) {
-      this.newJsPlumbInstance.removeFromAllPosses(this.selectedNodes);
+      this.newJsPlumbInstance.removeFromAllPosses(this.getStringIds(this.selectedNodes));
       this.clearArray(this.selectedNodes);
       if ($event.clientX > 200) {
         this.ngRedux.dispatch(this.actions.sendPaletteOpened(false));
@@ -206,6 +206,14 @@ export class CanvasComponent implements OnInit, DoCheck, OnDestroy {
     }
   }
 
+  private getStringIds(Nodes: Array<TNodeTemplate>) {
+    const nodeIds: String[] = [];
+    for (const node of Nodes) {
+      nodeIds.push(node.id);
+    }
+    return nodeIds;
+  }
+
   private getOffset(el) {
     let _x = 0;
     let _y = 0;
@@ -243,10 +251,18 @@ export class CanvasComponent implements OnInit, DoCheck, OnDestroy {
         this._layoutDirective.layoutNodes(this.allNodeTemplates, this.relationshipTemplates, this.newJsPlumbInstance);
       }
       if (pressedNavBarButton._mapHead.currentValue === 'alignv') {
-        this._layoutDirective.alignVertical(this.allNodeTemplates, this.newJsPlumbInstance);
+        if (this.selectedNodes.length > 1) {
+          this._layoutDirective.alignVertical(this.selectedNodes, this.newJsPlumbInstance);
+        } else {
+          this._layoutDirective.alignVertical(this.allNodeTemplates, this.newJsPlumbInstance);
+        }
       }
       if (pressedNavBarButton._mapHead.currentValue === 'alignh') {
-        this._layoutDirective.alignHorizontal(this.allNodeTemplates, this.newJsPlumbInstance);
+        if (this.selectedNodes.length > 1) {
+          this._layoutDirective.alignHorizontal(this.selectedNodes, this.newJsPlumbInstance);
+        } else {
+          this._layoutDirective.alignHorizontal(this.allNodeTemplates, this.newJsPlumbInstance);
+        }
       }
     }
   }
@@ -258,6 +274,7 @@ export class CanvasComponent implements OnInit, DoCheck, OnDestroy {
     this.visuals = this.jsonService.getVisuals();
     this.assignVisuals();
   }
+
 
   assignVisuals() {
     this.visuals = this.jsonService.getVisuals();
@@ -278,11 +295,11 @@ export class CanvasComponent implements OnInit, DoCheck, OnDestroy {
   makeDraggable($event): void {
     this.newJsPlumbInstance.draggable($event);
   }
-
+  // TODO Kann man löschen?
   private checkingNodeSelectionForDuplicateIDs(id: string) {
     this.nodeSelected = false;
     for (const node of this.selectedNodes) {
-      if (node === id) {
+      if (node.id === id) {
         this.nodeSelected = true;
       }
     }
@@ -293,13 +310,17 @@ export class CanvasComponent implements OnInit, DoCheck, OnDestroy {
   }
 
   checkIfNodeInSelection($event): void {
-    this.checkingNodeSelectionForDuplicateIDs($event);
+    // this.checkingNodeSelectionForDuplicateIDs($event);
+    if (this.arrayContainsNode(this.selectedNodes, $event) === false) {
+      this.newJsPlumbInstance.removeFromAllPosses(this.getStringIds(this.selectedNodes));
+      this.clearArray(this.selectedNodes);
+    }
   }
 
-  arrayContainsNode(arrayOfNodes: any[], id: string): boolean {
-    if (arrayOfNodes !== null && arrayOfNodes.length > 0) {
-      for (let i = 0; i < arrayOfNodes.length; i++) {
-        if (arrayOfNodes[i] === id) {
+  arrayContainsNode(Nodes: any[], id: string): boolean {
+    if (Nodes !== null && Nodes.length > 0) {
+      for (const node of Nodes) {
+        if (node.id === id) {
           return true;
         }
       }
@@ -308,14 +329,21 @@ export class CanvasComponent implements OnInit, DoCheck, OnDestroy {
   }
 
   private enhanceDragSelection(id: string) {
-    this.nodeArrayEmpty = false;
     this.newJsPlumbInstance.addToPosse(id, 'dragSelection');
-    this.nodeArrayEmpty = this.arrayContainsNode(this.selectedNodes, id);
-    if (!this.nodeArrayEmpty) {
-      this.selectedNodes.push(id);
+    if (!this.arrayContainsNode(this.selectedNodes, id)) {
+      this.selectedNodes.push(this.getNodeByID(this.allNodeTemplates, id));
     }
   }
 
+  private getNodeByID(Nodes: Array<TNodeTemplate>, id: string) {
+    if (Nodes !== null && Nodes.length > 0) {
+      for (const node of Nodes) {
+        if (node.id === id) {
+          return node;
+        }
+      }
+    }
+  }
   addNodeToDragSelection($event): void {
     this.enhanceDragSelection($event);
   }
