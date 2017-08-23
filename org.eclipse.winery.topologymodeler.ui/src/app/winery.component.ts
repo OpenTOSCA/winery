@@ -1,15 +1,26 @@
+/**
+ * Copyright (c) 2017 University of Stuttgart.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * and the Apache License 2.0 which both accompany this distribution,
+ * and are available at http://www.eclipse.org/legal/epl-v10.html
+ * and http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Contributors:
+ *     Thommy Zelenik - initial API and implementation
+ */
 import {Component, OnInit} from '@angular/core';
 import {TNodeTemplate, TRelationshipTemplate} from './ttopology-template';
-import {IAppState} from './redux/store/app.store';
-import {AppActions} from './redux/actions/app.actions';
+import {IWIneryState} from './redux/store/winery.store';
+import {WineryActions} from './redux/actions/winery.actions';
 import {NgRedux} from '@angular-redux/store';
 
 @Component({
-  selector: 'app-topologyrenderer',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  selector: 'winery-topologyrenderer',
+  templateUrl: './winery.component.html',
+  styleUrls: ['./winery.component.css']
 })
-export class AppComponent implements OnInit {
+export class WineryComponent implements OnInit {
   topologyTemplate: any;
   visuals: any;
   nodeTemplates: Array<TNodeTemplate> = [];
@@ -203,8 +214,9 @@ export class AppComponent implements OnInit {
     }
   ];
 
-  constructor(private ngRedux: NgRedux<IAppState>, private actions: AppActions) {
+  constructor(private ngRedux: NgRedux<IWIneryState>, private actions: WineryActions) {
   }
+
 
   ngOnInit() {
     this.topologyTemplate = this.testJson;

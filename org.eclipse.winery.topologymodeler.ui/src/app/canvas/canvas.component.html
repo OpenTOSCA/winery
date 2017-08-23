@@ -13,17 +13,17 @@
       <span></span>
     </div>
   </div>
-  <app-node *ngFor="let node of allNodeTemplates"
-            [title]="node.id"
-            [nodeColor]="node.color"
-            (sendId)="makeDraggable($event)"
-            [left]="node.otherAttributes.x + 'px'"
-            [top]="node.otherAttributes.y + 'px'"
-            [nodeImageUrl]="node.imageUrl"
-            (askForRepaint)="repaintJsPlumb()"
-            [navBarButtonClicked]="pressedNavBarButton"
-            (addNodeToDragSelection)="addNodeToDragSelection($event)"
-            (checkIfNodeInSelection)="checkIfNodeInSelection($event)"
-            [selectedNodes]="selectedNodes">
-  </app-node>
+  <winery-node *ngFor="let node of allNodeTemplates"
+               [title]="node.id"
+               [nodeColor]="node.color"
+               (sendId)="makeDraggable($event)"
+               [left]="node.otherAttributes.x + 'px'"
+               [top]="node.otherAttributes.y + 'px'"
+               [nodeImageUrl]="node.imageUrl"
+               [navbarButtonsState]="navbarButtonsState"
+               (addNodeToDragSelection)="addNodeToDragSelection($event)"
+               (checkIfNodeInSelection)="checkIfNodeInSelection($event)"
+               (askForRepaint)="repaintJsPlumb()"
+               [selectedNodes]="selectedNodes">
+  </winery-node>
 </div>

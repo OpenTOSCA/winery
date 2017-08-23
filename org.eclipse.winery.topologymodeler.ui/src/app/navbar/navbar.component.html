@@ -4,7 +4,7 @@
             (click)="showSaveAlert()">Save
     </button>
 
-    <div class="btn-group" data-toggle="buttons" style="margin-left: 4px">
+    <div class="btn-group" data-toggle="buttons" style="margin-left: 4px; z-index: 10;">
       <button
         class="btn btn-sm align-middle btn-secondary"
         type="button"
@@ -17,14 +17,14 @@
         type="button"
         id="alignh"
         (click)="toggleButton($event)">
-        Align-h (|)
+        Align-h (―)
       </button>
       <button
         class="btn btn-sm align-middle btn-secondary"
         type="button"
         id="alignv"
         (click)="toggleButton($event)">
-        Align-v (―)
+        Align-v (|)
       </button>
     </div>
     <div class="btn-group" data-toggle="buttons" style="margin-left: 4px">
@@ -73,7 +73,7 @@
         type="button"
         id="policies"
         (click)="toggleButton($event)"
-        [style.background-color]="getStyle(navbarButtonsState.policiesButton)">
+        [style.background-color]="getStyle(navbarButtonsState.buttonsState.policiesButton)">
         Policies
       </button>
       <button
@@ -81,7 +81,7 @@
         type="button"
         id="targetLocations"
         (click)="toggleButton($event)"
-        [style.background-color]="getStyle(navbarButtonsState.targetLocationsButton)">
+        [style.background-color]="getStyle(navbarButtonsState.buttonsState.targetLocationsButton)">
         Target Locations
       </button>
     </div>

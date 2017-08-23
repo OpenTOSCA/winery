@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
  *     Thommy Zelenik - initial API and implementation
  */
 var redux_1 = require("redux");
-var app_reducer_1 = require("../reducers/app.reducer");
+var app_reducer_1 = require("../reducers/winery.reducer");
 var topologyRenderer_reducer_1 = require("../reducers/topologyRenderer.reducer");
 exports.INITIAL_IAPP_STATE = {
     /*
@@ -21,7 +21,7 @@ exports.INITIAL_IAPP_STATE = {
     enhanceGrid: INITIAL_ENHANCE_GRID_STATE,
     */
     topologyRendererState: topologyRenderer_reducer_1.INITIAL_TOPOLOGY_RENDERER_STATE,
-    appState: app_reducer_1.INITIAL_APP_STATE
+    appState: app_reducer_1.INITIAL_WINERY_STATE
 };
 exports.rootReducer = redux_1.combineReducers({
     /*
@@ -30,5 +30,5 @@ exports.rootReducer = redux_1.combineReducers({
     enhanceGrid: EnhanceGridReducer,
     */
     topologyRendererState: topologyRenderer_reducer_1.TopologyRendererReducer,
-    appState: app_reducer_1.AppReducer
+    appState: app_reducer_1.WineryReducer
 });

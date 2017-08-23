@@ -17,10 +17,6 @@ export interface SendPaletteOpenedAction extends Action {
   paletteOpened: boolean;
 }
 
-export interface EnhanceGridAction extends Action {
-  enhancedGrid: boolean;
-}
-
 export interface SaveNodeTemplateAction extends Action {
   nodeTemplate: TNodeTemplate;
 }
@@ -30,30 +26,24 @@ export interface SaveRelationshipAction extends Action {
 }
 
 @Injectable()
-export class AppActions {
-    static SEND_PALETTEOPENED = 'SEND_PALETTEOPENED';
-    static ENHANCE_GRID = 'ENHANCE_GRID';
+export class WineryActions {
+    static SEND_PALETTE_OPENED = 'SEND_PALETTE_OPENED';
     static SAVE_NODE_TEMPLATE = 'SAVE_NODE_TEMPLATE';
     static SAVE_RELATIONSHIP = 'SAVE_RELATIONSHIP';
 
     sendPaletteOpened: ActionCreator<SendPaletteOpenedAction> =
       ((paletteOpened) => ({
-        type: AppActions.SEND_PALETTEOPENED,
+        type: WineryActions.SEND_PALETTE_OPENED,
         paletteOpened: paletteOpened
-      }));
-    enhanceGrid: ActionCreator<EnhanceGridAction> =
-      ((enhanceGrid) => ({
-        type: AppActions.ENHANCE_GRID,
-        enhancedGrid: enhanceGrid
       }));
     saveNodeTemplate: ActionCreator<SaveNodeTemplateAction> =
       ((newNode) => ({
-        type: AppActions.SAVE_NODE_TEMPLATE,
+        type: WineryActions.SAVE_NODE_TEMPLATE,
         nodeTemplate: newNode
       }));
     saveRelationship: ActionCreator<SaveRelationshipAction> =
       ((newRelationship) => ({
-        type: AppActions.SAVE_RELATIONSHIP,
+        type: WineryActions.SAVE_RELATIONSHIP,
         relationshipTemplate: newRelationship
       }));
 }

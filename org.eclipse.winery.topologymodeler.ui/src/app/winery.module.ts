@@ -5,9 +5,7 @@ import { HttpModule } from '@angular/http';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { AccordionModule } from 'ngx-bootstrap/accordion';
 import { JsPlumbService } from './jsPlumbService';
-
-import { AppComponent } from './app.component';
-
+import { WineryComponent } from './winery.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { WineryAlertModule } from './winery-alert/winery-alert.module';
 import { ToastModule, ToastOptions } from 'ng2-toastr/ng2-toastr';
@@ -16,28 +14,23 @@ import { PaletteComponent } from './palette/palette.component';
 import { SidebarComponent } from './sidebar/sidebar.component';
 import {JsonService} from './jsonService/json.service';
 import { TopologyRendererModule } from './topology-renderer/topology-renderer.module';
-import { PropertiesComponent } from './properties/properties.component';
-import { DeploymentArtifactsComponent } from './deployment-artifacts/deployment-artifacts.component';
-import { RequirementsCapabilitiesComponent } from './requirements-capabilities/requirements-capabilities.component';
-import { PoliciesComponent } from './policies/policies.component';
+import { PropertiesComponent } from './node/properties/properties.component';
+import { DeploymentArtifactsComponent } from './node/deployment-artifacts/deployment-artifacts.component';
+import { RequirementsCapabilitiesComponent } from './node/requirements-capabilities/requirements-capabilities.component';
+import { PoliciesComponent } from './node/policies/policies.component';
 import { PrintViewComponent } from './print-view/print-view.component';
-import { TargetLocationsComponent } from './target-locations/target-locations.component';
+import { TargetLocationsComponent } from './node/target-locations/target-locations.component';
 import {NgReduxModule, NgRedux, DevToolsExtension} from '@angular-redux/store';
-import {IAppState, INITIAL_IAPP_STATE, rootReducer} from './redux/store/app.store';
-import {AppActions} from './redux/actions/app.actions';
+import {IWIneryState, INITIAL_IWINERY_STATE, rootReducer} from './redux/store/winery.store';
+import {WineryActions} from './redux/actions/winery.actions';
 import {TopologyRendererActions} from './redux/actions/topologyRenderer.actions';
 
 @NgModule({
   declarations: [
-    AppComponent,
+    WineryComponent,
     PaletteComponent,
     SidebarComponent,
-    PropertiesComponent,
-    DeploymentArtifactsComponent,
-    RequirementsCapabilitiesComponent,
-    PoliciesComponent,
     PrintViewComponent,
-    TargetLocationsComponent,
   ],
   imports: [
     BrowserModule,
@@ -55,14 +48,14 @@ import {TopologyRendererActions} from './redux/actions/topologyRenderer.actions'
     {provide: ToastOptions, useClass: WineryCustomOption},
     JsPlumbService,
     JsonService,
-    AppActions,
+    WineryActions,
     TopologyRendererActions
   ],
 
-  bootstrap: [AppComponent]
+  bootstrap: [WineryComponent]
 })
-export class AppModule {
-  constructor(ngRedux: NgRedux<IAppState>,
+export class WineryModule {
+  constructor(ngRedux: NgRedux<IWIneryState>,
               devTools: DevToolsExtension) {
     const storeEnhancers = devTools.isEnabled() ?
       [ devTools.enhancer() ] :
@@ -70,7 +63,7 @@ export class AppModule {
 
     ngRedux.configureStore(
       rootReducer,
-      INITIAL_IAPP_STATE,
+      INITIAL_IWINERY_STATE,
       [],
       storeEnhancers);
   }

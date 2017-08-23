@@ -8,7 +8,7 @@ var __assign = (this && this.__assign) || Object.assign || function(t) {
     return t;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var app_actions_1 = require("../actions/app.actions");
+var app_actions_1 = require("../actions/winery.actions");
 var ttopology_template_1 = require("app/ttopology-template");
 exports.INITIAL_APP_STATE = {
     currentPaletteOpenedState: false,
@@ -18,19 +18,19 @@ exports.INITIAL_APP_STATE = {
 exports.AppReducer = function (lastState, action) {
     if (lastState === void 0) { lastState = exports.INITIAL_APP_STATE; }
     switch (action.type) {
-        case app_actions_1.AppActions.SEND_PALETTEOPENED:
+        case app_actions_1.WineryActions.SEND_PALETTEOPENED:
             var paletteOpened = action.paletteOpened;
             return __assign({}, lastState, { currentPaletteOpenedState: paletteOpened });
-        case app_actions_1.AppActions.ENHANCE_GRID:
+        case app_actions_1.WineryActions.ENHANCE_GRID:
             var enhancedGrid = action.enhancedGrid;
             return __assign({}, lastState, { currentEnhancedGridState: enhancedGrid });
-        case app_actions_1.AppActions.SAVE_NODE_TEMPLATE:
+        case app_actions_1.WineryActions.SAVE_NODE_TEMPLATE:
             var newNode = action.nodeTemplate;
             return __assign({}, lastState, { currentSavedJsonTopology: {
                     nodeTemplates: lastState.currentSavedJsonTopology.nodeTemplates.concat([newNode]),
                     relationshipTemplates: lastState.currentSavedJsonTopology.relationshipTemplates
                 } });
-        case app_actions_1.AppActions.SAVE_RELATIONSHIP:
+        case app_actions_1.WineryActions.SAVE_RELATIONSHIP:
             var newRelationship = action.relationshipTemplate;
             return __assign({}, lastState, { currentSavedJsonTopology: {
                     nodeTemplates: lastState.currentSavedJsonTopology.nodeTemplates,

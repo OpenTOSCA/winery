@@ -12,7 +12,7 @@
 import { Component, OnInit } from '@angular/core';
 
 @Component({
-  selector: 'app-deployment-artifacts',
+  selector: 'winery-deployment-artifacts',
   templateUrl: './deployment-artifacts.component.html',
   styleUrls: ['./deployment-artifacts.component.css']
 })

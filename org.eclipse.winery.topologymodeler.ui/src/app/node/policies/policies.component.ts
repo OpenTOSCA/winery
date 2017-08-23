@@ -12,11 +12,11 @@
 import { Component, OnInit } from '@angular/core';
 
 @Component({
-  selector: 'app-requirements-capabilities',
-  templateUrl: './requirements-capabilities.component.html',
-  styleUrls: ['./requirements-capabilities.component.css']
+  selector: 'winery-policies',
+  templateUrl: './policies.component.html',
+  styleUrls: ['./policies.component.css']
 })
-export class RequirementsCapabilitiesComponent implements OnInit {
+export class PoliciesComponent implements OnInit {
 
   constructor() { }
 

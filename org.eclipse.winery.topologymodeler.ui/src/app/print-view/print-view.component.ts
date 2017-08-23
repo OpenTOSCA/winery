@@ -12,7 +12,7 @@
 import { Component, OnInit } from '@angular/core';
 
 @Component({
-  selector: 'app-print-view',
+  selector: 'winery-print-view',
   templateUrl: './print-view.component.html',
   styleUrls: ['./print-view.component.css']
 })

@@ -1,5 +1,4 @@
 /* You can add global styles to this file, and also import other style files */
-
 .card.accordionGroupPanel,
 .card.accordionGroupPanel .card-header,
 .panel.accordionGroupPanel,
@@ -10,12 +9,26 @@
   user-select: none;
   scroll-padding-top: 1px;
   margin-bottom: 0 !important;
-  background-color: rgba(55,55,55,0.3);
   color: white;
 }
 
-.panel.accordionGroupPanel .panel-body {
+.card-header {
+  background-color: rgba(115,115,115,0.5);
+}
 
+.card {
+  background-color: rgba(255,255,255,0.1);
+}
+
+.panel.accordionGroupPanel .panel-body {
+  background-color: rgba(255,255,255,0.8);
+  margin-bottom: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+.jtk-overlay {
+  user-select: none;
+  cursor: default;
 }
 
 .jtk-drag-select * {
@@ -27,8 +40,12 @@
   user-select: none;
 }
 
+.jtk-connector { z-index:4; }
+.jtk-endpoint { z-index:5; }
+.jtk-overlay { z-index:6; }
+
 table tr{
-  height: 3px !important;
+
 }
 
 .td-key {
@@ -36,13 +53,47 @@ table tr{
   padding-left: 10px !important;
 }
 
-table tr td{
-  padding: 0px !important;
+.td-value {
+  text-align: right !important;
   padding-right: 10px !important;
+}
+
+.header-table td{
+  padding-top: 0px !important;
+  padding-bottom: 0px !important;
   margin: 0 !important;
-  text-align: right;
   width: auto !important;
   font-size: x-small;
+}
+
+.card-block {
+  padding-bottom: 0 !important;
+}
+
+.collapse.show {
+  display: inline-flex !important;
+  min-height: 0 !important;
+}
+
+.body-table td{
+  padding: 0px !important;
+  margin: 0 !important;
+  width: auto !important;
+  font-size: x-small;
+  color: black;
+}
+
+.table {
+  margin-bottom: 0 !important;
+}
+
+.card-block {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.table-active, .table-active>td, .table-active>th {
+  background-color: rgba(0,0,0,.075);
 }
 
 .table-border--grey td, .table-border--grey th {
