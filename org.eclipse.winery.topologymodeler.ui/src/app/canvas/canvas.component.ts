@@ -183,6 +183,7 @@ export class CanvasComponent implements OnInit, OnDestroy {
     }
   }
 
+  
   clearSelectedNodes(): void {
     for (const node of this.nodeChildrenArray) {
       if (this.selectedNodes.find(selectedNode => selectedNode.id === node.title)) {
