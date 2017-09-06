@@ -63,7 +63,7 @@ export class SidebarComponent implements OnInit {
     this.nodeTemplateSubscription = this.$ngRedux.select(state => state.wineryState.currentJsonTopology.nodeTemplates)
       .subscribe(nodeTemplates => {
 
-      })
+      });
     // apply changes to the node name <input> field with a debounceTime of 300ms
     const nodeNameKeyupObservable = this.nodeNameKeyUp
       .debounceTime(300)

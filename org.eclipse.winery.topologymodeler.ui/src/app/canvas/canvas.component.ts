@@ -194,7 +194,7 @@ export class CanvasComponent implements OnInit, OnDestroy {
   }
 
   showSelectionRange($event) {
-    console.log('mousedown');
+    console.log($event);
     this.ngRedux.dispatch(this.actions.sendPaletteOpened(false));
     this.clearSelectedNodes();
     for (const node of this.nodeChildrenArray) {

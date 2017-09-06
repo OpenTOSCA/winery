@@ -10,21 +10,8 @@
  *     Josip Ledic - initial API and implementation, Refactoring to use Redux instead
  *     Thommy Zelenik - implementation, Refactoring
  */
-import {
-  AfterViewInit,
-  Component,
-  DoCheck,
-  EventEmitter,
-  Input,
-  IterableDiffers,
-  NgZone,
-  OnInit,
-  HostBinding,
-  OnChanges,
-  Output,
-} from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, Input, NgZone, OnChanges, OnInit, Output } from '@angular/core';
 import { ButtonsStateModel } from '../models/buttonsState.model';
-import { TNodeTemplate } from '../ttopology-template';
 import { NgRedux } from '@angular-redux/store';
 import { IWineryState } from '../redux/store/winery.store';
 import { WineryActions } from '../redux/actions/winery.actions';
@@ -95,13 +82,18 @@ export class NodeComponent implements OnInit, AfterViewInit, OnChanges {
       ctrlKey: $event.ctrlKey
     };
     this.checkFocusNode.emit(focusNodeData);
-    if ($event.srcElement.parentElement.className !== 'accordion-toggle') {
-      if (!$event.ctrlKey) {
-        this.connectorEndpointVisible = !this.connectorEndpointVisible;
+    try {
+      if ($event.srcElement.parentElement.className !== 'accordion-toggle') {
+        this.zone.runOutsideAngular(() => {
+          document.getElementById(this.title).addEventListener('mousemove', this.bindMouseMove);
+        });
       }
-      this.zone.runOutsideAngular(() => {
-        document.getElementById(this.title).addEventListener('mousemove', this.bindMouseMove);
-      });
+    } catch (e) {
+      if ($event.target.parentElement.className !== 'accordion-toggle ') {
+        this.zone.runOutsideAngular(() => {
+          document.getElementById(this.title).addEventListener('mousemove', this.bindMouseMove);
+        });
+      }
     }
   }
 
@@ -121,6 +113,22 @@ export class NodeComponent implements OnInit, AfterViewInit, OnChanges {
 
   private testTimeDifference($event): void {
     if ((this.endTime - this.startTime) < 250) {
+      if (!$event.ctrlKey) {
+        try {
+          if ($event.srcElement.parentElement.className === 'accordion-toggle') {
+            this.connectorEndpointVisible = false;
+          } else {
+            this.connectorEndpointVisible = !this.connectorEndpointVisible;
+          }
+        } catch (e) {
+          if ($event.target.parentElement.className === 'accordion-toggle') {
+            console.log('hello');
+            this.connectorEndpointVisible = false;
+          } else {
+            this.connectorEndpointVisible = !this.connectorEndpointVisible;
+          }
+        }
+      }
       this.longpress = false;
     } else if (this.endTime - this.startTime >= 300) {
       this.longpress = true;

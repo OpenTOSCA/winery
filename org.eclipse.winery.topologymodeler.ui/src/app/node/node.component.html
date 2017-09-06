@@ -2,12 +2,11 @@
      style="padding: 3px; position: absolute; user-select: none" [style.top]="top" [style.left]="left"
      id={{title}} [style.borderColor]="nodeColor" [style.backgroundColor]="nodeColor"
      (mousedown)="trackTimeOfMouseDown($event)"
-     (mouseup)="trackTimeOfMouseUp($event)"
-     (click)="showConnectorEndpoint($event)">
+     (mouseup)="trackTimeOfMouseUp($event)">
   <div class="row rounded"
        [class.selected]="makeSelectionVisible"
        [class.unselected]="!makeSelectionVisible"
-       (click)="testTimeDifference(); openSidebar($event);">
+       (click)="openSidebar($event);">
     <div class="col-sm-3">
       <img *ngIf="!nodeImageUrl" src="https://api.adorable.io/avatars/50/{{title}}"
            style="border-radius: 10%; margin-top: 1px">

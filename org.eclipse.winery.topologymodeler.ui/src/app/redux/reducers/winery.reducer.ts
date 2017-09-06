@@ -85,6 +85,7 @@ export const WineryReducer =
             )
           }
         });
+
         return {
           ...lastState,
           currentJsonTopology: {
