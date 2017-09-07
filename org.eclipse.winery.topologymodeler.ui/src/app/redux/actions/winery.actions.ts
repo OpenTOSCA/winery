@@ -46,6 +46,7 @@ export interface DeleteNodeAction extends Action {
 
 @Injectable()
 export class WineryActions {
+
     static SEND_PALETTE_OPENED = 'SEND_PALETTE_OPENED';
     static SAVE_NODE_TEMPLATE = 'SAVE_NODE_TEMPLATE';
     static SAVE_RELATIONSHIP = 'SAVE_RELATIONSHIP';

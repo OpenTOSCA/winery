@@ -7,16 +7,19 @@
  * and http://www.apache.org/licenses/LICENSE-2.0
  *
  * Contributors:
- *     Thommy Zelenik - initial API and implementation
+ *     Thommy Zelenik, Josip Ledic - initial API and implementation
  */
-import {Component, OnInit} from '@angular/core';
-import {TNodeTemplate, TRelationshipTemplate} from './ttopology-template';
-import {IWineryState} from './redux/store/winery.store';
-import {WineryActions} from './redux/actions/winery.actions';
-import {NgRedux} from '@angular-redux/store';
+import 'rxjs/add/operator/do';
+import { Component, OnInit } from '@angular/core';
+import { TNodeTemplate, TRelationshipTemplate } from './ttopology-template';
+import { IWineryState } from './redux/store/winery.store';
+import { WineryActions } from './redux/actions/winery.actions';
+import { NgRedux } from '@angular-redux/store';
+import { ILoaded, LoadedService } from './loaded.service';
+import { AppReadyEventService } from './app-ready-event.service';
 
 @Component({
-  selector: 'winery-topologyrenderer',
+  selector: 'winery-topologymodeler',
   templateUrl: './winery.component.html',
   styleUrls: ['./winery.component.css']
 })
@@ -214,9 +217,25 @@ export class WineryComponent implements OnInit {
     }
   ];
 
-  constructor(private ngRedux: NgRedux<IWineryState>, private actions: WineryActions) {
+  public loaded: ILoaded;
+
+  constructor(private ngRedux: NgRedux<IWineryState>,
+              private actions: WineryActions,
+              private loadedService: LoadedService,
+              private appReadyEvent: AppReadyEventService) {
+
+    this.loaded = null;
+    loadedService.getLoadingState()
+      .subscribe((isAppLoaded) => {
+      this.loaded = isAppLoaded;
+      appReadyEvent.trigger();
+    });
+
   }
 
+  sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
 
   ngOnInit() {
     this.topologyTemplate = this.testJson;
@@ -261,6 +280,7 @@ export class WineryComponent implements OnInit {
     }
     for (let i = 0; i < this.relationshipTemplates.length; i++) {
       this.ngRedux.dispatch(this.actions.saveRelationship(this.relationshipTemplates[i]));
+      console.log(this.relationshipTemplates[i]);
     }
   }
 }

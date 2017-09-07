@@ -14,13 +14,45 @@
 
 <!-- Enable bootstrap 4 theme -->
 <script>window.__theme = 'bs4';</script>
-<winery-topologyrenderer>
-  <div class="sk-folding-cube">
-    <div class="sk-cube1 sk-cube"></div>
-    <div class="sk-cube2 sk-cube"></div>
-    <div class="sk-cube4 sk-cube"></div>
-    <div class="sk-cube3 sk-cube"></div>
-  </div>
-</winery-topologyrenderer>
+<winery-topologymodeler>
+
+</winery-topologymodeler>
+
+<div id="pre-bootstrap-container">
+
+  <script type="text/javascript">
+    // Listen for the "appready" event, which will be emitted by the application
+    // and bubble up (as far as we know) to the document root.
+    document.addEventListener('appready', handleAppReady);
+    // I handle the "appready" event and teardown the loading screen.
+    function handleAppReady(event) {
+      var preBootstrapContainer = document.getElementById("pre-bootstrap-container");
+      var preBootstrap = document.getElementById("pre-bootstrap");
+      // Add the class-name to initiate the transitions.
+      preBootstrap.className = "loaded";
+      // Remove the bootstrap container after the transition has
+      // completed (based on the known transition time).
+      setTimeout(
+        function removeLoadingScreen() {
+          preBootstrapContainer
+            .parentNode
+            .removeChild(preBootstrapContainer)
+          ;
+        },
+        1500
+      );
+    }
+  </script>
+
+
+    <div id="pre-bootstrap" class="sk-folding-cube">
+      <div class="sk-cube1 sk-cube"></div>
+      <div class="sk-cube2 sk-cube"></div>
+      <div class="sk-cube4 sk-cube"></div>
+      <div class="sk-cube3 sk-cube"></div>
+    </div>
+
+
+</div>
 </body>
 </html>

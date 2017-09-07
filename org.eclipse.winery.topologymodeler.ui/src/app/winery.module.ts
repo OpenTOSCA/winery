@@ -24,6 +24,8 @@ import {NgReduxModule, NgRedux, DevToolsExtension} from '@angular-redux/store';
 import {IWineryState, INITIAL_IWINERY_STATE, rootReducer} from './redux/store/winery.store';
 import {WineryActions} from './redux/actions/winery.actions';
 import {TopologyRendererActions} from './redux/actions/topologyRenderer.actions';
+import { LoadedService } from './loaded.service';
+import { AppReadyEventService } from './app-ready-event.service';
 
 @NgModule({
   declarations: [
@@ -49,7 +51,9 @@ import {TopologyRendererActions} from './redux/actions/topologyRenderer.actions'
     JsPlumbService,
     JsonService,
     WineryActions,
-    TopologyRendererActions
+    TopologyRendererActions,
+    LoadedService,
+    AppReadyEventService
   ],
 
   bootstrap: [WineryComponent]
