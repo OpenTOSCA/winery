@@ -64,7 +64,7 @@ export const WineryReducer =
           currentJsonTopology: {
             ...lastState.currentJsonTopology,
             nodeTemplates: lastState.currentJsonTopology.nodeTemplates.map(nodeTemplate => nodeTemplate.name === nodeNames.oldNodeName ?
-              new TNodeTemplate(
+              nodeTemplate = new TNodeTemplate(
                 lastState.currentJsonTopology.nodeTemplates[index].properties,
                 // id
                 lastState.currentJsonTopology.nodeTemplates[index].id,
