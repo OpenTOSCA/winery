@@ -59,12 +59,38 @@ export const WineryReducer =
       case WineryActions.CHANGE_NODE_NAME:
         const nodeNames: any = (<SidebarNodeNamechange>action).nodeNames;
         const index = lastState.currentJsonTopology.nodeTemplates.map(el => el.name).indexOf(nodeNames.oldNodeName);
-        return {
+        console.log(index);
+        console.log(nodeNames);
+        console.log({
           ...lastState,
           currentJsonTopology: {
             ...lastState.currentJsonTopology,
             nodeTemplates: lastState.currentJsonTopology.nodeTemplates.map(nodeTemplate => nodeTemplate.name === nodeNames.oldNodeName ?
               nodeTemplate = new TNodeTemplate(
+                lastState.currentJsonTopology.nodeTemplates[index].properties,
+                // id
+                lastState.currentJsonTopology.nodeTemplates[index].id,
+                // type
+                lastState.currentJsonTopology.nodeTemplates[index].type,
+                // name
+                nodeNames.newNodeName,
+                lastState.currentJsonTopology.nodeTemplates[index].minInstances,
+                lastState.currentJsonTopology.nodeTemplates[index].maxInstances,
+                lastState.currentJsonTopology.nodeTemplates[index].color,
+                lastState.currentJsonTopology.nodeTemplates[index].imageUrl,
+                lastState.currentJsonTopology.nodeTemplates[index].any,
+                lastState.currentJsonTopology.nodeTemplates[index].documentation,
+                lastState.currentJsonTopology.nodeTemplates[index].otherAttributes
+              ) : nodeTemplate
+            )
+          }
+        });
+        return {
+          ...lastState,
+          currentJsonTopology: {
+            ...lastState.currentJsonTopology,
+            nodeTemplates: lastState.currentJsonTopology.nodeTemplates.map(nodeTemplate => nodeTemplate.name === nodeNames.oldNodeName ?
+              new TNodeTemplate(
                 lastState.currentJsonTopology.nodeTemplates[index].properties,
                 // id
                 lastState.currentJsonTopology.nodeTemplates[index].id,

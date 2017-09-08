@@ -39,16 +39,12 @@ export class NodeComponent implements OnInit, AfterViewInit {
   longpress = false;
   makeSelectionVisible = false;
   setFlash = false;
+  @Input() nodeAttributes: any;
   @Input() needsToBeFlashed: boolean;
-  @Input() title: string;
-  @Input() name: string;
-  @Input() otherAttributes: any;
-  @Output() sendId: EventEmitter<string>;
-  @Output() askForRepaint: EventEmitter<string>;
-  @Input() nodeColor: string;
-  @Input() nodeImageUrl: string;
   @Input() dragSource: string;
   @Input() navbarButtonsState: ButtonsStateModel;
+  @Output() sendId: EventEmitter<string>;
+  @Output() askForRepaint: EventEmitter<string>;
   @Output() setDragSource: EventEmitter<any>;
   @Output() closedEndpoint: EventEmitter<string>;
   @Output() checkFocusNode: EventEmitter<any>;
@@ -75,7 +71,7 @@ export class NodeComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    this.sendId.emit(this.title);
+    this.sendId.emit(this.nodeAttributes.id);
   }
 
   private repaint($event) {
@@ -90,25 +86,25 @@ export class NodeComponent implements OnInit, AfterViewInit {
   mouseDownHandler($event): void {
     this.startTime = new Date().getTime();
     const focusNodeData = {
-      id: this.title,
+      id: this.nodeAttributes.id,
       ctrlKey: $event.ctrlKey
     };
     this.checkFocusNode.emit(focusNodeData);
     if ($event.srcElement.parentElement.className !== 'accordion-toggle') {
       this.previousPosition = {
-        left: document.getElementById(this.title).offsetLeft,
-        top: document.getElementById(this.title).offsetTop
+        left: document.getElementById(this.nodeAttributes.id).offsetLeft,
+        top: document.getElementById(this.nodeAttributes.id).offsetTop
       };
       this.zone.runOutsideAngular(() => {
-        document.getElementById(this.title).addEventListener('mousemove', this.bindMouseMove);
+        document.getElementById(this.nodeAttributes.id).addEventListener('mousemove', this.bindMouseMove);
       });
     }
   }
 
   mouseMove($event): void {
     this.currentPosition = {
-      left: document.getElementById(this.title).offsetLeft,
-      top: document.getElementById(this.title).offsetTop
+      left: document.getElementById(this.nodeAttributes.id).offsetLeft,
+      top: document.getElementById(this.nodeAttributes.id).offsetTop
     };
     if (this.previousPosition.left !== this.currentPosition.left ||
         this.previousPosition.top !== this.currentPosition.top) {
@@ -119,13 +115,13 @@ export class NodeComponent implements OnInit, AfterViewInit {
 
   mouseUpHandler($event): void {
     // mouseup
-    document.getElementById(this.title).removeEventListener('mousemove', this.bindMouseMove);
+    document.getElementById(this.nodeAttributes.id).removeEventListener('mousemove', this.bindMouseMove);
     this.endTime = new Date().getTime();
     this.testTimeDifference($event);
     if (this.previousPosition !== undefined && this.currentPosition !== undefined) {
       if (this.previousPosition.left !== this.currentPosition.left ||
         this.previousPosition.top !== this.currentPosition.top) {
-        this.updateAllNodes.emit(this.title);
+        this.updateAllNodes.emit(this.nodeAttributes.id);
       }
     }
   }
@@ -138,7 +134,7 @@ export class NodeComponent implements OnInit, AfterViewInit {
   private testTimeDifference($event): void {
     if ((this.endTime - this.startTime) < 250) {
       if (!$event.ctrlKey) {
-        this.closedEndpoint.emit(this.title);
+        this.closedEndpoint.emit(this.nodeAttributes.id);
       }
       this.longpress = false;
     } else if (this.endTime - this.startTime >= 300) {
@@ -149,7 +145,7 @@ export class NodeComponent implements OnInit, AfterViewInit {
   makeSource($event): void {
     const dragSourceInfo = {
       dragSource: this.dragSource,
-      nodeId: this.title
+      nodeId: this.nodeAttributes.id
     };
     this.setDragSource.emit(dragSourceInfo);
   }
@@ -170,8 +166,8 @@ export class NodeComponent implements OnInit, AfterViewInit {
       this.$ngRedux.dispatch(this.actions.openSidebar({
         sidebarContents: {
           sidebarVisible: true,
-          nodeId: this.title,
-          nameTextFieldValue: this.name
+          nodeId: this.nodeAttributes.id,
+          nameTextFieldValue: this.nodeAttributes.name
         }
       }));
     }

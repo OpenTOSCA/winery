@@ -1,7 +1,8 @@
 <div class="container rounded"
-     style="padding: 3px; position: absolute; user-select: none" [style.top]="otherAttributes.y + 'px'"
-     [style.left]="otherAttributes.x + 'px'"
-     id={{title}} [style.borderColor]="nodeColor" [style.backgroundColor]="nodeColor"
+     style="padding: 3px; position: absolute; user-select: none"
+     [style.top]="nodeAttributes.otherAttributes.y + 'px'"
+     [style.left]="nodeAttributes.otherAttributes.x + 'px'"
+     id={{nodeAttributes.id}} [style.borderColor]="nodeAttributes.color" [style.backgroundColor]="nodeAttributes.color"
      (mousedown)="mouseDownHandler($event)"
      (mouseup)="mouseUpHandler($event)">
   <div class="row rounded"
@@ -9,23 +10,23 @@
        [class.unselected]="!makeSelectionVisible"
        (click)="openSidebar($event);">
     <div class="col-sm-3">
-      <img *ngIf="!nodeImageUrl" src="https://api.adorable.io/avatars/50/{{title}}"
+      <img *ngIf="!nodeAttributes.imageUrl" src="https://api.adorable.io/avatars/50/{{nodeAttributes.id}}"
            style="border-radius: 10%; margin-top: 1px">
-      <img *ngIf="nodeImageUrl" src="{{nodeImageUrl}}">
+      <img *ngIf="nodeAttributes.imageUrl" src="{{nodeAttributes.imageUrl}}">
     </div>
     <div id="specifierDiv" class="col-sm-9">
       <table class="table table-active table-border--grey table-sm header-table">
         <tr [class.flashit]="setFlash">
           <td class="td-key">name:</td>
-          <td class="td-value">{{name}}</td>
+          <td class="td-value">{{nodeAttributes.name}}</td>
         </tr>
         <tr *ngIf="navbarButtonsState.buttonsState.idsButton">
           <td class="td-key">id:</td>
-          <td class="td-value" style="color: crimson">{{title}}</td>
+          <td class="td-value" style="color: crimson">{{nodeAttributes.id}}</td>
         </tr>
         <tr *ngIf="navbarButtonsState.buttonsState.typesButton">
           <td class="td-key">type:</td>
-          <td class="btn-link td-value">{{title}}</td>
+          <td class="btn-link td-value">{{nodeAttributes.id}}</td>
         </tr>
       </table>
     </div>
@@ -118,67 +119,3 @@
     </accordion-group>
   </accordion>
 </div>
-<!--
-<div class="old-container-style" [style.top]="top" [style.left]="left"
-     id={{title}} [style.borderColor]="nodeColor" [style.backgroundColor]="nodeColor"
-     [class.selected]="makeSelectionVisible"
-     (mousedown)="trackTimeOfMouseDown()"
-     (mouseup)="trackTimeOfMouseUp()"
-     (click)="showConnectorEndpoint($event)">
-  <div class="old-row-style">
-    <div>
-    </div>
-    <div id="specifierDiv">
-      <p class="old-name">{{title}}</p>
-      <p class="old-id" *ngIf="idsVisible">{{title}}</p>
-      <a href="#" class="old-type" *ngIf="typesVisible">{{title}}</a>
-    </div>
-  </div>
-    &lt;!&ndash; PROPERTIES &ndash;&gt;
-    <div class="old-properties-style"
-      *ngIf="propertiesVisible">
-      <div class="old-properties-header-style">
-        Properties
-        <i class="pull-sm-0 float-sm-right fa"></i>
-      </div>
-    </div>
-    &lt;!&ndash; DEPLOYMENT ARTIFACTS &ndash;&gt;
-    <div class="old-deployment-style"
-      #deploymentartifactsgroup
-      *ngIf="deploymentArtifactsVisible">
-      <div class="old-deployment-header-style">
-        Deployment Artifacts
-        <i class="pull-sm-0 float-sm-right fa icon-styling"></i>
-      </div>
-    </div>
-    &lt;!&ndash; REQUIREMENTS & CAPABILITIES &ndash;&gt;
-    <div class="old-requirements-style"
-      #requirementscapabilitiesgroup
-      *ngIf="requirementsCapabilitiesVisible">
-      <div class="old-requirements-header-style">
-        Requirements - Capabilities
-        <i class="pull-sm-0 float-sm-right fa icon-styling"></i>
-      </div>
-    </div>
-    &lt;!&ndash; POLICIES &ndash;&gt;
-    <div class="old-policies-style"
-      #policiesgroup
-      *ngIf="policiesVisible">
-      <div class="old-policies-header-style">
-        Policies
-        <i class="pull-sm-0 float-sm-right fa icon-styling">
-        </i>
-      </div>
-    </div>
-    &lt;!&ndash; TARGET LOCATIONS &ndash;&gt;
-    <div class="old-target-style"
-      #targetlocationsgroup
-      *ngIf="targetLocationsVisible">
-      <div>
-        Target Locations
-        <i class="pull-sm-0 float-sm-right fa icon-styling">
-        </i>
-      </div>
-    </div>
-  </div>
--->
