@@ -110,7 +110,6 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
 
   setButtonsState(currentButtonsState: ButtonsStateModel): void {
     this.navbarButtonsState = currentButtonsState;
-    console.log(this.nodeChildrenArray);
     setTimeout(() => this.repaintJsPlumb(), 1);
     const alignmentButtonLayout = this.navbarButtonsState.buttonsState.layoutButton;
     const alignmentButtonAlignH = this.navbarButtonsState.buttonsState.alignHButton;
