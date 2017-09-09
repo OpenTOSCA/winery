@@ -92,7 +92,7 @@ export class NodeComponent implements OnInit, AfterViewInit {
   passCurrentType($event): void {
     $event.stopPropagation();
     $event.preventDefault();
-    const currentType = $event.srcElement.innerHTML;
+    const currentType: string = $event.srcElement.innerHTML.replace(/\n/g, '').replace(/\s+/g, '');
     this.sendCurrentType.emit(currentType);
   }
 

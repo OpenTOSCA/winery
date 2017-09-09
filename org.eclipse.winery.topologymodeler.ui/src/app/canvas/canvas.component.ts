@@ -461,7 +461,7 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
         sourceElement,
         targetElement,
         undefined,
-        sourceElement.concat.targetElement,
+        sourceElement.concat(targetElement),
         this.currentType
       );
       console.log(newRelationship);
