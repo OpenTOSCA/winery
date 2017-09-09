@@ -134,11 +134,15 @@ export class NodeComponent implements OnInit, AfterViewInit {
     setTimeout(() => this.setFlash = false, 1000);
   }
 
+  closeConnectorEndpoints(): void {
+    if (!this.longpress) {
+      this.closedEndpoint.emit(this.nodeAttributes.id);
+      this.repaint(new Event('repaint'));
+    }
+  }
+
   private testTimeDifference($event): void {
     if ((this.endTime - this.startTime) < 250) {
-      if (!$event.ctrlKey) {
-        this.closedEndpoint.emit(this.nodeAttributes.id);
-      }
       this.longpress = false;
     } else if (this.endTime - this.startTime >= 300) {
       this.longpress = true;

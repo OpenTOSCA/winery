@@ -150,7 +150,14 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
         ['Label', {
           label: newRelationship.type,
           id: 'label',
-          labelStyle: {font: '11px Roboto, sans-serif', color: '#FAFAFA', fill: '#303030', borderStyle: '#424242', borderWidth: 1, padding: '3px'}
+          labelStyle: {
+            font: '11px Roboto, sans-serif',
+            color: '#FAFAFA',
+            fill: '#303030',
+            borderStyle: '#424242',
+            borderWidth: 1,
+            padding: '3px'
+          }
         }]
       ],
     });
@@ -167,6 +174,7 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
         const indexOfNode = this.nodeChildrenIdArray.indexOf(this.dragSourceInfos.nodeId);
         if (this.nodeChildrenArray[indexOfNode]) {
           this.nodeChildrenArray[indexOfNode].connectorEndpointVisible = false;
+          this.repaintJsPlumb();
         }
       }
     }
@@ -477,7 +485,6 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
     this.startTime = new Date().getTime();
   }
 
-
   trackTimeOfMouseUp($event: any): void {
     this.crosshair = false;
     this.endTime = new Date().getTime();
@@ -485,7 +492,7 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private testTimeDifference(): void {
-    if ((this.endTime - this.startTime) < 250) {
+    if ((this.endTime - this.startTime) < 300) {
       this.longPress = false;
     } else if (this.endTime - this.startTime >= 300) {
       this.longPress = true;

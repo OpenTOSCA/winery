@@ -8,7 +8,7 @@
   <div class="row rounded"
        [class.selected]="makeSelectionVisible"
        [class.unselected]="!makeSelectionVisible"
-       (click)="openSidebar($event);">
+       (click)="openSidebar($event); closeConnectorEndpoints()">
     <div class="col-sm-3">
       <img *ngIf="!nodeAttributes.imageUrl" src="https://robohash.org/{{nodeAttributes.id}}.png?set=set4"
            style="border-radius: 10%; margin-top: 1px; width: 50px; height: auto">
@@ -34,8 +34,9 @@
   <div class="endpointContainer container rounded" [style.border-color]="this.nodeAttributes.color" style="width: 100%" *ngIf="connectorEndpointVisible" (mouseover)="makeSource($event)">
     <div class="btn-group-vertical btn-group-sm" role="group" id={{dragSource}} >
         <button *ngFor="let relationshipType of relationshipTypes"
-                type="button" class="btn btn-sm btn-outline-secondary relationship-button"
-                [style.border-color]="this.nodeAttributes.color">
+                type="button" class="btn btn-sm btn-outline-secondary relationship-button sm"
+                [style.border-color]="this.nodeAttributes.color"
+                style="font-size: x-small;">
           {{relationshipType}}
         </button>
     </div>
