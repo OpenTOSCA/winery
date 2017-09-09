@@ -10,7 +10,15 @@
  *     Josip Ledic - initial API and implementation, Refactoring to use Redux instead
  *     Thommy Zelenik - implementation, Refactoring
  */
-import { AfterViewInit, Component, EventEmitter, Input, NgZone, OnChanges, OnInit, Output } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  EventEmitter,
+  Input,
+  NgZone,
+  OnInit,
+  Output,
+} from '@angular/core';
 import { ButtonsStateModel } from '../models/buttonsState.model';
 import { NgRedux } from '@angular-redux/store';
 import { IWineryState } from '../redux/store/winery.store';
@@ -21,29 +29,28 @@ import { WineryActions } from '../redux/actions/winery.actions';
   templateUrl: './node.component.html',
   styleUrls: ['./node.component.css'],
 })
-export class NodeComponent implements OnInit, AfterViewInit, OnChanges {
+export class NodeComponent implements OnInit, AfterViewInit {
   public items: string[] = ['Item 1', 'Item 2', 'Item 3'];
   public accordionGroupPanel = 'accordionGroupPanel';
   public customClass = 'customClass';
-  connectorEndpointVisible;
+  connectorEndpointVisible = false;
   startTime;
   endTime;
-  @Input() needsToBeFlashed: boolean;
   longpress = false;
   makeSelectionVisible = false;
-  @Input() title: string;
-  @Input() name: string;
-  @Input() left: number;
-  @Input() top: number;
-  @Output() sendId: EventEmitter<string>;
-  @Output() askForRepaint: EventEmitter<string>;
-  @Input() nodeColor: string;
-  @Input() nodeImageUrl: string;
+  setFlash = false;
+  @Input() nodeAttributes: any;
+  @Input() needsToBeFlashed: boolean;
   @Input() dragSource: string;
   @Input() navbarButtonsState: ButtonsStateModel;
+  @Output() sendId: EventEmitter<string>;
+  @Output() askForRepaint: EventEmitter<string>;
   @Output() setDragSource: EventEmitter<any>;
   @Output() closedEndpoint: EventEmitter<string>;
   @Output() checkFocusNode: EventEmitter<any>;
+  @Output() updateAllNodes: EventEmitter<string>;
+  previousPosition: any;
+  currentPosition: any;
 
   public addItem(): void {
     this.items.push(`Items ${this.items.length + 1}`);
@@ -57,13 +64,14 @@ export class NodeComponent implements OnInit, AfterViewInit, OnChanges {
     this.setDragSource = new EventEmitter();
     this.closedEndpoint = new EventEmitter();
     this.checkFocusNode = new EventEmitter();
+    this.updateAllNodes = new EventEmitter();
   }
 
   ngOnInit() {
   }
 
   ngAfterViewInit(): void {
-    this.sendId.emit(this.title);
+    this.sendId.emit(this.nodeAttributes.id);
   }
 
   private repaint($event) {
@@ -75,59 +83,58 @@ export class NodeComponent implements OnInit, AfterViewInit, OnChanges {
     this.mouseMove(ev);
   }
 
-  trackTimeOfMouseDown($event): void {
+  mouseDownHandler($event): void {
     this.startTime = new Date().getTime();
     const focusNodeData = {
-      id: this.title,
+      id: this.nodeAttributes.id,
       ctrlKey: $event.ctrlKey
     };
     this.checkFocusNode.emit(focusNodeData);
-    try {
-      if ($event.srcElement.parentElement.className !== 'accordion-toggle') {
-        this.zone.runOutsideAngular(() => {
-          document.getElementById(this.title).addEventListener('mousemove', this.bindMouseMove);
-        });
-      }
-    } catch (e) {
-      if ($event.target.parentElement.className !== 'accordion-toggle ') {
-        this.zone.runOutsideAngular(() => {
-          document.getElementById(this.title).addEventListener('mousemove', this.bindMouseMove);
-        });
-      }
+    if ($event.srcElement.parentElement.className !== 'accordion-toggle') {
+      this.previousPosition = {
+        left: document.getElementById(this.nodeAttributes.id).offsetLeft,
+        top: document.getElementById(this.nodeAttributes.id).offsetTop
+      };
+      this.zone.runOutsideAngular(() => {
+        document.getElementById(this.nodeAttributes.id).addEventListener('mousemove', this.bindMouseMove);
+      });
     }
   }
 
   mouseMove($event): void {
-    this.connectorEndpointVisible = false;
+    this.currentPosition = {
+      left: document.getElementById(this.nodeAttributes.id).offsetLeft,
+      top: document.getElementById(this.nodeAttributes.id).offsetTop
+    };
+    if (this.previousPosition.left !== this.currentPosition.left ||
+        this.previousPosition.top !== this.currentPosition.top) {
+      this.connectorEndpointVisible = false;
+    }
   }
 
-  trackTimeOfMouseUp($event): void {
-    document.getElementById(this.title).removeEventListener('mousemove', this.bindMouseMove);
+
+  mouseUpHandler($event): void {
+    // mouseup
+    document.getElementById(this.nodeAttributes.id).removeEventListener('mousemove', this.bindMouseMove);
     this.endTime = new Date().getTime();
     this.testTimeDifference($event);
+    if (this.previousPosition !== undefined && this.currentPosition !== undefined) {
+      if (this.previousPosition.left !== this.currentPosition.left ||
+        this.previousPosition.top !== this.currentPosition.top) {
+        this.updateAllNodes.emit(this.nodeAttributes.id);
+      }
+    }
   }
 
-  ngOnChanges() {
-    return true;
+  flash(): void {
+    this.setFlash = true;
+    setTimeout(() => this.setFlash = false, 1000);
   }
 
   private testTimeDifference($event): void {
     if ((this.endTime - this.startTime) < 250) {
       if (!$event.ctrlKey) {
-        try {
-          if ($event.srcElement.parentElement.className === 'accordion-toggle') {
-            this.connectorEndpointVisible = false;
-          } else {
-            this.connectorEndpointVisible = !this.connectorEndpointVisible;
-          }
-        } catch (e) {
-          if ($event.target.parentElement.className === 'accordion-toggle') {
-            console.log('hello');
-            this.connectorEndpointVisible = false;
-          } else {
-            this.connectorEndpointVisible = !this.connectorEndpointVisible;
-          }
-        }
+        this.closedEndpoint.emit(this.nodeAttributes.id);
       }
       this.longpress = false;
     } else if (this.endTime - this.startTime >= 300) {
@@ -138,21 +145,9 @@ export class NodeComponent implements OnInit, AfterViewInit, OnChanges {
   makeSource($event): void {
     const dragSourceInfo = {
       dragSource: this.dragSource,
-      nodeId: this.title
+      nodeId: this.nodeAttributes.id
     };
     this.setDragSource.emit(dragSourceInfo);
-  }
-
-  showConnectorEndpoint($event): void {
-    $event.stopPropagation();
-    if ($event.ctrlKey) {
-    } else {
-      if (!this.longpress) {
-        if (this.connectorEndpointVisible === true) {
-          this.closedEndpoint.emit('set no more drag sources');
-        }
-      }
-    }
   }
 
   // Only display the sidebar if the click is no longpress
@@ -171,8 +166,8 @@ export class NodeComponent implements OnInit, AfterViewInit, OnChanges {
       this.$ngRedux.dispatch(this.actions.openSidebar({
         sidebarContents: {
           sidebarVisible: true,
-          nodeId: this.title,
-          nameTextFieldValue: this.name
+          nodeId: this.nodeAttributes.id,
+          nameTextFieldValue: this.nodeAttributes.name
         }
       }));
     }

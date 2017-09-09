@@ -11,13 +11,13 @@
  */
 import { Action } from 'redux';
 import {
-  WineryActions,
+  DeleteNodeAction,
   SaveNodeTemplateAction,
   SaveRelationshipAction,
   SendPaletteOpenedAction,
-  DeleteNodeAction,
   SidebarNodeNamechange,
-  SidebarStateAction,
+  SidebarStateAction, UpdateNodeCoordinatesAction,
+  WineryActions
 } from '../actions/winery.actions';
 import { TNodeTemplate, TRelationshipTemplate, TTopologyTemplate } from 'app/ttopology-template';
 
@@ -85,7 +85,6 @@ export const WineryReducer =
             )
           }
         });
-
         return {
           ...lastState,
           currentJsonTopology: {
@@ -110,9 +109,36 @@ export const WineryReducer =
             )
           }
         };
-      case
-      WineryActions.SAVE_NODE_TEMPLATE
-      :
+      case WineryActions.UPDATE_NODE_COORDINATES:
+        const currentNodeCoordinates: any = (<UpdateNodeCoordinatesAction>action).otherAttributes;
+        const otherAttributes = {
+          x: currentNodeCoordinates.x,
+          y: currentNodeCoordinates.y
+        };
+        const nodeId = currentNodeCoordinates.id;
+        const nodeIndex = lastState.currentJsonTopology.nodeTemplates.map(nodeTemplate => nodeTemplate.id).indexOf(nodeId);
+        return {
+          ...lastState,
+          currentJsonTopology: {
+            ...lastState.currentJsonTopology,
+            nodeTemplates: lastState.currentJsonTopology.nodeTemplates.map(nodeTemplate => nodeTemplate.id === nodeId ?
+              new TNodeTemplate(
+                lastState.currentJsonTopology.nodeTemplates[nodeIndex].properties,
+                lastState.currentJsonTopology.nodeTemplates[nodeIndex].id,
+                lastState.currentJsonTopology.nodeTemplates[nodeIndex].type,
+                lastState.currentJsonTopology.nodeTemplates[nodeIndex].name,
+                lastState.currentJsonTopology.nodeTemplates[nodeIndex].minInstances,
+                lastState.currentJsonTopology.nodeTemplates[nodeIndex].maxInstances,
+                lastState.currentJsonTopology.nodeTemplates[nodeIndex].color,
+                lastState.currentJsonTopology.nodeTemplates[nodeIndex].imageUrl,
+                lastState.currentJsonTopology.nodeTemplates[nodeIndex].any,
+                lastState.currentJsonTopology.nodeTemplates[nodeIndex].documentation,
+                otherAttributes
+              ) : nodeTemplate
+            )
+          }
+        };
+      case WineryActions.SAVE_NODE_TEMPLATE :
         const newNode: TNodeTemplate = (<SaveNodeTemplateAction>action).nodeTemplate;
         return {
           ...lastState,
@@ -121,9 +147,7 @@ export const WineryReducer =
             nodeTemplates: [...lastState.currentJsonTopology.nodeTemplates, newNode]
           }
         };
-      case
-      WineryActions.SAVE_RELATIONSHIP
-      :
+      case WineryActions.SAVE_RELATIONSHIP :
         const newRelationship: TRelationshipTemplate = (<SaveRelationshipAction>action).relationshipTemplate;
         return {
           ...lastState,
@@ -140,11 +164,10 @@ export const WineryReducer =
             nodeTemplates: lastState.currentJsonTopology.nodeTemplates.filter(nodeTemplate => nodeTemplate.id !== deletedNodeId),
             relationshipTemplates: lastState.currentJsonTopology.relationshipTemplates.filter(
               relationshipTemplate => relationshipTemplate.sourceElement !== deletedNodeId &&
-                        relationshipTemplate.targetElement !== deletedNodeId)
+              relationshipTemplate.targetElement !== deletedNodeId)
           }
         };
       default:
         return lastState;
     }
-  }
-;
+  };
