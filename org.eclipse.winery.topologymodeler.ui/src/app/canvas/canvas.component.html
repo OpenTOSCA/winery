@@ -38,6 +38,7 @@
                (askForRepaint)="repaintJsPlumb($event)"
                (setDragSource)="setDragSource($event)"
                (closedEndpoint)="closedEndpoint($event)"
+
                [dragSource]="node.id + 'Endpoint'"
                (checkFocusNode)="checkFocusNode($event)"
                (updateAllNodes)="updateAllNodes($event)">

@@ -50,6 +50,7 @@ export class NodeComponent implements OnInit, AfterViewInit {
   @Output() closedEndpoint: EventEmitter<string>;
   @Output() checkFocusNode: EventEmitter<any>;
   @Output() updateAllNodes: EventEmitter<string>;
+  @Output() sendCurrentType: EventEmitter<string>;
   previousPosition: any;
   currentPosition: any;
   @Input() relationshipTemplates: Array<TRelationshipTemplate>;
@@ -68,6 +69,7 @@ export class NodeComponent implements OnInit, AfterViewInit {
     this.closedEndpoint = new EventEmitter();
     this.checkFocusNode = new EventEmitter();
     this.updateAllNodes = new EventEmitter();
+    this.sendCurrentType = new EventEmitter();
   }
 
   ngOnInit() {
@@ -85,6 +87,13 @@ export class NodeComponent implements OnInit, AfterViewInit {
 
   bindMouseMove = (ev) => {
     this.mouseMove(ev);
+  }
+
+  passCurrentType($event): void {
+    $event.stopPropagation();
+    $event.preventDefault();
+    const currentType = $event.srcElement.innerHTML;
+    this.sendCurrentType.emit(currentType);
   }
 
   mouseDownHandler($event): void {

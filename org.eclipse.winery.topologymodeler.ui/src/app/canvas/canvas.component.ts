@@ -65,6 +65,7 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
   dragSourceActive = false;
   gridWidth = 100;
   gridHeight = 100;
+  currentType: string;
   nodeChildrenIdArray: Array<string>;
   nodeChildrenArray: Array<NodeComponent>;
 
@@ -450,10 +451,18 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
       const targetElement = info.targetId;
       const newRelationship = new TRelationshipTemplate(
         sourceElement,
-        targetElement
+        targetElement,
+        undefined,
+        sourceElement.concat.targetElement,
+        this.currentType
       );
+      console.log(newRelationship);
       this.ngRedux.dispatch(this.actions.saveRelationship(newRelationship));
     });
+  }
+
+  sendCurrentType(currentType: string) {
+    this.currentType = currentType;
   }
 
   repaintJsPlumb() {

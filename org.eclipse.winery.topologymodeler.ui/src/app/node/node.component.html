@@ -31,8 +31,9 @@
       </table>
     </div>
   </div>
-  <div class="endpointContainer container rounded" [style.border-color]="this.nodeAttributes.color" style="width: 100%" *ngIf="connectorEndpointVisible" (mouseover)="makeSource($event)">
-    <div class="btn-group-vertical btn-group-sm" role="group" id={{dragSource}} >
+  <div class="endpointContainer container rounded" [style.border-color]="this.nodeAttributes.color" style="width: 100%" *ngIf="connectorEndpointVisible"
+       (mouseover)="makeSource($event)">
+    <div class="btn-group-vertical btn-group-sm" role="group" id={{dragSource}} (mousedown)="passCurrentType($event)">
         <button *ngFor="let relationshipType of relationshipTypes"
                 type="button" class="btn btn-sm btn-outline-secondary relationship-button"
                 [style.border-color]="this.nodeAttributes.color">
