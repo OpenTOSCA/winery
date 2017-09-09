@@ -1,26 +1,26 @@
-<nav class="navbar navbar-light bg-faded">
+<nav class="navbar navbar-light bg-faded" style="background-color: #212121">
   <form class="form-inline">
-    <button class="btn btn-sm align-middle btn-success" type="button" style="margin: 2px"
+    <button class="btn btn-sm align-middle btn-outline-success" type="button" style="margin: 2px"
             (click)="showSaveAlert()">Save
     </button>
 
     <div class="btn-group" data-toggle="buttons" style="margin-left: 4px; z-index: 10;">
       <button
-        class="btn btn-sm align-middle btn-secondary"
+        class="btn btn-sm align-middle dark-button-style"
         type="button"
         id="layout"
         (click)="toggleButton($event)">
         Layout
       </button>
       <button
-        class="btn btn-sm align-middle btn-secondary"
+        class="btn btn-sm align-middle dark-button-style"
         type="button"
         id="alignh"
         (click)="toggleButton($event)">
         Align-h (―)
       </button>
       <button
-        class="btn btn-sm align-middle btn-secondary"
+        class="btn btn-sm align-middle dark-button-style"
         type="button"
         id="alignv"
         (click)="toggleButton($event)">
@@ -29,7 +29,7 @@
     </div>
     <div class="btn-group" data-toggle="buttons" style="margin-left: 4px">
       <button
-        class="btn btn-sm align-middle btn-secondary"
+        class="btn btn-sm align-middle dark-button-style"
         type="button"
         id="ids"
         (click)="toggleButton($event)"
@@ -37,7 +37,7 @@
         Ids
       </button>
       <button
-        class="btn btn-sm align-middle btn-secondary"
+        class="btn btn-sm align-middle dark-button-style"
         type="button"
         id="types"
         (click)="toggleButton($event)"
@@ -45,7 +45,7 @@
         Types
       </button>
       <button
-        class="btn btn-sm align-middle btn-secondary"
+        class="btn btn-sm align-middle dark-button-style"
         type="button"
         id="properties"
         (click)="toggleButton($event)"
@@ -53,7 +53,7 @@
         Properties
       </button>
       <button
-        class="btn btn-sm align-middle btn-secondary"
+        class="btn btn-sm align-middle dark-button-style"
         type="button"
         id="deploymentArtifacts"
         (click)="toggleButton($event)"
@@ -61,7 +61,7 @@
         Deployment Artifacts
       </button>
       <button
-        class="btn btn-sm align-middle btn-secondary"
+        class="btn btn-sm align-middle dark-button-style"
         type="button"
         id="requirementsCapabilities"
         (click)="toggleButton($event)"
@@ -69,7 +69,7 @@
         Requirements & Capabilities
       </button>
       <button
-        class="btn btn-sm align-middle btn-secondary"
+        class="btn btn-sm align-middle dark-button-style"
         type="button"
         id="policies"
         (click)="toggleButton($event)"
@@ -77,7 +77,7 @@
         Policies
       </button>
       <button
-        class="btn btn-sm align-middle btn-secondary"
+        class="btn btn-sm align-middle dark-button-style"
         type="button"
         id="targetLocations"
         (click)="toggleButton($event)"
@@ -85,9 +85,9 @@
         Target Locations
       </button>
     </div>
-    <button class="btn btn-sm align-middle btn-secondary" type="button" style="margin-left: 4px">Print View</button>
+    <button class="btn btn-sm align-middle dark-button-style" type="button" style="margin-left: 4px">Print View</button>
     <div class="btn-group" style="margin-left: 4px" dropdown>
-      <button dropdownToggle type="button" class="btn btn-sm btn-secondary align-middle dropdown-toggle">
+      <button dropdownToggle type="button" class="btn btn-sm dark-button-style align-middle dropdown-toggle">
         Other <span class="caret"></span>
       </button>
       <ul *dropdownMenu class="dropdown-menu" role="menu">

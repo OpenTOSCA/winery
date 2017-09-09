@@ -23,6 +23,7 @@ import { ButtonsStateModel } from '../models/buttonsState.model';
 import { NgRedux } from '@angular-redux/store';
 import { IWineryState } from '../redux/store/winery.store';
 import { WineryActions } from '../redux/actions/winery.actions';
+import { TRelationshipTemplate } from '../ttopology-template';
 
 @Component({
   selector: 'winery-node',
@@ -51,6 +52,8 @@ export class NodeComponent implements OnInit, AfterViewInit {
   @Output() updateAllNodes: EventEmitter<string>;
   previousPosition: any;
   currentPosition: any;
+  @Input() relationshipTemplates: Array<TRelationshipTemplate>;
+  relationshipTypes = [];
 
   public addItem(): void {
     this.items.push(`Items ${this.items.length + 1}`);
@@ -68,6 +71,7 @@ export class NodeComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit() {
+    this.relationshipTemplates.map(rt => !this.relationshipTypes.includes(rt.type) ? this.relationshipTypes.push(rt.type) : null);
   }
 
   ngAfterViewInit(): void {
@@ -85,6 +89,7 @@ export class NodeComponent implements OnInit, AfterViewInit {
 
   mouseDownHandler($event): void {
     this.startTime = new Date().getTime();
+    this.repaint(new Event('repaint'));
     const focusNodeData = {
       id: this.nodeAttributes.id,
       ctrlKey: $event.ctrlKey
@@ -108,10 +113,8 @@ export class NodeComponent implements OnInit, AfterViewInit {
     };
     if (this.previousPosition.left !== this.currentPosition.left ||
         this.previousPosition.top !== this.currentPosition.top) {
-      this.connectorEndpointVisible = false;
     }
   }
-
 
   mouseUpHandler($event): void {
     // mouseup

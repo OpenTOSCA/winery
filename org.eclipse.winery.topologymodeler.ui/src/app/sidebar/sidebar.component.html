@@ -5,7 +5,7 @@
      *ngIf="sidebarState.sidebarVisible">
 
   <div id="nodeTemplateInformationSection" style="margin: 8px">
-    <button type="button" class="close" aria-label="Close" (click)="closeSidebar()">
+    <button type="button" class="close" style="color: #FFFFFF" aria-label="Close" (click)="closeSidebar()">
       <span aria-hidden="true">&times;</span>
     </button>
     <fieldset>
@@ -30,7 +30,7 @@
       <div class="form-group">
         <label for="minInstances">min</label>
         <div class="row">
-          <div class="col-lg-10">
+          <div class="col-lg-12">
             <div class="input-sm">
               <div class="input-group bootstrap-touchspin">
                 <span class="input-group-addon bootstrap-touchspin-prefix"
@@ -41,7 +41,7 @@
                        name="minInstances"
                        onblur="minInstancesChanged();"
                        class="form-control"
-                       style="display: block;"
+                       style="display: block; border-radius: 0.25rem; margin-right: 3px"
                        type="text">
                 <span class="input-group-addon bootstrap-touchspin-postfix" style="display: none;"></span>
                 <span class="input-group-btn-vertical">
@@ -59,7 +59,7 @@
         </div>
         <label for="maxInstances">max</label>
         <div class="row">
-          <div class="col-lg-10">
+          <div class="col-lg-12">
             <div class="input-sm">
               <div class="input-group bootstrap-touchspin">
                 <span class="input-group-addon bootstrap-touchspin-prefix"
@@ -71,7 +71,7 @@
                        name="maxInstances"
                        onblur="maxInstancesChanged()"
                        class="form-control"
-                       style="display: block;"
+                       style="display: block; border-radius: 0.25rem; margin-right: 3px"
                        type="text">
                 <span class="input-group-addon bootstrap-touchspin-postfix" style="display: none;"></span>
                 <span class="input-group-btn-vertical">

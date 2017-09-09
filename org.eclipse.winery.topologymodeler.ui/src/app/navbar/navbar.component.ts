@@ -44,7 +44,7 @@ export class NavbarComponent implements OnDestroy {
 
   getStyle(buttonPressed: boolean): string {
     if (buttonPressed) {
-      return 'lightgrey';
+      return '#424242';
     }
   }
 

@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css?family=Roboto:300');
 /*
 .old-navbar-style{
   padding: 5px;
@@ -47,3 +48,23 @@
 
 }
 */
+
+.dark-button-style {
+  background-color: #303030;
+  color: #e0e0e0;
+  border : 1px solid #000;
+  border-radius: 4px;
+  font-family: 'Roboto', sans-serif;
+  font-weight: lighter;
+  font-size: 14px;
+  line-height: 1.42857143;
+  white-space: nowrap;
+  vertical-align: middle;
+  cursor: pointer;
+}
+
+.dark-button-style:hover {
+  background-color: #424242;
+  border-color:  #989898;
+}
+

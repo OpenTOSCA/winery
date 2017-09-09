@@ -30,6 +30,7 @@ import { IWineryState } from '../redux/store/winery.store';
 import { ButtonsStateModel } from '../models/buttonsState.model';
 import { TopologyRendererActions } from '../redux/actions/topologyRenderer.actions';
 import { NodeComponent } from '../node/node.component';
+import { Hotkey, HotkeysService } from 'angular2-hotkeys';
 
 @Component({
   selector: 'winery-canvas',
@@ -72,13 +73,21 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
               private ngRedux: NgRedux<IWineryState>,
               private actions: WineryActions,
               private topologyRendererActions: TopologyRendererActions,
-              private zone: NgZone) {
+              private zone: NgZone,
+              private hotkeysService: HotkeysService) {
     this.nodeTemplatesSubscription = this.ngRedux.select(state => state.wineryState.currentJsonTopology.nodeTemplates)
       .subscribe(currentNodes => this.updateNodes(currentNodes));
     this.relationshipTemplatesSubscription = this.ngRedux.select(state => state.wineryState.currentJsonTopology.relationshipTemplates)
       .subscribe(currentRelationships => this.updateRelationships(currentRelationships));
     this.navBarButtonsStateSubscription = ngRedux.select(state => state.topologyRendererState)
       .subscribe(currentButtonsState => this.setButtonsState(currentButtonsState));
+    this.hotkeysService.add(new Hotkey('ctrl+a', (event: KeyboardEvent): boolean => {
+      event.stopPropagation();
+      for (const node of this.allNodeTemplates) {
+          this.enhanceDragSelection(node.id);
+      }
+      return false; // Prevent bubbling
+    }));
   }
 
   updateNodes(currentNodes: Array<TNodeTemplate>): void {
@@ -97,7 +106,6 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
       }
     }
   }
-
 
   updateRelationships(currentRelationships: Array<TRelationshipTemplate>): void {
     this.allRelationshipTemplates = currentRelationships;
@@ -140,9 +148,9 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
       target: newRelationship.targetElement,
       overlays: [['Arrow', {width: 15, length: 15, location: 1, id: 'arrow', direction: 1}],
         ['Label', {
-          label: '(Hosted On)',
+          label: newRelationship.type,
           id: 'label',
-          labelStyle: {font: 'bold 18px/30px Courier New, monospace'}
+          labelStyle: {font: '11px Roboto, sans-serif', color: '#FAFAFA', fill: '#303030', borderStyle: '#424242', borderWidth: 1, padding: '3px'}
         }]
       ],
     });
@@ -219,7 +227,6 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   showSelectionRange($event: any) {
-    // mousedown
     this.ngRedux.dispatch(this.actions.sendPaletteOpened(false));
     this.hideSidebar();
     this.clearSelectedNodes();
@@ -235,11 +242,9 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
       document.getElementById('container').addEventListener('mousemove', this.bindOpenSelector);
       document.getElementById('container').addEventListener('mouseup', this.bindSelectElements);
     });
-    this.crosshair = true;
   }
 
   openSelector($event: any) {
-
     this.selectionWidth = Math.abs(this.initialW - $event.pageX);
     this.selectionHeight = Math.abs(this.initialH - $event.pageY);
     if ($event.pageX <= this.initialW && $event.pageY >= this.initialH) {
@@ -272,7 +277,6 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
     }
     document.getElementById('container').removeEventListener('mousemove', this.bindOpenSelector);
     document.getElementById('container').removeEventListener('mouseup', this.bindSelectElements);
-    this.crosshair = false;
     this.selectionActive = false;
     this.selectionWidth = 0;
     this.selectionHeight = 0;
@@ -461,6 +465,7 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   trackTimeOfMouseDown($event: any): void {
+    this.crosshair = true;
     for (const node of this.nodeChildrenArray) {
       if (node.dragSource) {
         if (this.newJsPlumbInstance.isSource(node.dragSource)) {
@@ -474,6 +479,7 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
 
 
   trackTimeOfMouseUp($event: any): void {
+    this.crosshair = false;
     this.endTime = new Date().getTime();
     this.testTimeDifference();
   }
