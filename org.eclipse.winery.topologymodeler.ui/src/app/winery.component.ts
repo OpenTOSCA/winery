@@ -265,8 +265,8 @@ export class WineryComponent implements OnInit {
         )
       );
     }
-    for (let i = 0; i < this.nodeTemplates.length; i++) {
-      this.ngRedux.dispatch(this.actions.saveNodeTemplate(this.nodeTemplates[i]));
+    for (const nodeTemplate of this.nodeTemplates) {
+      this.ngRedux.dispatch(this.actions.saveNodeTemplate(nodeTemplate));
     }
     for (const relationship of this.testJson.relationshipTemplates) {
       this.relationshipTemplates.push(
@@ -278,9 +278,8 @@ export class WineryComponent implements OnInit {
         )
       );
     }
-    for (let i = 0; i < this.relationshipTemplates.length; i++) {
-      this.ngRedux.dispatch(this.actions.saveRelationship(this.relationshipTemplates[i]));
-      console.log(this.relationshipTemplates[i]);
+    for (const relationshipTemplate of this.relationshipTemplates) {
+      this.ngRedux.dispatch(this.actions.saveRelationship(relationshipTemplate));
     }
   }
 }

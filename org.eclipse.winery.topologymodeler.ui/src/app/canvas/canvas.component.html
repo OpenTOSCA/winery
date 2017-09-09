@@ -17,19 +17,27 @@
   </div>
 
   <winery-node *ngFor="let node of allNodeTemplates"
-               [title]="node.id"
-               [name]="node.name"
+               [nodeAttributes]="{
+                properties: node.properties,
+                id: node.id,
+                type: node.type,
+                name: node.name,
+                minInstances: node.minInstances,
+                maxInstances: node.maxInstances,
+                color: node.color,
+                imageUrl: node.imageUrl,
+                documentation: node.documentation,
+                any: node.any,
+                otherAttributes: node.otherAttributes
+               }"
                [needsToBeFlashed]="needsToBeFlashed"
-               [nodeColor]="node.color"
                (sendId)="makeDraggable($event)"
-               [left]="node.otherAttributes.x + 'px'"
-               [top]="node.otherAttributes.y + 'px'"
-               [nodeImageUrl]="node.imageUrl"
                [navbarButtonsState]="navbarButtonsState"
                (askForRepaint)="repaintJsPlumb($event)"
                (setDragSource)="setDragSource($event)"
                (closedEndpoint)="closedEndpoint($event)"
                [dragSource]="node.id + 'Endpoint'"
-               (checkFocusNode)="checkFocusNode($event)">
+               (checkFocusNode)="checkFocusNode($event)"
+               (updateAllNodes)="updateAllNodes($event)">
   </winery-node>
 </div>

@@ -36,6 +36,10 @@ export interface SaveNodeTemplateAction extends Action {
   nodeTemplate: TNodeTemplate;
 }
 
+export interface UpdateNodeCoordinatesAction extends Action {
+  otherAttributes: any;
+}
+
 export interface SaveRelationshipAction extends Action {
   relationshipTemplate: TRelationshipTemplate;
 }
@@ -53,6 +57,7 @@ export class WineryActions {
     static DELETE_NODE_TEMPLATE = 'DELETE_NODE_TEMPLATE';
     static CHANGE_NODE_NAME = 'CHANGE_NODE_NAME';
     static OPEN_SIDEBAR = 'OPEN_SIDEBAR';
+    static UPDATE_NODE_COORDINATES = 'UPDATE_NODE_COORDINATES';
 
     sendPaletteOpened: ActionCreator<SendPaletteOpenedAction> =
       ((paletteOpened) => ({
@@ -83,5 +88,10 @@ export class WineryActions {
       ((deletedNodeId) => ({
         type: WineryActions.DELETE_NODE_TEMPLATE,
         nodeTemplateId: deletedNodeId
+      }));
+    updateNodeCoordinates: ActionCreator<UpdateNodeCoordinatesAction> =
+      ((currentNodeCoordinates) => ({
+        type: WineryActions.UPDATE_NODE_COORDINATES,
+        otherAttributes: currentNodeCoordinates
       }));
 }
