@@ -12,7 +12,7 @@
  */
 import {
   AfterViewInit,
-  Component, ComponentRef,
+  Component, ComponentRef, ElementRef,
   EventEmitter,
   Input,
   NgZone, OnDestroy,
@@ -64,7 +64,8 @@ export class NodeComponent implements OnInit, AfterViewInit, OnDestroy {
 
   constructor(private zone: NgZone,
               private $ngRedux: NgRedux<IWineryState>,
-              private actions: WineryActions) {
+              private actions: WineryActions,
+              private ref: ElementRef) {
     this.sendId = new EventEmitter();
     this.askForRepaint = new EventEmitter();
     this.setDragSource = new EventEmitter();
@@ -108,8 +109,8 @@ export class NodeComponent implements OnInit, AfterViewInit, OnDestroy {
     };
     this.checkFocusNode.emit(focusNodeData);
     if ($event.srcElement.parentElement.className !== 'accordion-toggle') {
-      const offsetLeft = document.getElementById(this.nodeAttributes.id.offsetLeft);
-      const offsetTop = document.getElementById(this.nodeAttributes.id.offsetTop);
+      const offsetLeft = document.getElementById(this.nodeAttributes.id).offsetLeft;
+      const offsetTop = document.getElementById(this.nodeAttributes.id).offsetTop;
       if (offsetLeft && offsetTop) {
         this.previousPosition = {
           left: offsetLeft,
@@ -122,9 +123,10 @@ export class NodeComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
+
   mouseMove($event): void {
-    const offsetLeft = document.getElementById(this.nodeAttributes.id.offsetLeft);
-    const offsetTop = document.getElementById(this.nodeAttributes.id.offsetTop);
+    const offsetLeft = document.getElementById(this.nodeAttributes.id).offsetLeft;
+    const offsetTop = document.getElementById(this.nodeAttributes.id).offsetTop;
     if (offsetLeft && offsetTop) {
       this.currentPosition = {
         left: offsetLeft,
@@ -138,6 +140,8 @@ export class NodeComponent implements OnInit, AfterViewInit, OnDestroy {
     document.getElementById(this.nodeAttributes.id).removeEventListener('mousemove', this.bindMouseMove);
     this.endTime = new Date().getTime();
     this.testTimeDifference($event);
+    console.log(this.previousPosition);
+    console.log(this.currentPosition);
     if (this.previousPosition !== undefined && this.currentPosition !== undefined) {
       if (this.previousPosition.left !== this.currentPosition.left ||
         this.previousPosition.top !== this.currentPosition.top) {
