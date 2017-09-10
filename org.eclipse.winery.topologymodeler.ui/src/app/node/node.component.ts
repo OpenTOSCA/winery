@@ -12,10 +12,10 @@
  */
 import {
   AfterViewInit,
-  Component,
+  Component, ComponentRef,
   EventEmitter,
   Input,
-  NgZone,
+  NgZone, OnDestroy,
   OnInit,
   Output,
 } from '@angular/core';
@@ -23,13 +23,14 @@ import { ButtonsStateModel } from '../models/buttonsState.model';
 import { NgRedux } from '@angular-redux/store';
 import { IWineryState } from '../redux/store/winery.store';
 import { WineryActions } from '../redux/actions/winery.actions';
+import { TRelationshipTemplate } from '../ttopology-template';
 
 @Component({
   selector: 'winery-node',
   templateUrl: './node.component.html',
   styleUrls: ['./node.component.css'],
 })
-export class NodeComponent implements OnInit, AfterViewInit {
+export class NodeComponent implements OnInit, AfterViewInit, OnDestroy {
   public items: string[] = ['Item 1', 'Item 2', 'Item 3'];
   public accordionGroupPanel = 'accordionGroupPanel';
   public customClass = 'customClass';
@@ -49,8 +50,13 @@ export class NodeComponent implements OnInit, AfterViewInit {
   @Output() closedEndpoint: EventEmitter<string>;
   @Output() checkFocusNode: EventEmitter<any>;
   @Output() updateAllNodes: EventEmitter<string>;
+  @Output() sendCurrentType: EventEmitter<string>;
+  @Output() askForRemoval: EventEmitter<string>;
   previousPosition: any;
   currentPosition: any;
+  @Input() relationshipTemplates: Array<TRelationshipTemplate>;
+  relationshipTypes = [];
+  nodeRef: ComponentRef<Component>;
 
   public addItem(): void {
     this.items.push(`Items ${this.items.length + 1}`);
@@ -65,9 +71,12 @@ export class NodeComponent implements OnInit, AfterViewInit {
     this.closedEndpoint = new EventEmitter();
     this.checkFocusNode = new EventEmitter();
     this.updateAllNodes = new EventEmitter();
+    this.sendCurrentType = new EventEmitter();
+    this.askForRemoval = new EventEmitter();
   }
 
   ngOnInit() {
+    this.relationshipTemplates.map(rt => !this.relationshipTypes.includes(rt.type) ? this.relationshipTypes.push(rt.type) : null);
   }
 
   ngAfterViewInit(): void {
@@ -76,42 +85,53 @@ export class NodeComponent implements OnInit, AfterViewInit {
 
   private repaint($event) {
     $event.stopPropagation();
-    setTimeout(() => this.askForRepaint.emit(), 1);
+    setTimeout(() => this.askForRepaint.emit('Repaint'), 1);
   }
 
   bindMouseMove = (ev) => {
     this.mouseMove(ev);
   }
 
+  passCurrentType($event): void {
+    $event.stopPropagation();
+    $event.preventDefault();
+    const currentType: string = $event.srcElement.innerHTML.replace(/\n/g, '').replace(/\s+/g, '');
+    this.sendCurrentType.emit(currentType);
+  }
+
   mouseDownHandler($event): void {
     this.startTime = new Date().getTime();
+    this.repaint(new Event('repaint'));
     const focusNodeData = {
       id: this.nodeAttributes.id,
       ctrlKey: $event.ctrlKey
     };
     this.checkFocusNode.emit(focusNodeData);
     if ($event.srcElement.parentElement.className !== 'accordion-toggle') {
-      this.previousPosition = {
-        left: document.getElementById(this.nodeAttributes.id).offsetLeft,
-        top: document.getElementById(this.nodeAttributes.id).offsetTop
-      };
-      this.zone.runOutsideAngular(() => {
-        document.getElementById(this.nodeAttributes.id).addEventListener('mousemove', this.bindMouseMove);
-      });
+      const offsetLeft = document.getElementById(this.nodeAttributes.id.offsetLeft);
+      const offsetTop = document.getElementById(this.nodeAttributes.id.offsetTop);
+      if (offsetLeft && offsetTop) {
+        this.previousPosition = {
+          left: offsetLeft,
+          top: offsetTop
+        };
+        this.zone.runOutsideAngular(() => {
+          document.getElementById(this.nodeAttributes.id).addEventListener('mousemove', this.bindMouseMove);
+        });
+      }
     }
   }
 
   mouseMove($event): void {
-    this.currentPosition = {
-      left: document.getElementById(this.nodeAttributes.id).offsetLeft,
-      top: document.getElementById(this.nodeAttributes.id).offsetTop
-    };
-    if (this.previousPosition.left !== this.currentPosition.left ||
-        this.previousPosition.top !== this.currentPosition.top) {
-      this.connectorEndpointVisible = false;
+    const offsetLeft = document.getElementById(this.nodeAttributes.id.offsetLeft);
+    const offsetTop = document.getElementById(this.nodeAttributes.id.offsetTop);
+    if (offsetLeft && offsetTop) {
+      this.currentPosition = {
+        left: offsetLeft,
+        top: offsetTop
+      };
     }
   }
-
 
   mouseUpHandler($event): void {
     // mouseup
@@ -131,11 +151,15 @@ export class NodeComponent implements OnInit, AfterViewInit {
     setTimeout(() => this.setFlash = false, 1000);
   }
 
+  closeConnectorEndpoints($event): void {
+    if (!this.longpress && !$event.ctrlKey) {
+      this.closedEndpoint.emit(this.nodeAttributes.id);
+      this.repaint(new Event('repaint'));
+    }
+  }
+
   private testTimeDifference($event): void {
     if ((this.endTime - this.startTime) < 250) {
-      if (!$event.ctrlKey) {
-        this.closedEndpoint.emit(this.nodeAttributes.id);
-      }
       this.longpress = false;
     } else if (this.endTime - this.startTime >= 300) {
       this.longpress = true;
@@ -171,5 +195,12 @@ export class NodeComponent implements OnInit, AfterViewInit {
         }
       }));
     }
+  }
+
+  ngOnDestroy(): void {
+    if (this.nodeRef) {
+      this.nodeRef.destroy();
+    }
+    this.askForRemoval.emit(this.nodeAttributes.id);
   }
 }

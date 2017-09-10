@@ -17,6 +17,7 @@ import { WineryActions } from './redux/actions/winery.actions';
 import { NgRedux } from '@angular-redux/store';
 import { ILoaded, LoadedService } from './loaded.service';
 import { AppReadyEventService } from './app-ready-event.service';
+import { Hotkey, HotkeyModule, HotkeysService } from 'angular2-hotkeys';
 
 @Component({
   selector: 'winery-topologymodeler',
@@ -39,8 +40,8 @@ export class WineryComponent implements OnInit {
         any: [],
         otherAttributes: {
           location: 'undefined',
-          x: 600,
-          y: 49
+          x: 85,
+          y: 605
         },
         id: 'plantage',
         type: '{http://winery.opentosca.org/test/nodetypes/fruits}plantage',
@@ -53,8 +54,8 @@ export class WineryComponent implements OnInit {
         any: [],
         otherAttributes: {
           location: 'undefined',
-          x: 600,
-          y: 267
+          x: 500,
+          y: 605
         },
         id: 'tree',
         type: '{http://winery.opentosca.org/test/nodetypes/fruits}tree',
@@ -67,8 +68,8 @@ export class WineryComponent implements OnInit {
         any: [],
         otherAttributes: {
           location: 'undefined',
-          x: 600,
-          y: 785
+          x: 90,
+          y: 350
         },
         id: 'baobab',
         type: '{http://winery.opentosca.org/test/nodetypes/fruits}baobab',
@@ -81,8 +82,8 @@ export class WineryComponent implements OnInit {
         any: [],
         otherAttributes: {
           location: 'undefined',
-          x: 958,
-          y: 794
+          x: 505,
+          y: 93
         },
         id: 'banana',
         type: '{http://winery.opentosca.org/test/nodetypes/fruits}banana',
@@ -95,8 +96,8 @@ export class WineryComponent implements OnInit {
         any: [],
         otherAttributes: {
           location: 'undefined',
-          x: 214,
-          y: 764
+          x: 500,
+          y: 350
         },
         id: 'mango',
         type: '{http://winery.opentosca.org/test/nodetypes/fruits}mango',
@@ -108,23 +109,28 @@ export class WineryComponent implements OnInit {
     relationshipTemplates: [
       {
         'sourceElement': 'baobab',
-        'targetElement': 'tree'
+        'targetElement': 'tree',
+        'type': 'hosted on'
       },
       {
         'sourceElement': 'banana',
-        'targetElement': 'tree'
+        'targetElement': 'baobab',
+        'type': 'installed on'
       },
       {
         'sourceElement': 'mango',
-        'targetElement': 'tree'
+        'targetElement': 'tree',
+        'type': 'hosted on'
       },
       {
         'sourceElement': 'banana',
-        'targetElement': 'mango'
+        'targetElement': 'mango',
+        'type': 'requires'
       },
       {
         'sourceElement': 'baobab',
-        'targetElement': 'plantage'
+        'targetElement': 'plantage',
+        'type': 'extends'
       }
     ]
   };
@@ -222,7 +228,8 @@ export class WineryComponent implements OnInit {
   constructor(private ngRedux: NgRedux<IWineryState>,
               private actions: WineryActions,
               private loadedService: LoadedService,
-              private appReadyEvent: AppReadyEventService) {
+              private appReadyEvent: AppReadyEventService,
+              private hotkeysService: HotkeysService) {
 
     this.loaded = null;
     loadedService.getLoadingState()
@@ -275,6 +282,7 @@ export class WineryComponent implements OnInit {
           relationship.targetElement,
           undefined,
           relationship.sourceElement.concat(relationship.targetElement),
+          relationship.type
         )
       );
     }

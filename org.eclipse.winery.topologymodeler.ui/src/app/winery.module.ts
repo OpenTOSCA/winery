@@ -26,6 +26,7 @@ import {WineryActions} from './redux/actions/winery.actions';
 import {TopologyRendererActions} from './redux/actions/topologyRenderer.actions';
 import { LoadedService } from './loaded.service';
 import { AppReadyEventService } from './app-ready-event.service';
+import { HotkeyModule } from 'angular2-hotkeys';
 
 @NgModule({
   declarations: [
@@ -44,7 +45,8 @@ import { AppReadyEventService } from './app-ready-event.service';
     WineryAlertModule.forRoot(),
     ToastModule.forRoot(),
     AccordionModule.forRoot(),
-    TopologyRendererModule.forRoot()
+    TopologyRendererModule.forRoot(),
+    HotkeyModule.forRoot()
   ],
   providers: [
     {provide: ToastOptions, useClass: WineryCustomOption},

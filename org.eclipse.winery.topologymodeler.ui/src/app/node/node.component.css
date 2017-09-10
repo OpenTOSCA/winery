@@ -58,36 +58,48 @@ div.unselected {
 }
 
 div.endpointContainer {
-  background: #ffffff;
-  box-shadow: 2px 2px 19px #aaa;
+  background: rgba(255, 255, 255, 0);
   border: 1px solid #aeaeae;
-  width: 150px;
-  position: absolute;
-  left: 212px;
-  padding: 5px;
+  width: 206px !important;
+  padding: 0 !important;
 }
 
 div.connectorEndpoint {
-  width: 140px;
+  width: 206px !important;
   cursor: pointer;
 }
 
 div.connectorEndpoint:hover {
+  width: 206px !important;
+  cursor: pointer;
   background: rgb(237, 242, 247);
 }
 
 div.connectorBox {
   height: 15px;
-  width: 15px;
-  float: left;
 }
 
 div.connectorLabel {
   height: 15px;
-  width: 125px;
-  margin-left: 20px;
-  white-space: nowrap;
+  width: 208px;
   line-height: 16px;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
 }
+
+button.btn.btn-sm.btn-outline-secondary {
+  width: 202px;
+  background-color: rgba(255,255,255,0.8);
+  color: #242424;
+  cursor: copy;
+  padding: 0;
+}
+
+button.btn.btn-sm.btn-outline-secondary:hover, button.btn.btn-sm.btn-outline-secondary:focus {
+  width: 202px;
+  background-color: rgba(0,0,0,0.2);
+  color: #ffffff;
+  cursor: copy;
+  padding: 0;
+}
+

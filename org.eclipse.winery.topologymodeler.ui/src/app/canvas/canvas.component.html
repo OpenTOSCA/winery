@@ -1,5 +1,6 @@
 <div id="container" style="height: auto;"
-     (mousedown)="showSelectionRange($event)">
+     (mousedown)="showSelectionRange($event)"
+     (click)="this.repaintJsPlumb()">
   <div id="grid"
        (mousedown)="trackTimeOfMouseDown($event)"
        (mouseup)="trackTimeOfMouseUp($event)"
@@ -30,12 +31,15 @@
                 any: node.any,
                 otherAttributes: node.otherAttributes
                }"
+               [relationshipTemplates]="allRelationshipTemplates"
                [needsToBeFlashed]="needsToBeFlashed"
                (sendId)="makeDraggable($event)"
                [navbarButtonsState]="navbarButtonsState"
                (askForRepaint)="repaintJsPlumb($event)"
+               (askForRemoval)="removeElement($event)"
                (setDragSource)="setDragSource($event)"
                (closedEndpoint)="closedEndpoint($event)"
+               (sendCurrentType)="sendCurrentType($event)"
                [dragSource]="node.id + 'Endpoint'"
                (checkFocusNode)="checkFocusNode($event)"
                (updateAllNodes)="updateAllNodes($event)">

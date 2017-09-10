@@ -8,10 +8,10 @@
   <div class="row rounded"
        [class.selected]="makeSelectionVisible"
        [class.unselected]="!makeSelectionVisible"
-       (click)="openSidebar($event);">
+       (click)="openSidebar($event); closeConnectorEndpoints($event)">
     <div class="col-sm-3">
-      <img *ngIf="!nodeAttributes.imageUrl" src="https://api.adorable.io/avatars/50/{{nodeAttributes.id}}"
-           style="border-radius: 10%; margin-top: 1px">
+      <img *ngIf="!nodeAttributes.imageUrl" src="https://robohash.org/{{nodeAttributes.id}}.png?set=set4"
+           style="border-radius: 10%; margin-top: 1px; width: 50px; height: auto">
       <img *ngIf="nodeAttributes.imageUrl" src="{{nodeAttributes.imageUrl}}">
     </div>
     <div id="specifierDiv" class="col-sm-9">
@@ -31,12 +31,15 @@
       </table>
     </div>
   </div>
-  <div class="endpointContainer" *ngIf="connectorEndpointVisible" (mouseover)="makeSource($event)">
-    <div class="connectorEndpoint" id={{dragSource}}>
-      <div class="connectorBox">
-      </div>
-      <div class="connectorLabel">
-      </div>
+  <div class="endpointContainer container rounded" [style.border-color]="this.nodeAttributes.color" style="width: 100%" *ngIf="connectorEndpointVisible"
+       (mouseover)="makeSource($event)">
+    <div class="btn-group-vertical btn-group-sm" role="group" id={{dragSource}} (mousedown)="passCurrentType($event)">
+        <button *ngFor="let relationshipType of relationshipTypes;"
+                type="button" class="btn btn-sm btn-outline-secondary relationship-button sm"
+                [style.border-color]="this.nodeAttributes.color"
+                style="font-size: x-small;">
+          {{relationshipType}}
+        </button>
     </div>
   </div>
 
