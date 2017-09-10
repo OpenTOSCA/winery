@@ -84,7 +84,7 @@ export class NodeComponent implements OnInit, AfterViewInit, OnDestroy {
     this.sendId.emit(this.nodeAttributes.id);
   }
 
-  private repaint($event) {
+  repaint($event) {
     $event.stopPropagation();
     setTimeout(() => this.askForRepaint.emit('Repaint'), 1);
   }

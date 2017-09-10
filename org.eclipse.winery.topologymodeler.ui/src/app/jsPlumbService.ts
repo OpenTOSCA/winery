@@ -24,7 +24,7 @@ export class JsPlumbService {
         strokeWidth: 1,
         stroke: '#fafafa',
       },
-      Connector: ['StateMachine', {proximityLimit: 900, curviness: 30}],
+      Connector: ['Bezier', {curviness: 1, stub: 200}],
       Endpoint: 'Blank',
       connectorOverlays: [
         ['Arrow', {location: 1}],
