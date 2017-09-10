@@ -472,7 +472,7 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
     });
   }
 
-  setCurrentType(currentType: string) {
+  sendCurrentType(currentType: string) {
     this.currentType = currentType;
   }
 
