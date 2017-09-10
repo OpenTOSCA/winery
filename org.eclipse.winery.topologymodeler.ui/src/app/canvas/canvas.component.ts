@@ -103,7 +103,7 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
           this.nodeChildrenArray[nodeId].nodeAttributes.name = node.name;
           this.nodeChildrenArray[nodeId].flash();
           this.allNodeTemplates[i].name = node.name;
-          this.repaintJsPlumb('Repaint after updating nodes');
+          this.repaintJsPlumb();
         }
       }
     }
@@ -120,7 +120,7 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
 
   setButtonsState(currentButtonsState: ButtonsStateModel): void {
     this.navbarButtonsState = currentButtonsState;
-    setTimeout(() => this.repaintJsPlumb(''), 1);
+    setTimeout(() => this.repaintJsPlumb(), 1);
     const alignmentButtonLayout = this.navbarButtonsState.buttonsState.layoutButton;
     const alignmentButtonAlignH = this.navbarButtonsState.buttonsState.alignHButton;
     const alignmentButtonAlignV = this.navbarButtonsState.buttonsState.alignVButton;
@@ -164,7 +164,7 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
       ],
     });
     this.resetDragSource('reset drag source');
-    this.repaintJsPlumb('');
+    this.repaintJsPlumb();
   }
 
   resetDragSource(nodeId: string): void {
@@ -177,7 +177,7 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
         const indexOfNode = this.nodeChildrenIdArray.indexOf(this.dragSourceInfos.nodeId);
         if (this.nodeChildrenArray[indexOfNode]) {
           this.nodeChildrenArray[indexOfNode].connectorEndpointVisible = false;
-          this.repaintJsPlumb('');
+          this.repaintJsPlumb();
         }
       }
     }
@@ -479,10 +479,10 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
   removeElement(id: string) {
     this.newJsPlumbInstance.remove(id);
     console.log(id);
-    this.repaintJsPlumb('Repaint after removal');
+    this.repaintJsPlumb();
   }
 
-  repaintJsPlumb($event: string) {
+  repaintJsPlumb() {
     this.newJsPlumbInstance.repaintEverything();
   }
 
