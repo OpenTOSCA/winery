@@ -12,7 +12,7 @@
  */
 import {
   AfterViewInit,
-  Component, ComponentRef, ElementRef,
+  Component, ComponentRef,
   EventEmitter,
   Input,
   NgZone, OnDestroy,
@@ -64,8 +64,7 @@ export class NodeComponent implements OnInit, AfterViewInit, OnDestroy {
 
   constructor(private zone: NgZone,
               private $ngRedux: NgRedux<IWineryState>,
-              private actions: WineryActions,
-              private ref: ElementRef) {
+              private actions: WineryActions) {
     this.sendId = new EventEmitter();
     this.askForRepaint = new EventEmitter();
     this.setDragSource = new EventEmitter();
@@ -140,8 +139,6 @@ export class NodeComponent implements OnInit, AfterViewInit, OnDestroy {
     document.getElementById(this.nodeAttributes.id).removeEventListener('mousemove', this.bindMouseMove);
     this.endTime = new Date().getTime();
     this.testTimeDifference($event);
-    console.log(this.previousPosition);
-    console.log(this.currentPosition);
     if (this.previousPosition !== undefined && this.currentPosition !== undefined) {
       if (this.previousPosition.left !== this.currentPosition.left ||
         this.previousPosition.top !== this.currentPosition.top) {
