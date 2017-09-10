@@ -107,7 +107,13 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
         }
       }
     }
+    if (this.allRelationshipTemplates.length > 0) {
+      for (const relationship of this.allRelationshipTemplates) {
+        setTimeout(() => this.displayRelationships(relationship), 1);
+      }
+    }
   }
+
 
   updateRelationships(currentRelationships: Array<TRelationshipTemplate>): void {
     this.allRelationshipTemplates = currentRelationships;
@@ -461,6 +467,8 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
     this.newJsPlumbInstance.bind('connection', info => {
       const sourceElement = info.source.offsetParent.offsetParent.id;
       const targetElement = info.targetId;
+      console.log(sourceElement);
+      console.log(targetElement);
       const newRelationship = new TRelationshipTemplate(
         sourceElement,
         targetElement,
@@ -478,7 +486,6 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
 
   removeElement(id: string) {
     this.newJsPlumbInstance.remove(id);
-    console.log(id);
     this.repaintJsPlumb();
   }
 
