@@ -36,9 +36,10 @@
                (sendId)="makeDraggable($event)"
                [navbarButtonsState]="navbarButtonsState"
                (askForRepaint)="repaintJsPlumb($event)"
+               (askForRemoval)="removeElement($event)"
                (setDragSource)="setDragSource($event)"
                (closedEndpoint)="closedEndpoint($event)"
-
+               (sendCurrentType)="setCurrentType($event)"
                [dragSource]="node.id + 'Endpoint'"
                (checkFocusNode)="checkFocusNode($event)"
                (updateAllNodes)="updateAllNodes($event)">

@@ -103,6 +103,7 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
           this.nodeChildrenArray[nodeId].nodeAttributes.name = node.name;
           this.nodeChildrenArray[nodeId].flash();
           this.allNodeTemplates[i].name = node.name;
+          this.repaintJsPlumb('Repaint after updating nodes');
         }
       }
     }
@@ -119,7 +120,7 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
 
   setButtonsState(currentButtonsState: ButtonsStateModel): void {
     this.navbarButtonsState = currentButtonsState;
-    setTimeout(() => this.repaintJsPlumb(), 1);
+    setTimeout(() => this.repaintJsPlumb(''), 1);
     const alignmentButtonLayout = this.navbarButtonsState.buttonsState.layoutButton;
     const alignmentButtonAlignH = this.navbarButtonsState.buttonsState.alignHButton;
     const alignmentButtonAlignV = this.navbarButtonsState.buttonsState.alignVButton;
@@ -163,6 +164,7 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
       ],
     });
     this.resetDragSource('reset drag source');
+    this.repaintJsPlumb('');
   }
 
   resetDragSource(nodeId: string): void {
@@ -175,7 +177,7 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
         const indexOfNode = this.nodeChildrenIdArray.indexOf(this.dragSourceInfos.nodeId);
         if (this.nodeChildrenArray[indexOfNode]) {
           this.nodeChildrenArray[indexOfNode].connectorEndpointVisible = false;
-          this.repaintJsPlumb();
+          this.repaintJsPlumb('');
         }
       }
     }
@@ -214,6 +216,7 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
     for (const node of this.nodeChildrenArray) {
       if (node.makeSelectionVisible === true) {
         this.newJsPlumbInstance.removeAllEndpoints(node.nodeAttributes.id);
+        this.newJsPlumbInstance.removeFromAllPosses(node.nodeAttributes.id);
         if (node.connectorEndpointVisible === true) {
           if (this.newJsPlumbInstance.isSource(node.dragSource)) {
             this.newJsPlumbInstance.unmakeSource(node.dragSource);
@@ -222,6 +225,7 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
         this.ngRedux.dispatch(this.actions.deleteNodeTemplate(node.nodeAttributes.id));
       }
     }
+    this.selectedNodes.length = 0;
     this.hideSidebar();
   }
 
@@ -461,19 +465,24 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
         sourceElement,
         targetElement,
         undefined,
-        sourceElement.concat.targetElement,
+        sourceElement.concat(targetElement),
         this.currentType
       );
-      console.log(newRelationship);
       this.ngRedux.dispatch(this.actions.saveRelationship(newRelationship));
     });
   }
 
-  sendCurrentType(currentType: string) {
+  setCurrentType(currentType: string) {
     this.currentType = currentType;
   }
 
-  repaintJsPlumb() {
+  removeElement(id: string) {
+    this.newJsPlumbInstance.remove(id);
+    console.log(id);
+    this.repaintJsPlumb('Repaint after removal');
+  }
+
+  repaintJsPlumb($event: string) {
     this.newJsPlumbInstance.repaintEverything();
   }
 
@@ -481,8 +490,7 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
     this.newJsPlumbInstance.draggable(nodeId);
   }
 
-  trackTimeOfMouseDown($event: any): void {
-    this.crosshair = true;
+  removeDragSource(): void {
     for (const node of this.nodeChildrenArray) {
       if (node.dragSource) {
         if (this.newJsPlumbInstance.isSource(node.dragSource)) {
@@ -491,6 +499,12 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
         node.connectorEndpointVisible = false;
       }
     }
+  }
+
+  trackTimeOfMouseDown($event: any): void {
+    this.crosshair = true;
+    this.removeDragSource();
+    this.clearSelectedNodes();
     this.startTime = new Date().getTime();
   }
 

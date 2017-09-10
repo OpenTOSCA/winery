@@ -8,7 +8,7 @@
   <div class="row rounded"
        [class.selected]="makeSelectionVisible"
        [class.unselected]="!makeSelectionVisible"
-       (click)="openSidebar($event); closeConnectorEndpoints()">
+       (click)="openSidebar($event); closeConnectorEndpoints($event)">
     <div class="col-sm-3">
       <img *ngIf="!nodeAttributes.imageUrl" src="https://robohash.org/{{nodeAttributes.id}}.png?set=set4"
            style="border-radius: 10%; margin-top: 1px; width: 50px; height: auto">
