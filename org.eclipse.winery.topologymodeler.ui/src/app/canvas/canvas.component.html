@@ -17,6 +17,7 @@
     </div>
   </div>
 
+  <div #nodes>
   <winery-node *ngFor="let node of allNodeTemplates"
                [nodeAttributes]="{
                 properties: node.properties,
@@ -31,6 +32,7 @@
                 any: node.any,
                 otherAttributes: node.otherAttributes
                }"
+               [makeNewNodeSelectionVisible]="makeNewNodeSelectionVisible"
                [relationshipTemplates]="allRelationshipTemplates"
                [needsToBeFlashed]="needsToBeFlashed"
                (sendId)="makeDraggable($event)"
@@ -44,4 +46,5 @@
                (checkFocusNode)="checkFocusNode($event)"
                (updateAllNodes)="updateAllNodes($event)">
   </winery-node>
+  </div>
 </div>

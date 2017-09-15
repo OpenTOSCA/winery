@@ -28,7 +28,7 @@ export interface SidebarStateAction extends Action {
 export interface SidebarNodeNamechange extends Action {
   nodeNames: {
     newNodeName: string,
-    oldNodeName: string
+    id: string
   };
 }
 

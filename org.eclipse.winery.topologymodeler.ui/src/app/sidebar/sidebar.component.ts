@@ -71,10 +71,11 @@ export class SidebarComponent implements OnInit {
       .subscribe(data => {
         this.$ngRedux.dispatch(this.actions.changeNodeName({
           nodeNames: {
-            oldNodeName: this.sidebarState.nameTextFieldValue,
-            newNodeName: data
+            newNodeName: data,
+            id: this.sidebarState.nodeId
           }
         }));
+        console.log(this.sidebarState.nodeId);
         // refresh
         this.$ngRedux.dispatch(this.actions.openSidebar({
           sidebarContents: {

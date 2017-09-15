@@ -110,17 +110,17 @@ export class WineryComponent implements OnInit {
       {
         'sourceElement': 'baobab',
         'targetElement': 'tree',
-        'type': 'hosted on'
+        'type': 'hostedOn'
       },
       {
         'sourceElement': 'banana',
         'targetElement': 'baobab',
-        'type': 'installed on'
+        'type': 'installedOn'
       },
       {
         'sourceElement': 'mango',
         'targetElement': 'tree',
-        'type': 'hosted on'
+        'type': 'hostedOn'
       },
       {
         'sourceElement': 'banana',
@@ -276,13 +276,14 @@ export class WineryComponent implements OnInit {
       this.ngRedux.dispatch(this.actions.saveNodeTemplate(nodeTemplate));
     }
     for (const relationship of this.testJson.relationshipTemplates) {
+      const relationshipType = relationship.type.replace(' ', '');
       this.relationshipTemplates.push(
         new TRelationshipTemplate(
           relationship.sourceElement,
           relationship.targetElement,
           undefined,
-          relationship.sourceElement.concat(relationship.targetElement),
-          relationship.type
+          `${relationship.sourceElement}_${relationshipType}_${relationship.targetElement}`,
+          relationshipType
         )
       );
     }
