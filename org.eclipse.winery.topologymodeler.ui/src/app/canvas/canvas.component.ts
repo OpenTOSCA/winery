@@ -42,6 +42,7 @@ import { Hotkey, HotkeysService } from 'angular2-hotkeys';
 export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChildren(NodeComponent) nodeComponentChildren: QueryList<NodeComponent>;
   @ViewChild('nodes') child: ElementRef;
+  @ViewChild('selection') selection: ElementRef;
   allNodeTemplates: Array<TNodeTemplate> = [];
   allRelationshipTemplates: Array<TRelationshipTemplate> = [];
   navbarButtonsState: ButtonsStateModel;
@@ -110,7 +111,6 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
     this.newJsPlumbInstance = this.jsPlumbService.getJsPlumbInstance();
     this.newJsPlumbInstance.setContainer('container');
     console.log(this.newJsPlumbInstance);
-    console.log(this._eref.nativeElement.children);
   }
 
   updateNodes(currentNodes: Array<TNodeTemplate>): void {
@@ -378,12 +378,12 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   selectElements($event: any) {
-    const aElem = document.getElementById('selection');
-    for (const node of this.allNodeTemplates) {
-      const bElem = document.getElementById(node.id);
+    const aElem = this.selection.nativeElement;
+    for (const node of this.child.nativeElement.children) {
+      const bElem = node.firstChild;
       const result = this.isObjectInSelection(aElem, bElem);
       if (result === true) {
-        this.enhanceDragSelection(node.id);
+        this.enhanceDragSelection(node.firstChild.id);
       }
     }
     this.unbindMouseMove();
@@ -420,12 +420,11 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
 
   private isObjectInSelection(selectionArea, object): boolean {
     const selectionRect = selectionArea.getBoundingClientRect();
-    const objectRect = object.getBoundingClientRect();
     return (
-      ((selectionRect.top + selectionRect.height) > (objectRect.top + objectRect.height)) &&
-      (selectionRect.top < (objectRect.top)) &&
-      ((selectionRect.left + selectionArea.getBoundingClientRect().width) > (objectRect.left + objectRect.width)) &&
-      (selectionRect.left < (objectRect.left))
+      ((selectionRect.top + selectionRect.height) > (object.offsetTop + object.offsetHeight)) &&
+      (selectionRect.top < (object.offsetTop)) &&
+      ((selectionRect.left + selectionArea.getBoundingClientRect().width) > (object.offsetLeft + object.offsetWidth)) &&
+      (selectionRect.left < (object.offsetLeft))
     );
   }
 
