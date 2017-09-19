@@ -66,7 +66,9 @@ div.endpointContainer {
 
 div.connectorEndpoint {
   width: 206px !important;
+  font-weight: bold;
   cursor: pointer;
+  text-align: center;
 }
 
 div.connectorEndpoint:hover {
@@ -77,6 +79,8 @@ div.connectorEndpoint:hover {
 
 div.connectorBox {
   height: 15px;
+  width: 30px;
+  float: left;
 }
 
 div.connectorLabel {

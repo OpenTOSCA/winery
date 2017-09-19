@@ -82,6 +82,8 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
   currentPaletteOpenedState: boolean;
   makeNewNodeSelectionVisible: any;
   newNodeData: any;
+  allRelationshipTypes: Array<string> = [];
+  allRelationshipTypesColors: Array<any> = [];
 
   constructor(private jsPlumbService: JsPlumbService,
               private jsonService: JsonService,
@@ -119,6 +121,7 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
         this.newNode = currentNodes[currentNodes.length - 1];
         this.unbindConnection();
         this.clearSelectedNodes();
+        this.resetDragSource(this.newNode.id);
         this.repaintConnections();
         if (this.currentPaletteOpenedState) {
           this.addNewNodeToDragSelection(this.newNode.id, currentNodes);
@@ -194,6 +197,8 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
 
   updateRelationships(currentRelationships: Array<TRelationshipTemplate>): void {
     this.allRelationshipTemplates = currentRelationships;
+    this.allRelationshipTemplates.map(rel => !this.allRelationshipTypes.includes(rel.type) ?
+      this.allRelationshipTypes.push(rel.type) : null);
     setTimeout(() => {
       if (this.allRelationshipTemplates.length > 0) {
         for (const relationship of this.allRelationshipTemplates) {
@@ -252,6 +257,7 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
         ],
       });
       conn.id = newRelationship.id;
+      conn.setType(newRelationship.type);
     }
   }
 
@@ -306,7 +312,6 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
         ],
       });
       this.dragSourceInfos = dragSourceInfo;
-      console.log(this.dragSourceInfos);
       this.newJsPlumbInstance.makeTarget(this.allNodesIds);
       this.dragSourceActive = true;
       this.bindConnection();
@@ -542,7 +547,6 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
       this.newJsPlumbInstance.removeAllEndpoints(this.dragSourceInfos.dragSource);
       if (this.dragSourceInfos.dragSource) {
         if (this.newJsPlumbInstance.isSource(this.dragSourceInfos.dragSource)) {
-          console.log('unmakeSource');
           this.newJsPlumbInstance.unmakeSource(this.dragSourceInfos.dragSource);
         }
       }
@@ -556,7 +560,6 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
       this.newJsPlumbInstance.unbind('connection');
       this.jsPlumbBindConnection = false;
       this.unbindDragSource();
-      console.log('unbind');
     }
   }
 
@@ -582,7 +585,6 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
         this.unbindConnection();
         this.repaintJsPlumb();
       });
-      console.log('bind');
     }
   }
 
@@ -601,9 +603,30 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
+  assignRelTypes(): void {
+    if (this.allRelationshipTypes.length > 0) {
+      for (const rel of this.allRelationshipTypes) {
+        const color = '#' + (0x1000000 + Math.floor(Math.random() * 0x1000000)).toString(16).substr(1);
+        this.allRelationshipTypesColors.push({
+          type: rel,
+          color: '0 0 2px ' + color
+        });
+        this.newJsPlumbInstance.registerConnectionType(
+          rel, {
+            paintStyle: {
+              stroke: color,
+              strokeWidth: 2
+            },
+            hoverPaintStyle: {stroke: 'red', strokeWidth: 5}
+          });
+      }
+    }
+  }
+
   ngOnInit() {
     this.visuals = this.jsonService.getVisuals();
     this.assignVisuals();
+    this.assignRelTypes();
   }
 
 

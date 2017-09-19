@@ -58,8 +58,7 @@ export class NodeComponent implements OnInit, AfterViewInit, OnDestroy, DoCheck 
   @Input() makeNewNodeSelectionVisible: any;
   previousPosition: any;
   currentPosition: any;
-  @Input() relationshipTemplates: Array<TRelationshipTemplate>;
-  relationshipTypes = [];
+  @Input() allRelationshipTypesColors: Array<string>;
   nodeRef: ComponentRef<Component>;
   unbindMouseMove: Function;
   differ: any;
@@ -86,7 +85,6 @@ export class NodeComponent implements OnInit, AfterViewInit, OnDestroy, DoCheck 
   }
 
   ngOnInit() {
-    this.relationshipTemplates.map(rt => !this.relationshipTypes.includes(rt.type) ? this.relationshipTypes.push(rt.type) : null);
   }
 
   ngAfterViewInit(): void {

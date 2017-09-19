@@ -15,7 +15,6 @@ declare const jsPlumb: any;
 
 @Injectable()
 export class JsPlumbService {
-
   getJsPlumbInstance(): any {
     jsPlumb.ready(() => {
     });
