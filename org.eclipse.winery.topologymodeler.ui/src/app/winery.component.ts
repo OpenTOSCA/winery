@@ -17,7 +17,7 @@ import { WineryActions } from './redux/actions/winery.actions';
 import { NgRedux } from '@angular-redux/store';
 import { ILoaded, LoadedService } from './loaded.service';
 import { AppReadyEventService } from './app-ready-event.service';
-import { Hotkey, HotkeyModule, HotkeysService } from 'angular2-hotkeys';
+import { HotkeysService } from 'angular2-hotkeys';
 
 @Component({
   selector: 'winery-topologymodeler',
@@ -110,27 +110,27 @@ export class WineryComponent implements OnInit {
       {
         'sourceElement': 'baobab',
         'targetElement': 'tree',
-        'type': 'hostedOn'
+        'type': 'hostedOn',
       },
       {
         'sourceElement': 'banana',
         'targetElement': 'baobab',
-        'type': 'installedOn'
+        'type': 'installedOn',
       },
       {
         'sourceElement': 'mango',
         'targetElement': 'tree',
-        'type': 'hostedOn'
+        'type': 'hostedOn',
       },
       {
         'sourceElement': 'banana',
         'targetElement': 'mango',
-        'type': 'requires'
+        'type': 'requires',
       },
       {
         'sourceElement': 'baobab',
         'targetElement': 'plantage',
-        'type': 'extends'
+        'type': 'extends',
       }
     ]
   };
@@ -228,8 +228,7 @@ export class WineryComponent implements OnInit {
   constructor(private ngRedux: NgRedux<IWineryState>,
               private actions: WineryActions,
               private loadedService: LoadedService,
-              private appReadyEvent: AppReadyEventService,
-              private hotkeysService: HotkeysService) {
+              private appReadyEvent: AppReadyEventService) {
 
     this.loaded = null;
     loadedService.getLoadingState()

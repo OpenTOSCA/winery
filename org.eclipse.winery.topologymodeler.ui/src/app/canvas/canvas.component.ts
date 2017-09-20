@@ -118,13 +118,15 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
   updateNodes(currentNodes: Array<TNodeTemplate>): void {
     if (currentNodes.length !== this.allNodeTemplates.length) {
       if (currentNodes.length > this.allNodeTemplates.length) {
+        this.allNodeTemplates = currentNodes;
+        this.allNodesIds = this.allNodeTemplates.map(node => node.id);
         this.newNode = currentNodes[currentNodes.length - 1];
         this.unbindConnection();
         this.clearSelectedNodes();
         this.resetDragSource(this.newNode.id);
         this.repaintConnections();
         if (this.currentPaletteOpenedState) {
-          this.addNewNodeToDragSelection(this.newNode.id, currentNodes);
+          // this.addNewNodeToDragSelection(this.newNode.id, currentNodes);
           this.makeNewNodeSelectionVisible = {
             id: this.newNode.id,
           };
@@ -134,6 +136,7 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
             this.unbindNewNodeMouseUp = this.renderer.listen(this._eref.nativeElement, 'mouseup',
               ($event) => this.positionNewNode($event));
           });
+          this.enhanceDragSelection(this.newNode.id);
         }
       }
       this.allNodeTemplates = currentNodes;
@@ -150,14 +153,6 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
           }
         }
       }
-    }
-  }
-
-
-  addNewNodeToDragSelection(nodeId: string, currentNodes: Array<TNodeTemplate>): void {
-    if (!this.arrayContainsNode(this.selectedNodes, nodeId)) {
-      this.selectedNodes.push(this.getNodeByID(currentNodes, nodeId));
-      this.newJsPlumbInstance.addToPosse(nodeId, 'dragSelection');
     }
   }
 
@@ -258,8 +253,25 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
       });
       conn.id = newRelationship.id;
       conn.setType(newRelationship.type);
+      const me = this;
+      conn.bind('click', rel => {
+        this.clearSelectedNodes();
+        this.newJsPlumbInstance.select().removeType('marked');
+        const currentRel = me.allRelationshipTemplates.find(con => con.id === rel.id);
+        me.ngRedux.dispatch(this.actions.openSidebar({
+          sidebarContents: {
+            sidebarVisible: true,
+            nodeClicked: false,
+            id: currentRel.id,
+            nameTextFieldValue: currentRel.name,
+            type: currentRel.type
+          }
+        }));
+        conn.addType('marked');
+      });
     }
   }
+
 
   manageRelationships(newRelationship: TRelationshipTemplate): void {
     this.paintRelationship(newRelationship);
@@ -318,7 +330,6 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-
   @HostListener('document:keydown.delete', ['$event'])
   handleDeleteKeyEvent(event: KeyboardEvent) {
     this.unbindConnection();
@@ -336,6 +347,14 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
       }
     }
     this.selectedNodes.length = 0;
+    const allConnections = this.newJsPlumbInstance.getAllConnections();
+    for (const rel of allConnections) {
+      if (rel.hasType('marked')) {
+        this.newJsPlumbInstance.deleteConnection(rel);
+        const connectionIndex = this.allRelationshipTemplates.map(con => con.id).indexOf(rel.id);
+        this.allRelationshipTemplates.splice(connectionIndex, 1);
+      }
+    }
     this.hideSidebar();
   }
 
@@ -437,8 +456,10 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
     this.ngRedux.dispatch(this.actions.openSidebar({
       sidebarContents: {
         sidebarVisible: false,
-        nodeId: '',
-        nameTextFieldValue: ''
+        nodeClicked: false,
+        id: '',
+        nameTextFieldValue: '',
+        type: ''
       }
     }));
   }
@@ -526,7 +547,9 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
       this.newJsPlumbInstance.addToPosse(nodeId, 'dragSelection');
       for (const node of this.nodeChildrenArray) {
         if (this.selectedNodes.find(selectedNode => selectedNode.id === node.nodeAttributes.id)) {
-          node.makeSelectionVisible = true;
+          if (node.makeSelectionVisible === false) {
+            node.makeSelectionVisible = true;
+          }
         }
       }
     }
@@ -553,7 +576,6 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
       this.dragSourceActive = false;
     }
   }
-
 
   unbindConnection(): void {
     if (this.jsPlumbBindConnection === true) {
@@ -588,6 +610,10 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
+  unmarkConnections(unmarkMessage: string) {
+    this.newJsPlumbInstance.select().removeType('marked');
+  }
+
   assignVisuals() {
     for (const node of this.allNodeTemplates) {
       for (const visual of this.visuals) {
@@ -605,6 +631,7 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
 
   assignRelTypes(): void {
     if (this.allRelationshipTypes.length > 0) {
+      this.newJsPlumbInstance.registerConnectionType('marked', {paintStyle: {stroke: 'red', strokeWidth: 5 }});
       for (const rel of this.allRelationshipTypes) {
         const color = '#' + (0x1000000 + Math.floor(Math.random() * 0x1000000)).toString(16).substr(1);
         this.allRelationshipTypesColors.push({
@@ -660,6 +687,7 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
 
 
   trackTimeOfMouseDown($event: any): void {
+    this.newJsPlumbInstance.select().removeType('marked');
     this.crosshair = true;
     this.removeDragSource();
     this.clearSelectedNodes();

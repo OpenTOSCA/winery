@@ -55,6 +55,7 @@ export class NodeComponent implements OnInit, AfterViewInit, OnDestroy, DoCheck 
   @Output() updateAllNodes: EventEmitter<string>;
   @Output() sendCurrentType: EventEmitter<string>;
   @Output() askForRemoval: EventEmitter<string>;
+  @Output() unmarkConnections: EventEmitter<string>;
   @Input() makeNewNodeSelectionVisible: any;
   previousPosition: any;
   currentPosition: any;
@@ -81,6 +82,7 @@ export class NodeComponent implements OnInit, AfterViewInit, OnDestroy, DoCheck 
     this.updateAllNodes = new EventEmitter();
     this.sendCurrentType = new EventEmitter();
     this.askForRemoval = new EventEmitter();
+    this.unmarkConnections = new EventEmitter();
     this.differ = differs.find([]).create(null);
   }
 
@@ -104,6 +106,7 @@ export class NodeComponent implements OnInit, AfterViewInit, OnDestroy, DoCheck 
   }
 
   mouseDownHandler($event): void {
+    this.unmarkConnections.emit('unmark');
     this.startTime = new Date().getTime();
     this.repaint(new Event('repaint'));
     const focusNodeData = {
@@ -185,16 +188,27 @@ export class NodeComponent implements OnInit, AfterViewInit, OnDestroy, DoCheck 
       this.$ngRedux.dispatch(this.actions.openSidebar({
         sidebarContents: {
           sidebarVisible: false,
-          nodeId: '',
-          nameTextFieldValue: ''
+          nodeClicked: true,
+          id: '',
+          nameTextFieldValue: '',
+          type: ''
         }
       }));
     } else {
+      let type;
+      const id = this.nodeAttributes.id;
+      if ( id.includes ('_') ) {
+        type = id.substring(0, id.indexOf('_'));
+      } else {
+        type = id;
+      }
       this.$ngRedux.dispatch(this.actions.openSidebar({
         sidebarContents: {
           sidebarVisible: true,
-          nodeId: this.nodeAttributes.id,
-          nameTextFieldValue: this.nodeAttributes.name
+          nodeClicked: true,
+          id: this.nodeAttributes.id,
+          nameTextFieldValue: this.nodeAttributes.name,
+          type: type
         }
       }));
     }

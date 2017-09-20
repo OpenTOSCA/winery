@@ -11,7 +11,7 @@
     <fieldset>
       <div class="form-group">
         <label for="nodetemplateid">Id</label>
-        <input id="nodetemplateid" disabled="disabled" class="form-control" value="{{sidebarState.nodeId}}">
+        <input id="nodetemplateid" disabled="disabled" class="form-control" value="{{sidebarState.id}}">
       </div>
       <div class="form-group">
         <label for="nodetemplatename" class="control-label">Name</label>
@@ -24,10 +24,11 @@
            target="_blank"
            href="http://dev.winery.opentosca.org/winery/nodetypes/http%253A%252F%252Fopentosca.org%252Fnodetypes/Babel/"
            class="form-control">
-          {{sidebarState.nodeId}}
+          {{sidebarState.type}}
         </a>
       </div>
       <div class="form-group">
+        <div *ngIf="sidebarState.nodeClicked; else relClicked">
         <label for="minInstances">min</label>
         <div class="row">
           <div class="col-lg-12">
@@ -86,6 +87,64 @@
             </div>
           </div>
         </div>
+        </div>
+        <ng-template #relClicked>
+          <label for="requirements">Requirement</label>
+          <div class="row">
+            <div class="col-lg-12">
+              <div class="input-sm">
+                <div class="input-group bootstrap-touchspin">
+                <span class="input-group-addon bootstrap-touchspin-prefix"
+                      style="display: none;">
+                </span>
+                  <input id="requirements"
+                         value=""
+                         name="requirements"
+                         class="form-control"
+                         style="display: block; border-radius: 0.25rem; margin-right: 3px"
+                         type="text">
+                  <span class="input-group-addon bootstrap-touchspin-postfix" style="display: none;"></span>
+                  <span class="input-group-btn-vertical">
+                  <button class="btn btn-default bootstrap-touchspin-up" type="button">
+                    <i class="fa fa-chevron-up"></i>
+                  </button>
+                  <button class="btn btn-default bootstrap-touchspin-down"
+                          type="button">
+                    <i class="fa fa-chevron-down"></i>
+                  </button>
+                </span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <label for="capabilities">Capability</label>
+          <div class="row">
+            <div class="col-lg-12">
+              <div class="input-sm">
+                <div class="input-group bootstrap-touchspin">
+                <span class="input-group-addon bootstrap-touchspin-prefix"
+                      style="display: none;">
+                </span>
+                  <input id="capabilities"
+                         value=""
+                         name="capabilities"
+                         class="form-control"
+                         style="display: block; border-radius: 0.25rem; margin-right: 3px"
+                         type="text">
+                  <span class="input-group-addon bootstrap-touchspin-postfix" style="display: none;"></span>
+                  <span class="input-group-btn-vertical">
+                  <button class="btn btn-default bootstrap-touchspin-up" type="button">
+                    <i class="fa fa-chevron-up"></i>
+                  </button>
+                  <button class="btn btn-default bootstrap-touchspin-down" type="button">
+                    <i class="fa fa-chevron-down"></i>
+                  </button>
+                </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </ng-template>
       </div>
     </fieldset>
   </div>

@@ -45,8 +45,10 @@ export class SidebarComponent implements OnInit {
     this.$ngRedux.dispatch(this.actions.openSidebar({
       sidebarContents: {
         sidebarVisible: false,
-        nodeId: '',
-        nameTextFieldValue: ''
+        nodeClicked: false,
+        id: '',
+        nameTextFieldValue: '',
+        type: ''
       }
     }));
   };
@@ -55,6 +57,9 @@ export class SidebarComponent implements OnInit {
     this.sidebarSubscription = this.$ngRedux.select(state => state.wineryState.sidebarContents)
       .subscribe(newValue => {
           this.sidebarState = newValue;
+          if (!this.sidebarState.nameTextFieldValue) {
+            this.sidebarState.nameTextFieldValue = this.sidebarState.id;
+          }
           if (newValue.sidebarVisible) {
             this.sidebarAnimationStatus = 'in';
           }
@@ -69,19 +74,29 @@ export class SidebarComponent implements OnInit {
       .debounceTime(300)
       .distinctUntilChanged()
       .subscribe(data => {
-        this.$ngRedux.dispatch(this.actions.changeNodeName({
-          nodeNames: {
-            newNodeName: data,
-            id: this.sidebarState.nodeId
-          }
-        }));
-        console.log(this.sidebarState.nodeId);
+        if (this.sidebarState.nodeClicked) {
+          this.$ngRedux.dispatch(this.actions.changeNodeName({
+            nodeNames: {
+              newNodeName: data,
+              id: this.sidebarState.id
+            }
+          }));
+        } else {
+          this.$ngRedux.dispatch(this.actions.updateRelationshipName({
+            relData: {
+              newRelName: data,
+              id: this.sidebarState.id
+            }
+          }));
+        }
         // refresh
         this.$ngRedux.dispatch(this.actions.openSidebar({
           sidebarContents: {
             sidebarVisible: true,
-            nodeId: this.sidebarState.nodeId,
-            nameTextFieldValue: data
+            nodeClicked: true,
+            id: this.sidebarState.id,
+            nameTextFieldValue: data,
+            type: this.sidebarState.type
           }
         }));
       });
