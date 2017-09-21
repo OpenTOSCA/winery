@@ -184,25 +184,33 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
       for (const relationship of this.allRelationshipTemplates) {
         setTimeout(() => this.paintRelationship(relationship), 1);
       }
-      // console.log(this.newJsPlumbInstance.getAllConnections());
-      // console.log(this.allRelationshipTemplates);
       this.repaintJsPlumb();
     }
   }
 
   updateRelationships(currentRelationships: Array<TRelationshipTemplate>): void {
-    this.allRelationshipTemplates = currentRelationships;
-    this.allRelationshipTemplates.map(rel => !this.allRelationshipTypes.includes(rel.type) ?
-      this.allRelationshipTypes.push(rel.type) : null);
-    setTimeout(() => {
-      if (this.allRelationshipTemplates.length > 0) {
-        for (const relationship of this.allRelationshipTemplates) {
-          this.manageRelationships(relationship);
+    if (currentRelationships.length !== this.allRelationshipTemplates.length) {
+      this.allRelationshipTemplates = currentRelationships;
+      this.allRelationshipTemplates.map(rel => !this.allRelationshipTypes.includes(rel.type) ?
+        this.allRelationshipTypes.push(rel.type) : null);
+      setTimeout(() => {
+        if (this.allRelationshipTemplates.length > 0) {
+          for (const relationship of this.allRelationshipTemplates) {
+            this.manageRelationships(relationship);
+          }
+        }
+      }, 1);
+    } else {
+      for (const rel of this.allRelationshipTemplates) {
+        const conn = currentRelationships.find(el => el.id === rel.id);
+        if (conn) {
+          if (rel.name !== conn.name) {
+            rel.name = conn.name;
+          }
         }
       }
-    }, 1);
+    }
   }
-
 
   setButtonsState(currentButtonsState: ButtonsStateModel): void {
     this.navbarButtonsState = currentButtonsState;
@@ -333,29 +341,23 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
   @HostListener('document:keydown.delete', ['$event'])
   handleDeleteKeyEvent(event: KeyboardEvent) {
     this.unbindConnection();
-    for (const node of this.nodeChildrenArray) {
-      if (node.makeSelectionVisible === true) {
-        this.newJsPlumbInstance.deleteConnectionsForElement(node.nodeAttributes.id);
-        this.newJsPlumbInstance.removeAllEndpoints(node.nodeAttributes.id);
-        this.newJsPlumbInstance.removeFromAllPosses(node.nodeAttributes.id);
-        if (node.connectorEndpointVisible === true) {
-          if (this.newJsPlumbInstance.isSource(node.dragSource)) {
-            this.newJsPlumbInstance.unmakeSource(node.dragSource);
+    if (this.selectedNodes.length > 0) {
+      for (const node of this.nodeChildrenArray) {
+        if (node.makeSelectionVisible === true) {
+          this.newJsPlumbInstance.deleteConnectionsForElement(node.nodeAttributes.id);
+          this.newJsPlumbInstance.removeAllEndpoints(node.nodeAttributes.id);
+          this.newJsPlumbInstance.removeFromAllPosses(node.nodeAttributes.id);
+          if (node.connectorEndpointVisible === true) {
+            if (this.newJsPlumbInstance.isSource(node.dragSource)) {
+              this.newJsPlumbInstance.unmakeSource(node.dragSource);
+            }
           }
+          this.ngRedux.dispatch(this.actions.deleteNodeTemplate(node.nodeAttributes.id));
         }
-        this.ngRedux.dispatch(this.actions.deleteNodeTemplate(node.nodeAttributes.id));
       }
+      this.hideSidebar();
+      this.selectedNodes.length = 0;
     }
-    this.selectedNodes.length = 0;
-    const allConnections = this.newJsPlumbInstance.getAllConnections();
-    for (const rel of allConnections) {
-      if (rel.hasType('marked')) {
-        this.newJsPlumbInstance.deleteConnection(rel);
-        const connectionIndex = this.allRelationshipTemplates.map(con => con.id).indexOf(rel.id);
-        this.allRelationshipTemplates.splice(connectionIndex, 1);
-      }
-    }
-    this.hideSidebar();
   }
 
   clearSelectedNodes(): void {

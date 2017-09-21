@@ -93,7 +93,7 @@ export class SidebarComponent implements OnInit {
         this.$ngRedux.dispatch(this.actions.openSidebar({
           sidebarContents: {
             sidebarVisible: true,
-            nodeClicked: true,
+            nodeClicked: this.sidebarState.nodeClicked,
             id: this.sidebarState.id,
             nameTextFieldValue: data,
             type: this.sidebarState.type
