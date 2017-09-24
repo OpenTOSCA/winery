@@ -150,6 +150,14 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
             this.nodeChildrenArray[nodeId].nodeAttributes.name = node.name;
             this.nodeChildrenArray[nodeId].flash();
             this.allNodeTemplates[i].name = node.name;
+          } else if (this.allNodeTemplates[i].minInstances !== node.minInstances) {
+            const nodeId = this.nodeChildrenIdArray.indexOf(this.allNodeTemplates[i].id);
+            this.allNodeTemplates[i].minInstances = node.minInstances;
+            this.nodeChildrenArray[nodeId].flashMin();
+          } else if (this.allNodeTemplates[i].maxInstances !== node.maxInstances) {
+            const nodeId = this.nodeChildrenIdArray.indexOf(this.allNodeTemplates[i].id);
+            this.allNodeTemplates[i].maxInstances = node.maxInstances;
+            this.nodeChildrenArray[nodeId].flashMax();
           }
         }
       }
@@ -594,8 +602,13 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
         this.jsPlumbConnections.push(info.connection);
         const sourceElement = info.source.offsetParent.offsetParent.id;
         const targetElement = info.targetId;
+        console.log(this.currentType);
         const relationshipId = `${sourceElement}_${this.currentType}_${targetElement}`;
-        const relTypeExists = this.allRelationshipTemplates.map(rel => rel.id).includes(relationshipId);
+        const relTypeExists = this.allRelationshipTemplates.map(rel => {
+          console.log(rel.id);
+          return rel.id;
+        }).includes(this.currentType);
+        console.log(relTypeExists);
         if (relTypeExists === false) {
           const newRelationship = new TRelationshipTemplate(
             sourceElement,
@@ -638,7 +651,7 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
         const color = '#' + (0x1000000 + Math.floor(Math.random() * 0x1000000)).toString(16).substr(1);
         this.allRelationshipTypesColors.push({
           type: rel,
-          color: '0 0 2px ' + color
+          color: color
         });
         this.newJsPlumbInstance.registerConnectionType(
           rel, {

@@ -34,8 +34,12 @@ export class SidebarComponent implements OnInit {
   nodeTemplateSubscription;
   sidebarState: any;
   sidebarAnimationStatus: string;
+  maxInputEnabled = true;
+  min = 1;
 
   private nodeNameKeyUp: Subject<string> = new Subject<string>();
+  private nodeMinInstancesKeyUp: Subject<string> = new Subject<string>();
+  private nodeMaxInstancesKeyUp: Subject<string> = new Subject<string>();
 
   constructor(private $ngRedux: NgRedux<IWineryState>,
               private actions: WineryActions) {
@@ -48,19 +52,25 @@ export class SidebarComponent implements OnInit {
         nodeClicked: false,
         id: '',
         nameTextFieldValue: '',
-        type: ''
+        type: '',
+        minInstances: -1,
+        maxInstances: -1
       }
     }));
   };
 
+  getInfinityButtonStyle(): string {
+    return !this.maxInputEnabled ? '#ffc0c0' : '#e0e0e0';
+  }
+
   ngOnInit() {
     this.sidebarSubscription = this.$ngRedux.select(state => state.wineryState.sidebarContents)
-      .subscribe(newValue => {
-          this.sidebarState = newValue;
+      .subscribe(sidebarContents => {
+          this.sidebarState = sidebarContents;
           if (!this.sidebarState.nameTextFieldValue) {
             this.sidebarState.nameTextFieldValue = this.sidebarState.id;
           }
-          if (newValue.sidebarVisible) {
+          if (sidebarContents.sidebarVisible) {
             this.sidebarAnimationStatus = 'in';
           }
         }
@@ -96,15 +106,104 @@ export class SidebarComponent implements OnInit {
             nodeClicked: this.sidebarState.nodeClicked,
             id: this.sidebarState.id,
             nameTextFieldValue: data,
-            type: this.sidebarState.type
+            type: this.sidebarState.type,
+            minInstances: this.sidebarState.minInstances,
+            maxInstances: this.sidebarState.maxInstances
           }
         }));
       });
+    // minInstances
+    const nodeMinInstancesKeyUpObservable = this.nodeMinInstancesKeyUp
+      .debounceTime(300)
+      .distinctUntilChanged()
+      .subscribe(data => {
+        if (this.sidebarState.nodeClicked) {
+          this.$ngRedux.dispatch(this.actions.changeMinInstances({
+            minInstances: {
+              id: this.sidebarState.id,
+              count: data
+            }
+          }));
+        }
+      });
+    // maxInstances
+    const nodeMaxInstancesKeyUpObservable = this.nodeMaxInstancesKeyUp
+      .debounceTime(300)
+      .distinctUntilChanged()
+      .subscribe(data => {
+        if (this.sidebarState.nodeClicked) {
+          this.$ngRedux.dispatch(this.actions.changeMaxInstances({
+            maxInstances: {
+              id: this.sidebarState.id,
+              count: data
+            }
+          }));
+        }
+      });
   }
 
-  minInstancesChanged() {
+  minInstancesChanged($event) {
+      if ($event === 'inc') {
+        this.$ngRedux.dispatch(this.actions.incMinInstances({
+          minInstances: {
+            id: this.sidebarState.id
+          }
+        }));
+        this.sidebarState.minInstances += 1;
+      } else if ($event === 'dec') {
+        if (this.sidebarState.minInstances === 0) {
+          this.sidebarState.minInstances = 0;
+        } else {
+          this.$ngRedux.dispatch(this.actions.decMinInstances({
+            minInstances: {
+              id: this.sidebarState.id
+            }
+          }));
+          this.sidebarState.minInstances -= 1;
+        }
+      }
   }
 
-  maxInstancesChanged() {
+  maxInstancesChanged($event) {
+    if (!(this.sidebarState.maxInstances === '\u221E')) {
+      if ($event === 'inc') {
+        this.$ngRedux.dispatch(this.actions.incMaxInstances({
+          maxInstances: {
+            id: this.sidebarState.id
+          }
+        }));
+        this.sidebarState.maxInstances += 1;
+      } else if ($event === 'dec') {
+        if (this.sidebarState.maxInstances === 0) {
+          this.sidebarState.maxInstances = 0;
+        } else {
+          this.$ngRedux.dispatch(this.actions.decMaxInstances({
+            maxInstances: {
+              id: this.sidebarState.id
+            }
+          }));
+          this.sidebarState.maxInstances -= 1;
+        }
+      } else if ($event === 'inf') {
+        // infinity
+        this.maxInputEnabled = false;
+        this.sidebarState.maxInstances = '\u221E';
+        this.$ngRedux.dispatch(this.actions.changeMaxInstances({
+          maxInstances: {
+            id: this.sidebarState.id,
+            count: '\u221E'
+          }
+        }));
+      }
+    } else {
+      this.$ngRedux.dispatch(this.actions.changeMaxInstances({
+        maxInstances: {
+          id: this.sidebarState.id,
+          count: 0
+        }
+      }));
+      this.sidebarState.maxInstances = 0;
+      this.maxInputEnabled = true;
+    }
   }
 }

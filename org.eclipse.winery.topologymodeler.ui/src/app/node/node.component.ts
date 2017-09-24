@@ -25,7 +25,7 @@ import {
 import { ButtonsStateModel } from '../models/buttonsState.model';
 import { NgRedux } from '@angular-redux/store';
 import { IWineryState } from '../redux/store/winery.store';
-import { WineryActions } from '../redux/actions/winery.actions';
+import { SidebarStateAction, WineryActions } from '../redux/actions/winery.actions';
 import { TRelationshipTemplate } from '../ttopology-template';
 
 @Component({
@@ -43,6 +43,8 @@ export class NodeComponent implements OnInit, AfterViewInit, OnDestroy, DoCheck 
   longpress = false;
   makeSelectionVisible = false;
   setFlash = false;
+  setMaxFlash = false;
+  setMinFlash = false;
   @Input() nodeAttributes: any;
   @Input() needsToBeFlashed: boolean;
   @Input() dragSource: string;
@@ -101,7 +103,7 @@ export class NodeComponent implements OnInit, AfterViewInit, OnDestroy, DoCheck 
   passCurrentType($event): void {
     $event.stopPropagation();
     $event.preventDefault();
-    const currentType: string = $event.srcElement.innerHTML.replace(/\n/g, '').replace(/\s+/g, '');
+    const currentType: string = $event.srcElement.innerText.replace(/\n/g, '').replace(/\s+/g, '');
     this.sendCurrentType.emit(currentType);
   }
 
@@ -156,6 +158,16 @@ export class NodeComponent implements OnInit, AfterViewInit, OnDestroy, DoCheck 
     setTimeout(() => this.setFlash = false, 1000);
   }
 
+  flashMin(): void {
+    this.setMinFlash = true;
+    setTimeout(() => this.setMinFlash = false, 1000);
+  }
+
+  flashMax(): void {
+    this.setMaxFlash = true;
+    setTimeout(() => this.setMaxFlash = false, 1000);
+  }
+
   closeConnectorEndpoints($event): void {
     $event.stopPropagation();
     if (!this.longpress && !$event.ctrlKey) {
@@ -191,7 +203,9 @@ export class NodeComponent implements OnInit, AfterViewInit, OnDestroy, DoCheck 
           nodeClicked: true,
           id: '',
           nameTextFieldValue: '',
-          type: ''
+          type: '',
+          minInstances: -1,
+          maxInstances: -1
         }
       }));
     } else {
@@ -208,7 +222,9 @@ export class NodeComponent implements OnInit, AfterViewInit, OnDestroy, DoCheck 
           nodeClicked: true,
           id: this.nodeAttributes.id,
           nameTextFieldValue: this.nodeAttributes.name,
-          type: type
+          type: type,
+          minInstances: this.nodeAttributes.minInstances,
+          maxInstances: this.nodeAttributes.maxInstances
         }
       }));
     }

@@ -19,14 +19,30 @@ body{
   color: white;
 }
 
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
 .flashit {
-  animation: flash ease-in 400ms 1;
+  animation: flash ease-out 400ms 1;
 }
 
 @keyframes flash {
   0%  { background-color: rgba(255,255,255,0.2); }
-  20% { background-color: rgba(249, 246, 246,0.9); }
-  100% { background-color: rgba(229, 226, 247,0.1); }
+  20% { background-color: rgba(0, 246, 146,0.9); }
+  100% { background-color: rgba(0, 226, 147,0.1); }
+}
+
+.flashminmax {
+  animation: flashminmaxanimation ease-out 400ms 1;
+}
+
+@keyframes flashminmaxanimation {
+  0%  { background-color: rgba(255,255,255,0.2); }
+  20% { background-color: rgba(0, 246, 146,0.9); }
+  100% { background-color: rgba(0, 226, 147,0.1); }
 }
 
 .card-header {
@@ -70,14 +86,28 @@ table tr{
   padding-left: 10px !important;
 }
 
+.td-maxinstances {
+  padding-top: -5px !important;
+  padding-left: 3px !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+}
+
+.td-mininstances {
+  padding-top: 5px !important;
+  padding-left: 3px !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+}
+
 .td-value {
   text-align: right !important;
   padding-right: 10px !important;
 }
 
 .header-table td{
-  padding-top: 0px !important;
-  padding-bottom: 0px !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
   margin: 0 !important;
   width: auto !important;
   font-size: x-small;
@@ -93,15 +123,26 @@ table tr{
 }
 
 .body-table td{
-  padding: 0px !important;
+  padding: 0 !important;
   margin: 0 !important;
   width: auto !important;
   font-size: x-small;
   color: black;
 }
 
+tr.row.col-sm-12 {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+
 .table {
+  margin-top: 0 !important;
   margin-bottom: 0 !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  overflow-x: hidden !important;
 }
 
 .card-block {
@@ -110,11 +151,18 @@ table tr{
 }
 
 .table-active, .table-active>td, .table-active>th {
-  background-color: rgba(0,0,0,.075);
+  background-color: rgba(0,0,0,.0);
 }
 
 .table-border--grey td, .table-border--grey th {
-  border-top: 1px solid rgba(0,0,0,0.1);
+  border-top: 1px solid rgba(22,22,22,0.1);
+  border-radius: 3px;
+}
+
+.table-spacer {
+  border: 0 !important;
+  border-radius: 0 !important;
+  height: 22px !important;
 }
 
 .col-sm-9 {

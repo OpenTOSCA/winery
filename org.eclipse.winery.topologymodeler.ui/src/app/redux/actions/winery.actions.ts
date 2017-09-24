@@ -23,13 +23,53 @@ export interface SidebarStateAction extends Action {
     nodeClicked: boolean,
     id: string,
     nameTextFieldValue: string,
-    type: string
+    type: string,
+    minInstances: string,
+    maxInstances: string
   };
 }
 
 export interface SidebarNodeNamechange extends Action {
   nodeNames: {
     newNodeName: string,
+    id: string
+  };
+}
+
+export interface SidebarMinInstanceChanges extends Action {
+  minInstances: {
+    id: string,
+    count: number
+  };
+}
+
+export interface SidebarMaxInstanceChanges extends Action {
+  maxInstances: {
+    id: string,
+    count: number
+  };
+}
+
+export interface IncMaxInstances extends Action {
+  maxInstances: {
+    id: string
+  };
+}
+
+export interface DecMaxInstances extends Action {
+  maxInstances: {
+    id: string
+  };
+}
+
+export interface IncMinInstances extends Action {
+  minInstances: {
+    id: string
+  };
+}
+
+export interface DecMinInstances extends Action {
+  minInstances: {
     id: string
   };
 }
@@ -68,6 +108,12 @@ export class WineryActions {
     static OPEN_SIDEBAR = 'OPEN_SIDEBAR';
     static UPDATE_NODE_COORDINATES = 'UPDATE_NODE_COORDINATES';
     static UPDATE_REL_DATA = 'UPDATE_REL_DATA';
+    static CHANGE_MIN_INSTANCES = 'CHANGE_MIN_INSTANCES';
+    static CHANGE_MAX_INSTANCES = 'CHANGE_MAX_INSTANCES';
+    static INC_MIN_INSTANCES = 'INC_MIN_INSTANCES';
+    static DEC_MIN_INSTANCES = 'DEC_MIN_INSTANCES';
+    static INC_MAX_INSTANCES = 'INC_MAX_INSTANCES';
+    static DEC_MAX_INSTANCES = 'DEC_MAX_INSTANCES';
 
     sendPaletteOpened: ActionCreator<SendPaletteOpenedAction> =
       ((paletteOpened) => ({
@@ -83,6 +129,36 @@ export class WineryActions {
       ((nodeNames) => ({
         type: WineryActions.CHANGE_NODE_NAME,
         nodeNames: nodeNames.nodeNames
+      }));
+    changeMinInstances: ActionCreator<SidebarMinInstanceChanges> =
+      ((minInstances) => ({
+        type: WineryActions.CHANGE_MIN_INSTANCES,
+        minInstances: minInstances.minInstances
+      }));
+    changeMaxInstances: ActionCreator<SidebarMaxInstanceChanges> =
+      ((maxInstances) => ({
+        type: WineryActions.CHANGE_MAX_INSTANCES,
+        maxInstances: maxInstances.maxInstances
+    }));
+    incMinInstances: ActionCreator<IncMinInstances> =
+      ((minInstances) => ({
+        type: WineryActions.INC_MIN_INSTANCES,
+        minInstances: minInstances.minInstances
+      }));
+    incMaxInstances: ActionCreator<IncMaxInstances> =
+      ((maxInstances) => ({
+        type: WineryActions.INC_MAX_INSTANCES,
+        maxInstances: maxInstances.maxInstances
+      }));
+    decMinInstances: ActionCreator<DecMinInstances> =
+      ((minInstances) => ({
+        type: WineryActions.DEC_MIN_INSTANCES,
+        minInstances: minInstances.minInstances
+      }));
+    decMaxInstances: ActionCreator<DecMaxInstances> =
+      ((maxInstances) => ({
+        type: WineryActions.DEC_MAX_INSTANCES,
+        maxInstances: maxInstances.maxInstances
       }));
     saveNodeTemplate: ActionCreator<SaveNodeTemplateAction> =
       ((newNode) => ({

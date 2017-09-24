@@ -9,45 +9,55 @@
        [class.selected]="makeSelectionVisible"
        [class.unselected]="!makeSelectionVisible"
        (click)="openSidebar($event); closeConnectorEndpoints($event)">
+    <div class="col-sm-1" style="padding: 0;">
+      <table class="table table-responsive table-active table-border--grey table-sm header-table">
+        <tr style="padding: 0">
+          <td class="td-maxinstances"
+              [class.flashminmax]="setMaxFlash">{{nodeAttributes.maxInstances}}</td>
+        </tr>
+        <tr><td class="table-spacer"><br/></td></tr>
+        <tr style="padding: 0">
+          <td class="td-mininstances"
+              [class.flashminmax]="setMinFlash">{{nodeAttributes.minInstances}}</td>
+        </tr>
+      </table>
+    </div>
     <div class="col-sm-3">
       <img *ngIf="!nodeAttributes.imageUrl" src="https://robohash.org/{{nodeAttributes.id}}.png?set=set4"
            style="border-radius: 10%; margin-top: 1px; width: 50px; height: auto">
       <img *ngIf="nodeAttributes.imageUrl" src="{{nodeAttributes.imageUrl}}">
     </div>
-    <div id="specifierDiv" class="col-sm-9">
+    <div id="specifierDiv" class="col-sm-8" style="padding-left: 0; padding-right: 0">
       <table class="table table-active table-border--grey table-sm header-table">
-        <tr [class.flashit]="setFlash">
-          <td class="td-key">name:</td>
-          <td class="td-value">{{nodeAttributes.name}}</td>
+        <tr [class.flashit]="setFlash" class="row col-sm-12">
+          <td class="td-key col-sm-4">name:</td>
+          <td class="text-right td-value col-sm-8">{{nodeAttributes.name}}</td>
         </tr>
-        <tr *ngIf="navbarButtonsState.buttonsState.idsButton">
-          <td class="td-key">id:</td>
-          <td class="td-value" style="color: crimson">{{nodeAttributes.id}}</td>
+        <tr *ngIf="navbarButtonsState.buttonsState.idsButton" class="row col-sm-12">
+          <td class="td-key col-sm-4">id:</td>
+          <td class="text-right td-value col-sm-8" style="color: mediumvioletred">{{nodeAttributes.id}}</td>
         </tr>
-        <tr *ngIf="navbarButtonsState.buttonsState.typesButton">
-          <td class="td-key">type:</td>
-          <td class="btn-link td-value">{{nodeAttributes.id}}</td>
+        <tr *ngIf="navbarButtonsState.buttonsState.typesButton" class="row col-sm-12">
+          <td class="td-key col-sm-4">type:</td>
+          <td class="text-right btn-link td-value col-sm-8">{{nodeAttributes.id}}</td>
         </tr>
       </table>
     </div>
   </div>
-  <div class="endpointContainer container rounded" [style.border-color]="this.nodeAttributes.color" style="width: 100%" *ngIf="connectorEndpointVisible"
+  <div class="endpointContainer container rounded" [style.border-color]="this.nodeAttributes.color" style="width: 100%; box-shadow: none" *ngIf="connectorEndpointVisible"
        (mouseover)="makeSource($event)">
     <div class="btn-group-vertical btn-group-sm" role="group" id={{dragSource}} (mousedown)="passCurrentType($event)">
         <button *ngFor="let rel of allRelationshipTypesColors"
              type="button" class="btn btn-sm btn-outline-secondary relationship-button sm"
-             [style.border-color]="this.nodeAttributes.color" [style.text-shadow] = "rel.color"
+             [style.border-color]="this.nodeAttributes.color" [style.color]="rel.color"
              style="font-size: x-small">
-          {{rel.type}}
+          <i class="fa fa-arrow-circle-o-right" aria-hidden="true"></i> {{rel.type}}
         </button>
-  </div>
+    </div>
   </div>
 
   <!-- Repaint jsPlumb on every accordion click -->
-
   <accordion #accordion (click)="repaint($event)">
-
-
     <!-- PROPERTIES -->
     <accordion-group
       #propertiesgroup

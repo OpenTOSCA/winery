@@ -19,7 +19,8 @@ import {
   SidebarStateAction,
   UpdateNodeCoordinatesAction,
   WineryActions,
-  UpdateRelationshipNameAction
+  UpdateRelationshipNameAction, SidebarMinInstanceChanges, SidebarMaxInstanceChanges, IncMinInstances, DecMinInstances,
+  DecMaxInstances, IncMaxInstances
 } from '../actions/winery.actions';
 import { TNodeTemplate, TRelationshipTemplate, TTopologyTemplate } from 'app/ttopology-template';
 
@@ -36,7 +37,9 @@ export const INITIAL_WINERY_STATE: WineryState = {
     nodeClicked: false,
     id: '',
     nameTextFieldValue: '',
-    type: ''
+    type: '',
+    minInstances: 1,
+    maxInstances: 1
   },
   currentJsonTopology: new TTopologyTemplate
 };
@@ -59,6 +62,172 @@ export const WineryReducer =
         return {
           ...lastState,
           sidebarContents: newSidebarData
+        };
+      case WineryActions.CHANGE_MIN_INSTANCES:
+        const sideBarNodeId: any = (<SidebarMinInstanceChanges>action).minInstances.id;
+        const minInstances: any = (<SidebarMinInstanceChanges>action).minInstances.count;
+        const i = lastState.currentJsonTopology.nodeTemplates.map(el => el.id).indexOf(sideBarNodeId);
+        console.log('asd' + minInstances);
+        return {
+          ...lastState,
+          currentJsonTopology: {
+            ...lastState.currentJsonTopology,
+            nodeTemplates: lastState.currentJsonTopology.nodeTemplates.map(nodeTemplate => nodeTemplate.id === sideBarNodeId ?
+              new TNodeTemplate(
+                lastState.currentJsonTopology.nodeTemplates[i].properties,
+                // id
+                lastState.currentJsonTopology.nodeTemplates[i].id,
+                // type
+                lastState.currentJsonTopology.nodeTemplates[i].type,
+                // name
+                lastState.currentJsonTopology.nodeTemplates[i].name,
+                minInstances,
+                lastState.currentJsonTopology.nodeTemplates[i].maxInstances,
+                lastState.currentJsonTopology.nodeTemplates[i].color,
+                lastState.currentJsonTopology.nodeTemplates[i].imageUrl,
+                lastState.currentJsonTopology.nodeTemplates[i].any,
+                lastState.currentJsonTopology.nodeTemplates[i].documentation,
+                lastState.currentJsonTopology.nodeTemplates[i].otherAttributes
+              ) : nodeTemplate
+            )
+          }
+        };
+      case WineryActions.CHANGE_MAX_INSTANCES:
+        const sideBarNodeId2: any = (<SidebarMaxInstanceChanges>action).maxInstances.id;
+        const maxInstances: any = (<SidebarMaxInstanceChanges>action).maxInstances.count;
+        console.log(sideBarNodeId2);
+        const j = lastState.currentJsonTopology.nodeTemplates.map(el => el.id).indexOf(sideBarNodeId2);
+        return {
+          ...lastState,
+          currentJsonTopology: {
+            ...lastState.currentJsonTopology,
+            nodeTemplates: lastState.currentJsonTopology.nodeTemplates.map(nodeTemplate => nodeTemplate.id === sideBarNodeId2 ?
+              new TNodeTemplate(
+                lastState.currentJsonTopology.nodeTemplates[j].properties,
+                // id
+                lastState.currentJsonTopology.nodeTemplates[j].id,
+                // type
+                lastState.currentJsonTopology.nodeTemplates[j].type,
+                // name
+                lastState.currentJsonTopology.nodeTemplates[j].name,
+                lastState.currentJsonTopology.nodeTemplates[j].minInstances,
+                maxInstances,
+                lastState.currentJsonTopology.nodeTemplates[j].color,
+                lastState.currentJsonTopology.nodeTemplates[j].imageUrl,
+                lastState.currentJsonTopology.nodeTemplates[j].any,
+                lastState.currentJsonTopology.nodeTemplates[j].documentation,
+                lastState.currentJsonTopology.nodeTemplates[j].otherAttributes
+              ) : nodeTemplate
+            )
+          }
+        };
+      case WineryActions.INC_MIN_INSTANCES:
+        const id_incMinInstances: any = (<IncMinInstances>action).minInstances.id;
+        const k = lastState.currentJsonTopology.nodeTemplates.map(el => el.id).indexOf(id_incMinInstances);
+        return {
+          ...lastState,
+          currentJsonTopology: {
+            ...lastState.currentJsonTopology,
+            nodeTemplates: lastState.currentJsonTopology.nodeTemplates.map(nodeTemplate => nodeTemplate.id === id_incMinInstances ?
+              new TNodeTemplate(
+                lastState.currentJsonTopology.nodeTemplates[k].properties,
+                // id
+                lastState.currentJsonTopology.nodeTemplates[k].id,
+                // type
+                lastState.currentJsonTopology.nodeTemplates[k].type,
+                // name
+                lastState.currentJsonTopology.nodeTemplates[k].name,
+                lastState.currentJsonTopology.nodeTemplates[k].minInstances + 1,
+                lastState.currentJsonTopology.nodeTemplates[k].maxInstances,
+                lastState.currentJsonTopology.nodeTemplates[k].color,
+                lastState.currentJsonTopology.nodeTemplates[k].imageUrl,
+                lastState.currentJsonTopology.nodeTemplates[k].any,
+                lastState.currentJsonTopology.nodeTemplates[k].documentation,
+                lastState.currentJsonTopology.nodeTemplates[k].otherAttributes
+              ) : nodeTemplate
+            )
+          }
+        };
+      case WineryActions.DEC_MIN_INSTANCES:
+        const id_decMinInstances: any = (<DecMinInstances>action).minInstances.id;
+        const l = lastState.currentJsonTopology.nodeTemplates.map(el => el.id).indexOf(id_decMinInstances);
+        return {
+          ...lastState,
+          currentJsonTopology: {
+            ...lastState.currentJsonTopology,
+            nodeTemplates: lastState.currentJsonTopology.nodeTemplates.map(nodeTemplate => nodeTemplate.id === id_decMinInstances ?
+              new TNodeTemplate(
+                lastState.currentJsonTopology.nodeTemplates[l].properties,
+                // id
+                lastState.currentJsonTopology.nodeTemplates[l].id,
+                // type
+                lastState.currentJsonTopology.nodeTemplates[l].type,
+                // name
+                lastState.currentJsonTopology.nodeTemplates[l].name,
+                lastState.currentJsonTopology.nodeTemplates[l].minInstances - 1,
+                lastState.currentJsonTopology.nodeTemplates[l].maxInstances,
+                lastState.currentJsonTopology.nodeTemplates[l].color,
+                lastState.currentJsonTopology.nodeTemplates[l].imageUrl,
+                lastState.currentJsonTopology.nodeTemplates[l].any,
+                lastState.currentJsonTopology.nodeTemplates[l].documentation,
+                lastState.currentJsonTopology.nodeTemplates[l].otherAttributes
+              ) : nodeTemplate
+            )
+          }
+        };
+      case WineryActions.INC_MAX_INSTANCES:
+        const id_incMaxInstances: any = (<IncMaxInstances>action).maxInstances.id;
+        const m = lastState.currentJsonTopology.nodeTemplates.map(el => el.id).indexOf(id_incMaxInstances);
+        return {
+          ...lastState,
+          currentJsonTopology: {
+            ...lastState.currentJsonTopology,
+            nodeTemplates: lastState.currentJsonTopology.nodeTemplates.map(nodeTemplate => nodeTemplate.id === id_incMaxInstances ?
+              new TNodeTemplate(
+                lastState.currentJsonTopology.nodeTemplates[m].properties,
+                // id
+                lastState.currentJsonTopology.nodeTemplates[m].id,
+                // type
+                lastState.currentJsonTopology.nodeTemplates[m].type,
+                // name
+                lastState.currentJsonTopology.nodeTemplates[m].name,
+                lastState.currentJsonTopology.nodeTemplates[m].minInstances,
+                lastState.currentJsonTopology.nodeTemplates[m].maxInstances + 1,
+                lastState.currentJsonTopology.nodeTemplates[m].color,
+                lastState.currentJsonTopology.nodeTemplates[m].imageUrl,
+                lastState.currentJsonTopology.nodeTemplates[m].any,
+                lastState.currentJsonTopology.nodeTemplates[m].documentation,
+                lastState.currentJsonTopology.nodeTemplates[m].otherAttributes
+              ) : nodeTemplate
+            )
+          }
+        };
+      case WineryActions.DEC_MAX_INSTANCES:
+        const id_decMaxInstances: any = (<DecMaxInstances>action).maxInstances.id;
+        const n = lastState.currentJsonTopology.nodeTemplates.map(el => el.id).indexOf(id_decMaxInstances);
+        return {
+          ...lastState,
+          currentJsonTopology: {
+            ...lastState.currentJsonTopology,
+            nodeTemplates: lastState.currentJsonTopology.nodeTemplates.map(nodeTemplate => nodeTemplate.id === id_decMaxInstances ?
+              new TNodeTemplate(
+                lastState.currentJsonTopology.nodeTemplates[n].properties,
+                // id
+                lastState.currentJsonTopology.nodeTemplates[n].id,
+                // type
+                lastState.currentJsonTopology.nodeTemplates[n].type,
+                // name
+                lastState.currentJsonTopology.nodeTemplates[n].name,
+                lastState.currentJsonTopology.nodeTemplates[n].minInstances,
+                lastState.currentJsonTopology.nodeTemplates[n].maxInstances - 1,
+                lastState.currentJsonTopology.nodeTemplates[n].color,
+                lastState.currentJsonTopology.nodeTemplates[n].imageUrl,
+                lastState.currentJsonTopology.nodeTemplates[n].any,
+                lastState.currentJsonTopology.nodeTemplates[n].documentation,
+                lastState.currentJsonTopology.nodeTemplates[n].otherAttributes
+              ) : nodeTemplate
+            )
+          }
         };
       case WineryActions.CHANGE_NODE_NAME:
         const nodeNames: any = (<SidebarNodeNamechange>action).nodeNames;
