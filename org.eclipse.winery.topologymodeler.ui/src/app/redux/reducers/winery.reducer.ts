@@ -16,8 +16,10 @@ import {
   SaveRelationshipAction,
   SendPaletteOpenedAction,
   SidebarNodeNamechange,
-  SidebarStateAction, UpdateNodeCoordinatesAction,
-  WineryActions
+  SidebarStateAction,
+  UpdateNodeCoordinatesAction,
+  WineryActions,
+  UpdateRelationshipNameAction
 } from '../actions/winery.actions';
 import { TNodeTemplate, TRelationshipTemplate, TTopologyTemplate } from 'app/ttopology-template';
 
@@ -31,8 +33,10 @@ export const INITIAL_WINERY_STATE: WineryState = {
   currentPaletteOpenedState: false,
   sidebarContents: {
     sidebarVisible: false,
-    nodeId: '',
-    nameTextFieldValue: ''
+    nodeClicked: false,
+    id: '',
+    nameTextFieldValue: '',
+    type: ''
   },
   currentJsonTopology: new TTopologyTemplate
 };
@@ -58,15 +62,16 @@ export const WineryReducer =
         };
       case WineryActions.CHANGE_NODE_NAME:
         const nodeNames: any = (<SidebarNodeNamechange>action).nodeNames;
-        const index = lastState.currentJsonTopology.nodeTemplates.map(el => el.name).indexOf(nodeNames.oldNodeName);
+        const index = lastState.currentJsonTopology.nodeTemplates.map(el => el.id).indexOf(nodeNames.id);
+        /*
         console.log(index);
         console.log(nodeNames);
         console.log({
           ...lastState,
           currentJsonTopology: {
             ...lastState.currentJsonTopology,
-            nodeTemplates: lastState.currentJsonTopology.nodeTemplates.map(nodeTemplate => nodeTemplate.name === nodeNames.oldNodeName ?
-              nodeTemplate = new TNodeTemplate(
+            nodeTemplates: lastState.currentJsonTopology.nodeTemplates.map(nodeTemplate => nodeTemplate.id === nodeNames.id ?
+              new TNodeTemplate(
                 lastState.currentJsonTopology.nodeTemplates[index].properties,
                 // id
                 lastState.currentJsonTopology.nodeTemplates[index].id,
@@ -85,11 +90,12 @@ export const WineryReducer =
             )
           }
         });
+        */
         return {
           ...lastState,
           currentJsonTopology: {
             ...lastState.currentJsonTopology,
-            nodeTemplates: lastState.currentJsonTopology.nodeTemplates.map(nodeTemplate => nodeTemplate.name === nodeNames.oldNodeName ?
+            nodeTemplates: lastState.currentJsonTopology.nodeTemplates.map(nodeTemplate => nodeTemplate.id === nodeNames.id ?
               new TNodeTemplate(
                 lastState.currentJsonTopology.nodeTemplates[index].properties,
                 // id
@@ -167,7 +173,26 @@ export const WineryReducer =
               relationshipTemplate.targetElement !== deletedNodeId)
           }
         };
+      case WineryActions.UPDATE_REL_DATA:
+        const relData: any = (<UpdateRelationshipNameAction>action).relData;
+        const indexRel = lastState.currentJsonTopology.relationshipTemplates.map(rel => rel.id).indexOf(relData.id);
+        return {
+          ...lastState,
+          currentJsonTopology: {
+            ...lastState.currentJsonTopology,
+            relationshipTemplates: lastState.currentJsonTopology.relationshipTemplates.map(relTemplate => relTemplate.id === relData.id ?
+              new TRelationshipTemplate(
+                lastState.currentJsonTopology.relationshipTemplates[indexRel].sourceElement,
+                lastState.currentJsonTopology.relationshipTemplates[indexRel].targetElement,
+                relData.newRelName,
+                lastState.currentJsonTopology.relationshipTemplates[indexRel].id,
+                lastState.currentJsonTopology.relationshipTemplates[indexRel].type,
+              ) : relTemplate
+            )
+          }
+        };
       default:
         return lastState;
     }
   };
+

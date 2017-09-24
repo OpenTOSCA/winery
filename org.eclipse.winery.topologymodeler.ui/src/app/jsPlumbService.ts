@@ -15,7 +15,6 @@ declare const jsPlumb: any;
 
 @Injectable()
 export class JsPlumbService {
-
   getJsPlumbInstance(): any {
     jsPlumb.ready(() => {
     });
@@ -30,7 +29,7 @@ export class JsPlumbService {
         ['Arrow', {location: 1}],
       ],
       ConnectionsDetachable: false,
-      Anchor: ['Perimeter', { shape: 'Rectangle'}]
+      Anchor: 'Continuous'
     });
   }
 }

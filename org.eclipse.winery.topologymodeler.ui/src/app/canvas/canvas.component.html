@@ -12,11 +12,13 @@
          [style.left.px]="pageX"
          [style.top.px]="pageY"
          [style.width.px]="selectionWidth"
-         [style.height.px]="selectionHeight">
+         [style.height.px]="selectionHeight"
+         #selection>
       <span></span>
     </div>
   </div>
 
+  <div #nodes>
   <winery-node *ngFor="let node of allNodeTemplates"
                [nodeAttributes]="{
                 properties: node.properties,
@@ -31,7 +33,8 @@
                 any: node.any,
                 otherAttributes: node.otherAttributes
                }"
-               [relationshipTemplates]="allRelationshipTemplates"
+               [makeNewNodeSelectionVisible]="makeNewNodeSelectionVisible"
+               [allRelationshipTypesColors]="allRelationshipTypesColors"
                [needsToBeFlashed]="needsToBeFlashed"
                (sendId)="makeDraggable($event)"
                [navbarButtonsState]="navbarButtonsState"
@@ -42,6 +45,8 @@
                (sendCurrentType)="sendCurrentType($event)"
                [dragSource]="node.id + 'Endpoint'"
                (checkFocusNode)="checkFocusNode($event)"
-               (updateAllNodes)="updateAllNodes($event)">
+               (updateAllNodes)="updateAllNodes($event)"
+               (unmarkConnections)="unmarkConnections($event)">
   </winery-node>
+  </div>
 </div>
