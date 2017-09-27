@@ -89,6 +89,7 @@ export class NodeComponent implements OnInit, AfterViewInit, OnDestroy, DoCheck 
   }
 
   ngOnInit() {
+    console.log('On Init ' + this.nodeAttributes.id);
   }
 
   ngAfterViewInit(): void {
@@ -145,8 +146,10 @@ export class NodeComponent implements OnInit, AfterViewInit, OnDestroy, DoCheck 
     this.endTime = new Date().getTime();
     this.testTimeDifference($event);
     if (this.previousPosition !== undefined && this.currentPosition !== undefined) {
-      if (this.previousPosition.x !== this.currentPosition.x ||
-        this.previousPosition.y !== this.currentPosition.y) {
+      if ((this.previousPosition.x !== this.currentPosition.x ||
+        this.previousPosition.y !== this.currentPosition.y)) {
+        console.log(this.previousPosition);
+        console.log(this.currentPosition);
         this.unbindMouseMove();
         this.updateAllNodes.emit(this.currentPosition);
       }
@@ -240,9 +243,11 @@ export class NodeComponent implements OnInit, AfterViewInit, OnDestroy, DoCheck 
     }
   }
 
+
   ngOnDestroy(): void {
+    console.log(this.nodeAttributes.id);
     if (this.nodeRef) {
-      this.nodeRef.destroy();
+      // this.nodeRef.destroy();
     }
     this.askForRemoval.emit(this.nodeAttributes.id);
   }

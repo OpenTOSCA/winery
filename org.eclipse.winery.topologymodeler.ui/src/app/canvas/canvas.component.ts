@@ -116,11 +116,13 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   updateNodes(currentNodes: Array<TNodeTemplate>): void {
+    console.log('Hierr');
     if (currentNodes.length !== this.allNodeTemplates.length) {
       if (currentNodes.length > this.allNodeTemplates.length) {
-        this.allNodeTemplates = currentNodes;
-        this.allNodesIds = this.allNodeTemplates.map(node => node.id);
         this.newNode = currentNodes[currentNodes.length - 1];
+        this.allNodeTemplates.push(this.newNode);
+        console.log(this.allNodeTemplates);
+        this.allNodesIds = this.allNodeTemplates.map(node => node.id);
         this.unbindConnection();
         this.clearSelectedNodes();
         this.resetDragSource(this.newNode.id);
@@ -163,6 +165,7 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
       }
     }
   }
+
 
   moveNewNode(event): void {
     event.preventDefault();
