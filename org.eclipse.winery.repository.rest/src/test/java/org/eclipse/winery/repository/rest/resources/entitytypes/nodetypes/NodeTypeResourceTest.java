@@ -154,4 +154,11 @@ public class NodeTypeResourceTest extends AbstractResourceTest {
 		this.setRevisionTo("85e157a2ebc512d760ce3def9fa1728ccef319b0");
 		this.assertGet("nodetypes/http%253A%252F%252Fwinery.opentosca.org%252Ftest%252Fnodetypes%252Ffruits/baobab/?csar", "entitytypes/nodetypes/baobab.csar");
 	}
+
+	@Test
+	public void getAllVisualAppearances() throws Exception {
+		this.setRevisionTo("8cf0ce80c2c40c6ec178ef8e5bdc4e2fcdecc7f9");
+		this.assertGet("nodetypes/allvisualappearancedata", "entitytypes/nodetypes/test.visualappearances.json");
+	}
+
 }
