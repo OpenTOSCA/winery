@@ -1,0 +1,52 @@
+<div id="container" style="height: auto;"
+     (mousedown)="showSelectionRange($event)"
+     (click)="this.repaintJsPlumb()">
+  <div id="grid"
+       (mousedown)="trackTimeOfMouseDown($event)"
+       (mouseup)="trackTimeOfMouseUp($event)"
+       [class.crosshair]="this.crosshair"
+       [style.width.vw]="gridWidth"
+       [style.height.vh]="gridWidth">
+    <div class="selection" id="selection"
+         [class.selection-active]="selectionActive"
+         [style.left.px]="pageX"
+         [style.top.px]="pageY"
+         [style.width.px]="selectionWidth"
+         [style.height.px]="selectionHeight"
+         #selection>
+      <span></span>
+    </div>
+  </div>
+
+  <div #nodes>
+  <winery-node *ngFor="let node of allNodeTemplates"
+               [nodeAttributes]="{
+                properties: node.properties,
+                id: node.id,
+                type: node.type,
+                name: node.name,
+                minInstances: node.minInstances,
+                maxInstances: node.maxInstances,
+                color: node.color,
+                imageUrl: node.imageUrl,
+                documentation: node.documentation,
+                any: node.any,
+                otherAttributes: node.otherAttributes
+               }"
+               [makeNewNodeSelectionVisible]="makeNewNodeSelectionVisible"
+               [allRelationshipTypesColors]="allRelationshipTypesColors"
+               [needsToBeFlashed]="needsToBeFlashed"
+               (sendId)="makeDraggable($event)"
+               [navbarButtonsState]="navbarButtonsState"
+               (askForRepaint)="repaintJsPlumb($event)"
+               (askForRemoval)="removeElement($event)"
+               (setDragSource)="setDragSource($event)"
+               (closedEndpoint)="closedEndpoint($event)"
+               (sendCurrentType)="sendCurrentType($event)"
+               [dragSource]="node.id + 'Endpoint'"
+               (checkFocusNode)="checkFocusNode($event)"
+               (updateAllNodes)="updateSelectedNodes($event)"
+               (unmarkConnections)="unmarkConnections($event)">
+  </winery-node>
+  </div>
+</div>

@@ -1,0 +1,134 @@
+<div class="container rounded"
+     style="padding: 3px; position: absolute; user-select: none"
+     [style.top]="nodeAttributes.otherAttributes.y + 'px'"
+     [style.left]="nodeAttributes.otherAttributes.x + 'px'"
+     id={{nodeAttributes.id}} [style.borderColor]="nodeAttributes.color" [style.backgroundColor]="nodeAttributes.color"
+     (mousedown)="mouseDownHandler($event)"
+     (mouseup)="mouseUpHandler($event)">
+  <div class="row rounded"
+       [class.selected]="makeSelectionVisible"
+       [class.unselected]="!makeSelectionVisible"
+       (click)="openSidebar($event); closeConnectorEndpoints($event)">
+    <div class="col-sm-1" style="padding: 0;">
+      <table class="table table-responsive table-active table-border--grey table-sm header-table">
+        <tr style="padding: 0">
+          <td class="td-maxinstances"
+              [class.flashminmax]="setMaxFlash">{{nodeAttributes.maxInstances}}</td>
+        </tr>
+        <tr><td class="table-spacer"><br/></td></tr>
+        <tr style="padding: 0">
+          <td class="td-mininstances"
+              [class.flashminmax]="setMinFlash">{{nodeAttributes.minInstances}}</td>
+        </tr>
+      </table>
+    </div>
+    <div class="col-sm-3">
+      <img *ngIf="!nodeAttributes.imageUrl" src="https://robohash.org/{{nodeAttributes.id}}.png?set=set4"
+           style="border-radius: 10%; margin-top: 1px; width: 50px; height: auto">
+      <img *ngIf="nodeAttributes.imageUrl" src="{{nodeAttributes.imageUrl}}">
+    </div>
+    <div id="specifierDiv" class="col-sm-8" style="padding-left: 0; padding-right: 0">
+      <table class="table table-active table-border--grey table-sm header-table">
+        <tr [class.flashit]="setFlash" class="row col-sm-12">
+          <td class="td-key col-sm-4">name:</td>
+          <td class="text-right td-value col-sm-8">{{nodeAttributes.name}}</td>
+        </tr>
+        <tr *ngIf="navbarButtonsState.buttonsState.idsButton" class="row col-sm-12">
+          <td class="td-key col-sm-4">id:</td>
+          <td class="text-right td-value col-sm-8" style="color: mediumvioletred">{{nodeAttributes.id}}</td>
+        </tr>
+        <tr *ngIf="navbarButtonsState.buttonsState.typesButton" class="row col-sm-12">
+          <td class="td-key col-sm-4">type:</td>
+          <td class="text-right btn-link td-value col-sm-8">{{nodeAttributes.id}}</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+  <div class="endpointContainer container rounded" [style.border-color]="this.nodeAttributes.color" style="width: 100%; box-shadow: none" *ngIf="connectorEndpointVisible"
+       (mouseover)="makeSource($event)">
+    <div class="btn-group-vertical btn-group-sm" role="group" id={{dragSource}} (mousedown)="passCurrentType($event)">
+        <button *ngFor="let rel of allRelationshipTypesColors"
+             type="button" class="btn btn-sm btn-outline-secondary relationship-button sm"
+             [style.border-color]="this.nodeAttributes.color" [style.color]="rel.color"
+             style="font-size: x-small">
+          <i class="fa fa-arrow-circle-o-right" aria-hidden="true"></i> {{rel.type}}
+        </button>
+    </div>
+  </div>
+
+  <!-- Repaint jsPlumb on every accordion click -->
+  <accordion #accordion (click)="repaint($event)">
+    <!-- PROPERTIES -->
+    <accordion-group
+      #propertiesgroup
+      panelClass="accordionGroupPanel"
+      *ngIf="navbarButtonsState.buttonsState.propertiesButton">
+      <div accordion-heading>
+        Properties
+        <i class="pull-sm-0 float-sm-right fa icon-styling padding-top--2px"
+           [ngClass]="{'fa-chevron-down': propertiesgroup?.isOpen, 'fa-chevron-right': !propertiesgroup?.isOpen}"
+        ></i>
+      </div>
+      <winery-properties></winery-properties>
+    </accordion-group>
+
+    <!-- DEPLOYMENT ARTIFACTS -->
+    <accordion-group
+      #deploymentartifactsgroup
+      panelClass="accordionGroupPanel"
+      *ngIf="navbarButtonsState.buttonsState.deploymentArtifactsButton">
+      <div accordion-heading>
+        Deployment Artifacts
+        <i class="pull-sm-0 float-sm-right fa icon-styling padding-top--2px"
+           [ngClass]="{'fa-chevron-down': deploymentartifactsgroup?.isOpen,
+           'fa-chevron-right': !deploymentartifactsgroup?.isOpen}"
+        ></i>
+      </div>
+      <winery-deployment-artifacts></winery-deployment-artifacts>
+    </accordion-group>
+
+    <!-- REQUIREMENTS & CAPABILITIES -->
+    <accordion-group
+      #requirementscapabilitiesgroup
+      panelClass="accordionGroupPanel"
+      *ngIf="navbarButtonsState.buttonsState.requirementsCapabilitiesButton">
+      <div accordion-heading>
+        Requirements & Capabilities
+        <i class="pull-sm-0 float-sm-right fa icon-styling padding-top--2px"
+           [ngClass]="{'fa-chevron-down': requirementscapabilitiesgroup?.isOpen,
+           'fa-chevron-right': !requirementscapabilitiesgroup?.isOpen}"
+        ></i>
+      </div>
+      <winery-requirements-capabilities></winery-requirements-capabilities>
+    </accordion-group>
+
+    <!-- POLICIES -->
+    <accordion-group
+      #policiesgroup
+      panelClass="accordionGroupPanel"
+      *ngIf="navbarButtonsState.buttonsState.policiesButton">
+      <div accordion-heading>
+        Policies
+        <i class="pull-sm-0 float-sm-right fa icon-styling padding-top--2px"
+           [ngClass]="{'fa-chevron-down': policiesgroup?.isOpen, 'fa-chevron-right': !policiesgroup?.isOpen}">
+        </i>
+      </div>
+      <winery-policies></winery-policies>
+    </accordion-group>
+
+    <!-- TARGET LOCATIONS -->
+    <accordion-group
+      #targetlocationsgroup
+      panelClass="accordionGroupPanel"
+      *ngIf="navbarButtonsState.buttonsState.targetLocationsButton">
+      <div accordion-heading>
+        Target Locations
+        <i class="pull-sm-0 float-sm-right fa icon-styling padding-top--2px"
+           [ngClass]="{'fa-chevron-down': targetlocationsgroup?.isOpen,
+           'fa-chevron-right': !targetlocationsgroup?.isOpen}">
+        </i>
+      </div>
+      <winery-target-locations></winery-target-locations>
+    </accordion-group>
+  </accordion>
+</div>
