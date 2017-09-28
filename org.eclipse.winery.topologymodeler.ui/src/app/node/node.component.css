@@ -8,6 +8,8 @@ div.container {
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
+  border-color: rgb(50, 110, 135) !important;
+  background-color: rgb(105, 100, 100) !important;
 }
 
 .padding-top--2px {
@@ -59,7 +61,7 @@ div.unselected {
 
 div.endpointContainer {
   background: rgba(255, 255, 255, 0);
-  border: 1px solid #aeaeae;
+/*  border: 1px solid #aeaeae;*/
   width: 206px !important;
   padding: 0 !important;
 }
@@ -93,17 +95,21 @@ div.connectorLabel {
 
 button.btn.btn-sm.btn-outline-secondary {
   width: 202px;
-  background-color: rgba(255,255,255,0.8);
-  color: #242424;
+/*  background-color: rgba(255,255,255,0.8);*/
+  background-color: #E0E0E0 !important;
+  color: #000 !important;
   cursor: copy;
   padding: 0;
 }
 
+
 button.btn.btn-sm.btn-outline-secondary:hover, button.btn.btn-sm.btn-outline-secondary:focus {
-  width: 202px;
-  background-color: rgba(0,0,0,0.2);
-  color: #ffffff;
-  cursor: copy;
-  padding: 0;
+  background-color: rgba(0,0,0,0.2) !important;
+  color: #ffffff !important;
 }
+
+.relationship-button {
+  border-color: #fff !important;
+}
+
 
