@@ -62,9 +62,28 @@
   vertical-align: middle;
   cursor: pointer;
 }
+.dark-button-style:focus{
+  box-shadow:none;
+}
 
 .dark-button-style:hover {
   background-color: #424242;
   border-color:  #989898;
+}
+.dropdown-menu li:hover a{
+  background-color: #424242 !important;
+}
+.dropdown-menu li{
+  border: 1px solid transparent;
+}
+.dropdown-menu li:hover {
+  border-color: #fff;
+}
+.dropdown-menu {
+  background-color: #424242;
+  padding: 0px;
+}
+.dropdown-item {
+  color: #fff !important;
 }
 
