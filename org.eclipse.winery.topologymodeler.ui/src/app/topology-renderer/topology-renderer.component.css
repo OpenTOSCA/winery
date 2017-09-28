@@ -2,7 +2,7 @@ winery-navbar {
   position: fixed;
   top: 0px;
   width: 100%;
-  z-index: 500;
+  z-index: 700;
 }
 
 winery-canvas {

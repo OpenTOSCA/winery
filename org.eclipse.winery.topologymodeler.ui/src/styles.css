@@ -79,6 +79,9 @@ input[type=number]::-webkit-outer-spin-button {
   -ms-user-select: none;
   user-select: none;
 }
+.jtk-drag {
+  z-index:600 !important;
+}
 
 .jtk-connector { z-index:4; }
 .jtk-endpoint { z-index:5; }
