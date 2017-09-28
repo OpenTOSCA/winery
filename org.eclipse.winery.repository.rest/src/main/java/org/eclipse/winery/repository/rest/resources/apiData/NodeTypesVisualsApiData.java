@@ -13,12 +13,11 @@ package org.eclipse.winery.repository.rest.resources.apiData;
 
 import javax.xml.namespace.QName;
 
-import org.eclipse.winery.repository.backend.RepositoryFactory;
-import org.eclipse.winery.repository.rest.resources.entitytypes.nodetypes.VisualAppearanceResource;
-
 import org.eclipse.winery.common.RepositoryFileReference;
 import org.eclipse.winery.common.ids.definitions.NodeTypeId;
+import org.eclipse.winery.repository.backend.RepositoryFactory;
 import org.eclipse.winery.repository.backend.constants.Filename;
+import org.eclipse.winery.repository.rest.resources.entitytypes.nodetypes.VisualAppearanceResource;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
@@ -43,8 +42,6 @@ public class NodeTypesVisualsApiData {
 		if (RepositoryFactory.getRepository().exists(imageRef)) {
 			imageUrl = visuals.getAbsoluteURL() + "50x50";
 		}
-
-
 	}
 
 	public NodeTypesVisualsApiData() {
