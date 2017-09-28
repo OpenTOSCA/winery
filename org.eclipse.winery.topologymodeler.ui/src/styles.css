@@ -21,6 +21,10 @@ body{
 .card-header {
   background-color: rgb(48, 48, 48) !important;
 }
+.card-header:first-child {
+  border-radius: 0px;
+}
+
 
 input[type=number]::-webkit-inner-spin-button,
 input[type=number]::-webkit-outer-spin-button {

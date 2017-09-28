@@ -116,7 +116,13 @@ export class NodeComponent implements OnInit, AfterViewInit, OnDestroy, DoCheck 
       ctrlKey: $event.ctrlKey
     };
     this.checkFocusNode.emit(focusNodeData);
-    if ($event.srcElement.parentElement.className !== 'accordion-toggle') {
+    let parentEl;
+    try{
+      parentEl = $event.srcElement.parentElement.className;
+    } catch (e) {
+      parentEl = $event.target.parentElement.className;
+    }
+    if (parentEl !== 'accordion-toggle') {
       const offsetLeft = this.elRef.nativeElement.firstChild.offsetLeft;
       const offsetTop = this.elRef.nativeElement.firstChild.offsetTop;
         this.previousPosition = {
