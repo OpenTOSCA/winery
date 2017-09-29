@@ -641,6 +641,7 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
+
   bindConnection(): void {
     if (this.jsPlumbBindConnection === false) {
       this.jsPlumbBindConnection = true;
@@ -652,7 +653,7 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
         const relTypeExists = this.allRelationshipTemplates.map(rel => {
           return rel.id;
         }).includes(this.currentType);
-        if (relTypeExists === false && this.currentType) {
+        if (relTypeExists === false && this.currentType && sourceElement !== targetElement) {
           const newRelationship = new TRelationshipTemplate(
             sourceElement,
             targetElement,
