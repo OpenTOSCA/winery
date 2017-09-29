@@ -317,7 +317,6 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
     this.allNodeTemplates[index].otherAttributes.x = nodeCoordinates.x;
     this.allNodeTemplates[index].otherAttributes.y = nodeCoordinates.y;
     this.ngRedux.dispatch(this.actions.updateNodeCoordinates(nodeCoordinates));
-    console.log(nodeTemplate);
   }
 
   updateSelectedNodes($event): void {
@@ -388,7 +387,6 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
         this.newJsPlumbInstance.removeAllEndpoints(this.dragSourceInfos.dragSource);
         if (this.dragSourceInfos.dragSource) {
           if (this.newJsPlumbInstance.isSource(this.dragSourceInfos.dragSource)) {
-            console.log('unmakeSource');
             this.newJsPlumbInstance.unmakeSource(this.dragSourceInfos.dragSource);
           }
         }
