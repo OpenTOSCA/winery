@@ -306,6 +306,7 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
+
   setNewCoordinates(nodeTemplate: any): void {
     const index = this.allNodeTemplates.map(node => node.id).indexOf(nodeTemplate.firstChild.id);
     const nodeCoordinates = {
@@ -316,6 +317,7 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
     this.allNodeTemplates[index].otherAttributes.x = nodeCoordinates.x;
     this.allNodeTemplates[index].otherAttributes.y = nodeCoordinates.y;
     this.ngRedux.dispatch(this.actions.updateNodeCoordinates(nodeCoordinates));
+    console.log(nodeTemplate);
   }
 
   updateSelectedNodes($event): void {
