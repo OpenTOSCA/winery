@@ -112,7 +112,7 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
     }));
     this.newJsPlumbInstance = this.jsPlumbService.getJsPlumbInstance();
     this.newJsPlumbInstance.setContainer('container');
-    console.log(this.newJsPlumbInstance);
+    // console.log(this.newJsPlumbInstance);
   }
 
   updateNodes(currentNodes: Array<TNodeTemplate>): void {

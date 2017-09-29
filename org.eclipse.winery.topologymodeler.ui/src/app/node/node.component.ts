@@ -91,7 +91,6 @@ export class NodeComponent implements OnInit, AfterViewInit, OnDestroy, DoCheck 
   }
 
   ngOnInit() {
-    console.log('On Init ' + this.nodeAttributes.id);
   }
 
   ngAfterViewInit(): void {
@@ -124,24 +123,22 @@ export class NodeComponent implements OnInit, AfterViewInit, OnDestroy, DoCheck 
       ctrlKey: $event.ctrlKey
     };
     this.handleNodeClickedActions.emit(focusNodeData);
-    if ($event.srcElement.parentElement.className !== 'accordion-toggle') {
-      let parentEl;
-      try {
-        parentEl = $event.srcElement.parentElement.className;
-      } catch (e) {
-        parentEl = $event.target.parentElement.className;
-      }
-      if (parentEl !== 'accordion-toggle') {
-        const offsetLeft = this.elRef.nativeElement.firstChild.offsetLeft;
-        const offsetTop = this.elRef.nativeElement.firstChild.offsetTop;
-        this.previousPosition = {
-          x: offsetLeft,
-          y: offsetTop
-        };
-        this.zone.runOutsideAngular(() => {
-          this.unbindMouseMove = this.renderer.listen(this.elRef.nativeElement, 'mousemove', (event) => this.mouseMove(event));
-        });
-      }
+    let parentEl;
+    try {
+      parentEl = $event.srcElement.parentElement.className;
+    } catch (e) {
+      parentEl = $event.target.parentElement.className;
+    }
+    if (parentEl !== 'accordion-toggle') {
+      const offsetLeft = this.elRef.nativeElement.firstChild.offsetLeft;
+      const offsetTop = this.elRef.nativeElement.firstChild.offsetTop;
+      this.previousPosition = {
+        x: offsetLeft,
+        y: offsetTop
+      };
+      this.zone.runOutsideAngular(() => {
+        this.unbindMouseMove = this.renderer.listen(this.elRef.nativeElement, 'mousemove', (event) => this.mouseMove(event));
+      });
     }
   }
 
@@ -257,7 +254,6 @@ export class NodeComponent implements OnInit, AfterViewInit, OnDestroy, DoCheck 
   }
 
   ngOnDestroy(): void {
-    console.log(this.nodeAttributes.id);
     this.askForRemoval.emit(this.nodeAttributes.id);
     if (this.nodeRef) {
       this.nodeRef.destroy();
