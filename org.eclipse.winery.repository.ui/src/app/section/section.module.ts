@@ -5,9 +5,6 @@
  * and the Apache License 2.0 which both accompany this distribution,
  * and are available at http://www.eclipse.org/legal/epl-v20.html
  * and http://www.apache.org/licenses/LICENSE-2.0
- *
- * Contributors:
- *     Lukas Harzenetter - initial API and implementation
  */
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
@@ -26,6 +23,8 @@ import { SectionPipe } from './section.pipe';
 import { WineryUploaderModule } from '../wineryUploader/wineryUploader.module';
 import { TooltipModule } from 'ngx-bootstrap';
 import { WineryPipesModule } from '../wineryPipes/wineryPipes.module';
+import { XaasPackagerComponent } from './xaasPackager/xaasPackager.component';
+import { TagInputModule } from 'ngx-chips';
 
 @NgModule({
     imports: [
@@ -42,12 +41,14 @@ import { WineryPipesModule } from '../wineryPipes/wineryPipes.module';
         WineryUploaderModule,
         TooltipModule,
         WineryPipesModule,
+        TagInputModule
     ],
     exports: [SectionComponent],
     declarations: [
         SectionComponent,
         EntityContainerComponent,
-        SectionPipe
+        SectionPipe,
+        XaasPackagerComponent
     ],
     providers: [],
 })

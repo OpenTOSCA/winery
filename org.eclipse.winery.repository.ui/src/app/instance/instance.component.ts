@@ -5,9 +5,6 @@
  * and the Apache License 2.0 which both accompany this distribution,
  * and are available at http://www.eclipse.org/legal/epl-v20.html
  * and http://www.apache.org/licenses/LICENSE-2.0
- *
- * Contributors:
- *     Lukas Harzenetter, Niko Stadelmaier - initial API and implementation
  */
 import { Component, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -21,6 +18,7 @@ import { isNullOrUndefined } from 'util';
 import { WineryInstance } from '../wineryInterfaces/wineryComponent';
 import { ToscaTypes } from '../wineryInterfaces/enums';
 import { ToscaComponent } from '../wineryInterfaces/toscaComponent';
+import { Utils } from '../wineryUtils/utils';
 
 @Component({
     templateUrl: 'instance.component.html',
@@ -67,11 +65,6 @@ export class InstanceComponent implements OnDestroy {
                     }
 
                     this.availableTabs = this.service.getSubMenuByResource();
-
-                    // redirect to first element in the menu
-                    if (!this.router.url.includes('/admin') && this.router.url.split('/').length < 5) {
-                        this.router.navigate([this.service.path + '/' + this.availableTabs[0].toLowerCase().replace(/ /g, '')]);
-                    }
                 },
                 error => this.handleError(error)
             );
@@ -82,24 +75,10 @@ export class InstanceComponent implements OnDestroy {
     }
 
     private handleComponentData(data: WineryInstance) {
-        switch (this.toscaComponent.toscaType) {
-            case ToscaTypes.NodeTypeImplementation:
-                this.typeUrl = '/nodetypes';
-                break;
-            case ToscaTypes.RelationshipTypeImplementation:
-                this.typeUrl = '/relationshiptypes';
-                break;
-            case ToscaTypes.PolicyTemplate:
-                this.typeUrl = '/policytypes';
-                break;
-            case ToscaTypes.ArtifactTemplate:
-                this.typeUrl = '/artifacttypes';
-                break;
-            default:
-                this.typeUrl = null;
-        }
+        this.typeUrl = Utils.getTypeOfTemplateOrImplementation(this.toscaComponent.toscaType);
 
         if (!isNullOrUndefined(this.typeUrl)) {
+            this.typeUrl = '/' + this.typeUrl;
             const tempOrImpl = data.serviceTemplateOrNodeTypeOrNodeTypeImplementation[0];
             let qName: string[];
 
@@ -115,7 +94,7 @@ export class InstanceComponent implements OnDestroy {
             }
 
             if (qName.length === 2) {
-                this.typeUrl += '/' + encodeURIComponent(encodeURIComponent(qName[0])) + '/' + qName[1];
+                this.typeUrl += '/' + encodeURIComponent(qName[0]) + '/' + qName[1];
                 this.typeId = qName[1];
             } else {
                 this.typeUrl = null;

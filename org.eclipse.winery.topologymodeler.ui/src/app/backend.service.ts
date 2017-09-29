@@ -24,7 +24,7 @@ export class BackendService {
   }
 
   getServiceTemplate(): Observable<string> {
-    console.log(this.configuration)
+    console.log(this.configuration);
     const headers = new Headers({'Accept': 'application/json'});
     const options = new RequestOptions({headers: headers});
     const url = this.configuration.repositoryURL + '/servicetemplates/'

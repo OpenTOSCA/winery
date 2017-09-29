@@ -14,19 +14,21 @@ import {
   AfterViewInit,
   Component,
   ComponentRef,
+  DoCheck,
+  ElementRef,
   EventEmitter,
   Input,
+  KeyValueDiffers,
   NgZone,
   OnDestroy,
   OnInit,
   Output,
-  ElementRef, Renderer2, KeyValueDiffers, DoCheck,
+  Renderer2
 } from '@angular/core';
 import { ButtonsStateModel } from '../models/buttonsState.model';
 import { NgRedux } from '@angular-redux/store';
 import { IWineryState } from '../redux/store/winery.store';
-import { SidebarStateAction, WineryActions } from '../redux/actions/winery.actions';
-import { TRelationshipTemplate } from '../ttopology-template';
+import { WineryActions } from '../redux/actions/winery.actions';
 
 @Component({
   selector: 'winery-node',
@@ -104,7 +106,6 @@ export class NodeComponent implements OnInit, AfterViewInit, OnDestroy, DoCheck 
   passCurrentType($event): void {
     $event.stopPropagation();
     $event.preventDefault();
-    console.log();
     const currentType: string = $event.srcElement.innerText.replace(/\n/g, '').replace(/\s+/g, '');
     this.sendCurrentType.emit(currentType);
   }
@@ -119,8 +120,15 @@ export class NodeComponent implements OnInit, AfterViewInit, OnDestroy, DoCheck 
     };
     this.handleNodeClickedActions.emit(focusNodeData);
     if ($event.srcElement.parentElement.className !== 'accordion-toggle') {
-      const offsetLeft = this.elRef.nativeElement.firstChild.offsetLeft;
-      const offsetTop = this.elRef.nativeElement.firstChild.offsetTop;
+      let parentEl;
+      try {
+        parentEl = $event.srcElement.parentElement.className;
+      } catch (e) {
+        parentEl = $event.target.parentElement.className;
+      }
+      if (parentEl !== 'accordion-toggle') {
+        const offsetLeft = this.elRef.nativeElement.firstChild.offsetLeft;
+        const offsetTop = this.elRef.nativeElement.firstChild.offsetTop;
         this.previousPosition = {
           x: offsetLeft,
           y: offsetTop
@@ -128,9 +136,9 @@ export class NodeComponent implements OnInit, AfterViewInit, OnDestroy, DoCheck 
         this.zone.runOutsideAngular(() => {
           this.unbindMouseMove = this.renderer.listen(this.elRef.nativeElement, 'mousemove', (event) => this.mouseMove(event));
         });
+      }
     }
   }
-
 
   mouseMove($event): void {
     const offsetLeft = this.elRef.nativeElement.firstChild.offsetLeft;
@@ -214,7 +222,7 @@ export class NodeComponent implements OnInit, AfterViewInit, OnDestroy, DoCheck 
     } else {
       let type;
       const id = this.nodeAttributes.id;
-      if ( id.includes ('_') ) {
+      if (id.includes('_')) {
         type = id.substring(0, id.indexOf('_'));
       } else {
         type = id;
@@ -251,4 +259,3 @@ export class NodeComponent implements OnInit, AfterViewInit, OnDestroy, DoCheck 
     }
   }
 }
-
