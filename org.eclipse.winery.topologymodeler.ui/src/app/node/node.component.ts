@@ -55,8 +55,8 @@ export class NodeComponent implements OnInit, AfterViewInit, OnDestroy, DoCheck 
   @Output() askForRepaint: EventEmitter<string>;
   @Output() setDragSource: EventEmitter<any>;
   @Output() closedEndpoint: EventEmitter<string>;
-  @Output() checkFocusNode: EventEmitter<any>;
-  @Output() updateAllNodes: EventEmitter<string>;
+  @Output() handleNodeClickedActions: EventEmitter<any>;
+  @Output() updateSelectedNodes: EventEmitter<string>;
   @Output() sendCurrentType: EventEmitter<string>;
   @Output() askForRemoval: EventEmitter<string>;
   @Output() unmarkConnections: EventEmitter<string>;
@@ -82,8 +82,8 @@ export class NodeComponent implements OnInit, AfterViewInit, OnDestroy, DoCheck 
     this.askForRepaint = new EventEmitter();
     this.setDragSource = new EventEmitter();
     this.closedEndpoint = new EventEmitter();
-    this.checkFocusNode = new EventEmitter();
-    this.updateAllNodes = new EventEmitter();
+    this.handleNodeClickedActions = new EventEmitter();
+    this.updateSelectedNodes = new EventEmitter();
     this.sendCurrentType = new EventEmitter();
     this.askForRemoval = new EventEmitter();
     this.unmarkConnections = new EventEmitter();
@@ -105,7 +105,7 @@ export class NodeComponent implements OnInit, AfterViewInit, OnDestroy, DoCheck 
   passCurrentType($event): void {
     $event.stopPropagation();
     $event.preventDefault();
-    let currentType : string;
+    let currentType: string;
     try {
       currentType = $event.srcElement.innerText.replace(/\n/g, '').replace(/\s+/g, '');
     } catch (e) {
@@ -122,7 +122,7 @@ export class NodeComponent implements OnInit, AfterViewInit, OnDestroy, DoCheck 
       id: this.nodeAttributes.id,
       ctrlKey: $event.ctrlKey
     };
-    this.checkFocusNode.emit(focusNodeData);
+    this.handleNodeClickedActions.emit(focusNodeData);
     let parentEl;
     try {
       parentEl = $event.srcElement.parentElement.className;
@@ -143,8 +143,8 @@ export class NodeComponent implements OnInit, AfterViewInit, OnDestroy, DoCheck 
   }
 
   mouseMove($event): void {
-    const offsetLeft = this.elRef.nativeElement.firstChild.offsetLeft;
-    const offsetTop = this.elRef.nativeElement.firstChild.offsetTop;
+    const offsetLeft = this.elRef.nativeElement.querySelector('#' + this.nodeAttributes.id).offsetLeft;
+    const offsetTop = this.elRef.nativeElement.querySelector('#' + this.nodeAttributes.id).offsetTop;
     this.currentPosition = {
       id: this.nodeAttributes.id,
       x: offsetLeft,
@@ -157,10 +157,11 @@ export class NodeComponent implements OnInit, AfterViewInit, OnDestroy, DoCheck 
     this.endTime = new Date().getTime();
     this.testTimeDifference($event);
     if (this.previousPosition !== undefined && this.currentPosition !== undefined) {
-      if (this.previousPosition.x !== this.currentPosition.x ||
-        this.previousPosition.y !== this.currentPosition.y) {
+      const differenceY = this.previousPosition.y - this.currentPosition.y;
+      const differenceX = this.previousPosition.x - this.currentPosition.x;
+      if (Math.abs(differenceX) > 2 || Math.abs(differenceY) > 2) {
         this.unbindMouseMove();
-        this.updateAllNodes.emit(this.currentPosition);
+        this.updateSelectedNodes.emit('Update selectedNodes');
       }
     }
   }
@@ -253,9 +254,9 @@ export class NodeComponent implements OnInit, AfterViewInit, OnDestroy, DoCheck 
   }
 
   ngOnDestroy(): void {
+    this.askForRemoval.emit(this.nodeAttributes.id);
     if (this.nodeRef) {
       this.nodeRef.destroy();
     }
-    this.askForRemoval.emit(this.nodeAttributes.id);
   }
 }
