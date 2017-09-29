@@ -130,6 +130,7 @@ export class PaletteComponent implements OnInit, OnDestroy {
       otherAttributes
     );
     this.ngRedux.dispatch(this.actions.saveNodeTemplate(paletteItem));
+    this.ngRedux.dispatch(this.actions.sendPaletteOpened(false));
   }
 
   generateId(name: string): string {

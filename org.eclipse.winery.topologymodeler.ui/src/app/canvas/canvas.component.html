@@ -44,7 +44,7 @@
                (closedEndpoint)="closedEndpoint($event)"
                (sendCurrentType)="sendCurrentType($event)"
                [dragSource]="node.id + 'Endpoint'"
-               (checkFocusNode)="checkFocusNode($event)"
+               (handleNodeClickedActions)="handleNodeClickedActions($event)"
                (updateAllNodes)="updateSelectedNodes($event)"
                (unmarkConnections)="unmarkConnections($event)">
   </winery-node>
