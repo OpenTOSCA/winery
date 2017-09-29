@@ -214,23 +214,54 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
 
   updateRelationships(currentRelationships: Array<TRelationshipTemplate>): void {
     if (currentRelationships.length !== this.allRelationshipTemplates.length) {
-      this.allRelationshipTemplates = currentRelationships;
-      this.allRelationshipTemplates.map(rel => !this.allRelationshipTypes.includes(rel.type) ?
-        this.allRelationshipTypes.push(rel.type) : null);
-      setTimeout(() => {
-        if (this.allRelationshipTemplates.length > 0) {
-          for (const relationship of this.allRelationshipTemplates) {
-            this.manageRelationships(relationship);
-          }
-        }
-      }, 1);
+      const difference = currentRelationships.length - this.allRelationshipTemplates.length;
+      if (difference === 1) {
+        this.handleNewRelationship(currentRelationships);
+      } else if (difference < 1) {
+        this.handleDeletedRelationships(currentRelationships);
+      } else {
+        this.handleLoadedRelationships(currentRelationships);
+      }
     } else {
-      for (const rel of this.allRelationshipTemplates) {
-        const conn = currentRelationships.find(el => el.id === rel.id);
-        if (conn) {
-          if (rel.name !== conn.name) {
-            rel.name = conn.name;
-          }
+      this.updateRelName(currentRelationships);
+    }
+  }
+
+  handleNewRelationship(currentRelationships: Array<TRelationshipTemplate>): void {
+    const newRel = currentRelationships[currentRelationships.length - 1];
+    this.allRelationshipTemplates.push(newRel);
+    this.manageRelationships(newRel);
+  }
+
+  handleDeletedRelationships(currentRelationships: Array<TRelationshipTemplate>): void {
+    for (const rel of this.allRelationshipTemplates) {
+      if (!currentRelationships.map(con => con.id).includes(rel.id)) {
+        const deletedRel = rel.id;
+        const index = this.allRelationshipTemplates.map(con => con.id).indexOf(deletedRel);
+        this.allRelationshipTemplates.splice(index, 1);
+      }
+    }
+  }
+
+  handleLoadedRelationships(currentRelationships: Array<TRelationshipTemplate>): void {
+    this.allRelationshipTemplates = currentRelationships;
+    this.allRelationshipTemplates.map(rel => !this.allRelationshipTypes.includes(rel.type) ?
+      this.allRelationshipTypes.push(rel.type) : null);
+    setTimeout(() => {
+      if (this.allRelationshipTemplates.length > 0) {
+        for (const relationship of this.allRelationshipTemplates) {
+          this.manageRelationships(relationship);
+        }
+      }
+    }, 1);
+  }
+
+  updateRelName(currentRelationships: Array<TRelationshipTemplate>): void {
+    for (const rel of this.allRelationshipTemplates) {
+      const conn = currentRelationships.find(el => el.id === rel.id);
+      if (conn) {
+        if (rel.name !== conn.name) {
+          rel.name = conn.name;
         }
       }
     }
@@ -271,7 +302,6 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
     if (this.allNodeTemplates.length > 0) {
       for (const nodeTemplate of this.child.nativeElement.children) {
         this.setNewCoordinates(nodeTemplate);
-        console.log('Update All');
       }
     }
   }
@@ -285,7 +315,6 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
     };
     this.allNodeTemplates[index].otherAttributes.x = nodeCoordinates.x;
     this.allNodeTemplates[index].otherAttributes.y = nodeCoordinates.y;
-    console.log(nodeCoordinates);
     this.ngRedux.dispatch(this.actions.updateNodeCoordinates(nodeCoordinates));
   }
 
@@ -294,7 +323,6 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
       for (const nodeTemplate of this.child.nativeElement.children) {
         if (this.selectedNodes.map(node => node.id).includes(nodeTemplate.firstChild.id)) {
           this.setNewCoordinates(nodeTemplate);
-          console.log('Update Selected');
         }
       }
     }
