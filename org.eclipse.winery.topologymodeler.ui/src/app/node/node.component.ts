@@ -14,19 +14,21 @@ import {
   AfterViewInit,
   Component,
   ComponentRef,
+  DoCheck,
+  ElementRef,
   EventEmitter,
   Input,
+  KeyValueDiffers,
   NgZone,
   OnDestroy,
   OnInit,
   Output,
-  ElementRef, Renderer2, KeyValueDiffers, DoCheck,
+  Renderer2
 } from '@angular/core';
 import { ButtonsStateModel } from '../models/buttonsState.model';
 import { NgRedux } from '@angular-redux/store';
 import { IWineryState } from '../redux/store/winery.store';
-import { SidebarStateAction, WineryActions } from '../redux/actions/winery.actions';
-import { TRelationshipTemplate } from '../ttopology-template';
+import { WineryActions } from '../redux/actions/winery.actions';
 
 @Component({
   selector: 'winery-node',
@@ -117,7 +119,7 @@ export class NodeComponent implements OnInit, AfterViewInit, OnDestroy, DoCheck 
     };
     this.checkFocusNode.emit(focusNodeData);
     let parentEl;
-    try{
+    try {
       parentEl = $event.srcElement.parentElement.className;
     } catch (e) {
       parentEl = $event.target.parentElement.className;
@@ -125,16 +127,15 @@ export class NodeComponent implements OnInit, AfterViewInit, OnDestroy, DoCheck 
     if (parentEl !== 'accordion-toggle') {
       const offsetLeft = this.elRef.nativeElement.firstChild.offsetLeft;
       const offsetTop = this.elRef.nativeElement.firstChild.offsetTop;
-        this.previousPosition = {
-          x: offsetLeft,
-          y: offsetTop
-        };
-        this.zone.runOutsideAngular(() => {
-          this.unbindMouseMove = this.renderer.listen(this.elRef.nativeElement, 'mousemove', (event) => this.mouseMove(event));
-        });
+      this.previousPosition = {
+        x: offsetLeft,
+        y: offsetTop
+      };
+      this.zone.runOutsideAngular(() => {
+        this.unbindMouseMove = this.renderer.listen(this.elRef.nativeElement, 'mousemove', (event) => this.mouseMove(event));
+      });
     }
   }
-
 
   mouseMove($event): void {
     const offsetLeft = this.elRef.nativeElement.firstChild.offsetLeft;
@@ -217,7 +218,7 @@ export class NodeComponent implements OnInit, AfterViewInit, OnDestroy, DoCheck 
     } else {
       let type;
       const id = this.nodeAttributes.id;
-      if ( id.includes ('_') ) {
+      if (id.includes('_')) {
         type = id.substring(0, id.indexOf('_'));
       } else {
         type = id;

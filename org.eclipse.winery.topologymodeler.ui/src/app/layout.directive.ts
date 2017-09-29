@@ -21,12 +21,12 @@ export class LayoutDirective implements AfterViewInit {
 
     // get width and height of nodes
     nodeTemplates.forEach((node) => {
-      const width = this.elRef.nativeElement.querySelector('#'+node.id).offsetWidth;
-      const height = this.elRef.nativeElement.querySelector('#'+node.id).offsetHeight;
+      const width = this.elRef.nativeElement.querySelector('#' + node.id).offsetWidth;
+      const height = this.elRef.nativeElement.querySelector('#' + node.id).offsetHeight;
       children.push({id: node.id, width: width, height: height});
       // also get their current positions and apply them to the internal list
-      const left = this.elRef.nativeElement.querySelector('#'+node.id).offsetLeft;
-      const top = this.elRef.nativeElement.querySelector('#'+node.id).offsetTop;
+      const left = this.elRef.nativeElement.querySelector('#' + node.id).offsetLeft;
+      const top = this.elRef.nativeElement.querySelector('#' + node.id).offsetTop;
       // apply the old positions to the nodeslist
       node.otherAttributes['x'] = left;
       node.otherAttributes['y'] = top;
@@ -77,7 +77,7 @@ export class LayoutDirective implements AfterViewInit {
     // if there is only 1 node selected, do nothing
     if (!( selectedNodes.length === 1)) {
       const topPositions = selectedNodes.map((node) => {
-        return this.elRef.nativeElement.querySelector('#'+node.id).offsetTop;
+        return this.elRef.nativeElement.querySelector('#' + node.id).offsetTop;
       });
       // add biggest value to smallest and divide by 2, to get the exact middle of both
       result = ((Math.max.apply(null, topPositions) + Math.min.apply(null, topPositions)) / 2);
@@ -97,7 +97,7 @@ export class LayoutDirective implements AfterViewInit {
     // if there is only 1 node selected, do nothing
     if (!( selectedNodes.length === 1)) {
       const topPositions = selectedNodes.map((node) => {
-        return this.elRef.nativeElement.querySelector('#'+node.id).offsetLeft;
+        return this.elRef.nativeElement.querySelector('#' + node.id).offsetLeft;
       });
       // add biggest value to smallest and divide by 2, to get the exact middle of both
       result = ((Math.max.apply(null, topPositions) + Math.min.apply(null, topPositions)) / 2);
