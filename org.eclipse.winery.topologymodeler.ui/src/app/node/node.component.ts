@@ -143,8 +143,8 @@ export class NodeComponent implements OnInit, AfterViewInit, OnDestroy, DoCheck 
   }
 
   mouseMove($event): void {
-    const offsetLeft = this.elRef.nativeElement.firstChild.offsetLeft;
-    const offsetTop = this.elRef.nativeElement.firstChild.offsetTop;
+    const offsetLeft = this.elRef.nativeElement.querySelector('#' + this.nodeAttributes.id).offsetLeft;
+    const offsetTop = this.elRef.nativeElement.querySelector('#' + this.nodeAttributes.id).offsetTop;
     this.currentPosition = {
       id: this.nodeAttributes.id,
       x: offsetLeft,

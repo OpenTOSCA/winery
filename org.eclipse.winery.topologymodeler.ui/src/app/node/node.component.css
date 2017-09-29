@@ -61,7 +61,7 @@ div.unselected {
 
 div.endpointContainer {
   background: rgba(255, 255, 255, 0);
-/*  border: 1px solid #aeaeae;*/
+  /*  border: 1px solid #aeaeae;*/
   width: 206px !important;
   padding: 0 !important;
 }
@@ -95,7 +95,7 @@ div.connectorLabel {
 
 button.btn.btn-sm.btn-outline-secondary {
   width: 202px;
-/*  background-color: rgba(255,255,255,0.8);*/
+  /*  background-color: rgba(255,255,255,0.8);*/
   background-color: #E0E0E0 !important;
   color: #000 !important;
   cursor: copy;
@@ -111,5 +111,4 @@ button.btn.btn-sm.btn-outline-secondary:hover, button.btn.btn-sm.btn-outline-sec
 .relationship-button {
   border-color: #fff !important;
 }
-
 
