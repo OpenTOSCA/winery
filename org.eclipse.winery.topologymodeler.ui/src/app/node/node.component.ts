@@ -106,7 +106,12 @@ export class NodeComponent implements OnInit, AfterViewInit, OnDestroy, DoCheck 
   passCurrentType($event): void {
     $event.stopPropagation();
     $event.preventDefault();
-    const currentType: string = $event.srcElement.innerText.replace(/\n/g, '').replace(/\s+/g, '');
+    let currentType : string;
+    try {
+      currentType = $event.srcElement.innerText.replace(/\n/g, '').replace(/\s+/g, '');
+    } catch (e) {
+      currentType = $event.target.innerText.replace(/\n/g, '').replace(/\s+/g, '');
+    }
     this.sendCurrentType.emit(currentType);
   }
 
