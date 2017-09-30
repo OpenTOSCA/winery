@@ -95,7 +95,7 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
               private hotkeysService: HotkeysService,
               private renderer: Renderer2) {
     this.nodeTemplatesSubscription = this.ngRedux.select(state => state.wineryState.currentJsonTopology.nodeTemplates)
-      .subscribe(currentNodes =>  this.updateNodes(currentNodes));
+      .subscribe(currentNodes => this.updateNodes(currentNodes));
     this.relationshipTemplatesSubscription = this.ngRedux.select(state => state.wineryState.currentJsonTopology.relationshipTemplates)
       .subscribe(currentRelationships => this.updateRelationships(currentRelationships));
     this.navBarButtonsStateSubscription = ngRedux.select(state => state.topologyRendererState)
@@ -111,7 +111,7 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
     }));
     this.newJsPlumbInstance = this.jsPlumbService.getJsPlumbInstance();
     this.newJsPlumbInstance.setContainer('container');
-    console.log(this.newJsPlumbInstance);
+    // console.log(this.newJsPlumbInstance);
   }
 
   updateNodes(currentNodes: Array<TNodeTemplate>): void {
@@ -304,7 +304,6 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
       }
     }
   }
-
 
   setNewCoordinates(nodeTemplate: any): void {
     const index = this.allNodeTemplates.map(node => node.id).indexOf(nodeTemplate.firstChild.id);
@@ -667,7 +666,6 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
       this.unbindDragSource();
     }
   }
-
 
   bindConnection(): void {
     if (this.jsPlumbBindConnection === false) {
