@@ -14,11 +14,9 @@ import {
   AfterViewInit,
   Component,
   ComponentRef,
-  DoCheck,
   ElementRef,
   EventEmitter,
   Input,
-  KeyValueDiffers,
   NgZone,
   OnDestroy,
   OnInit,
@@ -35,7 +33,7 @@ import { WineryActions } from '../redux/actions/winery.actions';
   templateUrl: './node.component.html',
   styleUrls: ['./node.component.css'],
 })
-export class NodeComponent implements OnInit, AfterViewInit, OnDestroy, DoCheck {
+export class NodeComponent implements OnInit, AfterViewInit, OnDestroy {
   public items: string[] = ['Item 1', 'Item 2', 'Item 3'];
   public accordionGroupPanel = 'accordionGroupPanel';
   public customClass = 'customClass';
@@ -66,7 +64,6 @@ export class NodeComponent implements OnInit, AfterViewInit, OnDestroy, DoCheck 
   @Input() allRelationshipTypesColors: Array<string>;
   nodeRef: ComponentRef<Component>;
   unbindMouseMove: Function;
-  differ: any;
 
   public addItem(): void {
     this.items.push(`Items ${this.items.length + 1}`);
@@ -76,8 +73,7 @@ export class NodeComponent implements OnInit, AfterViewInit, OnDestroy, DoCheck 
               private $ngRedux: NgRedux<IWineryState>,
               private actions: WineryActions,
               private elRef: ElementRef,
-              private renderer: Renderer2,
-              differs: KeyValueDiffers) {
+              private renderer: Renderer2) {
     this.sendId = new EventEmitter();
     this.askForRepaint = new EventEmitter();
     this.setDragSource = new EventEmitter();
@@ -87,7 +83,6 @@ export class NodeComponent implements OnInit, AfterViewInit, OnDestroy, DoCheck 
     this.sendCurrentType = new EventEmitter();
     this.askForRemoval = new EventEmitter();
     this.unmarkConnections = new EventEmitter();
-    this.differ = differs.find([]).create(null);
   }
 
   ngOnInit() {
@@ -240,16 +235,6 @@ export class NodeComponent implements OnInit, AfterViewInit, OnDestroy, DoCheck 
           maxInstances: this.nodeAttributes.maxInstances
         }
       }));
-    }
-  }
-
-  ngDoCheck(): void {
-    const changes = this.differ.diff(this.makeNewNodeSelectionVisible);
-
-    if (changes) {
-      if (changes._mapHead.currentValue === this.nodeAttributes.id) {
-        this.makeSelectionVisible = true;
-      }
     }
   }
 

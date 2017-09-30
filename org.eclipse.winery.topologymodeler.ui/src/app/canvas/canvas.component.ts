@@ -80,7 +80,6 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
   unbindNewNodeMouseUp: Function;
   newNode: TNodeTemplate;
   currentPaletteOpenedState: boolean;
-  makeNewNodeSelectionVisible: any;
   newNodeData: any;
   allRelationshipTypes: Array<string> = [];
   allRelationshipTypesColors: Array<any> = [];
@@ -112,7 +111,7 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
     }));
     this.newJsPlumbInstance = this.jsPlumbService.getJsPlumbInstance();
     this.newJsPlumbInstance.setContainer('container');
-    // console.log(this.newJsPlumbInstance);
+    console.log(this.newJsPlumbInstance);
   }
 
   updateNodes(currentNodes: Array<TNodeTemplate>): void {
@@ -140,16 +139,15 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
     this.newNode = currentNodes[currentNodes.length - 1];
     this.allNodeTemplates.push(this.newNode);
     if (this.currentPaletteOpenedState) {
-      this.handleNodePressActions(this.newNode.id);
-      this.makeNewNodeSelectionVisible = {
-        id: this.newNode.id,
-      };
-      this.zone.runOutsideAngular(() => {
-        this.unbindNewNodeMouseMove = this.renderer.listen(this._eref.nativeElement, 'mousemove',
-          (event) => this.moveNewNode(event));
-        this.unbindNewNodeMouseUp = this.renderer.listen(this._eref.nativeElement, 'mouseup',
-          ($event) => this.positionNewNode($event));
-      });
+      setTimeout(() => {
+        this.handleNodePressActions(this.newNode.id);
+        this.zone.runOutsideAngular(() => {
+          this.unbindNewNodeMouseMove = this.renderer.listen(this._eref.nativeElement, 'mousemove',
+            (event) => this.moveNewNode(event));
+          this.unbindNewNodeMouseUp = this.renderer.listen(this._eref.nativeElement, 'mouseup',
+            ($event) => this.positionNewNode($event));
+        });
+      }, 1);
     }
   }
 
@@ -205,6 +203,7 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
     this.updateSelectedNodes('Position new Node');
     this.unbindNewNodeMouseMove();
     this.unbindNewNodeMouseUp();
+    this.newJsPlumbInstance.revalidate(this.newNode.id);
     this.repaintJsPlumb();
   }
 
