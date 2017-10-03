@@ -14,11 +14,9 @@ import {
   AfterViewInit,
   Component,
   ComponentRef,
-  DoCheck,
   ElementRef,
   EventEmitter,
   Input,
-  KeyValueDiffers,
   NgZone,
   OnDestroy,
   OnInit,
@@ -35,7 +33,7 @@ import { WineryActions } from '../redux/actions/winery.actions';
   templateUrl: './node.component.html',
   styleUrls: ['./node.component.css'],
 })
-export class NodeComponent implements OnInit, AfterViewInit, OnDestroy, DoCheck {
+export class NodeComponent implements OnInit, AfterViewInit, OnDestroy {
   public items: string[] = ['Item 1', 'Item 2', 'Item 3'];
   public accordionGroupPanel = 'accordionGroupPanel';
   public customClass = 'customClass';
@@ -55,8 +53,8 @@ export class NodeComponent implements OnInit, AfterViewInit, OnDestroy, DoCheck 
   @Output() askForRepaint: EventEmitter<string>;
   @Output() setDragSource: EventEmitter<any>;
   @Output() closedEndpoint: EventEmitter<string>;
-  @Output() checkFocusNode: EventEmitter<any>;
-  @Output() updateAllNodes: EventEmitter<string>;
+  @Output() handleNodeClickedActions: EventEmitter<any>;
+  @Output() updateSelectedNodes: EventEmitter<string>;
   @Output() sendCurrentType: EventEmitter<string>;
   @Output() askForRemoval: EventEmitter<string>;
   @Output() unmarkConnections: EventEmitter<string>;
@@ -66,7 +64,6 @@ export class NodeComponent implements OnInit, AfterViewInit, OnDestroy, DoCheck 
   @Input() allRelationshipTypesColors: Array<string>;
   nodeRef: ComponentRef<Component>;
   unbindMouseMove: Function;
-  differ: any;
 
   public addItem(): void {
     this.items.push(`Items ${this.items.length + 1}`);
@@ -76,18 +73,16 @@ export class NodeComponent implements OnInit, AfterViewInit, OnDestroy, DoCheck 
               private $ngRedux: NgRedux<IWineryState>,
               private actions: WineryActions,
               private elRef: ElementRef,
-              private renderer: Renderer2,
-              differs: KeyValueDiffers) {
+              private renderer: Renderer2) {
     this.sendId = new EventEmitter();
     this.askForRepaint = new EventEmitter();
     this.setDragSource = new EventEmitter();
     this.closedEndpoint = new EventEmitter();
-    this.checkFocusNode = new EventEmitter();
-    this.updateAllNodes = new EventEmitter();
+    this.handleNodeClickedActions = new EventEmitter();
+    this.updateSelectedNodes = new EventEmitter();
     this.sendCurrentType = new EventEmitter();
     this.askForRemoval = new EventEmitter();
     this.unmarkConnections = new EventEmitter();
-    this.differ = differs.find([]).create(null);
   }
 
   ngOnInit() {
@@ -105,7 +100,7 @@ export class NodeComponent implements OnInit, AfterViewInit, OnDestroy, DoCheck 
   passCurrentType($event): void {
     $event.stopPropagation();
     $event.preventDefault();
-    let currentType : string;
+    let currentType: string;
     try {
       currentType = $event.srcElement.innerText.replace(/\n/g, '').replace(/\s+/g, '');
     } catch (e) {
@@ -122,7 +117,7 @@ export class NodeComponent implements OnInit, AfterViewInit, OnDestroy, DoCheck 
       id: this.nodeAttributes.id,
       ctrlKey: $event.ctrlKey
     };
-    this.checkFocusNode.emit(focusNodeData);
+    this.handleNodeClickedActions.emit(focusNodeData);
     let parentEl;
     try {
       parentEl = $event.srcElement.parentElement.className;
@@ -143,8 +138,8 @@ export class NodeComponent implements OnInit, AfterViewInit, OnDestroy, DoCheck 
   }
 
   mouseMove($event): void {
-    const offsetLeft = this.elRef.nativeElement.firstChild.offsetLeft;
-    const offsetTop = this.elRef.nativeElement.firstChild.offsetTop;
+    const offsetLeft = this.elRef.nativeElement.querySelector('#' + this.nodeAttributes.id).offsetLeft;
+    const offsetTop = this.elRef.nativeElement.querySelector('#' + this.nodeAttributes.id).offsetTop;
     this.currentPosition = {
       id: this.nodeAttributes.id,
       x: offsetLeft,
@@ -157,10 +152,11 @@ export class NodeComponent implements OnInit, AfterViewInit, OnDestroy, DoCheck 
     this.endTime = new Date().getTime();
     this.testTimeDifference($event);
     if (this.previousPosition !== undefined && this.currentPosition !== undefined) {
-      if (this.previousPosition.x !== this.currentPosition.x ||
-        this.previousPosition.y !== this.currentPosition.y) {
+      const differenceY = this.previousPosition.y - this.currentPosition.y;
+      const differenceX = this.previousPosition.x - this.currentPosition.x;
+      if (Math.abs(differenceX) > 2 || Math.abs(differenceY) > 2) {
         this.unbindMouseMove();
-        this.updateAllNodes.emit(this.currentPosition);
+        this.updateSelectedNodes.emit('Update selectedNodes');
       }
     }
   }
@@ -242,20 +238,10 @@ export class NodeComponent implements OnInit, AfterViewInit, OnDestroy, DoCheck 
     }
   }
 
-  ngDoCheck(): void {
-    const changes = this.differ.diff(this.makeNewNodeSelectionVisible);
-
-    if (changes) {
-      if (changes._mapHead.currentValue === this.nodeAttributes.id) {
-        this.makeSelectionVisible = true;
-      }
-    }
-  }
-
   ngOnDestroy(): void {
+    this.askForRemoval.emit(this.nodeAttributes.id);
     if (this.nodeRef) {
       this.nodeRef.destroy();
     }
-    this.askForRemoval.emit(this.nodeAttributes.id);
   }
 }
