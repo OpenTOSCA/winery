@@ -6,12 +6,22 @@ import { WineryAlertService } from './winery-alert/winery-alert.service';
 @Directive({
   selector: '[wineryLayout]'
 })
+/**
+ * Manages all layouting operations besides drag and drop (this is in canvas.ts)
+ */
 export class LayoutDirective implements AfterViewInit {
   constructor(private alert: WineryAlertService,
               private elRef: ElementRef) {
 
   }
-
+  /** TODO YANNIC jsplumb als service injecten
+  /**
+   * Layouts all nodes (not just the selected ones).
+   * Uses ELK.Js which implements sugiyama to layout nodes.
+   * @param nodeTemplates
+   * @param relationshipTemplates
+   * @param jsPlumbInstance
+   */
   public layoutNodes(nodeTemplates: Array<TNodeTemplate>,
                      relationshipTemplates: Array<TRelationshipTemplate>,
                      jsPlumbInstance: any): void {
@@ -59,6 +69,13 @@ export class LayoutDirective implements AfterViewInit {
     });
   }
 
+  /**
+   * This applies the calculated positions to the actual node elements.
+   * Uses ELK.Js which implements sugiyama to layout nodes.
+   * @param data The data (relationships, nodes) used by the layouting algo.
+   * @param nodeTemplates The internal representation of the nodes.
+   * @param jsPlumbInstance
+   */
   private applyPositions(data: any,
                          nodeTemplates: Array<TNodeTemplate>,
                          jsPlumbInstance: any): void {
@@ -71,6 +88,12 @@ export class LayoutDirective implements AfterViewInit {
     this.repaintEverything(jsPlumbInstance);
   }
 
+  /**
+   * Aligns all selected elements horizontally.
+   * If no element is selected, all elements get aligned horizontal.
+   * @param selectedNodes
+   * @param jsPlumbInstance
+   */
   public alignHorizontal(selectedNodes: Array<TNodeTemplate>,
                          jsPlumbInstance: any): void {
     let result;
@@ -91,6 +114,12 @@ export class LayoutDirective implements AfterViewInit {
     }
   }
 
+  /**
+   * Aligns all selected elements vertically.
+   * If no element is selected, all elements get aligned vertical.
+   * @param selectedNodes
+   * @param jsPlumbInstance
+   */
   public alignVertical(selectedNodes: Array<TNodeTemplate>,
                        jsPlumbInstance: any): void {
     let result;
@@ -111,14 +140,25 @@ export class LayoutDirective implements AfterViewInit {
     }
   }
 
+  /**
+   * Repaints everything after 1ms.
+   * @param jsPlumbInstance
+   */
   private repaintEverything(jsPlumbInstance: any): void {
     setTimeout(() => jsPlumbInstance.repaintEverything(), 1);
   }
 
+  /**
+   * Shows a warning.
+   * @param message The message which is displayed.
+   */
   private showWarningAlert(message: string): void {
     this.alert.info(message);
   }
 
+  /**
+   * Angular lifecycle event
+   */
   ngAfterViewInit() {
 
   }

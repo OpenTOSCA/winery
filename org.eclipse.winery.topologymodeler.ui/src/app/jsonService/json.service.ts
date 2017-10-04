@@ -1,6 +1,9 @@
 import { Injectable, OnInit } from '@angular/core';
 import { Visuals } from '../ttopology-template';
 
+/**
+ * Distributes the JSON from the server to the app.
+ */
 @Injectable()
 export class JsonService implements OnInit {
 
@@ -32,27 +35,47 @@ export class JsonService implements OnInit {
     localName: ''
   }];
 
+  /**
+   * Returns the relationships coming from the server.
+   * @returns any The relationshipTemplates.
+   */
   getRelationships(): any {
       return this.testJson.relationshipTemplates;
 
   }
 
+  /**
+   * Returns the nodeTemplates coming from the server.
+   * @returns any The nodeTemplates.
+   */
   getNodes(): any {
       return this.testJson.nodeTemplates;
 
   }
 
+  /**
+   * Returns the visuals coming from the server.
+   * @returns any The visuals.
+   */
   getVisuals(): any {
       return this.visuals;
 
   }
-
+  /**
+   * Setter for the data coming from the server.
+   * @param visuals The visuals.
+   * @param topologyTemplate The topologyTemplates containing relations and nodes.
+   */
   setData(visuals: any, topologyTemplate: any) {
     // This causes "type not compatible error"
     this.visuals = visuals;
     this.testJson = topologyTemplate;
   }
 
+  /**
+   * Setter for the visuals coming from the server.
+   * @param visuals The visuals.
+   */
   setVisuals(visuals: any) {
     this.visuals = visuals;
     // TODO Josip: replace with proper QName implementation: Parse localName from QName
@@ -60,7 +83,10 @@ export class JsonService implements OnInit {
       visual.localName = visual.nodeTypeId.split('}')[1];
     }
   }
-
+  /**
+   * Setter for the topologyTemplates coming from the server.
+   * @param topologyTemplate The topologyTemplates containing relations and nodes.
+   */
   setTopologyTemplate(topologyTemplate: any) {
     this.testJson = topologyTemplate;
   }
@@ -68,6 +94,9 @@ export class JsonService implements OnInit {
   constructor() {
   }
 
+  /**
+   * Angular lifecycle event.
+   */
   ngOnInit() {
     // TODO visual local name
 
