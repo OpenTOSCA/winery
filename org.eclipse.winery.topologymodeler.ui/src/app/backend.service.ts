@@ -4,6 +4,9 @@ import { Observable } from 'rxjs/Observable';
 import { ActivatedRoute } from '@angular/router';
 import { isNullOrUndefined } from 'util';
 
+/**
+ * Responsible for interchanging data between the app and the server.
+ */
 @Injectable()
 export class BackendService {
   configuration: TopologyModelerConfiguration;
@@ -23,6 +26,10 @@ export class BackendService {
     });
   }
 
+  /**
+   * Requests data from the server
+   * @returns data  The JSON from the server
+   */
   getServiceTemplate(): Observable<string> {
     console.log(this.configuration);
     const headers = new Headers({'Accept': 'application/json'});
@@ -35,6 +42,9 @@ export class BackendService {
   }
 }
 
+/**
+ * Defines config of TopologyModeler.
+ */
 export class TopologyModelerConfiguration {
   readonly id: string;
   readonly ns: string;
