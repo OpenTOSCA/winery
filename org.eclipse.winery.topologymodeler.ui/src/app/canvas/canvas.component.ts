@@ -114,6 +114,11 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
     // console.log(this.newJsPlumbInstance);
   }
 
+  /**
+   * Gets called if nodes get deleted or created and calls the
+   * correct handler.
+   * @param currentNodes  List of all displayed nodes.
+   */
   updateNodes(currentNodes: Array<TNodeTemplate>): void {
     if (currentNodes.length !== this.allNodeTemplates.length) {
       const difference = currentNodes.length - this.allNodeTemplates.length;
@@ -130,6 +135,10 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
     this.allNodesIds = this.allNodeTemplates.map(node => node.id);
   }
 
+  /**
+   * Handler for new nodes, binds them on mousemove and mouseup events
+   * @param currentNodes  List of all displayed nodes.
+   */
   private handleNewNode(currentNodes: Array<TNodeTemplate>): void {
     this.unbindConnection();
     this.clearSelectedNodes();
@@ -151,6 +160,10 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
+  /**
+   * Handler for deleted nodes, removes the node from the internal representation
+   * @param currentNodes  List of all displayed nodes.
+   */
   private handleDeletedNodes(currentNodes: Array<TNodeTemplate>): void {
     let deletedNode;
     for (const node of this.allNodeTemplates) {
@@ -165,6 +178,10 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
+  /**
+   * Gets called if node is updated, implements some checks.
+   * @param currentNodes  List of all displayed nodes.
+   */
   private updateNodeAttributes(currentNodes: Array<TNodeTemplate>): void {
     for (let i = 0; i < this.allNodeTemplates.length; i++) {
       const node = currentNodes.find(el => el.id === this.allNodeTemplates[i].id);
@@ -187,6 +204,11 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
+  /**
+   * New nodes can be dragged directly from the palette,
+   * adds the node to the internal representation
+   * @param event  The html event.
+   */
   moveNewNode(event): void {
     event.preventDefault();
     const indexOfNewNode = this.allNodeTemplates.map(node => node.id).indexOf(this.newNode.id);
@@ -199,6 +221,10 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
     this.allNodeTemplates[indexOfNewNode].otherAttributes.y = this.newNodeData.y;
   }
 
+  /**
+   * Repositions the new node and repaints the screen
+   * @param $event  The html event.
+   */
   positionNewNode($event): void {
     this.updateSelectedNodes('Position new Node');
     this.unbindNewNodeMouseMove();
@@ -207,10 +233,19 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
     this.repaintJsPlumb();
   }
 
+  /**
+   * Setter for PaletteState
+   * @param currentPaletteOpened
+   */
   setPaletteState(currentPaletteOpened: boolean): void {
     this.currentPaletteOpenedState = currentPaletteOpened;
   }
 
+  /**
+   * Gets called if relationships get deleted or created and calls the
+   * correct handler.
+   * @param currentRelationships  List of all displayed relationships.
+   */
   updateRelationships(currentRelationships: Array<TRelationshipTemplate>): void {
     if (currentRelationships.length !== this.allRelationshipTemplates.length) {
       const difference = currentRelationships.length - this.allRelationshipTemplates.length;
@@ -226,12 +261,20 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
+  /**
+   * Handler for new relations, adds it to the internal representation
+   * @param currentRelationships  List of all displayed relations.
+   */
   handleNewRelationship(currentRelationships: Array<TRelationshipTemplate>): void {
     const newRel = currentRelationships[currentRelationships.length - 1];
     this.allRelationshipTemplates.push(newRel);
     this.manageRelationships(newRel);
   }
 
+  /**
+   * Handler for deleted relations, removes it from the internal representation
+   * @param currentRelationships  List of all displayed relations.
+   */
   handleDeletedRelationships(currentRelationships: Array<TRelationshipTemplate>): void {
     for (const rel of this.allRelationshipTemplates) {
       if (!currentRelationships.map(con => con.id).includes(rel.id)) {
@@ -242,6 +285,10 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
+  /**
+   * Handles relationships internally (store)
+   * @param currentRelationships  List of all displayed relations.
+   */
   handleLoadedRelationships(currentRelationships: Array<TRelationshipTemplate>): void {
     this.allRelationshipTemplates = currentRelationships;
     this.allRelationshipTemplates.map(rel => !this.allRelationshipTypes.includes(rel.type) ?
@@ -255,6 +302,10 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
     }, 1);
   }
 
+  /**
+   * Implements some checks if name of relation gets updated
+   * @param currentRelationships  List of all displayed relations.
+   */
   updateRelName(currentRelationships: Array<TRelationshipTemplate>): void {
     for (const rel of this.allRelationshipTemplates) {
       const conn = currentRelationships.find(el => el.id === rel.id);
@@ -266,6 +317,10 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
+  /**
+   * Handler for the layout buttons.
+   * @param currentButtonsState  Representation of all possible buttons.
+   */
   setButtonsState(currentButtonsState: ButtonsStateModel): void {
     this.navbarButtonsState = currentButtonsState;
     setTimeout(() => this.repaintJsPlumb(), 1);
@@ -297,6 +352,9 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
+  /**
+   * Updates the internal representation of all nodes with the actual dom information.
+   */
   updateAllNodes(): void {
     if (this.allNodeTemplates.length > 0) {
       for (const nodeTemplate of this.child.nativeElement.children) {
@@ -305,6 +363,10 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
+  /**
+   * Matches coordinates from the DOM elements with the internal representation.
+   * @param nodeTemplate  Node Element (DOM).
+   */
   setNewCoordinates(nodeTemplate: any): void {
     const index = this.allNodeTemplates.map(node => node.id).indexOf(nodeTemplate.firstChild.id);
     const nodeCoordinates = {
@@ -317,6 +379,10 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
     this.ngRedux.dispatch(this.actions.updateNodeCoordinates(nodeCoordinates));
   }
 
+  /**
+   * Updates the internal representation of the selected nodes with the actual dom information
+   * @param $event  The HTML event.
+   */
   updateSelectedNodes($event): void {
     if (this.selectedNodes.length > 0) {
       for (const nodeTemplate of this.child.nativeElement.children) {
@@ -327,6 +393,10 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
+  /**
+   * Paints new relationships between nodes
+   * @param newRelationship
+   */
   paintRelationship(newRelationship: TRelationshipTemplate) {
     const allJsPlumbRelationships = this.newJsPlumbInstance.getAllConnections();
     if (!allJsPlumbRelationships.map(rel => rel.id).includes(newRelationship.id)) {
@@ -352,6 +422,11 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
+  /**
+   * Sets the sidebar up for a new node, makes it visible.
+   * @param conn            The JSPlumb connection
+   * @param newRelationship The new relationship internally
+   */
   private handleRelSideBar(conn, newRelationship: any): void {
     conn.id = newRelationship.id;
     conn.setType(newRelationship.type);
@@ -373,12 +448,20 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
     });
   }
 
+  /**
+   * Resets and (re)paints all jsplumb elements
+   * @param newRelationship
+   */
   manageRelationships(newRelationship: TRelationshipTemplate): void {
     this.paintRelationship(newRelationship);
     this.resetDragSource('reset previous drag source');
     this.repaintJsPlumb();
   }
 
+  /**
+   * Resets JSPlumb drag source.
+   * @param nodeId
+   */
   resetDragSource(nodeId: string): void {
     if (this.dragSourceInfos) {
       if (this.dragSourceInfos.nodeId !== nodeId) {
@@ -399,6 +482,10 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
+  /**
+   * Cleanup after dragging operation - sets the endpoints invisible
+   * @param nodeId
+   */
   closedEndpoint(nodeId: string): void {
     const node = this.nodeChildrenArray.find((nodeTemplate => nodeTemplate.nodeAttributes.id === nodeId));
     node.connectorEndpointVisible = !node.connectorEndpointVisible;
@@ -415,6 +502,10 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
+  /**
+   * Start dragging operation
+   * @param dragSourceInfo
+   */
   setDragSource(dragSourceInfo: any): void {
     if (!this.dragSourceActive) {
       this.newJsPlumbInstance.makeSource(dragSourceInfo.dragSource, {
@@ -429,6 +520,10 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
+  /**
+   * Handler for the DEL-Key - removes a node
+   * @param event Keyboard event.
+   */
   @HostListener('document:keydown.delete', ['$event'])
   handleDeleteKeyEvent(event: KeyboardEvent) {
     this.unbindConnection();
@@ -451,6 +546,9 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
+  /**
+   * Removes the selected Nodes from JSPlumb and internally.
+   */
   clearSelectedNodes(): void {
     if (this.selectedNodes.length > 0) {
       for (const node of this.nodeChildrenArray) {
@@ -463,6 +561,10 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
+  /**
+   * Creates a new selection box and removes the old selections.
+   * @param $event
+   */
   showSelectionRange($event: any) {
     this.ngRedux.dispatch(this.actions.sendPaletteOpened(false));
     this.hideSidebar();
@@ -481,6 +583,10 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
     });
   }
 
+  /**
+   * Opens the selection box
+   * @param $event
+   */
   openSelector($event: any) {
     this.selectionWidth = Math.abs(this.initialW - $event.pageX);
     this.selectionHeight = Math.abs(this.initialH - $event.pageY);
@@ -494,6 +600,10 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
+  /**
+   * Selects the elements that are within the selection box.
+   * @param $event
+   */
   selectElements($event: any) {
     const aElem = this.selection.nativeElement;
     for (const node of this.child.nativeElement.children) {
@@ -518,12 +628,21 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
+  /**
+   * If the window gets scrolled, the HTML component where nodes can be
+   * placed on gets extended.
+   * @param $event
+   */
   @HostListener('window:scroll', ['event'])
   adjustGrid($event) {
     this.gridWidth = window.innerWidth;
     this.gridHeight = window.innerHeight;
   }
 
+  /**
+   * Getter for the offset of any DOM element.
+   * @param el  The DOM element.
+   */
   private getOffset(el: any) {
     let _x = 0;
     let _y = 0;
@@ -535,6 +654,11 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
     return {top: _y, left: _x};
   }
 
+  /**
+   * Checks if DOM element is completely in the selection box.
+   * @param selectionArea The selection box
+   * @param object        The DOM element.
+   */
   private isObjectInSelection(selectionArea, object): boolean {
     const selectionRect = selectionArea.getBoundingClientRect();
     return (
@@ -545,6 +669,9 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
     );
   }
 
+  /**
+   * Hides the Sidebar on the right.
+   */
   hideSidebar() {
     this.ngRedux.dispatch(this.actions.openSidebar({
       sidebarContents: {
@@ -557,6 +684,12 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
     }));
   }
 
+
+  /**
+   * Handler for the CTRL Key, adds or removes
+   * elements to the current selection
+   * @param nodeId
+   */
   private handleCtrlKeyNodePress(nodeId: string): void {
     if (this.jsPlumbBindConnection === true) {
       this.unbindConnection();
@@ -583,6 +716,10 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
+  /**
+   * Handler for Keyboard actions
+   * @param focusNodeData
+   */
   handleNodeClickedActions(focusNodeData: any): void {
     if (focusNodeData.ctrlKey) {
       this.handleCtrlKeyNodePress(focusNodeData.id);
@@ -591,6 +728,10 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
+  /**
+   * Clickhandler for Nodes, selects the clicked node.
+   * @param nodeId
+   */
   private handleNodePressActions(nodeId: string): void {
     for (const node of this.nodeChildrenArray) {
       if (node.nodeAttributes.id === nodeId) {
@@ -612,7 +753,13 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  private arrayContainsNode(Nodes: any[], id: string): boolean {
+  /**
+   * Checks if array 'Nodes' contains 'id'.
+   * @param Nodes
+   * @param id
+   * @returns Boolean True if 'Nodes' contains 'id'.
+   */
+  public arrayContainsNode(Nodes: any[], id: string): boolean {
     if (Nodes !== null && Nodes.length > 0) {
       for (const node of Nodes) {
         if (node.id === id) {
@@ -622,7 +769,10 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
     }
     return false;
   }
-
+  /**
+   * Enhances the selection internally and for JSPlumb.
+   * @param nodeId
+   */
   private enhanceDragSelection(nodeId: string) {
     if (!this.arrayContainsNode(this.selectedNodes, nodeId)) {
       this.selectedNodes.push(this.getNodeByID(this.allNodeTemplates, nodeId));
@@ -637,6 +787,11 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
+  /**
+   * Getter for Node by ID
+   * @param Nodes
+   * @param id
+   */
   private getNodeByID(Nodes: Array<TNodeTemplate>, id: string) {
     if (Nodes !== null && Nodes.length > 0) {
       for (const node of Nodes) {
@@ -647,6 +802,9 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
+  /**
+   * Removes the drag source from JSPlumb, removes connection.
+   */
   unbindDragSource(): void {
     if (this.dragSourceInfos) {
       this.newJsPlumbInstance.removeAllEndpoints(this.dragSourceInfos.dragSource);
@@ -659,6 +817,9 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
+  /**
+   * Removes a connection between nodes
+   */
   unbindConnection(): void {
     if (this.jsPlumbBindConnection === true) {
       this.newJsPlumbInstance.unbind('connection');
@@ -667,6 +828,9 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
+  /**
+   * Creates a connection between nodes in JSPlumb and internally.
+   */
   bindConnection(): void {
     if (this.jsPlumbBindConnection === false) {
       this.jsPlumbBindConnection = true;
@@ -694,11 +858,17 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-
+  /**
+   * Removes styling from a selected connection.
+   * @param unmarkMessage
+   */
   unmarkConnections(unmarkMessage: string) {
     this.newJsPlumbInstance.select().removeType('marked');
   }
 
+  /**
+   * Adds styling to all nodes
+   */
   assignVisuals() {
     for (const node of this.allNodeTemplates) {
       for (const visual of this.visuals) {
@@ -714,6 +884,10 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
+  /**
+   * Registers relationship (connection) types in JSPlumb (Color, strokewidth etc.)
+   * @param unmarkMessage
+   */
   assignRelTypes(): void {
     if (this.allRelationshipTypes.length > 0) {
       this.newJsPlumbInstance.registerConnectionType('marked', {paintStyle: {stroke: 'red', strokeWidth: 5 }});
@@ -735,30 +909,50 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
+  /**
+   * Lifecycle hook
+   */
   ngOnInit() {
     this.visuals = this.jsonService.getVisuals();
     this.assignVisuals();
     this.assignRelTypes();
   }
 
-
+  /**
+   * Replaces spaces from the currentType.
+   * @param currentType
+   */
   sendCurrentType(currentType: string) {
     this.currentType = currentType.replace(' ', '');
   }
 
+  /**
+   * Removes an element from JSPlumb.
+   * @param id
+   */
   removeElement(id: string) {
     this.newJsPlumbInstance.remove(id);
     this.repaintJsPlumb();
   }
 
+  /**
+   * Repaints JSPlumb after 1ms
+   */
   repaintJsPlumb() {
     setTimeout(() => this.newJsPlumbInstance.repaintEverything(), 1);
   }
 
+  /**
+   * Tells JSPlumb to make a node draggable
+   * @param nodeId
+   */
   makeDraggable(nodeId: string): void {
     this.newJsPlumbInstance.draggable(nodeId);
   }
 
+  /**
+   * Removes a connection between nodes
+   */
   removeDragSource(): void {
     for (const node of this.nodeChildrenArray) {
       if (node.dragSource) {
@@ -770,6 +964,11 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
+  /**
+   * Tracks the time of mousedown, this is necessary
+   * to decide wether a drag or a click is initiated.
+   * @param $event  The HTML event.
+   */
   trackTimeOfMouseDown($event: any): void {
     this.newJsPlumbInstance.select().removeType('marked');
     this.repaintJsPlumb();
@@ -780,12 +979,19 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
     this.startTime = new Date().getTime();
   }
 
+  /**
+   * Tracks the time of mouseup, this is necessary
+   * to decide wether a drag or a click is initiated.
+   * @param $event  The HTML event.
+   */
   trackTimeOfMouseUp($event: any): void {
     this.crosshair = false;
     this.endTime = new Date().getTime();
     this.testTimeDifference();
   }
-
+  /**
+   * Checks wether it was a drag or a click.
+   */
   private testTimeDifference(): void {
     if ((this.endTime - this.startTime) < 300) {
       this.longPress = false;
@@ -794,6 +1000,9 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
+  /**
+   * Lifecycle event
+   */
   ngAfterViewInit() {
     this.nodeChildrenArray = this.nodeComponentChildren.toArray();
     this.nodeChildrenIdArray = this.nodeChildrenArray.map(node => node.nodeAttributes.id);
@@ -802,7 +1011,9 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
       this.nodeChildrenIdArray = this.nodeChildrenArray.map(node => node.nodeAttributes.id);
     });
   }
-
+  /**
+   * Lifecycle event
+   */
   ngOnDestroy() {
     this.nodeTemplatesSubscription.unsubscribe();
     this.relationshipTemplatesSubscription.unsubscribe();
