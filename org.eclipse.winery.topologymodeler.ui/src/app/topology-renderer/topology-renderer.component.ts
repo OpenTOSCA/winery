@@ -17,6 +17,10 @@ import { WineryAlertService } from '../winery-alert/winery-alert.service';
 import { JsonService } from '../jsonService/json.service';
 import { Visuals } from '../ttopology-template';
 
+
+/**
+ * This is the parent component of the canvas and navbar component.
+ */
 @Component({
   selector: 'winery-topology-renderer',
   templateUrl: './topology-renderer.component.html',

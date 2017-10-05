@@ -20,6 +20,9 @@ import { AppReadyEventService } from './app-ready-event.service';
 import { HotkeysService } from 'angular2-hotkeys';
 import { BackendService } from './backend.service';
 
+/**
+ * This is the root component of the topology modeler.
+ */
 @Component({
   selector: 'winery-topologymodeler',
   templateUrl: './winery.component.html',

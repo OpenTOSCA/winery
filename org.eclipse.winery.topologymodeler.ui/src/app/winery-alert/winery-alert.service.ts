@@ -13,6 +13,10 @@ import { Injectable, ViewContainerRef } from '@angular/core';
 import { ToastsManager } from 'ng2-toastr/ng2-toastr';
 import { DatePipe } from '@angular/common';
 
+/**
+ * This is the own internal notify service of the topology renderer - may be replaced by the winery one.
+ * @class
+ */
 @Injectable()
 export class WineryAlertService {
 

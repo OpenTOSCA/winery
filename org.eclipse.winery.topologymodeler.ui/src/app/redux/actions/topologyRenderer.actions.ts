@@ -13,6 +13,9 @@
 import { Injectable } from '@angular/core';
 import {Action} from 'redux';
 
+/**
+ * Actions of the topologyRenderer
+ */
 @Injectable()
 export class TopologyRendererActions {
   static TOGGLE_POLICIES = 'TOGGLE_POLICIES';

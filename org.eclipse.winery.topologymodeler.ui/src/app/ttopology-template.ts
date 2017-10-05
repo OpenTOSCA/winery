@@ -16,11 +16,17 @@ export class AbstractTTemplate {
   }
 }
 
+/**
+ * This is the datamodel for node Templates and relationship templates
+ */
 export class TTopologyTemplate extends AbstractTTemplate {
   nodeTemplates: Array<TNodeTemplate> = [];
   relationshipTemplates: Array<TRelationshipTemplate> = [];
 }
 
+/**
+ * This is the datamodel for node Templates
+ */
 export class TNodeTemplate extends AbstractTTemplate {
   constructor(public properties: any,
               public id: string,
@@ -37,6 +43,9 @@ export class TNodeTemplate extends AbstractTTemplate {
   }
 }
 
+/**
+ * This is the datamodel for relationship templates
+ */
 export class TRelationshipTemplate extends AbstractTTemplate {
   /*
   get targetElement(): string {
@@ -58,7 +67,9 @@ export class TRelationshipTemplate extends AbstractTTemplate {
   }
 
 }
-
+/**
+ * This is the datamodel for the style of nodes and relationships
+ */
 export class Visuals {
 
   constructor(public color: string,

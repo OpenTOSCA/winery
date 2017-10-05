@@ -28,6 +28,9 @@ import { NgRedux } from '@angular-redux/store';
 import { IWineryState } from '../redux/store/winery.store';
 import { WineryActions } from '../redux/actions/winery.actions';
 
+/**
+ * Every node has its own component and gets created dynamically.
+ */
 @Component({
   selector: 'winery-node',
   templateUrl: './node.component.html',
@@ -85,18 +88,32 @@ export class NodeComponent implements OnInit, AfterViewInit, OnDestroy {
     this.unmarkConnections = new EventEmitter();
   }
 
+  /**
+   * Angular lifecycle event.
+   */
   ngOnInit() {
   }
 
+  /**
+   * Angular lifecycle event.
+   */
   ngAfterViewInit(): void {
     this.sendId.emit(this.nodeAttributes.id);
   }
 
+  /**
+   * Stops the event propagation to the canvas etc. and repaints.
+   * @param $event
+   */
   repaint($event) {
     $event.stopPropagation();
     setTimeout(() => this.askForRepaint.emit('Repaint'), 1);
   }
 
+  /**
+   * Sets the current type of a node.
+   * @param $event
+   */
   passCurrentType($event): void {
     $event.stopPropagation();
     $event.preventDefault();
@@ -109,6 +126,10 @@ export class NodeComponent implements OnInit, AfterViewInit, OnDestroy {
     this.sendCurrentType.emit(currentType);
   }
 
+  /**
+   * Handler for mousedown events, toggles visibility of node attributes
+   * @param $event
+   */
   mouseDownHandler($event): void {
     this.unmarkConnections.emit('unmark');
     this.startTime = new Date().getTime();
@@ -137,6 +158,10 @@ export class NodeComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
+  /**
+   * If a node is moved, this saves the current position of the node into the store.
+   * @param $event
+   */
   mouseMove($event): void {
     const offsetLeft = this.elRef.nativeElement.querySelector('#' + this.nodeAttributes.id).offsetLeft;
     const offsetTop = this.elRef.nativeElement.querySelector('#' + this.nodeAttributes.id).offsetTop;
@@ -147,6 +172,10 @@ export class NodeComponent implements OnInit, AfterViewInit, OnDestroy {
     };
   }
 
+  /**
+   * Checks if it was a click or a drag operation on the node.
+   * @param $event
+   */
   mouseUpHandler($event): void {
     // mouseup
     this.endTime = new Date().getTime();
@@ -161,21 +190,34 @@ export class NodeComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
+  /**
+   * CSS flash effect.
+   */
   flash(): void {
     this.setFlash = true;
     setTimeout(() => this.setFlash = false, 1000);
   }
 
+  /**
+   * CSS flash effect.
+   */
   flashMin(): void {
     this.setMinFlash = true;
     setTimeout(() => this.setMinFlash = false, 1000);
   }
 
+  /**
+   * CSS flash effect.
+   */
   flashMax(): void {
     this.setMaxFlash = true;
     setTimeout(() => this.setMaxFlash = false, 1000);
   }
 
+  /**
+   * If it was a click operation, close the connector endpoints for relations
+   * @param $event
+   */
   closeConnectorEndpoints($event): void {
     $event.stopPropagation();
     if (!this.longpress && !$event.ctrlKey) {
@@ -184,6 +226,10 @@ export class NodeComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
+  /**
+   * Checks if it was a click or a drag operation on the node.
+   * @param $event
+   */
   private testTimeDifference($event): void {
     if ((this.endTime - this.startTime) < 200) {
       this.longpress = false;
@@ -192,6 +238,10 @@ export class NodeComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
+  /**
+   * Creates a dragoperation for nodes
+   * @param $event
+   */
   makeSource($event): void {
     const dragSourceInfo = {
       dragSource: this.dragSource,
@@ -200,6 +250,10 @@ export class NodeComponent implements OnInit, AfterViewInit, OnDestroy {
     this.setDragSource.emit(dragSourceInfo);
   }
 
+  /**
+   * Only display the sidebar if the click is no longpress (drag)
+   * @param $event
+   */
   // Only display the sidebar if the click is no longpress
   openSidebar($event): void {
     $event.stopPropagation();
@@ -238,6 +292,9 @@ export class NodeComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
+  /**
+   * Angular lifecycle event.
+   */
   ngOnDestroy(): void {
     this.askForRemoval.emit(this.nodeAttributes.id);
     if (this.nodeRef) {

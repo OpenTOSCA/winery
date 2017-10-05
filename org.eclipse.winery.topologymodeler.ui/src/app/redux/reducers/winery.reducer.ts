@@ -44,6 +44,9 @@ export const INITIAL_WINERY_STATE: WineryState = {
   currentJsonTopology: new TTopologyTemplate
 };
 
+/**
+ * Reducer for the rest of the topology modeler
+ */
 export const WineryReducer =
   function (lastState: WineryState = INITIAL_WINERY_STATE, action: Action): WineryState {
     switch (action.type) {
