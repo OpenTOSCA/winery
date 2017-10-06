@@ -26,7 +26,7 @@ import { BackendService } from './backend.service';
   styleUrls: ['./winery.component.css']
 })
 export class WineryComponent implements OnInit {
-  topologyTemplate: any;
+  serviceTemplate: any;
   visuals: any;
   nodeTemplates: Array<TNodeTemplate> = [];
   relationshipTemplates: Array<TRelationshipTemplate> = [];
@@ -231,27 +231,35 @@ export class WineryComponent implements OnInit {
               private loadedService: LoadedService,
               private appReadyEvent: AppReadyEventService,
               private backendService: BackendService) {
-
+    // Loading Animation
     this.loaded = null;
-    loadedService.getLoadingState()
+    this.loadedService.getLoadingState()
       .subscribe((isAppLoaded) => {
-      this.loaded = isAppLoaded;
-      appReadyEvent.trigger();
-    });
+        this.loaded = isAppLoaded;
+        this.appReadyEvent.trigger();
+      });
 
-  }
-
-  sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
   }
 
   ngOnInit() {
-    this.topologyTemplate = this.testJson;
-    this.visuals = this.testVisuals;
-    for (const node of this.testJson.nodeTemplates) {
+    this.backendService.serviceTemplate$.subscribe(data => {
+      let visualData;
+      this.backendService.visuals$.subscribe(data2 => {
+        visualData = data2;
+        this.visuals = visualData;
+        this.initNodeTemplates(data.nodeTemplates, visualData);
+        console.log(data.nodeTemplates);
+      });
+      console.log(data.relationshipTemplates);
+      this.initRelationshipTemplates(data.relationshipTemplates);
+    });
+  }
+
+  initNodeTemplates(nodeTemplateArray: Array<any>, visuals: any) {
+    for (const node of nodeTemplateArray) {
       let color;
       let imageUrl;
-      for (const visual of this.testVisuals) {
+      for (const visual of visuals) {
         if (visual.localName === node.name) {
           color = visual.color;
           imageUrl = visual.imageUrl;
@@ -269,22 +277,30 @@ export class WineryComponent implements OnInit {
           imageUrl,
           node.documentation,
           node.any,
-          node.otherAttributes
+          node.otherAttributes,
+          node.x,
+          node.y
         )
       );
     }
     for (const nodeTemplate of this.nodeTemplates) {
       this.ngRedux.dispatch(this.actions.saveNodeTemplate(nodeTemplate));
     }
-    for (const relationship of this.testJson.relationshipTemplates) {
+  }
+
+  initRelationshipTemplates(relationshipTemplateArray: Array<any>) {
+    for (const relationship of relationshipTemplateArray) {
       const relationshipType = relationship.type.replace(' ', '');
       this.relationshipTemplates.push(
         new TRelationshipTemplate(
-          relationship.sourceElement,
-          relationship.targetElement,
-          undefined,
-          `${relationship.sourceElement}_${relationshipType}_${relationship.targetElement}`,
-          relationshipType
+          relationship.sourceElement.ref,
+          relationship.targetElement.ref,
+          relationship.name,
+          `${relationship.sourceElement.ref}_${relationshipType}_${relationship.targetElement.ref}`,
+          relationshipType,
+          relationship.documentation,
+          relationship.any,
+          relationship.otherAttributes
         )
       );
     }
@@ -293,3 +309,5 @@ export class WineryComponent implements OnInit {
     }
   }
 }
+
+

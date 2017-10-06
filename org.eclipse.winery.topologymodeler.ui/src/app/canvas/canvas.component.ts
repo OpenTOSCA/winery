@@ -19,7 +19,7 @@ import {
   QueryList,
   ViewChildren,
   AfterViewInit,
-  Renderer2, ViewChild
+  Renderer2, ViewChild, Input
 } from '@angular/core';
 import { JsPlumbService } from '../jsPlumbService';
 import { JsonService } from '../jsonService/json.service';
@@ -48,7 +48,6 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
   navbarButtonsState: ButtonsStateModel;
   selectedNodes: Array<TNodeTemplate> = [];
   newJsPlumbInstance: any;
-  visuals: any[];
   pageX: Number;
   pageY: Number;
   selectionActive: boolean;
@@ -84,9 +83,9 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
   newNodeData: any;
   allRelationshipTypes: Array<string> = [];
   allRelationshipTypesColors: Array<any> = [];
+  @Input() visuals;
 
   constructor(private jsPlumbService: JsPlumbService,
-              private jsonService: JsonService,
               private _eref: ElementRef,
               private _layoutDirective: LayoutDirective,
               private ngRedux: NgRedux<IWineryState>,
@@ -685,7 +684,6 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnInit() {
-    this.visuals = this.jsonService.getVisuals();
     this.assignVisuals();
     this.assignRelTypes();
   }
