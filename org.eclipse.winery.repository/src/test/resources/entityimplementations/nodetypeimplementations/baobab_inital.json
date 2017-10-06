@@ -1,0 +1,8 @@
+[
+  {
+	"namespace": "http://winery.opentosca.org/test/nodetypeimplementations/fruits",
+	"id": "baobab_impl",
+	"name": "baobab_impl",
+	"qName": "{http://winery.opentosca.org/test/nodetypeimplementations/fruits}baobab_impl"
+  }
+]

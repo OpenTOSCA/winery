@@ -12,12 +12,14 @@
  *******************************************************************************/
 package org.eclipse.winery.repository.rest.resources._support.collections;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
@@ -33,13 +35,15 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.sun.jersey.api.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Class managing a list of entities. It is intended to manage subresources, which are stored in a list. Either all
- * entities have a unique key given by the TOSCA specification (subclass EntityWithIdCollectionResource) or a unique key
- * is generated (subclass EntityWithoutIdCollectionResource)
+ * Class managing a list of entities. It is intended to manage subresources,
+ * which are stored in a list. Either all entities have a unique key given by
+ * the TOSCA specification (subclass EntityWithIdCollectionResource) or a unique
+ * key is generated (subclass EntityWithoutIdCollectionResource)
  *
  * @param <EntityResourceT> the resource modeling the entity
  * @param <EntityT>         the entity type of single items in the list
@@ -72,7 +76,12 @@ public abstract class EntityCollectionResource<EntityResourceT extends EntityRes
 	}
 
 	public List<String> getListOfAllEntityIdsAsList() {
-		return this.list.stream().map(et -> this.getId(et)).collect(Collectors.toList());
+		List<String> res = new ArrayList<>(this.list.size());
+		for (EntityT o : this.list) {
+			// We assume that different Object serializations *always* have different hashCodes
+			res.add(this.getId(o));
+		}
+		return res;
 	}
 
 	/**
@@ -82,13 +91,18 @@ public abstract class EntityCollectionResource<EntityResourceT extends EntityRes
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public String getAllEntityResources(@QueryParam(value = "noId") boolean noId) {
-		return this.getListOfAllEntityIdsAsList().stream()
-			.map(id -> this.getEntityResourceFromDecodedId(id))
-		    .map((EntityResourceT res) -> {
+		List<String> listOfAllSubResources = this.getListOfAllEntityIdsAsList();
+		List<EntityResourceT> resources = new ArrayList<>(listOfAllSubResources.size());
+		for (String id : listOfAllSubResources) {
+			resources.add(this.getEntityResourceFromDecodedId(id));
+		}
+		
+		return resources.stream().map((EntityResourceT res) -> {
 			String id = this.getId(res.o);
 			// some objects already have an id field
 			// we set it nevertheless, because it might happen that the name of the id field is not "id", but something else (such as "name")
 
+			this.getEntityResourceFromDecodedId(id);
 			// general method, same as with data binding
 			ObjectMapper mapper = new ObjectMapper();
 			mapper.enable(SerializationFeature.INDENT_OUTPUT);
@@ -106,17 +120,32 @@ public abstract class EntityCollectionResource<EntityResourceT extends EntityRes
 		}).collect(Collectors.joining(",", "[", "]"));
 	}
 
-	protected abstract EntityResourceT getEntityResourceFromDecodedId(String id);
-
-	protected EntityResourceT getEntityResourceFromEncodedId(String id) {
-		return this.getEntityResourceFromDecodedId(Util.URLdecode(Objects.requireNonNull(id)));
+	public EntityResourceT getEntityResourceFromDecodedId(String id) {
+		EntityT entity = null;
+		int idx = -1;
+		for (EntityT c : this.list) {
+			idx++;
+			String cId = this.getId(c);
+			if (cId.equals(id)) {
+				entity = c;
+				break;
+			}
+		}
+		if (entity == null) {
+			throw new NotFoundException();
+		} else {
+			return this.getEntityResourceInstance(entity, idx);
+		}
 	}
 
-	/**
-	 * Needs to be implemented at the children to get the SWAGGER tooling working. Each implementation needs to be
-	 * annotated with <code>@Path("{id}/")</code> and call <code>getEntityResourceFromEncodedId</code>
-	 */
-	public abstract EntityResourceT getEntityResource(String id);
+	@Path("{id}/")
+	public EntityResourceT getEntityResource(@PathParam("id") String id) {
+		if (id == null) {
+			throw new IllegalArgumentException("id has to be given");
+		}
+		id = Util.URLdecode(id);
+		return this.getEntityResourceFromDecodedId(id);
+	}
 
 	/**
 	 * @param entity the entity to create a resource for
@@ -147,8 +176,8 @@ public abstract class EntityCollectionResource<EntityResourceT extends EntityRes
 	public abstract String getId(EntityT entity);
 
 	/**
-	 * Checks for containment of e in the list. <code>equals</code> is not used as most EntityT do not offer a valid
-	 * implementation
+	 * Checks for containment of e in the list. <code>equals</code> is not used
+	 * as most EntityT do not offer a valid implementation
 	 *
 	 * @return true if list already contains e.
 	 */

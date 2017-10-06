@@ -24,7 +24,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
 import java.util.SortedSet;
-import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -85,11 +84,10 @@ public class WineryCli {
 	private static final Logger LOGGER = LoggerFactory.getLogger(WineryCli.class);
 	private static final String ARTEFACT_BE = "artefact";
 
-	enum Verbosity {
+	private enum Verbosity {
 		OUTPUT_NUMBER_OF_TOSCA_COMPONENTS,
 		OUTPUT_CURRENT_TOSCA_COMPONENT_ID,
-		OUTPUT_ERRORS,
-		NONE
+		OUTPUT_ERRORS
 	}
 
 	public static void main(String[] args) throws ParseException {
@@ -341,7 +339,7 @@ public class WineryCli {
 	}
 
 	private static void checkId(List<String> res, EnumSet<Verbosity> verbosity, DefinitionsChildId id) {
-		checkNamespaceUri(res, verbosity, id);
+		checkNamespaceUri(res, verbosity, id, id.getNamespace().getDecoded());
 		checkNcname(res, verbosity, id, id.getXmlId().getDecoded());
 	}
 
@@ -354,11 +352,11 @@ public class WineryCli {
 		}
 	}
 
-	static void checkNamespaceUri(List<String> res, EnumSet<Verbosity> verbosity, DefinitionsChildId id) {
+	private static void checkNamespaceUri(List<String> res, EnumSet<Verbosity> verbosity, DefinitionsChildId id, String uriStr) {
 		Objects.requireNonNull(res);
 		Objects.requireNonNull(verbosity);
 		Objects.requireNonNull(id);
-		String uriStr = id.getNamespace().getDecoded();
+		Objects.requireNonNull(uriStr);
 		if (!uriStr.trim().equals(uriStr)) {
 			printAndAddError(res, verbosity, id, "Namespace starts or ends with white spaces");
 		}
@@ -384,12 +382,7 @@ public class WineryCli {
 		}
 		boolean namespaceUriContainsDifferentType = DefinitionsChildId.ALL_TOSCA_COMPONENT_ID_CLASSES.stream()
 			.filter(definitionsChildIdClass -> !definitionsChildIdClass.isAssignableFrom(id.getClass()))
-			// we have the issue that nodetypeimplementation also contains nodetype
-			// we do the quick hack and check for plural s and /
-			.flatMap(definitionsChildIdClass -> {
-				final String lowerCaseIdClass = Util.getTypeForComponentId(definitionsChildIdClass).toLowerCase();
-				return Stream.of(lowerCaseIdClass + "s", lowerCaseIdClass + "/");
-			})
+			.map(definitionsChildIdClass -> Util.getTypeForComponentId(definitionsChildIdClass).toLowerCase())
 			.anyMatch(definitionsChildName -> uriStr.contains(definitionsChildName));
 		if (namespaceUriContainsDifferentType) {
 			printAndAddError(res, verbosity, id, "Namespace URI contains tosca definitions name from other type. E.g., Namespace is ...servicetemplates..., but the type is an artifact template");

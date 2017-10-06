@@ -5,6 +5,9 @@
  * and the Apache License 2.0 which both accompany this distribution,
  * and are available at http://www.eclipse.org/legal/epl-v20.html
  * and http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Contributors:
+ *     Nicole Keppler, Lukas Balzer - initial API and implementation
  */
 
 import { CommonModule } from '@angular/common';
@@ -20,7 +23,6 @@ import { WineryDuplicateValidatorModule } from '../../../wineryValidators/winery
 import { WineryModalModule } from '../../../wineryModalModule/winery.modal.module';
 import { WineryTableModule } from '../../../wineryTableModule/wineryTable.module';
 import { ImplementationsComponent } from './implementations.component';
-import { WineryPipesModule } from '../../../wineryPipes/wineryPipes.module';
 
 @NgModule({
     imports: [
@@ -37,7 +39,6 @@ import { WineryPipesModule } from '../../../wineryPipes/wineryPipes.module';
         WineryModalModule,
         WineryNamespaceSelectorModule,
         WineryDuplicateValidatorModule,
-        WineryPipesModule,
     ],
     exports: [],
     declarations: [

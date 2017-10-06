@@ -187,7 +187,7 @@ export class SectionComponent implements OnInit, OnDestroy {
             this.changeViewButtonTitle = showGrouped;
         }
 
-        const typesUrl = Utils.getTypeOfTemplateOrImplementation(this.toscaType);
+        const typesUrl = Utils.getImplementationOrTemplateOfType(this.toscaType);
 
         if (!isNullOrUndefined(typesUrl)) {
             this.service.getSectionData('/' + typesUrl + '?grouped=angularSelect')

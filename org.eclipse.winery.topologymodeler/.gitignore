@@ -14,7 +14,6 @@
 /.sonar
 /bin
 /build
-/orion
 sonar-project.properties
 /src/main/java/rebel.xml
 /src/main/resources/rebel*.xml

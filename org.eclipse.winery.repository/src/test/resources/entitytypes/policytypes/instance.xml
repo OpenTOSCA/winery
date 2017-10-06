@@ -1,0 +1,6 @@
+<tosca:Definitions xmlns:ns1="http://www.eclipse.org/winery/model/selfservice" xmlns:tosca="http://docs.oasis-open.org/tosca/ns/2011/12" xmlns:winery="http://www.opentosca.org/winery/extensions/tosca/2013/02/12" id="winery-defs-for_wfp-european" targetNamespace="http://winery.opentosca.org/test/policytypes/fruits">
+	<tosca:Import importType="http://docs.oasis-open.org/tosca/ns/2011/12" location="ns9__organic.tosca" namespace="http://winery.opentosca.org/test/policytypes/fruits"/>
+	<tosca:PolicyType abstract="no" final="yes" name="european" targetNamespace="http://winery.opentosca.org/test/policytypes/fruits">
+		<tosca:DerivedFrom xmlns:ns9="http://winery.opentosca.org/test/policytypes/fruits" typeRef="ns9:organic"/>
+	</tosca:PolicyType>
+</tosca:Definitions>

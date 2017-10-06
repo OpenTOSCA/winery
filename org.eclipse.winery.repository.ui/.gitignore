@@ -8,7 +8,7 @@
 npm-debug.log
 
 !/src/static/**/*
-/orion
+/build/
 /doc/
 /dist/
 /src/typings.d.ts

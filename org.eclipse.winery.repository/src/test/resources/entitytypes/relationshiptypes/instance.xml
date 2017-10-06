@@ -1,0 +1,30 @@
+<tosca:Definitions xmlns:winery="http://www.opentosca.org/winery/extensions/tosca/2013/02/12" xmlns:tosca="http://docs.oasis-open.org/tosca/ns/2011/12" xmlns:ns1="http://www.eclipse.org/winery/model/selfservice" id="winery-defs-for_ns2-eat" targetNamespace="http://winery.opentosca.org/test/ponyuniverse">
+	<tosca:Import namespace="http://winery.opentosca.org/test/ponyuniverse" location="ns0__ReqFood.tosca" importType="http://docs.oasis-open.org/tosca/ns/2011/12"/>
+	<tosca:Import namespace="http://winery.opentosca.org/test/ponyuniverse" location="ns0__CapFood.tosca" importType="http://docs.oasis-open.org/tosca/ns/2011/12"/>
+	<tosca:Import namespace="http://winery.opentosca.org/test/ponyuniverse" location="ns0__connectsTo.tosca" importType="http://docs.oasis-open.org/tosca/ns/2011/12"/>
+	<tosca:RelationshipType name="eat" abstract="no" final="no" targetNamespace="http://winery.opentosca.org/test/ponyuniverse" winery:color="#018758">
+		<tosca:DerivedFrom xmlns:ns0="http://winery.opentosca.org/test/ponyuniverse" typeRef="ns0:connectsTo"/>
+		<tosca:SourceInterfaces>
+			<tosca:Interface name="consistency">
+				<tosca:Operation name="isHard">
+					<tosca:InputParameters>
+						<tosca:InputParameter name="fruitToEat" type="Fruit" required="yes"/>
+					</tosca:InputParameters>
+					<tosca:OutputParameters>
+						<tosca:OutputParameter name="consistency" type="boolean" required="yes"/>
+					</tosca:OutputParameters>
+				</tosca:Operation>
+				<tosca:Operation name="isSoft">
+					<tosca:InputParameters>
+						<tosca:InputParameter name="fruitToEat" type="Fruit" required="yes"/>
+					</tosca:InputParameters>
+					<tosca:OutputParameters>
+						<tosca:OutputParameter name="consistency" type="boolean" required="yes"/>
+					</tosca:OutputParameters>
+				</tosca:Operation>
+			</tosca:Interface>
+		</tosca:SourceInterfaces>
+		<tosca:ValidSource xmlns:ns0="http://winery.opentosca.org/test/ponyuniverse" typeRef="ns0:ReqFood"/>
+		<tosca:ValidTarget xmlns:ns0="http://winery.opentosca.org/test/ponyuniverse" typeRef="ns0:CapFood"/>
+	</tosca:RelationshipType>
+</tosca:Definitions>

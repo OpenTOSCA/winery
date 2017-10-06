@@ -9,11 +9,11 @@
 export class ImplementationAPIData {
     namespace = '';
     localname = '';
-    displayName: string;
+    displayname: string;
 
     public constructor(namespace: string,
                        name: string) {
         this.namespace = namespace;
-        this.localname = this.displayName = name;
+        this.localname = this.displayname = name;
     }
 }

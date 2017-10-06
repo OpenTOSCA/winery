@@ -18,7 +18,6 @@ import { ImplementationWithTypeAPIData } from './implementationWithTypeAPIData';
 import { ModalDirective } from 'ngx-bootstrap';
 import { Utils } from '../../../wineryUtils/utils';
 import { WineryRowData, WineryTableColumn } from '../../../wineryTableModule/wineryTable.component';
-import { ToscaTypes } from '../../../wineryInterfaces/enums';
 
 @Component({
     selector: 'winery-instance-implementations',
@@ -28,18 +27,17 @@ import { ToscaTypes } from '../../../wineryInterfaces/enums';
 })
 export class ImplementationsComponent implements OnInit {
 
-    implementationData: ImplementationAPIData[] = [];
+    implementationData: ImplementationAPIData[];
     loading = true;
     selectedCell: any;
     newImplementation: ImplementationAPIData = new ImplementationAPIData('', '');
     elementToRemove: ImplementationAPIData;
-    implementationOrTemplate: ToscaTypes;
-    templateOrImplementationsLink: string;
-    selectedNamespace: string;
+    nameOfElementToRemove = '';
+    selectedNamespace = '';
     validatorObject: WineryValidatorObject;
     columns: Array<WineryTableColumn> = [
         { title: 'Namespace', name: 'namespace', sort: true },
-        { title: 'Name', name: 'displayName', sort: true },
+        { title: 'Name', name: 'displayname', sort: true },
     ];
     @ViewChild('confirmDeleteModal') confirmDeleteModal: ModalDirective;
     @ViewChild('addModal') addModal: ModalDirective;
@@ -47,11 +45,11 @@ export class ImplementationsComponent implements OnInit {
     constructor(private sharedData: InstanceService,
                 private service: ImplementationService,
                 private notificationService: WineryNotificationService) {
+        this.implementationData = [];
     }
 
     ngOnInit() {
         this.getImplementationData();
-        this.implementationOrTemplate = Utils.getImplementationOrTemplateOfType(this.sharedData.toscaComponent.toscaType);
     }
 
     // region ######## table methods ########
@@ -70,18 +68,25 @@ export class ImplementationsComponent implements OnInit {
     addNewImplementation(localname: string) {
         this.loading = true;
         const type = '{' + this.sharedData.toscaComponent.namespace + '}' + this.sharedData.toscaComponent.localName;
-        const resource = new ImplementationWithTypeAPIData(this.selectedNamespace, localname, type);
+        const resource = new ImplementationWithTypeAPIData(this.selectedNamespace,
+            localname,
+            type);
         this.service.postImplementation(resource).subscribe(
             data => this.handlePostResponse(data),
             error => this.handleError(error)
         );
     }
 
-    onRemoveClick(data: ImplementationAPIData) {
+    onRemoveClick(data: any) {
         if (isNullOrUndefined(data)) {
             return;
         } else {
-            this.elementToRemove = data;
+            this.elementToRemove = new ImplementationAPIData(data.namespace, data.localname);
+
+            const regex = /.*>(.*)<+/g;
+            const match = regex.exec(data.localname);
+            this.nameOfElementToRemove = match[1];
+
             this.confirmDeleteModal.show();
         }
     }
@@ -111,10 +116,10 @@ export class ImplementationsComponent implements OnInit {
     private handleData(impl: ImplementationAPIData[]) {
         this.implementationData = impl;
         this.implementationData = this.implementationData.map(item => {
-            const url = '/#/' + this.implementationOrTemplate
+            const url = '/#/' + Utils.getImplementationOrTemplateOfType(this.sharedData.toscaComponent.toscaType)
                 + '/' + encodeURIComponent(encodeURIComponent(item.namespace))
                 + '/' + item.localname;
-            item.displayName = '<a href="' + url + '">' + item.localname + '</a>';
+            item.displayname = '<a href="' + url + '">' + item.localname + '</a>';
             return item;
         });
         this.loading = false;
@@ -129,9 +134,9 @@ export class ImplementationsComponent implements OnInit {
         this.loading = false;
         if (data.ok) {
             this.getImplementationData();
-            this.notificationService.success('Created new ' + Utils.getToscaTypeNameFromToscaType(this.implementationOrTemplate));
+            this.notificationService.success('Created new Implementation');
         } else {
-            this.notificationService.error('Failed to create ' + Utils.getToscaTypeNameFromToscaType(this.implementationOrTemplate));
+            this.notificationService.error('Failed to create Implementation');
         }
     }
 
@@ -139,9 +144,9 @@ export class ImplementationsComponent implements OnInit {
         this.loading = false;
         if (data.ok) {
             this.getImplementationData();
-            this.notificationService.success('Deletion of ' + Utils.getToscaTypeNameFromToscaType(this.implementationOrTemplate) + ' Successful');
+            this.notificationService.success('Deletion of Implementation Successful');
         } else {
-            this.notificationService.error('Failed to delete ' + Utils.getToscaTypeNameFromToscaType(this.implementationOrTemplate) + ' failed');
+            this.notificationService.error('Failed to delete Implementation failed');
         }
     }
 

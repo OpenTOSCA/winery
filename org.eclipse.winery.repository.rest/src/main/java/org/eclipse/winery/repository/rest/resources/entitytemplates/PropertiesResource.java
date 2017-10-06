@@ -18,7 +18,6 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -33,11 +32,11 @@ import org.eclipse.winery.repository.backend.RepositoryFactory;
 import org.eclipse.winery.repository.rest.RestUtils;
 import org.eclipse.winery.repository.rest.resources.AbstractComponentInstanceResource;
 
-import io.github.adr.embedded.ADR;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.Element;
 
 public class PropertiesResource {
 
@@ -58,7 +57,7 @@ public class PropertiesResource {
 
 	@PUT
 	@Consumes({MediaType.APPLICATION_XML, MediaType.TEXT_XML})
-	public Response setProperties(@ADR(6) TEntityTemplate.Properties properties) {
+	public Response setProperties(TEntityTemplate.Properties properties) {
 		this.template.setProperties(properties);
 		return RestUtils.persist(this.res);
 	}
@@ -96,13 +95,7 @@ public class PropertiesResource {
 					LOGGER.debug("XML properties expected, but none found. Returning empty JSON.");
 					return Response.ok().entity("{}").type(MediaType.APPLICATION_JSON).build();
 				}
-				try {
-					@ADR(6)
-					Response response = Response.ok().entity(Util.getXMLAsString(TEntityTemplate.Properties.class, props)).type(MediaType.TEXT_XML).build();
-					return response;
-				} catch (Exception e) {
-					throw new WebApplicationException(e);
-				}
+				return Response.ok().entity(Util.getXMLAsString((Element) any)).type(MediaType.TEXT_XML).build();
 			}
 		} else {
 			Properties properties;

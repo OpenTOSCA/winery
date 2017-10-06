@@ -7,7 +7,7 @@
  * and http://www.apache.org/licenses/LICENSE-2.0
  */
 import { Injectable } from '@angular/core';
-import { Headers, Http, RequestOptions, Response } from '@angular/http';
+import { Headers, Http, Response, RequestOptions } from '@angular/http';
 import { InstanceService } from '../../instance.service';
 import { Observable } from 'rxjs/Observable';
 import { backendBaseURL } from '../../../configuration';
@@ -28,24 +28,11 @@ export class PropertiesService {
      */
     public getProperties(): Observable<any> {
         return this.http.get(this.path)
-                   .map(res => {
-                       if (res.headers.get('Content-Type') === 'application/json') {
-                           return {
-                               isXML: false, properties: res.json()
-                           };
-                       } else {
-                           return {isXML: true, properties: res.text()};
-                       }
-                   });
+            .map(res => res.json());
     }
 
-    public saveProperties(properties: any, isXML: boolean): Observable<Response> {
-        let headers: Headers;
-        if (isXML) {
-            headers = new Headers({'Content-Type': 'application/xml'});
-        } else {
-            headers = new Headers({'Content-Type': 'application/json'});
-        }
+    public saveProperties(properties: any): Observable<Response> {
+        const headers = new Headers({'Content-Type': 'application/json'});
         const options = new RequestOptions({headers: headers});
         return this.http.put(this.path, properties, options);
     }
