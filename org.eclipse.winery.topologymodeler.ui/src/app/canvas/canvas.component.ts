@@ -79,7 +79,6 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
   unbindNewNodeMouseUp: Function;
   newNode: TNodeTemplate;
   currentPaletteOpenedState: boolean;
-  makeNewNodeSelectionVisible: any;
   newNodeData: any;
   allRelationshipTypes: Array<string> = [];
   allRelationshipTypesColors: Array<any> = [];
@@ -111,53 +110,77 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
     }));
     this.newJsPlumbInstance = this.jsPlumbService.getJsPlumbInstance();
     this.newJsPlumbInstance.setContainer('container');
-    console.log(this.newJsPlumbInstance);
+    // console.log(this.newJsPlumbInstance);
   }
 
   updateNodes(currentNodes: Array<TNodeTemplate>): void {
     if (currentNodes.length !== this.allNodeTemplates.length) {
-      if (currentNodes.length > this.allNodeTemplates.length) {
+      const difference = currentNodes.length - this.allNodeTemplates.length;
+      if (difference === 1) {
+        this.handleNewNode(currentNodes);
+      } else if (difference < 1) {
+        this.handleDeletedNodes(currentNodes);
+      } else {
         this.allNodeTemplates = currentNodes;
-        this.allNodesIds = this.allNodeTemplates.map(node => node.id);
-        this.newNode = currentNodes[currentNodes.length - 1];
-        this.unbindConnection();
-        this.clearSelectedNodes();
-        this.resetDragSource(this.newNode.id);
-        this.repaintConnections();
-        if (this.currentPaletteOpenedState) {
-          // this.addNewNodeToDragSelection(this.newNode.id, currentNodes);
-          this.makeNewNodeSelectionVisible = {
-            id: this.newNode.id,
-          };
-          this.zone.runOutsideAngular(() => {
-            this.unbindNewNodeMouseMove = this.renderer.listen(this._eref.nativeElement, 'mousemove',
-              (event) => this.moveNewNode(event));
-            this.unbindNewNodeMouseUp = this.renderer.listen(this._eref.nativeElement, 'mouseup',
-              ($event) => this.positionNewNode($event));
-          });
-          this.enhanceDragSelection(this.newNode.id);
-        }
       }
-      this.allNodeTemplates = currentNodes;
-      this.allNodesIds = this.allNodeTemplates.map(node => node.id);
     } else {
-      for (let i = 0; i < this.allNodeTemplates.length; i++) {
-        const node = currentNodes.find(el => el.id === this.allNodeTemplates[i].id);
-        if (node) {
-          if (this.allNodeTemplates[i].name !== node.name) {
-            const nodeId = this.nodeChildrenIdArray.indexOf(this.allNodeTemplates[i].id);
-            this.nodeChildrenArray[nodeId].nodeAttributes.name = node.name;
-            this.nodeChildrenArray[nodeId].flash();
-            this.allNodeTemplates[i].name = node.name;
-          } else if (this.allNodeTemplates[i].minInstances !== node.minInstances) {
-            const nodeId = this.nodeChildrenIdArray.indexOf(this.allNodeTemplates[i].id);
-            this.allNodeTemplates[i].minInstances = node.minInstances;
-            this.nodeChildrenArray[nodeId].flashMin();
-          } else if (this.allNodeTemplates[i].maxInstances !== node.maxInstances) {
-            const nodeId = this.nodeChildrenIdArray.indexOf(this.allNodeTemplates[i].id);
-            this.allNodeTemplates[i].maxInstances = node.maxInstances;
-            this.nodeChildrenArray[nodeId].flashMax();
-          }
+      this.updateNodeAttributes(currentNodes);
+    }
+    this.allNodesIds = this.allNodeTemplates.map(node => node.id);
+  }
+
+  private handleNewNode(currentNodes: Array<TNodeTemplate>): void {
+    this.unbindConnection();
+    this.clearSelectedNodes();
+    if (this.newNode) {
+      this.resetDragSource(this.newNode.id);
+    }
+    this.newNode = currentNodes[currentNodes.length - 1];
+    this.allNodeTemplates.push(this.newNode);
+    if (this.currentPaletteOpenedState) {
+      setTimeout(() => {
+        this.handleNodePressActions(this.newNode.id);
+        this.zone.runOutsideAngular(() => {
+          this.unbindNewNodeMouseMove = this.renderer.listen(this._eref.nativeElement, 'mousemove',
+            (event) => this.moveNewNode(event));
+          this.unbindNewNodeMouseUp = this.renderer.listen(this._eref.nativeElement, 'mouseup',
+            ($event) => this.positionNewNode($event));
+        });
+      }, 1);
+    }
+  }
+
+  private handleDeletedNodes(currentNodes: Array<TNodeTemplate>): void {
+    let deletedNode;
+    for (const node of this.allNodeTemplates) {
+      if (!currentNodes.map(n => n.id).includes(node.id)) {
+        deletedNode = node.id;
+        break;
+      }
+    }
+    if (deletedNode) {
+      const index = this.allNodeTemplates.map(node => node.id).indexOf(deletedNode);
+      this.allNodeTemplates.splice(index, 1);
+    }
+  }
+
+  private updateNodeAttributes(currentNodes: Array<TNodeTemplate>): void {
+    for (let i = 0; i < this.allNodeTemplates.length; i++) {
+      const node = currentNodes.find(el => el.id === this.allNodeTemplates[i].id);
+      if (node) {
+        if (this.allNodeTemplates[i].name !== node.name) {
+          const nodeId = this.nodeChildrenIdArray.indexOf(this.allNodeTemplates[i].id);
+          this.nodeChildrenArray[nodeId].nodeAttributes.name = node.name;
+          this.nodeChildrenArray[nodeId].flash();
+          this.allNodeTemplates[i].name = node.name;
+        } else if (this.allNodeTemplates[i].minInstances !== node.minInstances) {
+          const nodeId = this.nodeChildrenIdArray.indexOf(this.allNodeTemplates[i].id);
+          this.allNodeTemplates[i].minInstances = node.minInstances;
+          this.nodeChildrenArray[nodeId].flashMin();
+        } else if (this.allNodeTemplates[i].maxInstances !== node.maxInstances) {
+          const nodeId = this.nodeChildrenIdArray.indexOf(this.allNodeTemplates[i].id);
+          this.allNodeTemplates[i].maxInstances = node.maxInstances;
+          this.nodeChildrenArray[nodeId].flashMax();
         }
       }
     }
@@ -179,41 +202,64 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
     this.updateSelectedNodes('Position new Node');
     this.unbindNewNodeMouseMove();
     this.unbindNewNodeMouseUp();
+    this.newJsPlumbInstance.revalidate(this.newNode.id);
+    this.repaintJsPlumb();
   }
 
   setPaletteState(currentPaletteOpened: boolean): void {
     this.currentPaletteOpenedState = currentPaletteOpened;
   }
 
-  repaintConnections(): void {
-    if (this.newJsPlumbInstance) {
-      this.newJsPlumbInstance.deleteEveryConnection();
-      for (const relationship of this.allRelationshipTemplates) {
-        setTimeout(() => this.paintRelationship(relationship), 1);
+  updateRelationships(currentRelationships: Array<TRelationshipTemplate>): void {
+    if (currentRelationships.length !== this.allRelationshipTemplates.length) {
+      const difference = currentRelationships.length - this.allRelationshipTemplates.length;
+      if (difference === 1) {
+        this.handleNewRelationship(currentRelationships);
+      } else if (difference < 1) {
+        this.handleDeletedRelationships(currentRelationships);
+      } else {
+        this.handleLoadedRelationships(currentRelationships);
       }
-      this.repaintJsPlumb();
+    } else {
+      this.updateRelName(currentRelationships);
     }
   }
 
-  updateRelationships(currentRelationships: Array<TRelationshipTemplate>): void {
-    if (currentRelationships.length !== this.allRelationshipTemplates.length) {
-      this.allRelationshipTemplates = currentRelationships;
-      this.allRelationshipTemplates.map(rel => !this.allRelationshipTypes.includes(rel.type) ?
-        this.allRelationshipTypes.push(rel.type) : null);
-      setTimeout(() => {
-        if (this.allRelationshipTemplates.length > 0) {
-          for (const relationship of this.allRelationshipTemplates) {
-            this.manageRelationships(relationship);
-          }
+  handleNewRelationship(currentRelationships: Array<TRelationshipTemplate>): void {
+    const newRel = currentRelationships[currentRelationships.length - 1];
+    this.allRelationshipTemplates.push(newRel);
+    this.manageRelationships(newRel);
+  }
+
+  handleDeletedRelationships(currentRelationships: Array<TRelationshipTemplate>): void {
+    for (const rel of this.allRelationshipTemplates) {
+      if (!currentRelationships.map(con => con.id).includes(rel.id)) {
+        const deletedRel = rel.id;
+        const index = this.allRelationshipTemplates.map(con => con.id).indexOf(deletedRel);
+        this.allRelationshipTemplates.splice(index, 1);
+      }
+    }
+  }
+
+  handleLoadedRelationships(currentRelationships: Array<TRelationshipTemplate>): void {
+    this.allRelationshipTemplates = currentRelationships;
+    this.allRelationshipTemplates.map(rel => !this.allRelationshipTypes.includes(rel.type) ?
+      this.allRelationshipTypes.push(rel.type) : null);
+    setTimeout(() => {
+      if (this.allRelationshipTemplates.length > 0) {
+        for (const relationship of this.allRelationshipTemplates) {
+          this.manageRelationships(relationship);
         }
-      }, 1);
-    } else {
-      for (const rel of this.allRelationshipTemplates) {
-        const conn = currentRelationships.find(el => el.id === rel.id);
-        if (conn) {
-          if (rel.name !== conn.name) {
-            rel.name = conn.name;
-          }
+      }
+    }, 1);
+  }
+
+  updateRelName(currentRelationships: Array<TRelationshipTemplate>): void {
+    for (const rel of this.allRelationshipTemplates) {
+      const conn = currentRelationships.find(el => el.id === rel.id);
+      if (conn) {
+        if (rel.name !== conn.name) {
+          rel.name = conn.name;
         }
       }
     }
@@ -253,15 +299,29 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
   updateAllNodes(): void {
     if (this.allNodeTemplates.length > 0) {
       for (const nodeTemplate of this.child.nativeElement.children) {
-        const index = this.allNodeTemplates.map(node => node.id).indexOf(nodeTemplate.firstChild.id);
-        const nodeCoordinates = {
-          id: nodeTemplate.firstChild.id,
-          x: nodeTemplate.firstChild.offsetLeft,
-          y: nodeTemplate.firstChild.offsetTop
-        };
-        this.allNodeTemplates[index].otherAttributes.x = nodeCoordinates.x;
-        this.allNodeTemplates[index].otherAttributes.y = nodeCoordinates.y;
-        this.ngRedux.dispatch(this.actions.updateNodeCoordinates(nodeCoordinates));
+        this.setNewCoordinates(nodeTemplate);
+      }
+    }
+  }
+
+  setNewCoordinates(nodeTemplate: any): void {
+    const index = this.allNodeTemplates.map(node => node.id).indexOf(nodeTemplate.firstChild.id);
+    const nodeCoordinates = {
+      id: nodeTemplate.firstChild.id,
+      x: nodeTemplate.firstChild.offsetLeft,
+      y: nodeTemplate.firstChild.offsetTop
+    };
+    this.allNodeTemplates[index].otherAttributes.x = nodeCoordinates.x;
+    this.allNodeTemplates[index].otherAttributes.y = nodeCoordinates.y;
+    this.ngRedux.dispatch(this.actions.updateNodeCoordinates(nodeCoordinates));
+  }
+
+  updateSelectedNodes($event): void {
+    if (this.selectedNodes.length > 0) {
+      for (const nodeTemplate of this.child.nativeElement.children) {
+        if (this.selectedNodes.map(node => node.id).includes(nodeTemplate.firstChild.id)) {
+          this.setNewCoordinates(nodeTemplate);
+        }
       }
     }
   }
@@ -287,27 +347,30 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
           }]
         ],
       });
-      conn.id = newRelationship.id;
-      conn.setType(newRelationship.type);
-      const me = this;
-      conn.bind('click', rel => {
-        this.clearSelectedNodes();
-        this.newJsPlumbInstance.select().removeType('marked');
-        const currentRel = me.allRelationshipTemplates.find(con => con.id === rel.id);
-        me.ngRedux.dispatch(this.actions.openSidebar({
-          sidebarContents: {
-            sidebarVisible: true,
-            nodeClicked: false,
-            id: currentRel.id,
-            nameTextFieldValue: currentRel.name,
-            type: currentRel.type
-          }
-        }));
-        conn.addType('marked');
-      });
+      this.handleRelSideBar(conn, newRelationship);
     }
   }
 
+  private handleRelSideBar(conn, newRelationship: any): void {
+    conn.id = newRelationship.id;
+    conn.setType(newRelationship.type);
+    const me = this;
+    conn.bind('click', rel => {
+      this.clearSelectedNodes();
+      this.newJsPlumbInstance.select().removeType('marked');
+      const currentRel = me.allRelationshipTemplates.find(con => con.id === rel.id);
+      me.ngRedux.dispatch(this.actions.openSidebar({
+        sidebarContents: {
+          sidebarVisible: true,
+          nodeClicked: false,
+          id: currentRel.id,
+          nameTextFieldValue: currentRel.name,
+          type: currentRel.type
+        }
+      }));
+      conn.addType('marked');
+    });
+  }
 
   manageRelationships(newRelationship: TRelationshipTemplate): void {
     this.paintRelationship(newRelationship);
@@ -321,7 +384,6 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
         this.newJsPlumbInstance.removeAllEndpoints(this.dragSourceInfos.dragSource);
         if (this.dragSourceInfos.dragSource) {
           if (this.newJsPlumbInstance.isSource(this.dragSourceInfos.dragSource)) {
-            console.log('unmakeSource');
             this.newJsPlumbInstance.unmakeSource(this.dragSourceInfos.dragSource);
           }
         }
@@ -494,69 +556,58 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
     }));
   }
 
-  checkFocusNode(focusNodeData: any): void {
-    if (focusNodeData.ctrlKey) {
-      if (this.jsPlumbBindConnection === true) {
-        this.unbindConnection();
-      }
-      if (!this.arrayContainsNode(this.selectedNodes, focusNodeData.id)) {
-        this.enhanceDragSelection(focusNodeData.id);
-        for (const node of this.nodeChildrenArray) {
-          const nodeIndex = this.selectedNodes.map(selectedNode => selectedNode.id).indexOf(node.nodeAttributes.id);
-          if (this.selectedNodes[nodeIndex] === undefined) {
-            node.makeSelectionVisible = false;
-            this.unbindConnection();
-          }
-          if (node.connectorEndpointVisible === true) {
-            node.connectorEndpointVisible = false;
-            this.resetDragSource('reset previous drag source');
-          }
+  private handleCtrlKeyNodePress(nodeId: string): void {
+    if (this.jsPlumbBindConnection === true) {
+      this.unbindConnection();
+    }
+    if (!this.arrayContainsNode(this.selectedNodes, nodeId)) {
+      this.enhanceDragSelection(nodeId);
+      for (const node of this.nodeChildrenArray) {
+        const nodeIndex = this.selectedNodes.map(selectedNode => selectedNode.id).indexOf(node.nodeAttributes.id);
+        if (this.selectedNodes[nodeIndex] === undefined) {
+          node.makeSelectionVisible = false;
+          this.unbindConnection();
         }
-      } else {
-        this.newJsPlumbInstance.removeFromAllPosses(focusNodeData.id);
-        const nodeIndex = this.nodeChildrenArray.map(node => node.nodeAttributes.id).indexOf(focusNodeData.id);
-        this.nodeChildrenArray[nodeIndex].makeSelectionVisible = false;
-        const selectedNodeIndex = this.selectedNodes.map(node => node.id).indexOf(focusNodeData.id);
-        this.selectedNodes.splice(selectedNodeIndex, 1);
+        if (node.connectorEndpointVisible === true) {
+          node.connectorEndpointVisible = false;
+          this.resetDragSource('reset previous drag source');
+        }
       }
     } else {
-      for (const node of this.nodeChildrenArray) {
-        if (node.nodeAttributes.id === focusNodeData.id) {
-          node.makeSelectionVisible = true;
-        } else if (!this.arrayContainsNode(this.selectedNodes, node.nodeAttributes.id)) {
-          node.makeSelectionVisible = false;
-          this.resetDragSource(focusNodeData.id);
-        }
-      }
-      this.unbindConnection();
-      if (this.selectedNodes.length === 1 && this.selectedNodes.find(node => node.id !== focusNodeData.id)) {
-        this.clearSelectedNodes();
-      }
-      if (this.selectedNodes.length === 0) {
-        this.enhanceDragSelection(focusNodeData.id);
-      }
-      if (!this.arrayContainsNode(this.selectedNodes, focusNodeData.id)) {
-        this.clearSelectedNodes();
-      }
+      this.newJsPlumbInstance.removeFromAllPosses(nodeId);
+      const nodeIndex = this.nodeChildrenArray.map(node => node.nodeAttributes.id).indexOf(nodeId);
+      this.nodeChildrenArray[nodeIndex].makeSelectionVisible = false;
+      const selectedNodeIndex = this.selectedNodes.map(node => node.id).indexOf(nodeId);
+      this.selectedNodes.splice(selectedNodeIndex, 1);
     }
   }
 
-  updateSelectedNodes($event): void {
-    if (this.selectedNodes.length > 0) {
-      for (const nodeTemplate of this.child.nativeElement.children) {
-        const draggedNode = this.selectedNodes.find(node => node.id === nodeTemplate.firstChild.id);
-        if (draggedNode) {
-          const index = this.allNodeTemplates.map(node => node.id).indexOf(nodeTemplate.firstChild.id);
-          const nodeCoordinates = {
-            id: nodeTemplate.firstChild.id,
-            x: nodeTemplate.firstChild.offsetLeft,
-            y: nodeTemplate.firstChild.offsetTop
-          };
-          this.allNodeTemplates[index].otherAttributes.x = nodeCoordinates.x;
-          this.allNodeTemplates[index].otherAttributes.y = nodeCoordinates.y;
-          this.ngRedux.dispatch(this.actions.updateNodeCoordinates(nodeCoordinates));
-        }
+  handleNodeClickedActions(focusNodeData: any): void {
+    if (focusNodeData.ctrlKey) {
+      this.handleCtrlKeyNodePress(focusNodeData.id);
+    } else {
+      this.handleNodePressActions(focusNodeData.id);
+    }
+  }
+
+  private handleNodePressActions(nodeId: string): void {
+    for (const node of this.nodeChildrenArray) {
+      if (node.nodeAttributes.id === nodeId) {
+        node.makeSelectionVisible = true;
+      } else if (!this.arrayContainsNode(this.selectedNodes, node.nodeAttributes.id)) {
+        node.makeSelectionVisible = false;
+        this.resetDragSource(nodeId);
       }
+    }
+    this.unbindConnection();
+    if (this.selectedNodes.length === 1 && this.selectedNodes.find(node => node.id !== nodeId)) {
+      this.clearSelectedNodes();
+    }
+    if (this.selectedNodes.length === 0) {
+      this.enhanceDragSelection(nodeId);
+    }
+    if (!this.arrayContainsNode(this.selectedNodes, nodeId)) {
+      this.clearSelectedNodes();
     }
   }
 
@@ -626,7 +677,7 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
         const relTypeExists = this.allRelationshipTemplates.map(rel => {
           return rel.id;
         }).includes(this.currentType);
-        if (relTypeExists === false) {
+        if (relTypeExists === false && this.currentType && sourceElement !== targetElement) {
           const newRelationship = new TRelationshipTemplate(
             sourceElement,
             targetElement,

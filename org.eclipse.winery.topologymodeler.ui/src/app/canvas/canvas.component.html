@@ -35,7 +35,6 @@
                 x: node.x,
                 y: node.y
                }"
-               [makeNewNodeSelectionVisible]="makeNewNodeSelectionVisible"
                [allRelationshipTypesColors]="allRelationshipTypesColors"
                [needsToBeFlashed]="needsToBeFlashed"
                (sendId)="makeDraggable($event)"
@@ -46,8 +45,8 @@
                (closedEndpoint)="closedEndpoint($event)"
                (sendCurrentType)="sendCurrentType($event)"
                [dragSource]="node.id + 'Endpoint'"
-               (checkFocusNode)="checkFocusNode($event)"
-               (updateAllNodes)="updateSelectedNodes($event)"
+               (handleNodeClickedActions)="handleNodeClickedActions($event)"
+               (updateSelectedNodes)="updateSelectedNodes($event)"
                (unmarkConnections)="unmarkConnections($event)">
   </winery-node>
   </div>
