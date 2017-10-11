@@ -107,7 +107,7 @@ export class PaletteComponent implements OnInit, OnDestroy {
   }
 
   publishTitle($event): void {
-    const left = ($event.pageX - 100).toString();
+    const left = ($event.pageX - 108).toString();
     const top = ($event.pageY - 30).toString();
     const name = $event.target.innerHTML;
     const otherAttributes = {
@@ -116,7 +116,7 @@ export class PaletteComponent implements OnInit, OnDestroy {
       y: top
     };
     const y = top;
-    const x = top;
+    const x = left;
     console.log('left (Palette) :' + otherAttributes.x);
     console.log('top (Palette):' + otherAttributes.y);
     const newId = this.generateId(name);

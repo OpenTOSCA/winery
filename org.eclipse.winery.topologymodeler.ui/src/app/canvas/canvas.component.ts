@@ -192,7 +192,7 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
     const indexOfNewNode = this.allNodeTemplates.map(node => node.id).indexOf(this.newNode.id);
     this.newNodeData = {
       id: this.newNode.id,
-      x: event.clientX - 100,
+      x: event.clientX - 108,
       y: event.clientY - 30
     };
     // TODO DO WE NEED THIS ANYMORE???
