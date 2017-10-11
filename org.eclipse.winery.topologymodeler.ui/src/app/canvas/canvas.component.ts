@@ -195,9 +195,6 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
       x: event.clientX - 108,
       y: event.clientY - 30
     };
-    // TODO DO WE NEED THIS ANYMORE???
-    //this.allNodeTemplates[indexOfNewNode].otherAttributes.x = this.newNodeData.x;
-    //this.allNodeTemplates[indexOfNewNode].otherAttributes.y = this.newNodeData.y;
     this.allNodeTemplates[indexOfNewNode].x = this.newNodeData.x;
     this.allNodeTemplates[indexOfNewNode].y = this.newNodeData.y;
     console.log(this.allNodeTemplates[indexOfNewNode].y);
@@ -316,9 +313,6 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
       x: nodeTemplate.firstChild.offsetLeft,
       y: nodeTemplate.firstChild.offsetTop
     };
-    // TODO DO WE NEED otherAttributes.x / y ANYMORE?
-    //this.allNodeTemplates[index].otherAttributes.x = nodeCoordinates.x;
-    //this.allNodeTemplates[index].otherAttributes.y = nodeCoordinates.y;
     this.allNodeTemplates[index].x = nodeCoordinates.x;
     this.allNodeTemplates[index].y = nodeCoordinates.y;
     this.ngRedux.dispatch(this.actions.updateNodeCoordinates(nodeCoordinates));

@@ -38,7 +38,7 @@ export class BackendService {
   }
 
   requestServiceTemplate(): Observable<string> {
-    if (isNullOrUndefined(this.configuration)) { setTimeout(null, 100) }
+    if (isNullOrUndefined(this.configuration)) { setTimeout(null, 100); }
     const headers = new Headers({'Accept': 'application/json'});
     const options = new RequestOptions({headers: headers});
     const url = this.configuration.repositoryURL + '/servicetemplates/'

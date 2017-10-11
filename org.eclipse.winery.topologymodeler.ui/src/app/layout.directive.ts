@@ -28,8 +28,8 @@ export class LayoutDirective implements AfterViewInit {
       const left = this.elRef.nativeElement.querySelector('#' + node.id).offsetLeft;
       const top = this.elRef.nativeElement.querySelector('#' + node.id).offsetTop;
       // apply the old positions to the nodeslist
-      //node.otherAttributes['x'] = left;
-      //node.otherAttributes['y'] = top;
+      // node.otherAttributes['x'] = left;
+      // node.otherAttributes['y'] = top;
       node.x = left;
       node.y = top;
     });

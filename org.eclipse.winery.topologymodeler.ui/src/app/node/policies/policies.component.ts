@@ -9,7 +9,8 @@
  * Contributors:
  *     Josip Ledic - ledicjp@gmail.com
  */
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { ModalDirective } from 'ngx-bootstrap';
 
 @Component({
   selector: 'winery-policies',
@@ -17,8 +18,10 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./policies.component.css']
 })
 export class PoliciesComponent implements OnInit {
-
+  @ViewChild('aboutModal') aboutModal: ModalDirective;
   constructor() { }
+
+
 
   ngOnInit() {
   }
