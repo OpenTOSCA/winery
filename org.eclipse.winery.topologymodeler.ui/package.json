@@ -9,12 +9,12 @@
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
-	"doc": "typedoc --options typedoc.json --exclude '**/*.spec.ts' ./src/"
+    "doc": "typedoc --options typedoc.json --exclude '**/*.spec.ts' ./src/"
   },
   "private": true,
   "dependencies": {
     "@angular-redux/store": "^6.5.7",
-    "@angular/animations": "^4.1.2",
+    "@angular/animations": "^4.4.4",
     "@angular/common": "^4.0.0",
     "@angular/compiler": "^4.0.0",
     "@angular/core": "^4.0.0",
@@ -54,7 +54,7 @@
     "protractor": "~5.1.0",
     "ts-node": "~2.0.0",
     "tslint": "~4.5.0",
-	"typedoc": "^0.8.0",
+    "typedoc": "^0.8.0",
     "typescript": "~2.2.0"
   }
 }

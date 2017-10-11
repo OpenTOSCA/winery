@@ -4,7 +4,8 @@
      [style.left]="nodeAttributes.x + 'px'"
      id={{nodeAttributes.id}} [style.borderColor]="nodeAttributes.color" [style.backgroundColor]="nodeAttributes.color"
      (mousedown)="mouseDownHandler($event)"
-     (mouseup)="mouseUpHandler($event)">
+     (mouseup)="mouseUpHandler($event)"
+     [@onCreateNodeTemplateAnimation]='visibilityState'>
   <div class="row rounded"
        [class.selected]="makeSelectionVisible"
        [class.unselected]="!makeSelectionVisible"
