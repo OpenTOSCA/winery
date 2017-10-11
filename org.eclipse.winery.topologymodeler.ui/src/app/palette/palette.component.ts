@@ -95,6 +95,8 @@ export class PaletteComponent implements OnInit, OnDestroy {
   updateState(newPaletteOpenedState: any) {
     if (!newPaletteOpenedState) {
       this.paletteRootState = 'shrunk';
+    } else {
+      this.paletteRootState = 'extended';
     }
   }
 
@@ -118,10 +120,8 @@ export class PaletteComponent implements OnInit, OnDestroy {
    */
   private toggleRootState(): void {
     if (this.paletteRootState === 'shrunk') {
-      this.paletteRootState = 'extended';
       this.ngRedux.dispatch(this.actions.sendPaletteOpened(true));
     } else {
-      this.paletteRootState = 'shrunk';
       this.ngRedux.dispatch(this.actions.sendPaletteOpened(false));
     }
   }
@@ -131,7 +131,7 @@ export class PaletteComponent implements OnInit, OnDestroy {
    * @param $event
    */
   publishTitle($event): void {
-    const left = ($event.pageX - 100).toString();
+    const left = ($event.pageX - 108).toString();
     const top = ($event.pageY - 30).toString();
     const name = $event.target.innerHTML;
     const otherAttributes = {
@@ -139,6 +139,10 @@ export class PaletteComponent implements OnInit, OnDestroy {
       x: left,
       y: top
     };
+    const y = top;
+    const x = left;
+    console.log('left (Palette) :' + otherAttributes.x);
+    console.log('top (Palette):' + otherAttributes.y);
     const newId = this.generateId(name);
     const paletteItem: TNodeTemplate = new TNodeTemplate(
       undefined,
@@ -151,7 +155,9 @@ export class PaletteComponent implements OnInit, OnDestroy {
       undefined,
       undefined,
       undefined,
-      otherAttributes
+      otherAttributes,
+      x,
+      y
     );
     this.ngRedux.dispatch(this.actions.saveNodeTemplate(paletteItem));
     this.ngRedux.dispatch(this.actions.sendPaletteOpened(false));

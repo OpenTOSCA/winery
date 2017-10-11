@@ -1,10 +1,11 @@
 <div class="container rounded"
      style="padding: 3px; position: absolute; user-select: none"
-     [style.top]="nodeAttributes.otherAttributes.y + 'px'"
-     [style.left]="nodeAttributes.otherAttributes.x + 'px'"
+     [style.top]="nodeAttributes.y + 'px'"
+     [style.left]="nodeAttributes.x + 'px'"
      id={{nodeAttributes.id}} [style.borderColor]="nodeAttributes.color" [style.backgroundColor]="nodeAttributes.color"
      (mousedown)="mouseDownHandler($event)"
-     (mouseup)="mouseUpHandler($event)">
+     (mouseup)="mouseUpHandler($event)"
+     [@onCreateNodeTemplateAnimation]='visibilityState'>
   <div class="row rounded"
        [class.selected]="makeSelectionVisible"
        [class.unselected]="!makeSelectionVisible"

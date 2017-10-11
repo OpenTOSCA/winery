@@ -5,9 +5,6 @@
  * and the Apache License 2.0 which both accompany this distribution,
  * and are available at http://www.eclipse.org/legal/epl-v20.html
  * and http://www.apache.org/licenses/LICENSE-2.0
- *
- * Contributors:
- *     Lukas Harzenetter - initial API and implementation
  */
 
 package org.eclipse.winery.repository.rest.resources.entitytemplates;
@@ -54,5 +51,12 @@ public class PropertiesResourceTest extends AbstractResourceTest {
 			"entitytemplates/updateProperty.xml");
 		this.assertGet("artifacttemplates/http%253A%252F%252Fwinery.opentosca.org%252Ftest%252Fartifacttemplates%252Ffruits/baobab-ArtifactTemplate-Peel/properties/",
 			"entitytemplates/updatedProperties.json");
+	}
+	
+	@Test
+	public void postXMLPropertiesToArtifact() throws Exception {
+		this.setRevisionTo("2025ac44d12f5814cc441ba2f8425cdc78c47bb4");
+		this.assertPut("artifacttemplates/http%253A%252F%252Fwinery.opentosca.org%252Ftest%252Fartifacttemplates/ShipOrderTemplate/properties/", "entitytemplates/artifacttemplates/updatedProperties.xml");
+		this.assertGet("artifacttemplates/http%253A%252F%252Fwinery.opentosca.org%252Ftest%252Fartifacttemplates/ShipOrderTemplate/properties/", "entitytemplates/artifacttemplates/updatedPropertiesAfterPut.xml");
 	}
 }

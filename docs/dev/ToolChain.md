@@ -5,11 +5,13 @@
 - [GitHub - Start](#github---start)
   * [First steps](#first-steps)
   * [Steps for working on a topic](#steps-for-working-on-a-topic)
-- [GitHub - Preparation First Pull Request](#github---preparation-first-pull-request)
+- [GitHub - Preparation First Pull Request to offical Eclipse Winery repository](#github---preparation-first-pull-request-to-offical-eclipse-winery-repository)
 - [GitHub - Prepare Pull Request](#github---prepare-pull-request)
 - [GitHub - Create Pull Request](#github---create-pull-request)
 - [GitHub - Change Pull Request](#github---change-pull-request)
+- [GitHub - After Pull Request Got Merged](#github---after-pull-request-got-merged)
 - [Excursus: Git](#excursus-git)
+- [License](#license)
 
 <!-- tocstop -->
 
@@ -58,10 +60,13 @@ For that, create a pull request to https://github.com/opentosca/winery to enable
 ## GitHub - Preparation First Pull Request to offical Eclipse Winery repository
 
 * Check [CONTRIBUTING.md](https://github.com/eclipse/winery/blob/master/CONTRIBUTING.md) and carefully read the instructions
-* http://wiki.eclipse.org/Development_Resources/Contributing_via_Git 🡒 Create an account **WITH THE SAME EMAIL THEN USED FOR THE COMMITS** (can also be checked in [gitk])
+* <http://wiki.eclipse.org/Development_Resources/Contributing_via_Git> 🡒 Create an account **WITH THE SAME EMAIL THEN USED FOR THE COMMITS** (can also be checked in [gitk])
 * Sign the Contributor Agreement electronically
 
 ## GitHub - Prepare Pull Request
+
+The aim of these steps to have a **single commit**.
+This is required by the Eclipse process for checking for intellectual property (IP process for short).
 
 * Check [CONTRIBUTING.md](https://github.com/eclipse/winery/blob/master/CONTRIBUTING.md).
 * Steps to prepare Pull Request:
@@ -75,7 +80,7 @@ For that, create a pull request to https://github.com/opentosca/winery to enable
   6. Check changes in Git Gui:
      - Each change you wanted: Is it recognized?
      - At each file: Is the copyright information in the header OK?
-     - Are there too much changed lines? 🡒 Do not stage spurious lines to the commit (e.g., tab 2 spaces, ...)
+     - Are there too much changed lines? 🡒 Do not stage spurious lines to the commit (e.g., tab to spaces, ...)
      - Are there too much changed files? 🡒 Do not stage files you did not intend to change (e.g., `build.gradle` if you did not touch `build.gradle` at all)
      - Check again the style (!)
      - (Don't forget RESCAN to see the current changes)
@@ -103,7 +108,7 @@ For that, create a pull request to https://github.com/opentosca/winery to enable
 * If there is a red cross, click in repective "Details" and fix them
 
 * In case of missing code quality, ... changes are requested by a committer (person controlling the pull request process)
-* FOR WINERY THE FOLLOWING APPLY:
+* FOR WINERY THE FOLLOWING APPLIES:
   - Open Git Gui
   - Make requested changes in your code (don't forget to RESCAN)
   - Commit
@@ -113,16 +118,18 @@ For that, create a pull request to https://github.com/opentosca/winery to enable
     See [GitHub - Prepare Pull Request](#github---prepare-pull-request).
     Then, do a force push (`git push -f`).
 
+
 ## GitHub - After Pull Request Got Merged
 
 * Delete the branch locally.
   The branch on origin (<https://github.com/OpenTOSCA/winery>) is deleted by the maintainer having done the merge.
 
+
 ## Excursus: Git
 
 ![ExcursusGit](graphics/ExcursusGit.png)
 
-  [gitk]: https://lostechies.com/joshuaflanagan/2010/09/03/use-gitk-to-understand-git/
+Please see also [use gitk to understand git](https://lostechies.com/joshuaflanagan/2010/09/03/use-gitk-to-understand-git/) to understand the settings in git.
 
 ## License
 
@@ -134,3 +141,4 @@ and the [Apache License v2.0] which both accompany this distribution.
 
   [Apache License v2.0]: http://www.apache.org/licenses/LICENSE-2.0.html
   [Eclipse Public License v2.0]: http://www.eclipse.org/legal/epl-v20.html
+  [gitk]: https://lostechies.com/joshuaflanagan/2010/09/03/use-gitk-to-understand-git/

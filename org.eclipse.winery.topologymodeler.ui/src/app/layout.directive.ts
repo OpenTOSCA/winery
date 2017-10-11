@@ -38,8 +38,10 @@ export class LayoutDirective implements AfterViewInit {
       const left = this.elRef.nativeElement.querySelector('#' + node.id).offsetLeft;
       const top = this.elRef.nativeElement.querySelector('#' + node.id).offsetTop;
       // apply the old positions to the nodeslist
-      node.otherAttributes['x'] = left;
-      node.otherAttributes['y'] = top;
+      // node.otherAttributes['x'] = left;
+      // node.otherAttributes['y'] = top;
+      node.x = left;
+      node.y = top;
     });
 
     // get source and targets of relationships
@@ -81,8 +83,8 @@ export class LayoutDirective implements AfterViewInit {
                          jsPlumbInstance: any): void {
     nodeTemplates.forEach((node, index) => {
       // apply the new positions to the nodes
-      node.otherAttributes['x'] = data.children[index].x;
-      node.otherAttributes['y'] = data.children[index].y + 40;
+      node.x = data.children[index].x + 40;
+      node.y = data.children[index].y + 50;
     });
 
     this.repaintEverything(jsPlumbInstance);
@@ -106,7 +108,7 @@ export class LayoutDirective implements AfterViewInit {
       result = ((Math.max.apply(null, topPositions) + Math.min.apply(null, topPositions)) / 2);
       // iterate over the nodes again, and apply positions
       selectedNodes.forEach((node) => {
-        node.otherAttributes['y'] = result;
+        node.y = result;
       });
       this.repaintEverything(jsPlumbInstance);
     } else {
@@ -132,7 +134,7 @@ export class LayoutDirective implements AfterViewInit {
       result = ((Math.max.apply(null, topPositions) + Math.min.apply(null, topPositions)) / 2);
       // iterate over the nodes again, and apply positions
       selectedNodes.forEach((node) => {
-        node.otherAttributes['x'] = result;
+        node.x = result;
       });
       this.repaintEverything(jsPlumbInstance);
     } else {

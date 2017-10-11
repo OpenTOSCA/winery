@@ -23,6 +23,7 @@ import {
   Output,
   Renderer2
 } from '@angular/core';
+import { trigger, state, style, transition, animate, keyframes } from '@angular/animations';
 import { ButtonsStateModel } from '../models/buttonsState.model';
 import { NgRedux } from '@angular-redux/store';
 import { IWineryState } from '../redux/store/winery.store';
@@ -35,11 +36,22 @@ import { WineryActions } from '../redux/actions/winery.actions';
   selector: 'winery-node',
   templateUrl: './node.component.html',
   styleUrls: ['./node.component.css'],
+  animations: [trigger('onCreateNodeTemplateAnimation', [
+    state('hidden', style({opacity: 0, transform: 'translateX(0)'})),
+    state('visible', style({opacity: 1, transform: 'scale'})),
+    transition('hidden => visible', animate('300ms', keyframes([
+      style({opacity: 0, transform: 'scale(0.2)', offset: 0}),
+      style({opacity: 0.3, transform: 'scale(1.1)',  offset: 0.7}),
+      style({opacity: 1, transform: 'scale(1.0)',     offset: 1.0})
+    ]))),
+  ]),
+  ]
 })
 export class NodeComponent implements OnInit, AfterViewInit, OnDestroy {
   public items: string[] = ['Item 1', 'Item 2', 'Item 3'];
   public accordionGroupPanel = 'accordionGroupPanel';
   public customClass = 'customClass';
+  visibilityState = 'hidden';
   connectorEndpointVisible = false;
   startTime;
   endTime;
@@ -92,6 +104,7 @@ export class NodeComponent implements OnInit, AfterViewInit, OnDestroy {
    * Angular lifecycle event.
    */
   ngOnInit() {
+
   }
 
   /**
@@ -99,6 +112,7 @@ export class NodeComponent implements OnInit, AfterViewInit, OnDestroy {
    */
   ngAfterViewInit(): void {
     this.sendId.emit(this.nodeAttributes.id);
+    this.visibilityState = 'visible';
   }
 
   /**
