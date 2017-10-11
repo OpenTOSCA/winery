@@ -21,8 +21,8 @@ import { ArtifactSourceComponent } from '../../instance/artifactTemplates/artifa
 import { TabsModule } from 'ngx-bootstrap';
 import { WineryEditorModule } from '../../wineryEditorModule/wineryEditor.module';
 import { WineryDuplicateValidatorModule } from '../../wineryValidators/wineryDuplicateValidator.module';
-import { ReadmeComponent } from '../../instance/artifactTemplates/readme/readme.component';
-import { WineryMarkdownModule } from '../../wineryMarkdownComponent/wineryMarkdown.module';
+import { WineryReadmeModule } from '../../wineryReadmeModule/wineryReadme.module';
+import { WineryLicenseModule } from '../../wineryLicenseModule/wineryLicense.module';
 
 @NgModule({
     imports: [
@@ -37,12 +37,12 @@ import { WineryMarkdownModule } from '../../wineryMarkdownComponent/wineryMarkdo
         WineryEditorModule,
         WineryDuplicateValidatorModule,
         ArtifactTemplateRouterModule,
-        WineryMarkdownModule
+        WineryReadmeModule,
+        WineryLicenseModule
     ],
     declarations: [
         FilesComponent,
         ArtifactSourceComponent,
-        ReadmeComponent,
         PropertiesComponent,
     ]
 })

@@ -1,21 +1,20 @@
 /*******************************************************************************
- * Copyright (c) 2012-2013 University of Stuttgart.
+ * Copyright (c) 2012-2017 University of Stuttgart.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * and the Apache License 2.0 which both accompany this distribution,
  * and are available at http://www.eclipse.org/legal/epl-v20.html
  * and http://www.apache.org/licenses/LICENSE-2.0
- *
- * Contributors:
- *     Oliver Kopp - initial API and implementation
  *******************************************************************************/
-package org.eclipse.winery.repository.rest.resources.interfaces;
+package org.eclipse.winery.repository.rest.resources.servicetemplates.plans;
 
 import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -27,7 +26,6 @@ import org.eclipse.winery.repository.rest.RestUtils;
 import org.eclipse.winery.repository.rest.resources._support.IPersistable;
 import org.eclipse.winery.repository.rest.resources._support.collections.withid.EntityWithIdCollectionResource;
 
-import io.swagger.annotations.ApiParam;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,6 +39,9 @@ public class ParametersResource extends EntityWithIdCollectionResource<Parameter
 		super(ParameterResource.class, TParameter.class, parameters, typeResource);
 	}
 
+	/**
+	 * TODO: This method possibly is never called from the Angular UI
+	 */
 	@POST
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	@Produces(MediaType.TEXT_PLAIN)
@@ -48,7 +49,8 @@ public class ParametersResource extends EntityWithIdCollectionResource<Parameter
 	public Response createParamter(
 			@FormParam("name") String name,
 			@FormParam("type") String type,
-			@FormParam("required") @ApiParam(value = "type tYesNo, not Boolean. For convenience, on/off is also supported. In case this parameter is not provided, 'off' is assumed. This is in contrast to the specification, but it eases implementing the UI") String required) {
+			//@ApiParam(value = "type tYesNo, not Boolean. For convenience, on/off is also supported. In case this parameter is not provided, 'off' is assumed. This is in contrast to the specification, but it eases implementing the UI")
+			@FormParam("required") String required) {
 		// @formatter:on
 		if (StringUtils.isEmpty(name)) {
 			return Response.status(Status.BAD_REQUEST).entity("name must not be null").build();
@@ -88,5 +90,11 @@ public class ParametersResource extends EntityWithIdCollectionResource<Parameter
 	@Override
 	public String getId(TParameter entity) {
 		return entity.getName();
+	}
+
+	@Override
+	@Path("{id}/")
+	public ParameterResource getEntityResource(@PathParam("id") String id) {
+		return this.getEntityResourceFromEncodedId(id);
 	}
 }
