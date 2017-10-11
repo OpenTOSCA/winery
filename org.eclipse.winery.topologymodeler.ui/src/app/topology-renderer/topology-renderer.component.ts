@@ -16,6 +16,7 @@ import {
 import { WineryAlertService } from '../winery-alert/winery-alert.service';
 import { JsonService } from '../jsonService/json.service';
 import { Visuals } from '../ttopology-template';
+import { BackendService } from '../backend.service';
 
 @Component({
   selector: 'winery-topology-renderer',
@@ -28,12 +29,10 @@ export class TopologyRendererComponent implements OnInit {
   @Input() visuals: Visuals[] = [new Visuals('red', 'apple', 'apple', 'abc')];
 
   constructor(vcr: ViewContainerRef, private notify: WineryAlertService,
-              private jsonService: JsonService) {
+              private backendService: BackendService) {
     this.notify.init(vcr);
   }
 
   ngOnInit() {
-    this.jsonService.setVisuals(this.visuals);
-    this.jsonService.setTopologyTemplate(this.topologyTemplate);
   }
 }

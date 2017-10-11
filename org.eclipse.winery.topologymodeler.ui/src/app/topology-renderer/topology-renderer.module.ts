@@ -33,6 +33,7 @@ import { RequirementsCapabilitiesComponent } from '../node/requirements-capabili
 import { TargetLocationsComponent } from '../node/target-locations/target-locations.component';
 import { PoliciesComponent } from '../node/policies/policies.component';
 import { DeploymentArtifactsComponent } from '../node/deployment-artifacts/deployment-artifacts.component';
+import { WineryModalModule } from '../../repositoryUiDependencies/wineryModalModule/winery.modal.module';
 
 @NgModule({
   imports: [
@@ -45,7 +46,8 @@ import { DeploymentArtifactsComponent } from '../node/deployment-artifacts/deplo
     ToastModule.forRoot(),
     AccordionModule.forRoot(),
     NgReduxModule,
-    RouterModule
+    RouterModule,
+    WineryModalModule,
   ],
   declarations: [
     NavbarComponent,

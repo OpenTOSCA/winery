@@ -19,7 +19,7 @@ import {
   QueryList,
   ViewChildren,
   AfterViewInit,
-  Renderer2, ViewChild
+  Renderer2, ViewChild, Input
 } from '@angular/core';
 import { JsPlumbService } from '../jsPlumbService';
 import { JsonService } from '../jsonService/json.service';
@@ -48,7 +48,6 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
   navbarButtonsState: ButtonsStateModel;
   selectedNodes: Array<TNodeTemplate> = [];
   newJsPlumbInstance: any;
-  visuals: any[];
   pageX: Number;
   pageY: Number;
   selectionActive: boolean;
@@ -83,9 +82,9 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
   newNodeData: any;
   allRelationshipTypes: Array<string> = [];
   allRelationshipTypesColors: Array<any> = [];
+  @Input() visuals;
 
   constructor(private jsPlumbService: JsPlumbService,
-              private jsonService: JsonService,
               private _eref: ElementRef,
               private _layoutDirective: LayoutDirective,
               private ngRedux: NgRedux<IWineryState>,
@@ -111,12 +110,12 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
     }));
     this.newJsPlumbInstance = this.jsPlumbService.getJsPlumbInstance();
     this.newJsPlumbInstance.setContainer('container');
-    // console.log(this.newJsPlumbInstance);
   }
 
   updateNodes(currentNodes: Array<TNodeTemplate>): void {
     if (currentNodes.length !== this.allNodeTemplates.length) {
       const difference = currentNodes.length - this.allNodeTemplates.length;
+      console.log(difference);
       if (difference === 1) {
         this.handleNewNode(currentNodes);
       } else if (difference < 1) {
@@ -133,6 +132,7 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
   private handleNewNode(currentNodes: Array<TNodeTemplate>): void {
     this.unbindConnection();
     this.clearSelectedNodes();
+
     if (this.newNode) {
       this.resetDragSource(this.newNode.id);
     }
@@ -192,11 +192,12 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
     const indexOfNewNode = this.allNodeTemplates.map(node => node.id).indexOf(this.newNode.id);
     this.newNodeData = {
       id: this.newNode.id,
-      x: event.clientX - 100,
+      x: event.clientX - 108,
       y: event.clientY - 30
     };
-    this.allNodeTemplates[indexOfNewNode].otherAttributes.x = this.newNodeData.x;
-    this.allNodeTemplates[indexOfNewNode].otherAttributes.y = this.newNodeData.y;
+    this.allNodeTemplates[indexOfNewNode].x = this.newNodeData.x;
+    this.allNodeTemplates[indexOfNewNode].y = this.newNodeData.y;
+    console.log(this.allNodeTemplates[indexOfNewNode].y);
   }
 
   positionNewNode($event): void {
@@ -312,8 +313,8 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
       x: nodeTemplate.firstChild.offsetLeft,
       y: nodeTemplate.firstChild.offsetTop
     };
-    this.allNodeTemplates[index].otherAttributes.x = nodeCoordinates.x;
-    this.allNodeTemplates[index].otherAttributes.y = nodeCoordinates.y;
+    this.allNodeTemplates[index].x = nodeCoordinates.x;
+    this.allNodeTemplates[index].y = nodeCoordinates.y;
     this.ngRedux.dispatch(this.actions.updateNodeCoordinates(nodeCoordinates));
   }
 
@@ -736,7 +737,6 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnInit() {
-    this.visuals = this.jsonService.getVisuals();
     this.assignVisuals();
     this.assignRelTypes();
   }

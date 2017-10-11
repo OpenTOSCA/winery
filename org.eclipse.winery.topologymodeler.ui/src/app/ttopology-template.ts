@@ -32,7 +32,9 @@ export class TNodeTemplate extends AbstractTTemplate {
               public imageUrl: string,
               documentation?: any,
               any?: any,
-              otherAttributes?: any) {
+              otherAttributes?: any,
+              public x?: string,
+              public y?: string) {
     super(documentation, any, otherAttributes);
   }
 }

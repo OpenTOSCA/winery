@@ -15,7 +15,7 @@ import { backendBaseURL } from '../../../configuration';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 
 @Component({
-    templateUrl: 'topologyTemplate.component.html'
+    templateUrl: 'serviceTemplate.component.html'
 })
 export class TopologyTemplateComponent implements OnInit {
 

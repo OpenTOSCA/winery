@@ -90,6 +90,25 @@ input[type=number]::-webkit-outer-spin-button {
 table tr{
 
 }
+.add-button-wrapper{
+  text-align: center;
+}
+.add-button-wrapper button {
+  margin-top: 5px;
+  margin-bottom: 5px;
+  background-color: #E0E0E0 !important;
+  color: #000 !important;
+  border-color: #fff !important;
+  line-height:1;
+  font-size: x-small;
+}
+.add-button-wrapper button:focus, .add-button-wrapper button:hover {
+  background-color: rgba(0,0,0,0.6) !important;
+  color: #ffffff !important;
+  -webkit-box-shadow: initial;
+  -moz-box-shadow: initial;
+  box-shadow: initial;
+}
 
 .td-key {
   text-align: left !important;
@@ -138,6 +157,10 @@ table tr{
   width: auto !important;
   font-size: x-small;
   color: black;
+}
+.body-table th{
+  padding-left: 0 !important;
+  color: #303030;
 }
 
 tr.row.col-sm-12 {

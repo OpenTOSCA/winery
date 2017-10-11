@@ -8,6 +8,7 @@
 # dependencies
 /node_modules
 /node
+/src/repositoryUiDependencies
 
 # IDEs and editors
 /.idea

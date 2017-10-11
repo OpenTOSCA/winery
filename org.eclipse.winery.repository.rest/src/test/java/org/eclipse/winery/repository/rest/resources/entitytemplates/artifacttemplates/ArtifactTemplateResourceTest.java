@@ -5,10 +5,6 @@
  * and the Apache License 2.0 which both accompany this distribution,
  * and are available at http://www.eclipse.org/legal/epl-v20.html
  * and http://www.apache.org/licenses/LICENSE-2.0
- *
- * Contributors:
- * 	   Oliver Kopp - initial API and implementation
- *     Philipp Meyer - support for source directory
  *******************************************************************************/
 package org.eclipse.winery.repository.rest.resources.entitytemplates.artifacttemplates;
 
@@ -17,14 +13,31 @@ import java.nio.file.Path;
 import org.eclipse.winery.repository.rest.resources.AbstractResourceTest;
 
 import org.eclipse.jetty.toolchain.test.MavenTestingUtils;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class ArtifactTemplateResourceTest extends AbstractResourceTest {
 
 	@Test
+	public void getFilesZip() throws Exception {
+		this.setRevisionTo("88e5ccd6c35aeffdebc19c8dda9cd76f432538f8");
+		this.assertGet("artifacttemplates/http%253A%252F%252Fopentosca.org%252Fartifacttemplates/MyTinyTest/files/zip", "entitytemplates/artifacttemplates/MyTinyTest_src.zip");
+	}
+
+	@Test
 	public void getSourceZip() throws Exception {
 		this.setRevisionTo("88e5ccd6c35aeffdebc19c8dda9cd76f432538f8");
 		this.assertGet("artifacttemplates/http%253A%252F%252Fopentosca.org%252Fartifacttemplates/MyTinyTest/source/zip", "entitytemplates/artifacttemplates/MyTinyTest_src.zip");
+	}
+
+	@Test
+	@Ignore("Ignored, because git-lfs is not mandatory for Winery to work properly")
+	public void lfsTest() throws Exception {
+		this.setRevisionTo("6ca5993d6a9abd255fb28f70c4ea73b189a47a57");
+		// in case git-lsf is not available this test fails
+		// NOT because the .iso file contained in source is not 2 bytes as expected,
+		// BUT git-lfs is not available in the path
+		this.assertGet("artifacttemplates/http%253A%252F%252Fopentosca.org%252Fartifacttemplates/MyTinyTest/source/", "entitytemplates/artifacttemplates/largeSource.json");
 	}
 
 	@Test

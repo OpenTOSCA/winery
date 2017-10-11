@@ -37,8 +37,8 @@ import { CapabilityTypeModule } from './wineryMainModules/capabilityTypes/capabi
 import { NodeTypeImplementationModule } from './wineryMainModules/nodeTypeImplementations/nodeTypeImplementation.module';
 import { RelationshipTypeImplementationModule } from './wineryMainModules/relationshipTypeImplementations/relationshipTypeImplementation.module';
 import { PolicyTemplateModule } from './wineryMainModules/policyTemplates/policyTemplate.module';
+import { ImportModule } from './wineryMainModules/imports/imports.module';
 import { WineryGitLogComponent } from './wineryGitLog/wineryGitLog.component';
-import { TemplatesOfTypeModule } from './instance/sharedComponents/templatesOfTypes/templatesOfType.Module';
 
 @NgModule({
     imports: [
@@ -52,7 +52,6 @@ import { TemplatesOfTypeModule } from './instance/sharedComponents/templatesOfTy
         SectionModule,
         WineryModalModule,
         TooltipModule.forRoot(),
-        TemplatesOfTypeModule,
         ServiceTemplateModule,
         NodeTypeModule,
         RelationshipTypeModule,
@@ -65,6 +64,7 @@ import { TemplatesOfTypeModule } from './instance/sharedComponents/templatesOfTy
         NodeTypeImplementationModule,
         RelationshipTypeImplementationModule,
         PolicyTemplateModule,
+        ImportModule,
 
         WineryRepositoryRoutingModule,
     ],
