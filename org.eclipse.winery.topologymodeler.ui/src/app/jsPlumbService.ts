@@ -13,6 +13,9 @@ import { Injectable } from '@angular/core';
 
 declare const jsPlumb: any;
 
+/**
+ * Defines the JSPlumb instance which is used over the complete project.
+ */
 @Injectable()
 export class JsPlumbService {
   getJsPlumbInstance(): any {

@@ -97,6 +97,9 @@ export interface UpdateRelationshipNameAction extends Action {
   };
 }
 
+/**
+ * Winery Actions
+ */
 @Injectable()
 export class WineryActions {
 

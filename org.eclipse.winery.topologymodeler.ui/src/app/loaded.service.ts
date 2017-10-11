@@ -16,6 +16,10 @@ export class LoadedService {
 
   constructor() { }
 
+  /**
+   * Getter for loading state
+   * @returns stream
+   */
   public getLoadingState(): Observable<ILoaded> {
     const stream = Observable
       .of({isLoaded: true})
