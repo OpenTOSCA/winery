@@ -110,12 +110,12 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
     }));
     this.newJsPlumbInstance = this.jsPlumbService.getJsPlumbInstance();
     this.newJsPlumbInstance.setContainer('container');
-    // console.log(this.newJsPlumbInstance);
   }
 
   updateNodes(currentNodes: Array<TNodeTemplate>): void {
     if (currentNodes.length !== this.allNodeTemplates.length) {
       const difference = currentNodes.length - this.allNodeTemplates.length;
+      console.log(difference);
       if (difference === 1) {
         this.handleNewNode(currentNodes);
       } else if (difference < 1) {
@@ -132,6 +132,7 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
   private handleNewNode(currentNodes: Array<TNodeTemplate>): void {
     this.unbindConnection();
     this.clearSelectedNodes();
+
     if (this.newNode) {
       this.resetDragSource(this.newNode.id);
     }
@@ -194,8 +195,12 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
       x: event.clientX - 100,
       y: event.clientY - 30
     };
-    this.allNodeTemplates[indexOfNewNode].otherAttributes.x = this.newNodeData.x;
-    this.allNodeTemplates[indexOfNewNode].otherAttributes.y = this.newNodeData.y;
+    // TODO DO WE NEED THIS ANYMORE???
+    //this.allNodeTemplates[indexOfNewNode].otherAttributes.x = this.newNodeData.x;
+    //this.allNodeTemplates[indexOfNewNode].otherAttributes.y = this.newNodeData.y;
+    this.allNodeTemplates[indexOfNewNode].x = this.newNodeData.x;
+    this.allNodeTemplates[indexOfNewNode].y = this.newNodeData.y;
+    console.log(this.allNodeTemplates[indexOfNewNode].y);
   }
 
   positionNewNode($event): void {
@@ -311,8 +316,11 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
       x: nodeTemplate.firstChild.offsetLeft,
       y: nodeTemplate.firstChild.offsetTop
     };
-    this.allNodeTemplates[index].otherAttributes.x = nodeCoordinates.x;
-    this.allNodeTemplates[index].otherAttributes.y = nodeCoordinates.y;
+    // TODO DO WE NEED otherAttributes.x / y ANYMORE?
+    //this.allNodeTemplates[index].otherAttributes.x = nodeCoordinates.x;
+    //this.allNodeTemplates[index].otherAttributes.y = nodeCoordinates.y;
+    this.allNodeTemplates[index].x = nodeCoordinates.x;
+    this.allNodeTemplates[index].y = nodeCoordinates.y;
     this.ngRedux.dispatch(this.actions.updateNodeCoordinates(nodeCoordinates));
   }
 

@@ -62,6 +62,7 @@ export class NodeComponent implements OnInit, AfterViewInit, OnDestroy {
   previousPosition: any;
   currentPosition: any;
   @Input() allRelationshipTypesColors: Array<string>;
+  // TODO EMPTY, NEed BETTER EXAMPLE
   nodeRef: ComponentRef<Component>;
   unbindMouseMove: Function;
 
