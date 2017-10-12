@@ -3,7 +3,7 @@
 body{
   overflow-x: hidden;
   overflow-y: scroll;
-  background-color: #303030;
+  /*background-color: #303030;*/
 }
 
 .modal {

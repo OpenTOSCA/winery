@@ -1,7 +1,7 @@
-      <div class="bootstrap-vertical-nav" [@paletteRootState]="paletteRootState">
+      <div class="bootstrap-vertical-nav">
 
-        <button id="palette_root" class="btn btn-primary" [@paletteRootState]="paletteRootState" type="button" (click)="openPalette()">
-          <div [@paletteRootTextState]="paletteRootState">Palette</div>
+        <button id="palette_root" class="btn btn-primary" type="button" (click)="openPalette()">
+          <div >Palette</div>
         </button>
 
         <div [@paletteItemState]="paletteRootState" class="palette-items-wrapper">

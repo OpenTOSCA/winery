@@ -1,33 +1,44 @@
 #palette_root {
-  border-radius:0.25rem;
-  box-shadow: initial;
-  background-color: #424242;
-  border-color: #212121;
+    border-radius: 0.25rem;
+    box-shadow: initial;
+    /*background-color: #424242;*/
+    background-color: #dddcdc;
+    border-color: #212121;
+    color: black;
+    min-width: 200px;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
 }
 
 #palette_root:hover {
-  background-color: #424242;
-  border-color: #fff;
+    background-color: #EAF2F5;
 }
-.palette-items-wrapper{
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
+
+.palette-items-wrapper {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
+
 .nav-item {
-  border: 2px solid #212121;;
-  background-color: #424242;
-  border-radius: 0.25rem;
-  color: #fff;
+    border: 1px solid #212121;
+    /*background-color: #424242;*/
+    background-color: #dddcdc;
+    border-radius: 0.25rem;
+    /*color: #fff;*/
+    color: #000;
+}
+.nav-item:hover {
+    background-color: #EAF2F5;
 }
 
 .bootstrap-vertical-nav {
-  position:fixed;
-  float: left;
-  z-index: 500;
+    position: fixed;
+    float: left;
+    z-index: 500;
 }
 
 .nav-tabs {
-  border-bottom: none;
+    border-bottom: none;
 }

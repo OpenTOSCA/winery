@@ -69,7 +69,7 @@ export class SidebarComponent implements OnInit {
    * CSS styling for "infinity button"
    */
   getInfinityButtonStyle(): string {
-    return !this.maxInputEnabled ? '#ffc0c0' : '#e0e0e0';
+    return !this.maxInputEnabled ? '#ffc0c0' : 'rgb(240, 240, 240)';
   }
 
   /**
