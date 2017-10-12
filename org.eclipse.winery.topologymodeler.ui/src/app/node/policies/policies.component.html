@@ -1,61 +1,31 @@
 <table class="table table-border--grey table-sm body-table">
-  <tr>
-    <th>
-      Name
-    </th>
-    <th>
-      Type
-    </th>
-    <th>
-      Template
-    </th>
-  </tr>
-  <tr>
-    <td class="">username:</td>
-    <td class="">root</td>
-    <td class="">root</td>
-  </tr>
-  <tr>
-    <td class="">password:</td>
-    <td class="">12345678</td>
-    <td class="">12345678</td>
-  </tr>
+    <tr>
+        <th>
+            Name
+        </th>
+        <th>
+            Type
+        </th>
+        <th>
+            Template
+        </th>
+    </tr>
+    <tr>
+        <td class="">username:</td>
+        <td class="">root</td>
+        <td class="">root</td>
+    </tr>
+    <tr>
+        <td class="">password:</td>
+        <td class="">12345678</td>
+        <td class="">12345678</td>
+    </tr>
 </table>
 
 <div class="add-button-wrapper">
-  <button (click)="aboutModal.show()" class="btn btn-sm">Add new</button>
+    <button (click)="toggleModal($event);" class="btn btn-sm btn-modal">Add new</button>
 </div>
 
-<winery-modal bsModal #aboutModal="bs-modal" [modalRef]="aboutModal">
-  <winery-modal-header [title]="'Winery 1.0.0-SNAPSHOT'">
-  </winery-modal-header>
-  <winery-modal-body>
-    <p> Supporting <a href="docs.oasis-open.org/tosca/TOSCA/v1.0/os/TOSCA-v1.0-os.html">TOSCA-v1.0 &ndash;
-      Topology and Orchestration Specification for Cloud Applications Version 1.0. 25 November 2013. OASIS
-      Standard.</a><br/>
-      <br/>
-      Code contributions by Oliver Kopp, Tobias Binz, Uwe Breitenbücher, Kálmán Képes, Rene Trefft, Yves Schubert,
-      Timur Sungur, Jerome Tagliaferri, Tobias Unger, Lukas Harzenetter, Niko Stadelmaier, Tino Stadelmaier,
-      Nicole Keppler, Philipp Meyer, Lukas Balzer, Huixin Liu
-    </p>
-    <h3>License</h3>
-    <p>The Eclipse Foundation makes available all content of this software (&ldquo;Content&rdquo;).
-      Unless otherwise indicated below, the Content is provided to you under the terms and conditions of the
-      Eclipse Public License Version 2.0 (&ldquo;EPL&rdquo;) and the and the Apache License 2.0.
-      A copy of the EPL is available at <a href="http://www.eclipse.org/legal/epl-v20.html">http://www.eclipse.org/legal/epl-v20.html</a>.
-      A copy of the ASL is available at <a href="http://www.apache.org/licenses/LICENSE-2.0.html">http://www.apache.org/licenses/LICENSE-2.0.html</a>.
-      For purposes of the EPL, &ldquo;Program&rdquo; will mean the Content.</p>
-    <p>If you did not receive this Content directly from the Eclipse Foundation, the Content is being redistributed
-      by another party (&ldquo;Redistributor&rdquo;) and different terms and conditions may apply to your use of
-      any object code in the Content.
-      Check the Redistributor's license that was provided with the Content.
-      If no such license exists, contact the Redistributor.
-      Unless otherwise indicated below, the terms and conditions of the EPL still apply to any source code in the
-      Content and such source code may be obtained at <a href="http://www.eclipse.org">http://www.eclipse.org</a>.
-    </p>
-  </winery-modal-body>
-  <winery-modal-footer [showDefaultButtons]="false">
-    <button type="button" class="btn btn-default" (click)="aboutModal.hide()">Ok</button>
-  </winery-modal-footer>
-</winery-modal>
+
+
 

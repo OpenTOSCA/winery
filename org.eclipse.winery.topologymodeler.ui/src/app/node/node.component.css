@@ -11,7 +11,9 @@ div.container {
   border-color: rgb(50, 110, 135) !important;
   background-color: rgb(105, 100, 100) !important;
 }
-
+.removeZIndex {
+    z-index:initial !important;
+}
 .padding-top--2px {
   padding-top: 2px;
 }

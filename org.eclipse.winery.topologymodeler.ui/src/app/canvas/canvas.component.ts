@@ -32,6 +32,7 @@ import { ButtonsStateModel } from '../models/buttonsState.model';
 import { TopologyRendererActions } from '../redux/actions/topologyRenderer.actions';
 import { NodeComponent } from '../node/node.component';
 import { Hotkey, HotkeysService } from 'angular2-hotkeys';
+import { ModalDirective } from 'ngx-bootstrap';
 
 @Component({
   selector: 'winery-canvas',
@@ -115,7 +116,6 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
   updateNodes(currentNodes: Array<TNodeTemplate>): void {
     if (currentNodes.length !== this.allNodeTemplates.length) {
       const difference = currentNodes.length - this.allNodeTemplates.length;
-      console.log(difference);
       if (difference === 1) {
         this.handleNewNode(currentNodes);
       } else if (difference < 1) {
@@ -197,7 +197,6 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
     };
     this.allNodeTemplates[indexOfNewNode].x = this.newNodeData.x;
     this.allNodeTemplates[indexOfNewNode].y = this.newNodeData.y;
-    console.log(this.allNodeTemplates[indexOfNewNode].y);
   }
 
   positionNewNode($event): void {
@@ -703,8 +702,6 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit {
   assignVisuals() {
     for (const node of this.allNodeTemplates) {
       for (const visual of this.visuals) {
-        // console.log('node.id = ' + node.id);
-        // console.log('visual = ' + JSON.stringify(visual));
         if (node.id === visual.localName || node.id.startsWith(visual.localName + '_')) {
           node.color = visual.color;
           if (visual.hasOwnProperty('imageUrl')) {

@@ -9,21 +9,26 @@
  * Contributors:
  *     Josip Ledic - ledicjp@gmail.com
  */
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
 import { ModalDirective } from 'ngx-bootstrap';
 
 @Component({
-  selector: 'winery-policies',
-  templateUrl: './policies.component.html',
-  styleUrls: ['./policies.component.css']
+    selector: 'winery-policies',
+    templateUrl: './policies.component.html',
+    styleUrls: ['./policies.component.css']
 })
 export class PoliciesComponent implements OnInit {
-  @ViewChild('aboutModal') aboutModal: ModalDirective;
-  constructor() { }
+    @Output() toggleModalHandler: EventEmitter<any>;
 
+    constructor() {
+        this.toggleModalHandler = new EventEmitter();
+    }
 
+    public toggleModal($event) {
+        this.toggleModalHandler.emit('Open modal');
+    }
 
-  ngOnInit() {
-  }
+    ngOnInit() {
+    }
 
 }

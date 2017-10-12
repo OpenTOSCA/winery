@@ -6,6 +6,13 @@ body{
   background-color: #303030;
 }
 
+.modal {
+    color: #000 !important;
+}
+.modal p {
+    line-height: 100% !important;
+}
+
 .card.accordionGroupPanel,
 .card.accordionGroupPanel .card-header,
 .panel.accordionGroupPanel,
