@@ -9,6 +9,10 @@
  * Contributors:
  *     Thommy Zelenik - initial API and implementation
  */
+
+/**
+ * Internal representation of navbar buttons
+ */
 export interface ButtonsStateModel {
   buttonsState: {
     targetLocationsButton?: boolean;

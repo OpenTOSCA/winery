@@ -42,7 +42,9 @@ export const INITIAL_TOPOLOGY_RENDERER_STATE: TopologyRendererState = {
     alignVButton: false
   }
 };
-
+/**
+ * Reducer for the TopologyRenderer
+ */
 export const TopologyRendererReducer =
   function (lastState: TopologyRendererState = INITIAL_TOPOLOGY_RENDERER_STATE, action: Action): TopologyRendererState {
     switch (action.type) {

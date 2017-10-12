@@ -6,6 +6,9 @@ import { isNullOrUndefined } from 'util';
 import { backendBaseURL } from './configuration';
 import { Subject } from 'rxjs/Subject';
 
+/**
+ * Responsible for interchanging data between the app and the server.
+ */
 @Injectable()
 export class BackendService {
   configuration: TopologyModelerConfiguration;
@@ -37,6 +40,10 @@ export class BackendService {
     });
   }
 
+  /**
+   * Requests data from the server
+   * @returns data  The JSON from the server
+   */
   requestServiceTemplate(): Observable<string> {
     if (isNullOrUndefined(this.configuration)) { setTimeout(null, 100); }
     const headers = new Headers({'Accept': 'application/json'});
@@ -62,6 +69,9 @@ export class BackendService {
    }*/
 }
 
+/**
+ * Defines config of TopologyModeler.
+ */
 export class TopologyModelerConfiguration {
   readonly id: string;
   readonly ns: string;

@@ -18,6 +18,10 @@ import { JsonService } from '../jsonService/json.service';
 import { Visuals } from '../ttopology-template';
 import { BackendService } from '../backend.service';
 
+
+/**
+ * This is the parent component of the canvas and navbar component.
+ */
 @Component({
   selector: 'winery-topology-renderer',
   templateUrl: './topology-renderer.component.html',

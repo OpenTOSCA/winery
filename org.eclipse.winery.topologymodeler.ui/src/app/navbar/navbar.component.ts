@@ -17,6 +17,9 @@ import {TopologyRendererActions} from '../redux/actions/topologyRenderer.actions
 import {ButtonsStateModel} from '../models/buttonsState.model';
 import {IWineryState} from '../redux/store/winery.store';
 
+/**
+ * The navbar of the topologymodeler.
+ */
 @Component({
   selector: 'winery-navbar',
   templateUrl: './navbar.component.html',
@@ -38,10 +41,18 @@ export class NavbarComponent implements OnDestroy {
       .subscribe(newButtonsState => this.setButtonsState(newButtonsState));
   }
 
+  /**
+   * Setter for buttonstate
+   * @param newButtonsState
+   */
   setButtonsState(newButtonsState: ButtonsStateModel): void {
     this.navbarButtonsState = newButtonsState;
   }
 
+  /**
+   * Getter for the style of a pressed button.
+   * @param buttonPressed
+   */
   getStyle(buttonPressed: boolean): string {
     if (buttonPressed) {
       return '#424242';
@@ -100,10 +111,15 @@ export class NavbarComponent implements OnDestroy {
     }
   }
 
+  /**
+   * Shows the message if the save button is pressed.
+   */
   public showSaveAlert(): void {
     this.alert.success('Successfully saved!');
   }
-
+  /**
+   * Angular lifecycle event.
+   */
   ngOnDestroy() {
     this.navBarButtonsStateSubscription.unsubscribe();
   }

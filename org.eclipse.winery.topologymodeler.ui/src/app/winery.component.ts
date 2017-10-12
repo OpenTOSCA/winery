@@ -21,6 +21,9 @@ import { HotkeysService } from 'angular2-hotkeys';
 import { BackendService } from './backend.service';
 import { QName } from './qname';
 
+/**
+ * This is the root component of the topology modeler.
+ */
 @Component({
   selector: 'winery-topologymodeler',
   templateUrl: './winery.component.html',

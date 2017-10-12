@@ -17,9 +17,9 @@ describe('CanvasComponent', () => {
       declarations: [CanvasComponent,
         NodeComponent],
       imports: [AccordionModule.forRoot()],
-      providers: [JsPlumbService, {provide: JsonService, useClass: MockJsonService }]
+      providers: [JsPlumbService, {provide: JsonService, useClass: MockJsonService}]
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   beforeEach(() => {

@@ -8,6 +8,9 @@ import 'rxjs/add/operator/distinctUntilChanged';
 import 'rxjs/add/operator/map';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 
+/**
+ * This is the right sidebar, where attributes of nodes and relationships get displayed.
+ */
 @Component({
   selector: 'winery-sidebar',
   templateUrl: './sidebar.component.html',
@@ -45,6 +48,9 @@ export class SidebarComponent implements OnInit {
               private actions: WineryActions) {
   }
 
+  /**
+   * Closes the sidebar.
+   */
   closeSidebar() {
     this.$ngRedux.dispatch(this.actions.openSidebar({
       sidebarContents: {
@@ -59,10 +65,17 @@ export class SidebarComponent implements OnInit {
     }));
   };
 
+  /**
+   * CSS styling for "infinity button"
+   */
   getInfinityButtonStyle(): string {
     return !this.maxInputEnabled ? '#ffc0c0' : '#e0e0e0';
   }
 
+  /**
+   * Angular lifecycle event.
+   * initializes the sidebar with the correct data, also implements debounce time for a smooth user experience
+   */
   ngOnInit() {
     this.sidebarSubscription = this.$ngRedux.select(state => state.wineryState.sidebarContents)
       .subscribe(sidebarContents => {
@@ -166,6 +179,10 @@ export class SidebarComponent implements OnInit {
       });
   }
 
+  /**
+   * Implements some checks, if the values from the user are correct, and updates the nodes
+   * @param $event
+   */
   minInstancesChanged($event) {
       if ($event === 'inc') {
         this.$ngRedux.dispatch(this.actions.incMinInstances({
@@ -202,6 +219,11 @@ export class SidebarComponent implements OnInit {
     }));
   }
 
+
+  /**
+   * Implements some checks, if the values from the user are correct, and updates the nodes
+   * @param $event
+   */
   maxInstancesChanged($event) {
     if (!(this.sidebarState.maxInstances === '\u221E')) {
       if ($event === 'inc') {

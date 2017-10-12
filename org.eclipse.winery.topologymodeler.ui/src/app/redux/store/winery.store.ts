@@ -20,6 +20,9 @@ import {
   TopologyRendererState
 } from '../reducers/topologyRenderer.reducer';
 
+/**
+ * The topology modeler has one store for all data.
+ */
 export interface IWineryState {
   topologyRendererState: TopologyRendererState;
   wineryState: WineryState;
