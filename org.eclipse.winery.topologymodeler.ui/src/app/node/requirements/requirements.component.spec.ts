@@ -1,6 +1,6 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { RequirementsCapabilitiesComponent } from './requirements-capabilities.component';
+import { RequirementsCapabilitiesComponent } from './requirements.component';
 
 describe('RequirementsCapabilitiesComponent', () => {
   let component: RequirementsCapabilitiesComponent;

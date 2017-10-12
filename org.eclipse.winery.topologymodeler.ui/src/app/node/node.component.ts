@@ -9,6 +9,7 @@
  * Contributors:
  *     Josip Ledic - initial API and implementation, Refactoring to use Redux instead
  *     Thommy Zelenik - implementation, Refactoring
+ *     Yannic Sowoidnich - implementation, Refactoring
  */
 import {
     AfterViewInit,
@@ -62,7 +63,6 @@ export class NodeComponent implements OnInit, AfterViewInit, OnDestroy {
     setFlash = false;
     setMaxFlash = false;
     setMinFlash = false;
-    removeZIndex = false;
     @Input() nodeAttributes: any;
     @Input() needsToBeFlashed: boolean;
     @Input() dragSource: string;
@@ -82,8 +82,10 @@ export class NodeComponent implements OnInit, AfterViewInit, OnDestroy {
     @Input() allRelationshipTypesColors: Array<string>;
     nodeRef: ComponentRef<Component>;
     unbindMouseMove: Function;
-    modalIsOpen = false;
-    @ViewChild('aboutModal') aboutModal: ModalDirective;
+    @ViewChild('policiesModal') policiesModal: ModalDirective;
+    @ViewChild('capabilitiesModal') capabilitiesModal: ModalDirective;
+    @ViewChild('requirementsModal') requirementsModal: ModalDirective;
+    @ViewChild('deploymentArtifactModal') deploymentArtifactModal: ModalDirective;
 
     public addItem(): void {
         this.items.push(`Items ${this.items.length + 1}`);
@@ -179,12 +181,28 @@ export class NodeComponent implements OnInit, AfterViewInit, OnDestroy {
       }
   }
 
-
-    toggleModalHandler(modalData: any) {
+    /**
+     * This modal handler gets triggered by the Policies component
+     * @param modalData - this holds the type, which tells the function which modal to open.
+     */
+    public toggleModalHandler(modalData: any) {
         // get id of node to get respective data
         console.log(this.elRef.nativeElement.firstChild.id);
-        // show modal
-        this.aboutModal.show();
+        // show correct modal
+        switch (modalData.type) {
+            case 'POLICIES':
+                this.policiesModal.show();
+                break;
+            case 'DEPLOYMENT_ARTIFACTS':
+                this.deploymentArtifactModal.show();
+                break;
+            case 'REQUIREMENTS':
+                this.requirementsModal.show();
+                break;
+            case 'CAPABILITIES':
+                this.capabilitiesModal.show();
+                break;
+        }
     }
 
   /**

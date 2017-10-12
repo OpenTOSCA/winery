@@ -29,55 +29,57 @@ import { WineryCustomOption } from '../winery-alert/winery-alert-options';
 import { TopologyRendererComponent } from './topology-renderer.component';
 import { NgReduxModule } from '@angular-redux/store';
 import { PropertiesComponent } from '../node/properties/properties.component';
-import { RequirementsCapabilitiesComponent } from '../node/requirements-capabilities/requirements-capabilities.component';
+import { RequirementsComponent } from '../node/requirements/requirements.component';
 import { TargetLocationsComponent } from '../node/target-locations/target-locations.component';
 import { PoliciesComponent } from '../node/policies/policies.component';
 import { DeploymentArtifactsComponent } from '../node/deployment-artifacts/deployment-artifacts.component';
 import { WineryModalModule } from '../../repositoryUiDependencies/wineryModalModule/winery.modal.module';
+import { CapabilitiesComponent } from '../node/capabilities/capabilities.component';
 
 @NgModule({
-  imports: [
-    CommonModule,
-    FormsModule,
-    HttpModule,
-    BrowserAnimationsModule,
-    BsDropdownModule.forRoot(),
-    WineryAlertModule.forRoot(),
-    ToastModule.forRoot(),
-    AccordionModule.forRoot(),
-    NgReduxModule,
-    RouterModule,
-    WineryModalModule,
-  ],
-  declarations: [
-    NavbarComponent,
-    NodeComponent,
-    CanvasComponent,
-    LayoutDirective,
-    TopologyRendererComponent,
-    PropertiesComponent,
-    RequirementsCapabilitiesComponent,
-    TargetLocationsComponent,
-    PoliciesComponent,
-    DeploymentArtifactsComponent
-  ],
-  exports: [
-    TopologyRendererComponent
-  ],
+    imports: [
+        CommonModule,
+        FormsModule,
+        HttpModule,
+        BrowserAnimationsModule,
+        BsDropdownModule.forRoot(),
+        WineryAlertModule.forRoot(),
+        ToastModule.forRoot(),
+        AccordionModule.forRoot(),
+        NgReduxModule,
+        RouterModule,
+        WineryModalModule,
+    ],
+    declarations: [
+        NavbarComponent,
+        NodeComponent,
+        CanvasComponent,
+        LayoutDirective,
+        TopologyRendererComponent,
+        PropertiesComponent,
+        RequirementsComponent,
+        TargetLocationsComponent,
+        PoliciesComponent,
+        DeploymentArtifactsComponent,
+        CapabilitiesComponent
+    ],
+    exports: [
+        TopologyRendererComponent
+    ],
 })
 export class TopologyRendererModule {
 
-  static forRoot(): ModuleWithProviders {
-    return {
-      ngModule: TopologyRendererModule,
-      providers: [
-        {provide: ToastOptions, useClass: WineryCustomOption},
-        JsPlumbService,
-        JsonService
-      ]
-    };
-  }
+    static forRoot(): ModuleWithProviders {
+        return {
+            ngModule: TopologyRendererModule,
+            providers: [
+                {provide: ToastOptions, useClass: WineryCustomOption},
+                JsPlumbService,
+                JsonService
+            ]
+        };
+    }
 
-  constructor() {
-  }
+    constructor() {
+    }
 }

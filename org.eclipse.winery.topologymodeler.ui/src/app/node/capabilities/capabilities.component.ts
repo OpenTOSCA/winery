@@ -7,19 +7,19 @@
  * and http://www.apache.org/licenses/LICENSE-2.0
  *
  * Contributors:
- *     Josip Ledic - ledicjp@gmail.com
+ *     Yannic Sowoidnich
  */
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 
 @Component({
-    selector: 'winery-deployment-artifacts',
-    templateUrl: './deployment-artifacts.component.html',
-    styleUrls: ['./deployment-artifacts.component.css']
+  selector: 'winery-capabilities',
+  templateUrl: './capabilities.component.html',
+  styleUrls: ['./capabilities.component.css']
 })
 /**
- * This Handles Information about the deployment artifacts
+ * This Handles Information about the nodes capabilities
  */
-export class DeploymentArtifactsComponent implements OnInit {
+export class CapabilitiesComponent implements OnInit {
     @Output() toggleModalHandler: EventEmitter<any>;
 
     constructor() {
@@ -27,17 +27,16 @@ export class DeploymentArtifactsComponent implements OnInit {
     }
 
     /**
-     * Propagates the click event to node.component, where deployment artifact modal gets opened.
+     * Propagates the click event to node.component, where capabilities modal gets opened.
      * @param $event
      */
     public toggleModal($event) {
         const modalData = {
-            type : 'DEPLOYMENT_ARTIFACTS'
+            type : 'CAPABILITIES'
         };
         this.toggleModalHandler.emit(modalData);
     }
 
     ngOnInit() {
     }
-
 }

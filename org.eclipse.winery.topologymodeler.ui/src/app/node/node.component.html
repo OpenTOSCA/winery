@@ -86,23 +86,44 @@
            'fa-chevron-right': !deploymentartifactsgroup?.isOpen}"
         ></i>
       </div>
-      <winery-deployment-artifacts></winery-deployment-artifacts>
+      <winery-deployment-artifacts
+          (toggleModalHandler)="toggleModalHandler($event)">
+      </winery-deployment-artifacts>
     </accordion-group>
 
-    <!-- REQUIREMENTS & CAPABILITIES -->
+    <!-- REQUIREMENTS-->
     <accordion-group
-      #requirementscapabilitiesgroup
+      #requirementsgroup
       panelClass="accordionGroupPanel"
       *ngIf="navbarButtonsState.buttonsState.requirementsCapabilitiesButton">
       <div accordion-heading>
-        Requirements & Capabilities
+        Requirements
         <i class="pull-sm-0 float-sm-right fa icon-styling padding-top--2px"
            [ngClass]="{'fa-chevron-down': requirementscapabilitiesgroup?.isOpen,
            'fa-chevron-right': !requirementscapabilitiesgroup?.isOpen}"
         ></i>
       </div>
-      <winery-requirements-capabilities></winery-requirements-capabilities>
+      <winery-requirements
+          (toggleModalHandler)="toggleModalHandler($event)">
+      </winery-requirements>
     </accordion-group>
+
+      <!-- CAPABILITIES -->
+      <accordion-group
+          #capabilitiesgroup
+          panelClass="accordionGroupPanel"
+          *ngIf="navbarButtonsState.buttonsState.requirementsCapabilitiesButton">
+          <div accordion-heading>
+              Capabilities
+              <i class="pull-sm-0 float-sm-right fa icon-styling padding-top--2px"
+                 [ngClass]="{'fa-chevron-down': requirementscapabilitiesgroup?.isOpen,
+           'fa-chevron-right': !requirementscapabilitiesgroup?.isOpen}"
+              ></i>
+          </div>
+          <winery-capabilities
+              (toggleModalHandler)="toggleModalHandler($event)">
+          </winery-capabilities>
+      </accordion-group>
 
     <!-- POLICIES -->
     <accordion-group
@@ -137,35 +158,181 @@
   </accordion>
 </div>
 
-<winery-modal bsModal #aboutModal="bs-modal" [modalRef]="aboutModal" >
-    <winery-modal-header [title]="'Winery 1.0.0-SNAPSHOT'">
+<!-- POLICIES MODAL -->
+<winery-modal bsModal #policiesModal="bs-modal" [modalRef]="policiesModal" >
+    <winery-modal-header [title]="'Add Policy'">
     </winery-modal-header>
     <winery-modal-body>
-        <p> Supporting <a href="docs.oasis-open.org/tosca/TOSCA/v1.0/os/TOSCA-v1.0-os.html">TOSCA-v1.0 &ndash;
-            Topology and Orchestration Specification for Cloud Applications Version 1.0. 25 November 2013. OASIS
-            Standard.</a><br/>
-            <br/>
-            Code contributions by Oliver Kopp, Tobias Binz, Uwe Breitenbücher, Kálmán Képes, Rene Trefft, Yves Schubert,
-            Timur Sungur, Jerome Tagliaferri, Tobias Unger, Lukas Harzenetter, Niko Stadelmaier, Tino Stadelmaier,
-            Nicole Keppler, Philipp Meyer, Lukas Balzer, Huixin Liu
-        </p>
-        <h3>License</h3>
-        <p>The Eclipse Foundation makes available all content of this software (&ldquo;Content&rdquo;).
-            Unless otherwise indicated below, the Content is provided to you under the terms and conditions of the
-            Eclipse Public License Version 2.0 (&ldquo;EPL&rdquo;) and the and the Apache License 2.0.
-            A copy of the EPL is available at <a href="http://www.eclipse.org/legal/epl-v20.html">http://www.eclipse.org/legal/epl-v20.html</a>.
-            A copy of the ASL is available at <a href="http://www.apache.org/licenses/LICENSE-2.0.html">http://www.apache.org/licenses/LICENSE-2.0.html</a>.
-            For purposes of the EPL, &ldquo;Program&rdquo; will mean the Content.</p>
-        <p>If you did not receive this Content directly from the Eclipse Foundation, the Content is being redistributed
-            by another party (&ldquo;Redistributor&rdquo;) and different terms and conditions may apply to your use of
-            any object code in the Content.
-            Check the Redistributor's license that was provided with the Content.
-            If no such license exists, contact the Redistributor.
-            Unless otherwise indicated below, the terms and conditions of the EPL still apply to any source code in the
-            Content and such source code may be obtained at <a href="http://www.eclipse.org">http://www.eclipse.org</a>.
-        </p>
+        <div class="form-group">
+            <label for="policyName" class="control-label">Name:</label>
+            <input id="policyName" class="form-control" name="Name" type="text" required="required" />
+        </div>
+
+        <div class="form-group">
+            <label for="policyType" class="control-label">Type:</label>
+            <select id="policyType" name="policyType" class="form-control">
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="policyTemplate" class="control-label">Policy Template:</label>
+
+            <select id="policyTemplate" class="form-control" name="policyTemplate"></select>
+        </div>
+
+        <div>
+            <div id="OrionpolicyXML" class="orionxmleditordiv" ><pre></pre></div>
+        </div>
     </winery-modal-body>
     <winery-modal-footer [showDefaultButtons]="false">
-        <button type="button" class="btn btn-default" (click)="aboutModal.hide()">Ok</button>
+        <button type="button" class="btn btn-default" (click)="policiesModal.hide()">Cancel</button>
+        <button type="button" id="addPolicy" class="btn btn-primary">Add</button>
+    </winery-modal-footer>
+</winery-modal>
+
+<!-- CAPABILITIES MODAL -->
+<winery-modal bsModal #capabilitiesModal="bs-modal" [modalRef]="capabilitiesModal" >
+    <winery-modal-header [title]="'Add Capability'">
+    </winery-modal-header>
+    <winery-modal-body>
+        <form id="addCapForm" enctype="multipart/form-data">
+            <fieldset>
+
+                <div class="form-group" id="CapIdGroup">
+                    <label for="CapId" class="control-label">Id:</label>
+                    <input id="CapId" class="form-control" name="CapId" type="text" required="required" />
+                </div>
+
+                <div class="form-group">
+                    <label for="CapNameChooser" class="control-label">Definition Name:</label>
+                    <select  id="CapNameChooser" class="form-control" type="text" required="required"> </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="CapTypeDisplay" class="control-label">Cap Type:</label>
+                    <input  id="CapTypeDisplay" class="form-control" type="text" required="required" disabled="disabled"/>
+                </div>
+
+                <div id="CapPropertiesContainer">
+                </div>
+            </fieldset>
+        </form>
+    </winery-modal-body>
+    <winery-modal-footer [showDefaultButtons]="false">
+        <button type="button" class="btn btn-default" (click)="capabilitiesModal.hide()">Cancel</button>
+        <button type="button" id="addCapbtn" class="btn btn-primary">Add</button>
+    </winery-modal-footer>
+</winery-modal>
+
+<!-- REQUIREMENTS MODAL -->
+<winery-modal bsModal #requirementsModal="bs-modal" [modalRef]="requirementsModal" >
+    <winery-modal-header [title]="'Add Requirement'">
+    </winery-modal-header>
+    <winery-modal-body>
+        <form id="addReqForm" enctype="multipart/form-data">
+            <fieldset>
+
+                <div class="form-group" id="ReqIdGroup">
+                    <label for="ReqId" class="control-label">Id:</label>
+                    <input id="ReqId" class="form-control" name="ReqId" type="text" required="required" />
+                </div>
+
+                <div class="form-group">
+                    <label for="ReqNameChooser" class="control-label">Definition Name:</label>
+                    <select  id="ReqNameChooser" class="form-control" type="text" required="required"> </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="ReqTypeDisplay" class="control-label">Cap Type:</label>
+                    <input  id="ReqTypeDisplay" class="form-control" type="text" required="required" disabled="disabled"/>
+                </div>
+
+                <div id="ReqPropertiesContainer">
+                </div>
+            </fieldset>
+        </form>
+    </winery-modal-body>
+    <winery-modal-footer [showDefaultButtons]="false">
+        <button type="button" class="btn btn-default" (click)="requirementsModal.hide()">Cancel</button>
+        <button type="button" id="addReqbtn" class="btn btn-primary">Add</button>
+    </winery-modal-footer>
+</winery-modal>
+
+<!-- DEPLOYMENT ARTIFACT MODAL -->
+<winery-modal bsModal #deploymentArtifactModal="bs-modal" [modalRef]="deploymentArtifactModal" >
+    <winery-modal-header [title]="'Add Deployment Artifact'">
+    </winery-modal-header>
+    <winery-modal-body>
+        <form id="addDeploymentArtifactForm" enctype="multipart/form-data">
+            <fieldset>
+
+                <div class="form-group">
+                    <label>Name</label>
+                    <input class="form-control" name="artifactName" id="artifactName" type="text" required="required" autocomplete="on" />
+                </div>
+                <h4>Artifact Template Creation</h4>
+                <div class="radio">
+                    <label>
+                        <input type="radio" name="artifactTemplateCreation" value="createArtifactTemplate" checked="checked" id="createArtifactTemplateInput"/>Create Artifact Template>
+                    </label>
+                    <p class="help-block">Check if you want to upload <strong>new</strong> files, you do not want to reuse existing files and you do not point to an image library.</p>
+                </div>
+                <div class="radio">
+                    <label>
+                        <input type="radio" name="artifactTemplateCreation" value="linkArtifactTemplate"/>Link Artifact Template
+                    </label>
+                    <p class="help-block">Check if you want to reuse existing files.</p>
+                </div>
+                <div class="radio">
+                    <label>
+                        <input type="radio" name="artifactTemplateCreation" value="skipArtifactTemplate"/>Do not create an artifact template
+                    </label>
+                    <p class="help-block">Check if you want to point to an image library.</p>
+                </div>
+            </fieldset>
+            <fieldset id="artifactTypeFieldset">
+                <div class="form-group" id="artifactTypeDiv">
+                    <label for="artifactType">Artifact Type</label>
+                    <select name="artifactType" class="form-control" id="artifactType">
+
+
+                    </select>
+                </div>
+            </fieldset>
+            <fieldset>
+                <div class="form-group-grouping">
+                    <!-- createArtifactTemplate class is required for artifactcreationdialog -->
+                    <div class="form-group createArtifactTemplate">
+                        <label>Artifact Template Name</label>
+                        <!-- name is an NCName -->
+                        <input class="artifactData form-control" id="artifactTemplateName" name="artifactTemplateName" type="text" required="required" autocomplete="on" placeholder="Enter name for artifact template" pattern="[\i-[:]][\c-[:]]*"/>
+                        <div id="artifactTemplateNameIsValid" class="invalid">
+                            <span id="artifactTemplateNameIsInvalidReason"></span>
+                        </div>
+                    </div>
+
+                    <!-- createArtifactTemplate class is required for artifactcreationdialog -->
+                    <div class="form-group createArtifactTemplate">
+                        <label for="artifactTemplateNS" class="control-label">Namespace</label>
+                        <input type="text" class="form-control" name="artifactTemplateNS" id="artifactTemplateNS" />
+                    </div>
+                </div>
+
+                <div id="linkArtifactTemplate" class="form-group" style="display:none;">
+                    <label for="divArtifactTemplateToLink">Artifact Template</label>
+                    <div id="divArtifactTemplateToLink">
+
+                        <select id=artifactTemplateToLink name="artifactTemplate" class="form-control" style="max-width: 90%">
+                        </select>
+
+                        <a href="#" target="_blank" class="btn btn-info btn-sm" id="viewArtifactTemplateToLink">view</a>
+                    </div>
+                </div>
+            </fieldset>
+        </form>
+    </winery-modal-body>
+    <winery-modal-footer [showDefaultButtons]="false">
+        <button type="button" class="btn btn-default" (click)="deploymentArtifactModal.hide()">Cancel</button>
+        <button type="button" class="btn btn-primary">Add</button>
     </winery-modal-footer>
 </winery-modal>
