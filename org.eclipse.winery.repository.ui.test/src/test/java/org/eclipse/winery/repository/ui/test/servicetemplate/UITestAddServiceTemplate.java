@@ -32,6 +32,7 @@ public class UITestAddServiceTemplate extends TestSettings {
 		addSelfService();
 		//addTags(Thread);
 		addDocu();
+		addTags();
 		deleteAll();
 
 		Assert.assertTrue(true);

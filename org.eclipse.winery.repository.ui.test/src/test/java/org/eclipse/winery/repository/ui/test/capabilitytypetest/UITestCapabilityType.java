@@ -83,8 +83,7 @@ public class UITestCapabilityType extends TestSettings {
 		driver.findElement(By.xpath("//a[@class='editButton']")).click();
 		driver.findElement(By.xpath("//div[@class='subMenu']//a[@class='styledTabMenuButton styledTabMenuButton2ndlevel']//div[contains(text(), 'Inheritance')]")).click();
 		driver.findElement(By.xpath("//div[@class='ui-select-match']")).click();
-		thread.sleep(20);
-		driver.findElement(By.xpath("//div[@class='ui-select-choices-row']//a[@class='dropdown-item']//div[contains(text(), 'CapabilityTypeWithOneKvProperty')]")).click();
+		driver.findElement(By.xpath("//div[@class='ui-select_choices-row']//a[@class='dropdown-item']//div[contains(text(), 'CapabilityTypeWithTwoKvProperty')]")).click();
 		driver.findElement(By.xpath("//button[@class='btn btn-primary'][contains(text(), 'Save')]")).click();
 
 		thread.sleep(2000);

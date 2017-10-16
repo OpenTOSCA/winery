@@ -20,8 +20,8 @@ public class UITestAddOtherArtifactTemplate extends TestSettings {
 		driver.findElement(By.xpath("//a[@class='btn btn-default'][contains(text(), 'Artifact Templates')]")).click();
 		//add new artifact template
 		driver.findElement(By.id("sectionsAddNewBtn")).click();
-		driver.findElement(By.id("componentName")).sendKeys("Hallo2");
-		driver.findElement(By.id("namespace")).sendKeys("http://plain.winery.opentosca.org/artifacttemplatetypes");
+		driver.findElement(By.id("componentName")).sendKeys("Hallo");
+		driver.findElement(By.id("namespace")).sendKeys("http://plain.winery.opentosca.org/capabilitytypes");
 		driver.findElement(By.xpath("//div[@class='ui-select-match']//span[@class='btn btn-default btn-secondary form-control ui-select-toggle']")).click();
 		driver.findElement(By.xpath("//a[@class='dropdown-item']//div[contains(text(), 'ArtifactTypeWithoutProperties')]")).click();
 		driver.findElement(By.xpath("//button[@class='btn btn-primary'][contains(text(), 'Add')]")).click();
@@ -30,13 +30,12 @@ public class UITestAddOtherArtifactTemplate extends TestSettings {
 
 		//add documentation
 		driver.findElement(By.xpath("//div[@class='subMenu']//a[@class='styledTabMenuButton styledTabMenuButton2ndlevel']//div[contains(text(), 'Documentation')]")).click();
-	 	driver.findElement(By.xpath("//div[@class='documentationField']//textarea[@class='texDoc ng-untouched ng-pristine ng-valid']")).sendKeys("Hallo, Ich bin eine Dokumentation!");
-		driver.findElement(By.xpath("//button[@class='btn btn-primary'][contains(text(), 'Save')]")).click();
-		Thread.sleep(1000);
-		//Delete 
-		driver.findElement(By.xpath("//button[@class='btn btn-danger'][contains(.,'Delete')]")).click();
-		driver.findElement(By.xpath("//button[@class='btn btn-primary'][contains(.,'Delete')]")).click();
-		Assert.assertTrue(true);
+		WebElement element = driver.findElement(By.xpath("//div[@class='documentationField']//textarea[@class='texDoc ng-untouched ng-pristine ng-valid']"));
+		element.click();
+		element.sendKeys("Hallo, Ich bin eine Dokumentation!");
+		WebElement element2 = driver.findElement(By.xpath("//div[@class='floatButton']//button[@class='btn btn-primary']"));
+		element2.click();
+		Assert.assertFalse("Can't add same NodeName", element2.isEnabled());
 	}
 }
 

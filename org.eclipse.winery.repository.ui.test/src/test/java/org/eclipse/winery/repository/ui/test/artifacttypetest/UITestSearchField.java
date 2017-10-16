@@ -16,7 +16,9 @@ public class UITestSearchField extends TestSettings {
 	public void testSearchField() throws Exception {
 		driver.get("http://localhost:4200/#/other");
 		driver.findElement(By.xpath("//a[@class='btn btn-default'][contains(text(), 'Artifact Types')]")).click();
-		driver.findElement(By.xpath("//input[@id='searchBox']")).sendKeys("ArtifactTypeWithTwoKvProperties");
-		Assert.assertTrue("Search Field works!", true);
+
+		WebElement element = driver.findElement(By.xpath("//input[@id='searchBox']"));
+		element.sendKeys("Hallo");
+		Assert.assertTrue("Search Field works!", element.isEnabled());
 	}
 }

@@ -16,7 +16,7 @@ public class UITestGroupByNamespace extends TestSettings {
 	//"Group by namespace" and change then to "show all items"
 	public void testGroupByNamespace() throws Exception {
 		driver.get("http://localhost:4200/#/other");
-		driver.findElement(By.xpath("//a[@class='btn btn-default'][contains(text(), 'Artifact Types')]")).click();
+		driver.findElement(By.xpath("//a[@class='btn btn-default'][contains(text(), 'Artifact Templates')]")).click();
 		driver.findElement(By.id("sectionsGroupBtn")).click();
 		driver.findElement(By.id("sectionsGroupBtn")).click();
 		WebElement element = driver.findElement(By.id("sectionsGroupBtn"));

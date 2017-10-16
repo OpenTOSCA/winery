@@ -21,7 +21,7 @@ public class UITestAddArtifactTemplate extends TestSettings {
 		driver.findElement(By.xpath("//a[@class='btn btn-default'][contains(text(), 'Artifact Templates')]")).click();
 		driver.findElement(By.id("sectionsAddNewBtn")).click();
 		driver.findElement(By.id("componentName")).sendKeys("Hallo");
-		driver.findElement(By.id("namespace")).sendKeys("http://plain.winery.opentosca.org/artifacttemplatetypes");
+		driver.findElement(By.id("namespace")).sendKeys("http://plain.winery.opentosca.org/capabilitytypes");
 		driver.findElement(By.xpath("//div[@class='ui-select-match']//span[@class='btn btn-default btn-secondary form-control ui-select-toggle']")).click();
 		driver.findElement(By.xpath("//a[@class='dropdown-item']//div[contains(text(), 'ArtifactTypeWithoutProperties')]")).click();
 		driver.findElement(By.xpath("//button[@class='btn btn-primary'][contains(text(), 'Add')]")).click();
@@ -33,10 +33,11 @@ public class UITestAddArtifactTemplate extends TestSettings {
 		driver.findElement(By.xpath("//a[@class='btn btn-default'][contains(text(), 'Artifact Templates')]")).click();
 		driver.findElement(By.id("sectionsAddNewBtn")).click();
 		driver.findElement(By.id("componentName")).sendKeys("Hallo");
-		driver.findElement(By.id("namespace")).sendKeys("http://plain.winery.opentosca.org/artifacttemplatetypes");
+		driver.findElement(By.id("namespace")).sendKeys("http://plain.winery.opentosca.org/capabilitytypes");
 		driver.findElement(By.xpath("//div[@class='ui-select-match']")).click();
 		driver.findElement(By.xpath("//a[@class='dropdown-item']//div[contains(text(), 'ArtifactTypeWithoutProperties')]")).click();
 		WebElement element = driver.findElement(By.xpath("//button[@class='btn btn-primary'][contains(text(), 'Add')]"));
+		element.click();
 		Assert.assertFalse("Can't add same NodeName", element.isEnabled());
 	}
 }

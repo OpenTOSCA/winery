@@ -17,6 +17,10 @@ public class UITestExportAsCsar extends TestSettings {
 		driver.get("http://localhost:4200/#/other");
 		driver.findElement(By.xpath("//a[@class='btn btn-default'][contains(text(), 'Artifact Templates')]")).click();
 		driver.findElement(By.xpath("//a[@class='exportButton']")).click();
-		Assert.assertTrue("Export Artifact Template as CSAR successful", true);
+		//driver.findElement(By.xpath("//button[contains(text(), 'OK')]"));
+
+		WebElement element = driver.findElement(By.xpath("//button[contains(text(), 'OK')]"));
+		element.click();
+		Assert.assertTrue("Export Artifact Template as CSAR successful", element.isEnabled());
 	}
 }
