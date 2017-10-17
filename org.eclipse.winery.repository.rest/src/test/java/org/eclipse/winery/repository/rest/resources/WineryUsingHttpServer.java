@@ -43,6 +43,7 @@ public class WineryUsingHttpServer {
 		return createHttpServer(8080);
 	}
 
+	
 	private static void addServlet(ServletContextHandler context, String s) {
 		ServletHolder h = context.addServlet(com.sun.jersey.spi.container.servlet.ServletContainer.class, "/*");
 		h.setInitParameter("com.sun.jersey.config.property.packages", "org.eclipse.winery.repository.rest.resources");
