@@ -34,6 +34,7 @@ public class UITestNodeTypes extends TestSettings {
 		driver.findElement(By.id("sectionsAddNewBtn")).click();
 		driver.findElement(By.id("componentName")).sendKeys("TestNode");
 		driver.findElement(By.id("namespace")).sendKeys("http://plain.winery.opentosca.org/nodetypes");
+		Thread.sleep(20);
 		driver.findElement(By.xpath("//div[@class='modal-footer']//button[contains(.,'Add')]")).click();
 
 		//Refresh page

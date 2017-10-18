@@ -31,10 +31,9 @@ public class UITestAddArtifact extends TestSettings {
 		driver.findElement(By.xpath("//a[@class='btn btn-default'][contains(text(), 'Artifact Types')]")).click();
 		driver.findElement(By.id("sectionsAddNewBtn")).click();
 		driver.findElement(By.id("componentName")).sendKeys("Hallo");
-		driver.findElement(By.id("namespace")).sendKeys("http://plain.winery.opentosca.org/capabilitytypes");
+		driver.findElement(By.id("namespace")).sendKeys("http://plain.winery.opentosca.org/artifacttypes");
 
 		WebElement element = driver.findElement(By.xpath("//button[@class='btn btn-primary'][contains(text(), 'Add')]"));
-		element.click();
 		Assert.assertFalse("Can't add same NodeName", element.isEnabled());
 	}
 }

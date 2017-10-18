@@ -18,11 +18,10 @@ public class UITestDeleteArtifact extends TestSettings {
 
 		driver.get("http://localhost:4200/#/other");
 		driver.findElement(By.xpath("//a[@class='btn btn-default'][contains(text(), 'Artifact Types')]")).click();
-		driver.findElement(By.xpath("//div[@class='entityContainer artifactType']//div[@class='center']//div[@class='informationContainer']//div[@class='name'][contains(text(), 'Hallo')]//a[@class='deleteButton']")).click();
-
-		WebElement element = driver.findElement(By.xpath("//button[@class='btn btn-primary']"));
-		element.click();
-		Assert.assertTrue("Delete Artifact Type successful", element.isEnabled());
-
+		driver.findElement(By.xpath("//div[@class='center']//div[@class='informationContainer']//div[@class='name'][contains(text(), 'Hallo')]")).click();
+		driver.findElement(By.xpath("//button[@class='btn btn-danger'][contains(.,'Delete')]")).click();
+		driver.findElement(By.xpath("//button[@class='btn btn-primary'][contains(.,'Delete')]")).click();
+		//driver.findElement(By.xpath("//button[@class='btn btn-primary']")).click();
+		Assert.assertTrue("Delete Artifact Type successful", true);
 	}
 }

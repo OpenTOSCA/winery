@@ -30,39 +30,35 @@ public class UITestArtifactTemplateGeneral extends TestSettings {
 		driver.findElement(By.xpath("//a[@class='dropdown-item']//div[contains(text(), 'ArtifactTypeWithTwoKvProperties')]")).click();
 		driver.findElement(By.xpath("//button[@class='btn btn-primary'][contains(text(), 'Add')]")).click();
 
-		thread.sleep(2000);
+		thread.sleep(50);
 
 		addOtherArtifactTemplate(thread);
 		editArtifactTemplate(thread, originalHandle);
 		deleteArtifactTemplate(thread);
-		exportCSAR();
-
 		Assert.assertTrue(true);
 	}
 
 	private void addOtherArtifactTemplate(Thread thread) throws InterruptedException {
 		//add another artifact template
-		driver.findElement(By.xpath("//a[@class='styledTabMenuButton selected']//div[contains(text(), 'Other Elements: Artifact Templates')]")).click();
+		driver.get("http://localhost:4200/#/other");
 		driver.findElement(By.xpath("//a[@class='btn btn-default'][contains(text(), 'Artifact Templates')]")).click();
 		driver.findElement(By.id("sectionsAddNewBtn")).click();
 		driver.findElement(By.id("componentName")).sendKeys("OtherArtifactTemplateTest");
-		driver.findElement(By.id("namespace")).sendKeys("http://plain.winery.opentosca.org/artifacttypes");
+		driver.findElement(By.id("namespace")).sendKeys("http://plain.winery.opentosca.org/artifacttemplatetypes");
 		driver.findElement(By.xpath("//div[@class='ui-select-match']//span[@class='btn btn-default btn-secondary form-control ui-select-toggle']")).click();
 		driver.findElement(By.xpath("//a[@class='dropdown-item']//div[contains(text(), 'ArtifactTypeWithoutProperties')]")).click();
 		driver.findElement(By.xpath("//button[@class='btn btn-primary'][contains(text(), 'Add')]")).click();
-
-		thread.sleep(2000);
+		thread.sleep(50);
 	}
 
 	private void editArtifactTemplate(Thread thread, String originalHandle) throws InterruptedException {
 		//edit artifact template, go to XML view
-		driver.findElement(By.xpath("//a[@class='styledTabMenuButton selected']//div[contains(text(), 'Other Elements: Artifact Templates')]")).click();
+		driver.get("http://localhost:4200/#/other");
 		driver.findElement(By.xpath("//a[@class='btn btn-default'][contains(text(), 'Artifact Templates')]")).click();
 		driver.findElement(By.xpath("//a[@class='editButton']")).click();
 		driver.findElement(By.xpath("//a[@class='btn btn-info']")).click();
-
 		//close opened tab with xml view
-		thread.sleep(2000);
+		thread.sleep(50);
 
 		for (String handle : driver.getWindowHandles()) {
 			if (!handle.equals(originalHandle)) {
@@ -70,28 +66,25 @@ public class UITestArtifactTemplateGeneral extends TestSettings {
 				driver.close();
 			}
 		}
-		thread.sleep(5000);
-
+		thread.sleep(50);
 		driver.switchTo().window(originalHandle);
-
-		thread.sleep(2000);
+		thread.sleep(50);
 	}
 
 	private void deleteArtifactTemplate(Thread thread) throws InterruptedException {
-		//delete artifact template
-		driver.findElement(By.xpath("//a[@class='styledTabMenuButton selected']//div[contains(text(), 'Other Elements: Artifact Templates')]")).click();
-		driver.findElement(By.xpath("//a[@class='btn btn-default'][contains(text(), 'Artifact Templates')]")).click();
-		driver.findElement(By.xpath("//a[@class='deleteButton']")).click();
-		driver.findElement(By.xpath("//button[@class='btn btn-primary']")).click();
 
+		driver.get("http://localhost:4200/#/other");
+		driver.findElement(By.xpath("//a[@class='btn btn-default'][contains(text(), 'Artifact Templates')]")).click();
+		driver.findElement(By.xpath("//div[@class='center']//div[@class='informationContainer']//div[@class='name'][contains(text(), 'OtherArtifactTemplateTest')]")).click();
+		driver.findElement(By.xpath("//button[@class='btn btn-danger'][contains(.,'Delete')]")).click();
+		driver.findElement(By.xpath("//button[@class='btn btn-primary'][contains(.,'Delete')]")).click();
 		thread.sleep(2000);
-	}
-
-	private void exportCSAR() throws InterruptedException {
-		//export CSAR
-		driver.findElement(By.xpath("//a[@class='styledTabMenuButton selected']//div[contains(text(), 'Other Elements: Artifact Templates')]")).click();
+		
+		//delete artifact template
+		driver.get("http://localhost:4200/#/other");
 		driver.findElement(By.xpath("//a[@class='btn btn-default'][contains(text(), 'Artifact Templates')]")).click();
-		driver.findElement(By.id("sectionsImportCsarBtn")).click();
-		driver.findElement(By.xpath("//input[@type='file']")).click();
+		driver.findElement(By.xpath("//div[@class='center']//div[@class='informationContainer']//div[@class='name'][contains(text(), 'ArtifactTemplateTest')]")).click();
+		driver.findElement(By.xpath("//button[@class='btn btn-danger'][contains(.,'Delete')]")).click();
+		driver.findElement(By.xpath("//button[@class='btn btn-primary'][contains(.,'Delete')]")).click();
 	}
 }
