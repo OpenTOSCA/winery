@@ -51,7 +51,7 @@ public class UITestAddServiceTemplate extends TestSettings {
 	}
 
 	private void addTags() throws InterruptedException {
-		driver.findElement(By.xpath("//a[@class='styledTabMenuButton styledTabMenuButton2ndlevel selected']//div[contains(.,'Tags')]")).click();
+		driver.findElement(By.xpath("//a[@class='styledTabMenuButton styledTabMenuButton2ndlevel']//div[contains(.,'Tags')]")).click();
 		driver.findElement(By.xpath("//button[@class='rightbutton btn btn-primary btn-xs'][contains(.,'Add')]")).click();
 		driver.findElement(By.id("name")).sendKeys("addTag");
 		driver.findElement(By.id("value")).sendKeys("addValue");

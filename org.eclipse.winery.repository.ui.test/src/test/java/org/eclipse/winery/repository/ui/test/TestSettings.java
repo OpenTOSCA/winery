@@ -42,7 +42,7 @@ public class TestSettings extends TestWithGitBackedRepository {
 				// for tests in the IDE only -- for travis, the binary should have been automatically downloaded - see https://github.com/Ardesco/Selenium-Maven-Template/blob/master/pom.xml
 
 				//System.setProperty(, "C:/Users/Franzi/Documents/geckodriver.exe");
-				System.setProperty("webdriver.gecko.driver", "C:/Users/asst/Desktop/geckodriver.exe");
+				System.setProperty("webdriver.gecko.driver", "C:/Users/lharz/Downloads/geckodriver.exe");
 			}
 
 			DesiredCapabilities desiredCapabilities = DesiredCapabilities.firefox();
@@ -67,7 +67,7 @@ public class TestSettings extends TestWithGitBackedRepository {
 
 	@Before
 	public void setToLatestRevision() throws Exception {
-		this.setRevisionTo("origin/black");
+		this.setRevisionTo("origin/plain");
 	}
 
 	@AfterClass
