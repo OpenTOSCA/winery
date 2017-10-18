@@ -5,7 +5,7 @@ import org.junit.Test;
 import org.openqa.selenium.By;
 
 public class UITestBaobab extends TestSettings {
-	
+
 	@Test
 	public void baobabtest() throws Exception {
 		driver.get("http://localhost:4200/#/nodetypes");

@@ -2,10 +2,12 @@ package org.eclipse.winery.repository.ui.test;
 
 import java.net.URL;
 
+import org.eclipse.winery.repository.TestWithGitBackedRepository;
 import org.eclipse.winery.repository.rest.server.WineryUsingHttpServer;
 
 import org.eclipse.jetty.server.Server;
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
@@ -13,7 +15,7 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 
-public class TestSettings {
+public class TestSettings extends TestWithGitBackedRepository {
 
 	protected static RemoteWebDriver driver;
 
@@ -39,6 +41,7 @@ public class TestSettings {
 			DesiredCapabilities desiredCapabilities = DesiredCapabilities.firefox();
 			desiredCapabilities.setCapability("marionette", true);
 			driver = new FirefoxDriver(desiredCapabilities);
+			//driver = new FirefoxDriver();
 		} else {
 			runsOnSauce = true;
 			String sauceAccessKey = System.getenv("SAUCE_ACCESS_KEY");
@@ -54,6 +57,11 @@ public class TestSettings {
 		}
 
 		driver.manage().timeouts().implicitlyWait(10, SECONDS);
+	}
+
+	@Before
+	public void setToLatestRevision() throws Exception {
+		this.setRevisionTo("origin/black");
 	}
 
 	@AfterClass
