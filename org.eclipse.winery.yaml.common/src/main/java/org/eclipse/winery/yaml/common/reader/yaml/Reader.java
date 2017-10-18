@@ -1,21 +1,18 @@
 /*******************************************************************************
  * Copyright (c) 2017 University of Stuttgart.
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License v2.0
  * and the Apache License 2.0 which both accompany this distribution,
- * and are available at http://www.eclipse.org/legal/epl-v10.html
+ * and are available at http://www.eclipse.org/legal/epl-v20.html
  * and http://www.apache.org/licenses/LICENSE-2.0
- *
- * Contributors:
- *     Christoph Kleine - initial API and implementation
  *******************************************************************************/
 package org.eclipse.winery.yaml.common.reader.yaml;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Path;
 
 import org.eclipse.winery.model.tosca.yaml.TImportDefinition;
 import org.eclipse.winery.model.tosca.yaml.TServiceTemplate;
@@ -43,17 +40,6 @@ public class Reader {
         this.yaml = new Yaml();
     }
 
-    /**
-     * @param fileName the file to parse
-     */
-    public TServiceTemplate parse(Path fileName) throws MultiException {
-        return this.readServiceTemplate(fileName.getParent().toString(), fileName.getFileName().toString(), Namespaces.DEFAULT_NS);
-    }
-
-    /**
-     * @deprecated Use {@link Reader#parse(java.nio.file.Path)}
-     */
-    @Deprecated
     public TServiceTemplate parse(String path, String file) throws MultiException {
         return this.readServiceTemplate(path, file, Namespaces.DEFAULT_NS);
     }
@@ -98,16 +84,17 @@ public class Reader {
      * @throws MissingFile if the file could not be found.
      */
     private Object readObject(String fileName) throws MissingFile {
-        InputStream inputStream;
-        try {
-            File file = new File(fileName);
-            inputStream = new FileInputStream(file);
+        File file = new File(fileName);
+        try (InputStream inputStream = new FileInputStream(file)) {
+            return this.yaml.load(inputStream);
         } catch (FileNotFoundException e) {
             MissingFile ex = new MissingFile("The file \"" + fileName + "\" could not be found!");
             ex.setFileContext(fileName);
             throw ex;
+        } catch (IOException e) {
+            LOGGER.error("Could not read from inputstream", e);
+            return null;
         }
-        return this.yaml.load(inputStream);
     }
 
     /**

@@ -8,6 +8,11 @@ jdk:
 sudo: required
 dist: trusty
 
+addons:
+  sauce_connect:
+    username: "koppor"
+    access_key: "c155c8a7-2b78-4731-8771-24229ba18c9f"
+
 before_install:
   # This is https://github.com/codacy/codacy-coverage-reporter#install-jpm, but the SSL certificate is expired, therefore we directly do the commands of the install script here
   # This is needed, because we use TypeScript and Java in one project
@@ -16,6 +21,14 @@ before_install:
   #- java -jar jpm4j.jar -u init
   # - ~/jpm/bin/jpm install com.codacy:codacy-coverage-reporter:assembly
   - mvn resources:resources -pl org.eclipse.winery.repository.configuration
+
+before_script:
+  - "export DISPLAY=:99.0"
+  - "sh -e /etc/init.d/xvfb start"
+  - sleep 3 # give xvfb some time to start
+  - mvn -pl org.eclipse.winery.repository.rest,org.eclipse.winery.repository.ui -am package -DskipTests
+  - java -jar java -jar org.eclipse.winery.repository.rest/target/winery-rest-server.jar&
+  - sleep 3 # give Web server some time to bind to sockets, etc
 
 script:
   - mvn package
