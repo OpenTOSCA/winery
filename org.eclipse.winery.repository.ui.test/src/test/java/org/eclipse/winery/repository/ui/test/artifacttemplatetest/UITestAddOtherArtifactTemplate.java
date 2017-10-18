@@ -1,6 +1,5 @@
 package org.eclipse.winery.repository.ui.test.artifacttemplatetest;
 
-import javax.validation.constraints.AssertFalse;
 import javax.validation.constraints.AssertTrue;
 
 import org.eclipse.winery.repository.ui.test.TestSettings;
