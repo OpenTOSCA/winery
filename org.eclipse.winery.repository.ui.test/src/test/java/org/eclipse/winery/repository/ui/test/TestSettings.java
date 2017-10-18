@@ -19,6 +19,8 @@ public class TestSettings extends TestWithGitBackedRepository {
 
 	protected static RemoteWebDriver driver;
 
+	private static final String WEBDRIVER_GECKO_DRIVER = "webdriver.gecko.driver";
+
 	private static Server repositoryServer;
 	private static Server repositoryUiServer;
 
@@ -36,12 +38,16 @@ public class TestSettings extends TestWithGitBackedRepository {
 			repositoryUiServer = WineryUsingHttpServer.createHttpServerForRepositoryUi();
 			repositoryUiServer.start();
 
-			//System.setProperty("webdriver.gecko.driver", "C:/Users/Franzi/Documents/geckodriver.exe");
-			System.setProperty("webdriver.gecko.driver", "C:/Users/asst/Desktop/geckodriver.exe");
+			if (System.getProperty(WEBDRIVER_GECKO_DRIVER) == null) {
+				// for tests in the IDE only -- for travis, the binary should have been automatically downloaded - see https://github.com/Ardesco/Selenium-Maven-Template/blob/master/pom.xml
+
+				//System.setProperty(, "C:/Users/Franzi/Documents/geckodriver.exe");
+				System.setProperty("webdriver.gecko.driver", "C:/Users/asst/Desktop/geckodriver.exe");
+			}
+
 			DesiredCapabilities desiredCapabilities = DesiredCapabilities.firefox();
 			desiredCapabilities.setCapability("marionette", true);
 			driver = new FirefoxDriver(desiredCapabilities);
-			//driver = new FirefoxDriver();
 		} else {
 			runsOnSauce = true;
 			String sauceAccessKey = System.getenv("SAUCE_ACCESS_KEY");

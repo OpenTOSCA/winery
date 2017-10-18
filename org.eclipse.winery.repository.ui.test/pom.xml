@@ -78,6 +78,73 @@
 					<target>1.8</target>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>com.lazerycode.selenium</groupId>
+				<artifactId>driver-binary-downloader-maven-plugin</artifactId>
+				<version>1.0.14</version>
+				<configuration>
+					<rootStandaloneServerDirectory>${project.basedir}/src/test/resources/selenium_standalone_binaries
+					</rootStandaloneServerDirectory>
+					<downloadedZipFileDirectory>${project.basedir}/src/test/resources/selenium_standalone_zips
+					</downloadedZipFileDirectory>
+					<customRepositoryMap>${project.basedir}/src/test/resources/RepositoryMap.xml</customRepositoryMap>
+					<overwriteFilesThatExist>false</overwriteFilesThatExist>
+					<onlyGetDriversForHostOperatingSystem>false</onlyGetDriversForHostOperatingSystem>
+					<fileDownloadRetryAttempts>3</fileDownloadRetryAttempts>
+					<fileDownloadReadTimeout>3000</fileDownloadReadTimeout>
+					<operatingSystems>
+						<windows>true</windows>
+						<linux>true</linux>
+						<mac>true</mac>
+					</operatingSystems>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>selenium</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-failsafe-plugin</artifactId>
+				<version>2.19.1</version>
+				<configuration>
+					<parallel>methods</parallel>
+					<threadCount>1</threadCount>
+					<systemPropertyVariables>
+						<browser>firefox</browser>
+						<screenshotDirectory>${project.build.directory}/screenshots</screenshotDirectory>
+						<remoteDriver>false</remoteDriver>
+						<!--
+                                                <gridURL>${seleniumGridURL}</gridURL>
+                                                <desiredPlatform>${platform}</desiredPlatform>
+                                                <desiredBrowserVersion>${browserVersion}</desiredBrowserVersion>
+                                                <proxyEnabled>${proxyEnabled}</proxyEnabled>
+                                                <proxyHost>${proxyHost}</proxyHost>
+                                                <proxyPort>${proxyPort}</proxyPort>
+                        -->
+
+						<!--Set properties passed in by the driver binary downloader-->
+						<phantomjs.binary.path>${phantomjs.binary.path}</phantomjs.binary.path>
+						<webdriver.chrome.driver>${webdriver.chrome.driver}</webdriver.chrome.driver>
+						<webdriver.ie.driver>${webdriver.ie.driver}</webdriver.ie.driver>
+						<webdriver.opera.driver>${webdriver.opera.driver}</webdriver.opera.driver>
+						<webdriver.gecko.driver>${webdriver.gecko.driver}</webdriver.gecko.driver>
+						<webdriver.edge.driver>${webdriver.edge.driver}</webdriver.edge.driver>
+					</systemPropertyVariables>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>integration-test</goal>
+							<!--This goal makes the build fail if you have test failures-->
+							<goal>verify</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
 </project>
