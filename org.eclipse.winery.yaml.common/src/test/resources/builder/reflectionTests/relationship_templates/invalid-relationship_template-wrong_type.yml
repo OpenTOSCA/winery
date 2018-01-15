@@ -7,57 +7,10 @@ metadata:
   reference: 3.7.4
   exception: UndefinedType
     
-interface_types:
-  ift1:
-    derived_from: tosca.interfaces.Root
-    version: 1.0.0
-    metadata:
-      md1: Metadata value
-    description: Interface type description
-    inputs: 
-      ift1.ipt1:
-        type: string
-    op1: 
-      description: Interface operation description
-
-relationship_types:
-  rlt1:
-    derived_from: tosca.relationships.Root
-    version: 1.0.0
-    description: Relationship type description
-    metadata:
-      md1: Metadata value
-    properties: 
-      rlt1.prt1: 
-        type: string
-    attributes: 
-      rlt1.attr1: 
-        type: string
-    interfaces:
-      intf1:
-        type: tosca.interfaces.node.lifecycle.Standard
-        inputs:
-          intf1.prt1: 
-            type: string
-        op1:
-          description: Interface operation description
-    valid_target_types: [ ntp1 ]
     
 topology_template:
   description: Topology template description  
   relationship_templates:
     rltp1:
       type: type
-      description: Relationship template description
-      metadata:
-        md1: Metadata value
-      properties:
-        rlt1.prt1: String value
-      attributes:
-        rlt1.attr: String value
-      interfaces:
-        intf1:
-          inputs:
-            ift1.ipt1: interface value
-          op1: 
-            description: Interface operation description
+     

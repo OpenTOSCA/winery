@@ -1,24 +1,12 @@
 tosca_definitions_version: tosca_simple_yaml_1_1
 
 metadata:
-  description: This test contains a valid node_template.
+  description: This test contains an invalid node_template with a missing 'selectable' value in the directives keyname.
   targetNamespace: http://www.example.org/ns/simple/yaml/1.1/test
   tosca.version: 1.1
   reference: 3.7.3
-  exception: None
-  keyname: topology_template.node_templates.ndt1
-  assert: |
-    type = ntp1
-    description = Node template description
-    metadata.md1 = Metadata value
-    properties.ndt1.prp1 = Property value
-    attributes.ndt1.attr1 = Attribute value
-    requirements.0.rqr1.node = ndt1
-    capabilities.cbt1.properties.prt1 = Property assignment value
-    interfaces.intf1.inputs.ift1.ipt1 = interface value
-    interfaces.intf1.operations.op1.description = Interface operation description
-    artifacts.artf1.type = test.artifacttypes.at1
-    artifacts.artf1.files = [artifacts/example.py]    
+  exception: 
+  keyname: topology_template.node_templates.ndt1     
 
 capability_types:
   cbt1:
@@ -139,6 +127,7 @@ topology_template:
       description: Node template description
       metadata: 
         md1: Metadata value
+      directives: [drt1]
       properties:
         ndt1.prp1: Property value
       attributes:
@@ -159,5 +148,10 @@ topology_template:
       artifacts:
         artf1:
           type: test.artifacttypes.at1
-          file: artifacts/example.py     
+          file: artifacts/example.py
+      node_filter:
+        properties:
+          - ndt1.prp1: { equal: 2 }
+          
+             
     
