@@ -9,5 +9,5 @@ metadata:
 
 capability_types:
   test.capabilities.ct1:
-    derived_from: undefined
+    derived_from: tosca.groups.Root
     
