@@ -12,7 +12,6 @@ topology_template:
   node_templates:
     ndt1:
       type: tosca.nodes.Root
-      description: Node template description
   groups:
       gtd1:
         type: tosca.groups.Root

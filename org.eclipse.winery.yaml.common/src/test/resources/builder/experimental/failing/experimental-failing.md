@@ -110,6 +110,65 @@ According to the spec a valid artifact definition requires the file to be define
 
 A missing file should cause an exception to be thrown, but currently causes an assertion error.
 
+## invalid-input-wrong_value_type
+
+- tosca.version: 1.1
+- reference: 3.5.12
+
+According to the spec, <parameter-value> represents a type-compatible value to assign to the named parameter.
+
+```yaml
+<parameter_name>:
+  type: <parameter_type>
+  value: <parameter_value>
+ ``` 
+In this test a type-incompatible value is assigned, which is not caught by the validator. Example see below:
+```yaml
+ipt1: 
+  type: integer
+  value: value
+```
+
+## invalid-input-wrong_default_type
+
+- tosca.version: 1.1
+- reference: 3.5.12.3
+
+According to the additional requirements in the spec: 'The value provided on a parameter definition’s default keyname SHALL be type compatible 1291 with the type declared on the definition’s type keyname.'
+
+Example for an invalid type test:
+```yaml
+ipt1: 
+  type: integer      
+  default: value
+```
+
+In this test, a type-incompatible default value is assigned, which is currently not caught by the validator.
+
+## invalid-constraints-topology_template-input-wrong_constraint_type
+
+- tosca.version: 1.1
+- reference: 3.5.12.3
+
+According to the spec: 'Constraints of a parameter definition SHALL be type-compatible with the type defined for that definition'.
+
+This test contains a mismatch between types, which is not caught by the validator.
+
+Example:
+
+````yaml
+ipt1: 
+  type: integer      
+  constraints:
+    - greater_or_equal: value
+````
+
+
+
+
+
+
+
 
 
 
