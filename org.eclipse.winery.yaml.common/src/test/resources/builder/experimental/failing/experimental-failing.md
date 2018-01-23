@@ -163,6 +163,57 @@ ipt1:
     - greater_or_equal: value
 ````
 
+## invalid-group_definition-wrong_member
+
+- tosca.version: 1.1
+- reference: 3.7.5
+
+The 'members' field of a group definition contains the required list of one or more node template names (within the same topology template) that are members of this logical group.
+
+In this test the member field contains a node template which is not specified within the same topology template:
+
+This error is currently not detected by the validator.
+
+
+
+
+## valid-policy_definitions
+
+- tosca.version: 1.1
+- reference: 3.7.6
+
+This test contains a valid policy definition.
+
+Running this test causes a ArrayIndexOutOfBoundsException to be thrown. 
+
+## invalid-node_template-wrong_directives
+
+According to the spec: 'The node_filter keyword (and supporting grammar) SHALL only be valid if the Node Template has a directive keyname with the value of “selectable” set.'
+
+This test does not contain the correct directive, however the use of directives is not yet supported. Maybe leave the test for a later version of the spec.
+
+## invalid-artifact_definition-node_template-artifacts-missing_file
+
+This test contains a node template with an invalid artifact definition where the required file is missing.
+This test should lead to an exception but nothing gets thrown.
+
+## invalid-artifact_definition-node_template-artifacts-missing_type
+
+This test contains a node template with an invalid artifact definition where the required type is missing.
+This test should lead to an exception but nothing gets thrown.
+
+## invalid-artifact_definition-node_template-artifacts-wrong_type
+
+This test contains a node template with an invalid artifact definition where undefined type is given.
+This test should lead to an exception but nothing gets thrown.
+
+
+
+
+
+ 
+
+
 
 
 

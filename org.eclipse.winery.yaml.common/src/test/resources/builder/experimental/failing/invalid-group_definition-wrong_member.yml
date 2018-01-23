@@ -9,12 +9,9 @@ metadata:
   
 
 topology_template:
-  node_templates:
-    ndt1:
-      type: tosca.nodes.Root
   groups:
       gtd1:
         type: tosca.groups.Root
-        members: [ ndt2 ]
+        members: [ ndt1 ]
        
     

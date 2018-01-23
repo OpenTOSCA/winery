@@ -14,6 +14,6 @@ topology_template:
       type: tosca.nodes.Root      
       artifacts:
         artf1:
-          type: test.artifacttypes.at1
+          type: test.artifacts.Root
           file:      
     

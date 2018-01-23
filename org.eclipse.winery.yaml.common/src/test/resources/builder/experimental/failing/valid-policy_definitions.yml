@@ -8,16 +8,10 @@ metadata:
   exception: None
   assert-typeof: |
   assert: |    
-    node_types.ntp1.version = 1.0.0
     node_types.ntp1.derived_from = tosca.nodes.Root
-    policy_types.plt1.version = 1.0.0
-    policy_types.plt1.metadata.md1 = Metadata value
-    policy_types.plt1.description = Policy type description
     policy_types.plt1.properties.plt1.prt1.type = string
     policy_types.plt1.targets = [ntp1]
-    topology_template.description = Topology template description
     topology_template.node_templates.ndt1.type = ntp1
-    topology_template.node_templates.ndt1.description = Node template description    
     topology_template.policies.plc1.type = plt1
     topology_template.policies.plc1.description = Policy definition
     topology_template.policies.plc1.metadata.md1 = Metadata value
@@ -27,26 +21,19 @@ metadata:
 node_types:
   ntp1:
     derived_from: tosca.nodes.Root
-    version: 1.0.0       
     
 policy_types:
   plt1:
     derived_from: tosca.policies.Performance
-    version: 1.0.0
-    metadata:
-      md1: Metadata value
-    description: Policy type description
     properties:
       plt1.prt1:
         type: string
     targets: [ntp1]
     
 topology_template:
-  description: Topology template description  
   node_templates:
     ndt1:
       type: ntp1
-      description: Node template description      
   policies:
     plc1:
       type: plt1
