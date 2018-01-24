@@ -13,6 +13,7 @@ metadata:
     value = 42
     required = false
     default = 99
+    status = deprecated
     constraints.0.greater_or_equal = 42
     entry_schema.description = entry_schema description
     entry_schema.type = integer
@@ -26,6 +27,7 @@ topology_template:
       value: 42
       required: false
       default: 99
+      status: deprecated
       constraints:
         - greater_or_equal: 42
       entry_schema:
