@@ -176,7 +176,6 @@ This error is currently not detected by the validator.
 
 
 
-
 ## valid-policy_definitions
 
 - tosca.version: 1.1
@@ -188,24 +187,49 @@ Running this test causes a ArrayIndexOutOfBoundsException to be thrown.
 
 ## invalid-node_template-wrong_directives
 
+- tosca.version: 1.1
+- reference: 3.7.3.3
+
 According to the spec: 'The node_filter keyword (and supporting grammar) SHALL only be valid if the Node Template has a directive keyname with the value of “selectable” set.'
 
 This test does not contain the correct directive, however the use of directives is not yet supported. Maybe leave the test for a later version of the spec.
 
 ## invalid-artifact_definition-node_template-artifacts-missing_file
 
+- tosca.version: 1.1
+- reference: 3.5.6
+
 This test contains a node template with an invalid artifact definition where the required file is missing.
 This test should lead to an exception but nothing gets thrown.
 
 ## invalid-artifact_definition-node_template-artifacts-missing_type
+
+- tosca.version: 1.1
+- reference: 3.5.6
 
 This test contains a node template with an invalid artifact definition where the required type is missing.
 This test should lead to an exception but nothing gets thrown.
 
 ## invalid-artifact_definition-node_template-artifacts-wrong_type
 
+- tosca.version: 1.1
+- reference: 3.5.6
+
 This test contains a node template with an invalid artifact definition where undefined type is given.
 This test should lead to an exception but nothing gets thrown.
+
+## invalid-relationship_template-wrong-source_template
+
+- tosca.version: 1.1
+- reference: 3.7.4.3
+
+The source relationship template provided as a value on the copy keyname MUST NOT itself use the copy keyname (i.e., it must itself be a complete relationship template description and not copied from another relationship template).
+
+This test contains a relationship template using another relationship with a 'copy' keyname as a source tempalte.
+
+According to the spec this is not allowed and should cause an exception to be thrown. This is currently not handled by the validator.
+
+
 
 
 

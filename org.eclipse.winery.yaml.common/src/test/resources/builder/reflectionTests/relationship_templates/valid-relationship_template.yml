@@ -6,23 +6,23 @@ metadata:
   tosca.version: 1.1
   reference: 3.7.4
   exception: None
-  keyname: topology_template.relationship_templates.rltp1   
+  keyname: topology_template.relationship_templates.rltp1
+  assert-typeof: |
+    properties.rltp1.prt1 = TPropertyAssignment
+    attributes.rltp1.attr1 = TAttributeAssignment
+    interfaces.intf1 = TInterfaceDefinition       
   assert: |    
     type = rlt1
     description = Relationship template description
     metadata.md1 = Metadata value
-    properties.rlt1.prt1 = String value
-    attributes.rlt1.attr = String value
-    interfaces.intf1.inputs.ift1.ipt1 = interface value
+    properties.rltp1.prt1 = String value
+    attributes.rltp1.attr1 = String value
+    interfaces.intf1.inputs.intf1.prt1 = interface value
     interfaces.intf1.operations.op1.description = Interface operation description
     
 interface_types:
   ift1:
     derived_from: tosca.interfaces.Root
-    version: 1.0.0
-    metadata:
-      md1: Metadata value
-    description: Interface type description
     inputs: 
       ift1.ipt1:
         type: string
@@ -32,10 +32,6 @@ interface_types:
 relationship_types:
   rlt1:
     derived_from: tosca.relationships.Root
-    version: 1.0.0
-    description: Relationship type description
-    metadata:
-      md1: Metadata value
     properties: 
       rlt1.prt1: 
         type: string
@@ -44,13 +40,12 @@ relationship_types:
         type: string
     interfaces:
       intf1:
-        type: tosca.interfaces.node.lifecycle.Standard
+        type: tosca.interfaces.Root
         inputs:
           intf1.prt1: 
             type: string
         op1:
           description: Interface operation description
-    valid_target_types: [ ntp1 ]
     
 topology_template:
   description: Topology template description  
@@ -61,12 +56,12 @@ topology_template:
       metadata:
         md1: Metadata value
       properties:
-        rlt1.prt1: String value
+        rltp1.prt1: String value
       attributes:
-        rlt1.attr: String value
+        rltp1.attr1: String value
       interfaces:
         intf1:
           inputs:
-            ift1.ipt1: interface value
+            intf1.prt1: interface value
           op1: 
             description: Interface operation description

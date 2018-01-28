@@ -14,17 +14,10 @@ metadata:
     metadata.reference = 3.7.5
     metadata.exception = None
     interface_types.ift1.derived_from = tosca.interfaces.Root
-    interface_types.ift1.version = 1.0.0
-    interface_types.ift1.metadata.md1 = Metadata value
-    interface_types.ift1.description = Interface type description
     interface_types.ift1.inputs.ift1.ipt1.type = string
     interface_types.ift1.operations.op1.description = Interface operation description
-    node_types.ntp1.derived_from = tosca.nodes.Root
-    node_types.ntp1.version = 1.0.0
     group_types.gt1.derived_from = tosca.groups.Root
-    group_types.gt1.version = 1.0.0
-    topology_template.node_templates.ndt1.type = ntp1
-    topology_template.node_templates.ndt1.description = Node template description
+    topology_template.node_templates.ndt1.type = tosca.nodes.Root
     topology_template.groups.gtd1.type = gt1
     topology_template.groups.gtd1.description = Topology template group description
     topology_template.groups.gtd1.metadata.md1 = Metadata value
@@ -34,48 +27,39 @@ metadata:
     topology_template.groups.gtd1.interfaces.intf1.operations.op1.description = Interface operation description     
     
    
-    
 interface_types:
   ift1:
     derived_from: tosca.interfaces.Root
-    version: 1.0.0
-    metadata:
-      md1: Metadata value
-    description: Interface type description
     inputs: 
       ift1.ipt1:
         type: string
     op1: 
       description: Interface operation description
           
-node_types:
-  ntp1:
-    derived_from: tosca.nodes.Root
-    version: 1.0.0    
-          
 group_types:
   gt1:
     derived_from: tosca.groups.Root
-    version: 1.0.0            
+    properties:
+      gt1.prt:
+        type: string        
 
 topology_template:
   node_templates:
     ndt1:
-      type: ntp1
-      description: Node template description
+      type: tosca.nodes.Root
   groups:
-      gtd1:
-        type: gt1
-        description: Topology template group description
-        metadata:
-          md1: Metadata value
-        properties:
-          gt1.prt1: Property value
-        members: [ ndt1 ]
-        interfaces:
-          intf1:
-            inputs:
-              ift1.ipt1: interface value
-            op1: 
-              description: Interface operation description     
+    gtd1:
+      type: gt1
+      description: Topology template group description
+      metadata:
+        md1: Metadata value
+      properties:
+        gt1.prt1: Property value
+      members: [ ndt1 ]
+      interfaces:
+        intf1:
+          inputs:
+            ift1.ipt1: interface value
+          op1: 
+            description: Interface operation description     
     

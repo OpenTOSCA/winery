@@ -7,6 +7,13 @@ metadata:
   reference: 3.7.3
   exception: None
   keyname: topology_template.node_templates.ndt1
+  assert-typeof: |
+    properties.ndt1.prp1 = TPropertyAssignment 
+    attributes.ndt1.attr1 = TAttributeAssignment
+    requirements.0.rqr1 = TRequirementAssignment
+    capabilities.cbt1 = TCapabilityAssignment
+    interfaces.intf1 = TInterfaceDefinition
+    artifacts.artf1 = TArtifactDefinition
   assert: |
     type = ntp1
     description = Node template description
@@ -25,54 +32,21 @@ metadata:
 capability_types:
   cbt1:
     derived_from: tosca.capabilities.Node
-    version: 1.0.0
-    description: Capability type description
     properties: 
       cbt1.prt1:
         type: string
     attributes:
       cbt1.attr1:
         type: string
-        description: Attribute description
-        default: 42
-        status: experimental
-    valid_source_types: [ ntp1 ]
     
 interface_types:
   ift1:
     derived_from: tosca.interfaces.Root
-    version: 1.0.0
-    metadata:
-      md1: Metadata value
-    description: Interface type description
     inputs: 
       ift1.ipt1:
         type: string
     op1: 
       description: Interface operation description
-    
-relationship_types:
-  rlt1:
-    derived_from: tosca.relationships.Root
-    version: 1.0.0
-    description: Relationship type description
-    metadata:
-      md1: Metadata value
-    properties: 
-      rlt1.prt1: 
-        type: string
-    attributes: 
-      rlt1.attr1: 
-        type: string
-    interfaces:
-      intf1:
-        type: tosca.interfaces.node.lifecycle.Standard
-        inputs:
-          intf1.prt1: 
-            type: string
-        op1:
-          description: Interface operation description
-    valid_target_types: [ ntp1 ]
     
 node_types:
   ntp1:
@@ -87,54 +61,9 @@ node_types:
     properties:
       ntp1.prt1:
         type: string
-    requirements:
-      - rqr1:
-          capability: cbt1
-          node: ntp1
-          relationship: rlt1
-          occurrences: [1, 10]   
     capabilities:
       ntp1.cbt1: cbt1
-          
-group_types:
-  gt1:
-    derived_from: tosca.groups.Root
-    version: 1.0.0
-    metadata:
-      md1: Metadata value
-    description: Group definition description
-    properties: 
-      gt1.prt1: 
-        type: string
-    members: [ntp1]
-    requirements:
-      - rqr1:
-          capability: cbt1
-          node: ntp1
-          relationship: rlt1
-          occurrences: [1, 10]
-    capabilities:
-      cbt1:
-        type: cbt1
-        description: Group type capability description
-        properties: 
-          prt1: 
-            type: string
-    interfaces:
-      intf1:
-        type: tosca.interfaces.node.lifecycle.Standard
         
-policy_types:
-  plt1:
-    derived_from: tosca.policies.Performance
-    version: 1.0.0
-    metadata:
-      md1: Metadata value
-    description: Policy type description
-    properties:
-      plt1.prt1:
-        type: string
-    targets: [ntp1]
 
 topology_template:
   node_templates:
