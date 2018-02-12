@@ -251,6 +251,24 @@ public abstract class AbstractResourceTest extends TestWithGitBackedRepository {
             throw new RuntimeException(e);
         }
     }
+    protected void assertNoContentPost(String restUrl, Path file) {
+        start()
+            .multiPart(file.toFile())
+            .post(callURL(restUrl))
+            .then()
+            .statusCode(204);
+    }
+
+	protected void assertDelete(String restURL) {
+		try {
+			start()
+				.delete(callURL(restURL))
+				.then()
+				.statusCode(204);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
 
     protected void assertUploadBinary(String restURL, String fileName) {
         given()
