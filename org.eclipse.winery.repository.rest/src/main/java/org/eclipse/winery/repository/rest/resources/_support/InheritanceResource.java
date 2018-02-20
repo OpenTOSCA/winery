@@ -13,7 +13,10 @@
  *******************************************************************************/
 package org.eclipse.winery.repository.rest.resources._support;
 
+import org.eclipse.winery.model.tosca.TExtensibleElements;
+import org.eclipse.winery.repository.rest.RestUtils;
 import org.eclipse.winery.repository.rest.resources.apiData.InheritanceResourceApiData;
+import org.eclipse.winery.repository.rest.resources.servicetemplates.ServiceTemplateResource;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -35,46 +38,89 @@ import javax.ws.rs.core.Response;
  */
 public class InheritanceResource {
 
-    private AbstractComponentInstanceResourceWithNameDerivedFromAbstractFinal managedResource;
+	private AbstractComponentInstanceResourceWithNameDerivedFromAbstractFinal managedResource;
 
-    public InheritanceResource(AbstractComponentInstanceResourceWithNameDerivedFromAbstractFinal res) {
-        this.managedResource = res;
-    }
+	/**
+	 * Private wrapper class for ServiceTemplates to emulate the derivedFrom,
+	 * abstract and final attributes
+	 *
+	 */
+	private class ServiceTemplateResourceWrapper
+			extends AbstractComponentInstanceResourceWithNameDerivedFromAbstractFinal {
+		private ServiceTemplateResource res;
 
-    public String getDerivedFrom() {
-        return this.managedResource.getDerivedFrom();
-    }
+		ServiceTemplateResourceWrapper(ServiceTemplateResource res) {
+			super(res.getId());
+			this.res = res;
+		}
 
-    /**
-     * Produces a JSON object containing all necessary data for displaying and editing the inheritance.
-     *
-     * @return JSON object in the format
-     * {
-     * "isAbstract": "no",
-     * "isFinal": "yes",
-     * "derivedFrom": "[QName]"
-     * }
-     */
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    public InheritanceResourceApiData getInheritanceManagementJSON() {
-        return new InheritanceResourceApiData(this.managedResource);
-    }
+		@Override
+		protected TExtensibleElements createNewElement() {
+			return null;
+		}
 
-    /**
-     * Saves the inheritance management from a putted json object in the format:
-     * {
-     * "isAbstract": "no",
-     * "isFinal": "yes",
-     * "derivedFrom": "[QName]"
-     * }
-     *
-     * @param json Should at least contain values for abstract, final and QName.
-     * @return Response
-     */
-    @PUT
-    @Consumes(MediaType.APPLICATION_JSON)
-    public Response saveInheritanceManagementFromJSON(InheritanceResourceApiData json) {
-        return this.managedResource.putInheritance(json);
-    }
+		@Override
+		public String getDerivedFrom() {
+			return this.res.getServiceTemplate().getDerivedFrom();
+		}
+
+		@Override
+		public String getTBoolean(String key) {
+			if (key.equals("getAbstract")) {
+				return this.res.getServiceTemplate().getAbstract();
+			} else if (key.equals("getFinal")) {
+				return this.res.getServiceTemplate().getFinal();
+			} else {
+				return null;
+			}
+		}
+
+		@Override
+		public Response putInheritance(InheritanceResourceApiData json) {
+			this.res.getServiceTemplate().setAbstract(json.isAbstract);
+			this.res.getServiceTemplate().setDerivedFrom(json.derivedFrom);
+			this.res.getServiceTemplate().setFinal(json.isFinal);
+			return RestUtils.persist(res);
+		}
+
+	}
+
+	public InheritanceResource(AbstractComponentInstanceResourceWithNameDerivedFromAbstractFinal res) {
+		this.managedResource = res;
+	}
+
+	public InheritanceResource(ServiceTemplateResource res) {
+		this.managedResource = new ServiceTemplateResourceWrapper(res);
+	}
+
+	public String getDerivedFrom() {
+		return this.managedResource.getDerivedFrom();
+	}
+
+	/**
+	 * Produces a JSON object containing all necessary data for displaying and
+	 * editing the inheritance.
+	 *
+	 * @return JSON object in the format { "isAbstract": "no", "isFinal": "yes",
+	 *         "derivedFrom": "[QName]" }
+	 */
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public InheritanceResourceApiData getInheritanceManagementJSON() {
+		return new InheritanceResourceApiData(this.managedResource);
+	}
+
+	/**
+	 * Saves the inheritance management from a putted json object in the format: {
+	 * "isAbstract": "no", "isFinal": "yes", "derivedFrom": "[QName]" }
+	 *
+	 * @param json
+	 *            Should at least contain values for abstract, final and QName.
+	 * @return Response
+	 */
+	@PUT
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response saveInheritanceManagementFromJSON(InheritanceResourceApiData json) {
+		return this.managedResource.putInheritance(json);
+	}
 }

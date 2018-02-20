@@ -47,6 +47,7 @@ import org.eclipse.winery.repository.driverspecificationandinjection.DriverInjec
 import org.eclipse.winery.repository.rest.RestUtils;
 import org.eclipse.winery.repository.rest.resources._support.AbstractComponentInstanceWithReferencesResource;
 import org.eclipse.winery.repository.rest.resources._support.IHasName;
+import org.eclipse.winery.repository.rest.resources._support.InheritanceResource;
 import org.eclipse.winery.repository.rest.resources._support.dataadapter.injectionadapter.InjectorReplaceData;
 import org.eclipse.winery.repository.rest.resources._support.dataadapter.injectionadapter.InjectorReplaceOptions;
 import org.eclipse.winery.repository.rest.resources.servicetemplates.boundarydefinitions.BoundaryDefinitionsResource;
@@ -280,6 +281,11 @@ public class ServiceTemplateResource extends AbstractComponentInstanceWithRefere
         URI url = uriInfo.getBaseUri().resolve(RestUtils.getAbsoluteURL(id));
         LOGGER.debug("URI of the old and new service template {}", url.toString());
         return Response.created(url).build();
+    }
+    
+    @Path("inheritance/")
+    public InheritanceResource getInheritanceManagement() {
+    		return new InheritanceResource(this);
     }
 
     public TServiceTemplate getServiceTemplate() {
