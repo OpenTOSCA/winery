@@ -25,5 +25,7 @@ This lists the architectural decisions for Eclipse Winery.
 
 <!-- adrlogstop -->
 
+- [ADR-SECURE-CSAR](adr-secure-csar/index.md) - The list of architectural decisions related to CSAR encryption/signing
+  
 [template.md](template) contains the template.
 More information on MADR is available at <https://adr.github.io/madr/>.
