@@ -234,6 +234,11 @@
             <artifactId>jgrapht-core</artifactId>
             <version>1.0.1</version>
         </dependency>
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcpkix-jdk15on</artifactId>
+            <version>1.59</version>
+        </dependency>
     </dependencies>
     <build>
         <resources>
