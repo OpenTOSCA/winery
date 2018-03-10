@@ -25,6 +25,7 @@ Chosen option: [B], because security layer is not present in Winery and multiple
 
 * Good, because all types of keys and certificates can be stored in one password-protected place 
 * Bad, because keystore still can be accessed via Winery
+* Bad, because it can be difficult to maintain unique aliases for all entities 
 
 ### [C] Use separate keystores for every stored key/keypair/...
 
