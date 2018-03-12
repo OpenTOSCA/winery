@@ -22,6 +22,9 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import java.io.InputStream;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 
 public class SecretKeysResource extends AbstractKeystoreEntityResource {
     
@@ -37,18 +40,20 @@ public class SecretKeysResource extends AbstractKeystoreEntityResource {
     }
 
     @POST
-    @Consumes(MediaType.MULTIPART_FORM_DATA)
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response uploadExistingSecretKey(@FormDataParam("alias") String alias, 
-                                            @FormDataParam("keyFile") InputStream uploadedInputStream) {
-        // TODO
-        return Response.noContent().build();
-    }
-
-    @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response generateSecretKey(MultivaluedMap<String,String> multivaluedMap) {
+    public Response generateSecretKey(@FormParam("alias") String alias,
+                                      @FormParam("algo") String algo,
+                                      @FormParam("keySize") int keySize) {
+        this.keystoreManager.generateSecretKeyEntry(alias, algo, keySize);
+        return Response.ok().build();
+    }
+    
+    @POST
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response uploadExistingSecretKey(@FormDataParam("alias") String alias,
+                                            @FormDataParam("keyFile") InputStream uploadedInputStream) {
         // TODO
         return Response.noContent().build();
     }

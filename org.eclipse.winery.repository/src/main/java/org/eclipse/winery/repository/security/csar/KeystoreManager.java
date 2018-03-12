@@ -14,22 +14,21 @@
 
 package org.eclipse.winery.repository.security.csar;
 
-import java.security.Key;
-import java.security.KeyPair;
+import java.security.*;
 
 public interface KeystoreManager {
 
-    KeyPair generateKeyPair(String algorithm, int keySize);
+    KeyStore.PrivateKeyEntry generatePrivateKeyEntry(String alias, String algorithm, int keySize);
     
-    Key generateSecretKey(String algorithm, int keySize);
+    Key generateSecretKeyEntry(String alias, String algorithm, int keySize);
     
-    boolean storeSecretKey(String keyAlias, Key key);
+    boolean storeSecretKey(String alias, Key key);
 
-    Key loadSecretKey(String keyAlias);
+    Key loadSecretKey(String alias);
 
-    boolean storePrivateKey(String keyAlias, Key key);
+    boolean storePrivateKey(String alias, Key key);
 
-    Key loadPrivateKey(String keyAlias);
+    Key loadPrivateKey(String alias);
     
     void storeCertificate();
     
