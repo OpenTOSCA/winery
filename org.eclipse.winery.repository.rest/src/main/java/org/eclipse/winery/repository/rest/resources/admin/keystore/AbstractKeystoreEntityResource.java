@@ -17,6 +17,8 @@ package org.eclipse.winery.repository.rest.resources.admin.keystore;
 import org.eclipse.winery.repository.security.csar.KeystoreManager;
 
 import javax.ws.rs.DELETE;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
 
 public abstract class AbstractKeystoreEntityResource {
@@ -27,7 +29,8 @@ public abstract class AbstractKeystoreEntityResource {
     }
 
     @DELETE
-    public Response deleteEntity(String alias) {
+    @Path("{alias}")
+    public Response deleteEntity(@PathParam("alias") String alias) {
         // TODO: handle deletion of the keystore entity
         return Response.ok().build();
     }
