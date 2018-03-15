@@ -15,15 +15,17 @@
 package org.eclipse.winery.repository.security.csar.util;
 
 public enum SymmetricEncryptionAlgorithm {
-    AES256("AES", 256),
-    AES512("AES", 512);
-
+    AES256("AES", 256, true),
+    AES512("AES", 512, false);
+    
     private String name;
     private int keySize;
+    private boolean isDefault;
     
-    SymmetricEncryptionAlgorithm(String algorithm, int keySize) {
+    SymmetricEncryptionAlgorithm(String algorithm, int keySize, boolean isDefault) {
         this.name = algorithm;
         this.keySize = keySize;
+        this.isDefault = isDefault;        
     }
 
     public String getName() { return this.name; }
@@ -32,8 +34,14 @@ public enum SymmetricEncryptionAlgorithm {
 
     public static SymmetricEncryptionAlgorithm valueOf(String algorithm, int keySize) {
         for (SymmetricEncryptionAlgorithm a : values()) {
-            if (a.getName().equals(algorithm.toUpperCase()) && a.getKeySize() == keySize)
-                return a;
+            if (keySize != -1) {
+                if (a.getName().equals(algorithm.toUpperCase()) && a.getKeySize() == keySize)
+                    return a;
+            }
+            else {
+                if (a.getName().equals(algorithm.toUpperCase()) && a.isDefault)
+                    return a;
+            }
         }
         throw new IllegalArgumentException("Chosen option is not supported: " + "@algorithm." + algorithm + " @keySize." + keySize);
     }

@@ -14,6 +14,7 @@
 
 package org.eclipse.winery.repository.rest.resources.admin.keystore;
 
+import io.swagger.annotations.ApiOperation;
 import org.eclipse.winery.common.ids.admin.KeystoreId;
 import org.eclipse.winery.repository.security.csar.JCEKSKeystoreManager;
 import org.eclipse.winery.repository.security.csar.KeystoreManager;
@@ -32,24 +33,30 @@ public class KeyStoreAdminResource extends AbstractAdminResource {
 
     public KeyStoreAdminResource() {
         super(new KeystoreId());
-        // TODO: init proper KeystoreManager implementation 
         keystoreManager = new JCEKSKeystoreManager(this.configuration);
+        if (!keystoreManager.keystoreExists())
+            throw new WebApplicationException(
+                Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("Keystore cannot be initialized")
+                    .build()
+            );
     }
 
+    @ApiOperation(value = "Gets the list of entities in the keystore",
+        notes = "Returns keystore file if asFile parameter is set")
     @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response getKeystoreInfo() {
-        // TODO: return the list of keystore's entities
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_OCTET_STREAM})
+    public Response getKeystoreInfo(@QueryParam("toFile") boolean asFile) {
+        if (asFile) {
+            // TODO: return the keystore file
+        }
+        else {
+        
+        }
+        
         return Response.ok("dummy-return", MediaType.TEXT_PLAIN).build();
     }
     
-    @GET
-    @Produces(MediaType.APPLICATION_OCTET_STREAM)
-    public Response getKeystoreFile() {
-        // TODO: return the list of keystore's entities
-        return Response.ok("dummy-return", MediaType.APPLICATION_OCTET_STREAM).build();
-    }
-
     @Path("keys/")
     public SecretKeysResource getSecretKeysResource() {
         return new SecretKeysResource(keystoreManager);

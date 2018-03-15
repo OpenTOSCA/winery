@@ -19,16 +19,24 @@ import org.eclipse.winery.common.RepositoryFileReference;
 import org.eclipse.winery.common.ids.admin.KeystoreId;
 import org.eclipse.winery.repository.backend.filebased.FilebasedRepository;
 import org.eclipse.winery.repository.backend.RepositoryFactory;
+import org.eclipse.winery.repository.security.csar.datatypes.KeyEntityType;
+import org.eclipse.winery.repository.security.csar.exceptions.GenericKeystoreManagerException;
 import org.eclipse.winery.repository.security.csar.util.SymmetricEncryptionAlgorithm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.security.*;
+import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.Collection;
+import java.util.Enumeration;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
@@ -56,14 +64,14 @@ public class JCEKSKeystoreManager implements KeystoreManager {
         FilebasedRepository fr = (FilebasedRepository) RepositoryFactory.getRepository();
         this.keystorePath = fr.ref2AbsolutePath(keystoreRef).toString();
         try {
-            KeyStore keyStore = KeyStore.getInstance(KEYSTORE_TYPE);
+            KeyStore keystore = KeyStore.getInstance(KEYSTORE_TYPE);
             if (!RepositoryFactory.getRepository().exists(keystoreRef)) {
-                keyStore.load(null, null);
-                keyStore.store(new FileOutputStream(keystorePath), KEYSTORE_PASSWORD.toCharArray());
-                this.keystore = keyStore;
+                keystore.load(null, null);
+                keystore.store(new FileOutputStream(keystorePath), KEYSTORE_PASSWORD.toCharArray());
+                this.keystore = keystore;
             }
-            keyStore.load(new FileInputStream(keystorePath), KEYSTORE_PASSWORD.toCharArray());
-            this.keystore = keyStore;
+            keystore.load(new FileInputStream(keystorePath), KEYSTORE_PASSWORD.toCharArray());
+            this.keystore = keystore;
         }
         catch (Exception e) {
             LOGGER.error("Could not generate JCEKS keystore", e);
@@ -71,23 +79,18 @@ public class JCEKSKeystoreManager implements KeystoreManager {
     }
     
     @Override
-    public KeyStore.PrivateKeyEntry generatePrivateKeyEntry(String alias, String algorithm, int keySize) {
-        
-        return null;
-    }
-
-    @Override
-    public Key generateSecretKeyEntry(String alias, String algorithm, int keySize) {
-        KeyGenerator keyGenerator = null;
+    public KeyEntityType generateSecretKeyEntry(String alias, String algorithm, int keySize) {
         try {
-            SymmetricEncryptionAlgorithm chosenAlgo = SymmetricEncryptionAlgorithm.valueOf(algorithm, keySize);
-            keyGenerator = KeyGenerator.getInstance(chosenAlgo.getName(), KEYSTORE_PROVIDER);
+            KeyGenerator keyGenerator;
+            SymmetricEncryptionAlgorithm chosenAlgorithm = SymmetricEncryptionAlgorithm.valueOf(algorithm, keySize);
+            keyGenerator = KeyGenerator.getInstance(chosenAlgorithm.getName(), KEYSTORE_PROVIDER);
             assert keyGenerator != null;
-            keyGenerator.init(chosenAlgo.getKeySize());
+            keyGenerator.init(chosenAlgorithm.getKeySize());
             Key k = keyGenerator.generateKey();
-            this.keystore.setKeyEntry(alias, k, KEYSTORE_PASSWORD.toCharArray(), null);
+            
+            keystore.setKeyEntry(alias, k, KEYSTORE_PASSWORD.toCharArray(), null);
             keystore.store(new FileOutputStream(this.keystorePath), KEYSTORE_PASSWORD.toCharArray());
-            return k;
+            return new KeyEntityType.Builder(alias, algorithm).keySizeInBits(keySize).build();
         } catch (NoSuchAlgorithmException | NoSuchProviderException | KeyStoreException | CertificateException | IOException e) {
             LOGGER.error("Error while generating a secret key", e);
         }
@@ -98,12 +101,13 @@ public class JCEKSKeystoreManager implements KeystoreManager {
     @Override
     public boolean storeSecretKey(String alias, Key key) {
         try {
-            if (!this.keystore.containsAlias(alias)) {
-                this.keystore.setKeyEntry(alias, key, KEYSTORE_PASSWORD.toCharArray(), null);
+            if (!keystore.containsAlias(alias)) {
+                keystore.setKeyEntry(alias, key, KEYSTORE_PASSWORD.toCharArray(), null);
+                
                 return true;
             }
-            else
-                return false;            
+            else 
+                return false;
         } catch (KeyStoreException e) {
             LOGGER.error("The provided key cannot be stored", e);
         }
@@ -112,19 +116,23 @@ public class JCEKSKeystoreManager implements KeystoreManager {
     }
 
     @Override
+    public boolean storeKeyPair(String alias, KeyPair keypair) {
+        return false;
+    }
+
+    @Override
     public Key loadSecretKey(String alias) {
         try {
-            return this.keystore.getKey(alias, KEYSTORE_PASSWORD.toCharArray());
+            Key key = this.keystore.getKey(alias, KEYSTORE_PASSWORD.toCharArray());
+            if ((key instanceof SecretKey))
+                return key;
+            else
+                throw new UnrecoverableKeyException();
         } catch (KeyStoreException | NoSuchAlgorithmException | UnrecoverableKeyException e) {
             e.printStackTrace();
         }
 
         return null;
-    }
-
-    @Override
-    public boolean storePrivateKey(String alias, Key key) {
-        return false;
     }
 
     @Override
@@ -145,5 +153,108 @@ public class JCEKSKeystoreManager implements KeystoreManager {
             LOGGER.error("Error while checking the size of the keystore", e);
         }
         return -1;
+    }
+
+    @Override
+    public boolean deleteKeystoreEntry(String alias) {
+        try {
+            this.keystore.deleteEntry(alias);
+            return true;
+        } catch (KeyStoreException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    @Override
+    public boolean deleteAllSecretKeys() throws GenericKeystoreManagerException {
+        for (KeyEntityType secretKey : getSecretKeysList(false)) {
+            if (!deleteKeystoreEntry(secretKey.getAlias()))
+                throw new GenericKeystoreManagerException("Could not delete all secret keys");
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public Collection<KeyPair> getKeyPairsList() {
+        Enumeration<String> aliases = null;
+        Collection<KeyPair> keypairs = new ArrayList<>();
+        try {
+            aliases = this.keystore.aliases();
+            while (aliases.hasMoreElements()) {
+                String alias = aliases.nextElement();
+                if (this.keystore.isKeyEntry(alias)) {
+                    Key key = null;
+                    try {
+                        key = this.keystore.getKey(alias, KEYSTORE_PASSWORD.toCharArray());
+                        if ((key instanceof PrivateKey)) {
+                            Certificate cert = this.keystore.getCertificate(alias);
+                            KeyPair kp = new KeyPair(cert.getPublicKey(), (PrivateKey) key);
+                            keypairs.add(kp);                            
+                        }
+                    } catch (NoSuchAlgorithmException | UnrecoverableKeyException e) {
+                        e.printStackTrace();
+                    }
+                }                    
+            }
+        } catch (KeyStoreException e) {
+            e.printStackTrace();
+        }
+        return keypairs;
+    }
+
+    @Override
+    public Collection<Certificate> getCertificatesList() {
+        return null;
+    }
+
+    @Override
+    public boolean keystoreExists() {
+        return keystore != null;
+    }
+
+    @Override
+    public Collection<KeyEntityType> getSecretKeysList(boolean withKeyEncoded) {
+        Enumeration<String> aliases = null;
+        Collection<KeyEntityType> keys = new ArrayList<>();
+        try {
+            aliases = this.keystore.aliases();
+            while (aliases.hasMoreElements()) {
+                String alias = aliases.nextElement();
+                if (this.keystore.isKeyEntry(alias)) {
+                    Key key;
+                    try {
+                        key = this.keystore.getKey(alias, KEYSTORE_PASSWORD.toCharArray());
+                        if ((key instanceof SecretKey)) {
+                            if (!withKeyEncoded)
+                                keys.add(new KeyEntityType
+                                    .Builder(alias, key.getAlgorithm())
+                                    .keySizeInBits(key.getEncoded().length)
+                                    .build()
+                                );
+                            else
+                                keys.add(new KeyEntityType
+                                    .Builder(alias, key.getAlgorithm())
+                                    .keySizeInBits(key.getEncoded().length)
+                                    .base64Key(Base64.getEncoder().encodeToString(key.getEncoded()))
+                                    .build()
+                                );
+                            
+                        }
+                    } catch (NoSuchAlgorithmException | UnrecoverableKeyException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        } catch (KeyStoreException e) {
+            LOGGER.error("Could not retrieve a list of secret keys", e);
+        }
+        return keys;
+    }
+
+    @Override
+    public KeyPair generateKeyPairWithSelfSignedCertificate(String alias, String algorithm, int keySize) {
+        return null;
     }
 }

@@ -15,16 +15,21 @@
 package org.eclipse.winery.repository.rest.resources.admin.keystore;
 
 import com.sun.jersey.multipart.FormDataParam;
+import io.swagger.annotations.ApiOperation;
 import org.eclipse.winery.repository.security.csar.KeystoreManager;
+import org.eclipse.winery.repository.security.csar.datatypes.KeyEntityType;
+import org.eclipse.winery.repository.security.csar.exceptions.GenericKeystoreManagerException;
 
 import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 import java.io.InputStream;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
+import java.net.URI;
+import java.util.Collection;
+import java.util.Objects;
+import java.util.stream.Stream;
 
 public class SecretKeysResource extends AbstractKeystoreEntityResource {
     
@@ -32,53 +37,61 @@ public class SecretKeysResource extends AbstractKeystoreEntityResource {
         super(keystoreManager);
     }
 
+    @ApiOperation(value = "Gets the list of secret keys")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getSecretKeysList() {
-        // TODO
-        return Response.noContent().build();
+    public Collection<KeyEntityType> getSecretKeysList(@QueryParam("withKeyEncoded") boolean withKeyEncoded) {
+        return keystoreManager.getSecretKeysList(withKeyEncoded);
     }
 
-    @POST
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response generateSecretKey(@FormParam("alias") String alias,
-                                      @FormParam("algo") String algo,
-                                      @FormParam("keySize") int keySize) {
-        this.keystoreManager.generateSecretKeyEntry(alias, algo, keySize);
-        return Response.ok().build();
-    }
-    
+    @ApiOperation(value = "Generates a new or stores an existing secret key")
     @POST
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response uploadExistingSecretKey(@FormDataParam("alias") String alias,
-                                            @FormDataParam("keyFile") InputStream uploadedInputStream) {
-        // TODO
-        return Response.noContent().build();
-    }
+    public Response storeSecretKey(@FormDataParam("alias") String alias,
+                                   @FormDataParam("algo") String algo,
+                                   @DefaultValue("-1") @FormDataParam("keySize") int keySize,
+                                   @FormDataParam("keyFile") InputStream uploadedInputStream,
+                                   @Context UriInfo uriInfo) {
+        if (Stream.of(alias, uploadedInputStream).allMatch(Objects::nonNull) || 
+            (Stream.of(alias, algo).allMatch(Objects::nonNull))) {
+            if (uploadedInputStream == null) {
+                System.out.println("s=" + keySize);
+                KeyEntityType entity = keystoreManager.generateSecretKeyEntry(alias, algo, keySize);
+                URI uri = uriInfo.getAbsolutePathBuilder().path(entity.getAlias()).build();
+                return Response.created(uri).entity(entity).build();
+            }
+            else {
+                // TODO store existing 
+            }
+        }
+        else
+            throw new WebApplicationException(
+                Response.status(Response.Status.BAD_REQUEST)
+                    .entity("some parameters are missing")
+                    .build()
+            );
 
-    @GET
-    @Path("{alias}")
+        return null;
+    }
+    
+    @ApiOperation(value = "Removes all secret keys from the keystore")
+    @DELETE
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getSecretKeyInfo(@PathParam("alias") String alias) {
-        // TODO
-        return Response.noContent().build();
+    public Response deleteAll() {
+        try {
+            keystoreManager.deleteAllSecretKeys();
+        } catch (GenericKeystoreManagerException e) {
+            throw new WebApplicationException(
+                Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(e.getMessage())
+                    .build()
+            );
+        }
+        return Response.noContent().build();            
     }
-
-    @GET
+    
     @Path("{alias}")
-    @Produces(MediaType.APPLICATION_OCTET_STREAM)
-    public Response getSecretKeyFile(@PathParam("alias") String alias) {
-        // TODO
-        return Response.noContent().build();
-    }
-
-    @PUT
-    @Path("{alias}")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response replaceSecretKey(@PathParam("alias") String alias) {
-        // TODO
-        return Response.noContent().build();
-    }
+    public SecretKeyResource getSecretKeyResource() { return new SecretKeyResource(keystoreManager); }
+    
 }
