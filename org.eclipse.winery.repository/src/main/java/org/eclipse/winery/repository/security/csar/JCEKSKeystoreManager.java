@@ -156,24 +156,27 @@ public class JCEKSKeystoreManager implements KeystoreManager {
     }
 
     @Override
-    public boolean deleteKeystoreEntry(String alias) {
+    public void deleteKeystoreEntry(String alias) throws GenericKeystoreManagerException {
         try {
             this.keystore.deleteEntry(alias);
-            return true;
-        } catch (KeyStoreException e) {
+            this.keystore.store(new FileOutputStream(this.keystorePath), KEYSTORE_PASSWORD.toCharArray());
+        } catch (KeyStoreException | CertificateException | NoSuchAlgorithmException | IOException e) {
             e.printStackTrace();
+            throw new GenericKeystoreManagerException(e.getMessage());
         }
-        return false;
     }
 
     @Override
-    public boolean deleteAllSecretKeys() throws GenericKeystoreManagerException {
-        for (KeyEntityType secretKey : getSecretKeysList(false)) {
-            if (!deleteKeystoreEntry(secretKey.getAlias()))
-                throw new GenericKeystoreManagerException("Could not delete all secret keys");
-            return true;
+    public void deleteAllSecretKeys() throws GenericKeystoreManagerException {
+        try {
+            for (KeyEntityType secretKey : getSecretKeysList(false)) {
+                deleteKeystoreEntry(secretKey.getAlias());
+            }
+            this.keystore.store(new FileOutputStream(this.keystorePath), KEYSTORE_PASSWORD.toCharArray());
+        } catch (KeyStoreException | IOException | CertificateException | NoSuchAlgorithmException | GenericKeystoreManagerException e) {
+            e.printStackTrace();
+            throw new GenericKeystoreManagerException(e.getMessage());
         }
-        return false;
     }
 
     @Override
@@ -212,6 +215,17 @@ public class JCEKSKeystoreManager implements KeystoreManager {
     @Override
     public boolean keystoreExists() {
         return keystore != null;
+    }
+
+    @Override
+    public boolean entityExists(String alias) {
+        try {
+            return keystore.containsAlias(alias);
+        } catch (KeyStoreException e) {
+            e.printStackTrace();
+            LOGGER.error("Error while checking if entity exists", e.getMessage());
+        }
+        return false;
     }
 
     @Override

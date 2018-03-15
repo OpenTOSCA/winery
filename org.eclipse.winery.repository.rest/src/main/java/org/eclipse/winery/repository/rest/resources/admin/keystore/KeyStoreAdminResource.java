@@ -57,17 +57,17 @@ public class KeyStoreAdminResource extends AbstractAdminResource {
         return Response.ok("dummy-return", MediaType.TEXT_PLAIN).build();
     }
     
-    @Path("keys/")
+    @Path("keys")
     public SecretKeysResource getSecretKeysResource() {
         return new SecretKeysResource(keystoreManager);
     }
 
-    @Path("keypairs/")
+    @Path("keypairs")
     public KeyPairsResource getKeyPairsResource() {
         return new KeyPairsResource(keystoreManager);
     }
 
-    @Path("certificates/")
+    @Path("certificates")
     public CertificatesResource getCertificatesResource() {
         return new CertificatesResource(keystoreManager);
     }

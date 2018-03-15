@@ -16,6 +16,7 @@ package org.eclipse.winery.repository.rest.resources.admin.keystore;
 
 import io.swagger.annotations.ApiOperation;
 import org.eclipse.winery.repository.security.csar.KeystoreManager;
+import org.eclipse.winery.repository.security.csar.exceptions.GenericKeystoreManagerException;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -41,14 +42,18 @@ public class SecretKeyResource extends AbstractKeystoreEntityResource {
     @ApiOperation(value = "Deletes resource using its alias")
     @DELETE
     public Response deleteEntity(@PathParam("alias") String alias) {
-        if (this.keystoreManager.deleteKeystoreEntry(alias))
-            return Response.ok().build();
-        else
+        if (!this.keystoreManager.entityExists(alias))
+            return Response.status(Response.Status.NOT_FOUND).build();
+        try {
+            this.keystoreManager.deleteKeystoreEntry(alias);
+        } catch (GenericKeystoreManagerException e) {
             throw new WebApplicationException(
-                Response.status(Response.Status.BAD_REQUEST)
-                    .entity("some parameters are missing")
+                Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(e.getMessage())
                     .build()
             );
+        }
+        return Response.noContent().build();
     }
     
 }

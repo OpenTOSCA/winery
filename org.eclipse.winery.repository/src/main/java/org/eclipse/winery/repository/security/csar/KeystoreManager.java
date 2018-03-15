@@ -25,6 +25,8 @@ public interface KeystoreManager {
 
     boolean keystoreExists();
     
+    boolean entityExists(String alias);
+    
     Collection<KeyEntityType> getSecretKeysList(boolean withKeyEncoded);
 
     Collection<KeyPair> getKeyPairsList();
@@ -47,8 +49,8 @@ public interface KeystoreManager {
     
     int getKeystoreSize();
     
-    boolean deleteKeystoreEntry(String alias);
+    void deleteKeystoreEntry(String alias) throws GenericKeystoreManagerException;
     
-    boolean deleteAllSecretKeys() throws GenericKeystoreManagerException;
+    void deleteAllSecretKeys() throws GenericKeystoreManagerException;
     
 }

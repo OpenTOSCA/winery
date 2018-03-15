@@ -56,7 +56,6 @@ public class SecretKeysResource extends AbstractKeystoreEntityResource {
         if (Stream.of(alias, uploadedInputStream).allMatch(Objects::nonNull) || 
             (Stream.of(alias, algo).allMatch(Objects::nonNull))) {
             if (uploadedInputStream == null) {
-                System.out.println("s=" + keySize);
                 KeyEntityType entity = keystoreManager.generateSecretKeyEntry(alias, algo, keySize);
                 URI uri = uriInfo.getAbsolutePathBuilder().path(entity.getAlias()).build();
                 return Response.created(uri).entity(entity).build();
@@ -75,9 +74,8 @@ public class SecretKeysResource extends AbstractKeystoreEntityResource {
         return null;
     }
     
-    @ApiOperation(value = "Removes all secret keys from the keystore")
+    @ApiOperation(value = "Deletes all secret keys from the keystore")
     @DELETE
-    @Produces(MediaType.APPLICATION_JSON)
     public Response deleteAll() {
         try {
             keystoreManager.deleteAllSecretKeys();
@@ -88,7 +86,7 @@ public class SecretKeysResource extends AbstractKeystoreEntityResource {
                     .build()
             );
         }
-        return Response.noContent().build();            
+        return Response.noContent().build();
     }
     
     @Path("{alias}")
