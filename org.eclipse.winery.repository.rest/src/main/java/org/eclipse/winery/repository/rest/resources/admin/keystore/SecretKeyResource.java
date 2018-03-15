@@ -16,12 +16,13 @@ package org.eclipse.winery.repository.rest.resources.admin.keystore;
 
 import io.swagger.annotations.ApiOperation;
 import org.eclipse.winery.repository.security.csar.KeystoreManager;
+import org.eclipse.winery.repository.security.csar.datatypes.KeyEntityType;
 import org.eclipse.winery.repository.security.csar.exceptions.GenericKeystoreManagerException;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.Base64;
+import javax.ws.rs.core.StreamingOutput;
 
 public class SecretKeyResource extends AbstractKeystoreEntityResource {
     public SecretKeyResource(KeystoreManager keystoreManager) {
@@ -30,13 +31,38 @@ public class SecretKeyResource extends AbstractKeystoreEntityResource {
 
     @ApiOperation(value = "Gets secret key as base64-encoded string or as binary")
     @GET
-    @Produces({MediaType.TEXT_PLAIN, MediaType.APPLICATION_OCTET_STREAM})
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_OCTET_STREAM})
     public Response getSecretKeyInfo(@PathParam("alias") String alias, @QueryParam("toFile") boolean asFile) {
-        if (!asFile)
-            return Response.ok(Base64.getEncoder().encodeToString(this.keystoreManager.loadSecretKey(alias).getEncoded())).build();
-        else
-            // TODO
-            return Response.ok().build();
+        alias = alias.trim();
+        if (!this.keystoreManager.entityExists(alias))
+            return Response.status(Response.Status.NOT_FOUND).build();
+
+        try {
+            if (!asFile) {
+                KeyEntityType key = this.keystoreManager.loadSecretKey(alias);
+                return Response.ok().entity(key).build();
+            }
+            else {
+                byte[] key = keystoreManager.loadSecretKeyAsByteArray(alias);
+                StreamingOutput stream = output -> {
+                    try {
+                        output.write(key);
+                        output.flush();
+                    } catch (Exception e) {
+                        throw new WebApplicationException(
+                            Response.serverError().entity(e.getMessage()).build()
+                        );
+                    }
+                };
+
+                return Response.ok(stream).header("content-disposition","attachment; filename = " + alias + ".key").build();
+            }
+        } catch (GenericKeystoreManagerException e) {
+            e.printStackTrace();
+            throw new WebApplicationException(
+                Response.serverError().entity(e.getMessage()).build()
+            );
+        }
     }
 
     @ApiOperation(value = "Deletes resource using its alias")
@@ -48,9 +74,7 @@ public class SecretKeyResource extends AbstractKeystoreEntityResource {
             this.keystoreManager.deleteKeystoreEntry(alias);
         } catch (GenericKeystoreManagerException e) {
             throw new WebApplicationException(
-                Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity(e.getMessage())
-                    .build()
+                Response.serverError().entity(e.getMessage()).build()
             );
         }
         return Response.noContent().build();

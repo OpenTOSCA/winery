@@ -43,7 +43,9 @@ public interface KeystoreManager {
 
     void storeCertificate();
 
-    Key loadSecretKey(String alias);
+    KeyEntityType loadSecretKey(String alias) throws GenericKeystoreManagerException;
+
+    byte[] loadSecretKeyAsByteArray(String alias) throws GenericKeystoreManagerException;
 
     Key loadPrivateKey(String alias);
     

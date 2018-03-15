@@ -81,9 +81,7 @@ public class SecretKeysResource extends AbstractKeystoreEntityResource {
             keystoreManager.deleteAllSecretKeys();
         } catch (GenericKeystoreManagerException e) {
             throw new WebApplicationException(
-                Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity(e.getMessage())
-                    .build()
+                Response.serverError().entity(e.getMessage()).build()
             );
         }
         return Response.noContent().build();

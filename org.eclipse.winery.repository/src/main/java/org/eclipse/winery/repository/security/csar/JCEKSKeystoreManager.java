@@ -121,18 +121,41 @@ public class JCEKSKeystoreManager implements KeystoreManager {
     }
 
     @Override
-    public Key loadSecretKey(String alias) {
+    public KeyEntityType loadSecretKey(String alias) throws GenericKeystoreManagerException {
         try {
             Key key = this.keystore.getKey(alias, KEYSTORE_PASSWORD.toCharArray());
-            if ((key instanceof SecretKey))
-                return key;
+            if ((key instanceof SecretKey)) {
+                byte[] encodedKey = key.getEncoded();
+                key.getFormat();
+                KeyEntityType result = new KeyEntityType.Builder(alias, key.getAlgorithm())
+                    .base64Key(getBase64EncodedKey(encodedKey))
+                    .keySizeInBits(encodedKey.length)
+                    .build();
+                return result;
+            }
             else
                 throw new UnrecoverableKeyException();
         } catch (KeyStoreException | NoSuchAlgorithmException | UnrecoverableKeyException e) {
+            LOGGER.error("Error loading a secret key", e.getMessage());
             e.printStackTrace();
+            throw new GenericKeystoreManagerException(e.getMessage());
         }
+    }
 
-        return null;
+    @Override
+    public byte[] loadSecretKeyAsByteArray(String alias) throws GenericKeystoreManagerException {
+        Key key;
+        try {
+            key = this.keystore.getKey(alias, KEYSTORE_PASSWORD.toCharArray());
+            if ((key instanceof SecretKey))
+                return key.getEncoded();
+            else
+                throw new UnrecoverableKeyException();
+        } catch (KeyStoreException | NoSuchAlgorithmException | UnrecoverableKeyException e) {
+            LOGGER.error("Error loading a secret key", e.getMessage());
+            e.printStackTrace();
+            throw new GenericKeystoreManagerException(e.getMessage());
+        }
     }
 
     @Override
@@ -251,7 +274,7 @@ public class JCEKSKeystoreManager implements KeystoreManager {
                                 keys.add(new KeyEntityType
                                     .Builder(alias, key.getAlgorithm())
                                     .keySizeInBits(key.getEncoded().length)
-                                    .base64Key(Base64.getEncoder().encodeToString(key.getEncoded()))
+                                    .base64Key(getBase64EncodedKey(key.getEncoded()))
                                     .build()
                                 );
                             
@@ -271,4 +294,9 @@ public class JCEKSKeystoreManager implements KeystoreManager {
     public KeyPair generateKeyPairWithSelfSignedCertificate(String alias, String algorithm, int keySize) {
         return null;
     }
+    
+    private String getBase64EncodedKey(byte[] key) {
+        return Base64.getEncoder().encodeToString(key);
+    }
+    
 }

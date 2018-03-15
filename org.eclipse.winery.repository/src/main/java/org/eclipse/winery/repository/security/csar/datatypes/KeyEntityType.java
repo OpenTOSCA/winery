@@ -43,7 +43,7 @@ public class KeyEntityType {
             this.algorithm = algorithm;
         }
         
-        public Builder keySizeInBits(int size) { keySizeInBits = 8 * size; return this; }
+        public Builder keySizeInBits(int size) { keySizeInBits = size * Byte.SIZE; return this; }
         public Builder base64Key(String key) { base64Key = key; return this; }
 
         public KeyEntityType build() {
