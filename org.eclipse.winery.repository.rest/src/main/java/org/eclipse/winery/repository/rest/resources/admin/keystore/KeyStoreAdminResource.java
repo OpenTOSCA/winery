@@ -34,19 +34,22 @@ public class KeyStoreAdminResource extends AbstractAdminResource {
     public KeyStoreAdminResource() {
         super(new KeystoreId());
         keystoreManager = new JCEKSKeystoreManager(this.configuration);
-        if (!keystoreManager.keystoreExists())
+        if (!keystoreManager.keystoreExists()) {
+            LOGGER.error("Error initializing keystore");
             throw new WebApplicationException(
                 Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity("Keystore cannot be initialized")
+                    .type(MediaType.TEXT_PLAIN)
                     .build()
             );
+        }
     }
 
     @ApiOperation(value = "Gets the list of entities in the keystore",
         notes = "Returns keystore file if asFile parameter is set")
     @GET
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_OCTET_STREAM})
-    public Response getKeystoreInfo(@QueryParam("toFile") boolean asFile) {
+    public Response listKeystoreEntities(@QueryParam("toFile") boolean asFile) {
         if (asFile) {
             // TODO: return the keystore file
         }
@@ -71,5 +74,13 @@ public class KeyStoreAdminResource extends AbstractAdminResource {
     public CertificatesResource getCertificatesResource() {
         return new CertificatesResource(keystoreManager);
     }
-    
+
+    @GET
+    @Path("algorithms/")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getSupportedAlgorithms() {
+        // TODO: return combined algorithms list
+        
+        return Response.ok().entity(this.keystoreManager.getSupportedSymmetricEncryptionAlgorithms()).build();
+    }
 }

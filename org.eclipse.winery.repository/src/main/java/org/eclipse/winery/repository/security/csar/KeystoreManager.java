@@ -16,6 +16,7 @@ package org.eclipse.winery.repository.security.csar;
 
 import org.eclipse.winery.repository.security.csar.datatypes.KeyEntityType;
 import org.eclipse.winery.repository.security.csar.exceptions.GenericKeystoreManagerException;
+import org.eclipse.winery.repository.security.csar.support.SymmetricAlgorithm;
 
 import java.io.InputStream;
 import java.security.*;
@@ -27,6 +28,8 @@ public interface KeystoreManager {
     boolean keystoreExists();
     
     boolean entityExists(String alias);
+    
+    Collection<SymmetricAlgorithm> getSupportedSymmetricEncryptionAlgorithms();
     
     Collection<KeyEntityType> getSecretKeysList(boolean withKeyEncoded);
 
