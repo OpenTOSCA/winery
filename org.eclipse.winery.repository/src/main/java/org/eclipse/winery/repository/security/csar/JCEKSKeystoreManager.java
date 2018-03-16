@@ -15,6 +15,7 @@
 package org.eclipse.winery.repository.security.csar;
 
 import org.apache.commons.configuration.Configuration;
+import org.apache.commons.io.IOUtils;
 import org.eclipse.winery.common.RepositoryFileReference;
 import org.eclipse.winery.common.ids.admin.KeystoreId;
 import org.eclipse.winery.repository.backend.filebased.FilebasedRepository;
@@ -27,9 +28,11 @@ import org.slf4j.LoggerFactory;
 
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.security.*;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
@@ -79,40 +82,47 @@ public class JCEKSKeystoreManager implements KeystoreManager {
     }
     
     @Override
-    public KeyEntityType generateSecretKeyEntry(String alias, String algorithm, int keySize) {
+    public KeyEntityType generateSecretKeyEntry(String alias, String algorithm, int keySize) throws GenericKeystoreManagerException {
         try {
             KeyGenerator keyGenerator;
             SymmetricEncryptionAlgorithm chosenAlgorithm = SymmetricEncryptionAlgorithm.valueOf(algorithm, keySize);
             keyGenerator = KeyGenerator.getInstance(chosenAlgorithm.getName(), KEYSTORE_PROVIDER);
             assert keyGenerator != null;
-            keyGenerator.init(chosenAlgorithm.getKeySize());
-            Key k = keyGenerator.generateKey();
+            keyGenerator.init(chosenAlgorithm.getkeySizeInBits());
+            Key key = keyGenerator.generateKey();
             
-            keystore.setKeyEntry(alias, k, KEYSTORE_PASSWORD.toCharArray(), null);
+            keystore.setKeyEntry(alias, key, KEYSTORE_PASSWORD.toCharArray(), null);
             keystore.store(new FileOutputStream(this.keystorePath), KEYSTORE_PASSWORD.toCharArray());
-            return new KeyEntityType.Builder(alias, algorithm).keySizeInBits(keySize).build();
+            return new KeyEntityType
+                .Builder(alias, algorithm)
+                .keySizeInBits(keySize)
+                .base64Key(getBase64EncodedKey(key.getEncoded()))
+                .build();
         } catch (NoSuchAlgorithmException | NoSuchProviderException | KeyStoreException | CertificateException | IOException e) {
             LOGGER.error("Error while generating a secret key", e);
+            throw new GenericKeystoreManagerException("Could not generate the secret key with given properties");
         }
-        
-        return null;
     }
 
     @Override
-    public boolean storeSecretKey(String alias, Key key) {
+    public KeyEntityType storeSecretKey(String alias, String algorithm, InputStream uploadedInputStream) throws GenericKeystoreManagerException {
         try {
-            if (!keystore.containsAlias(alias)) {
-                keystore.setKeyEntry(alias, key, KEYSTORE_PASSWORD.toCharArray(), null);
-                
-                return true;
-            }
-            else 
-                return false;
-        } catch (KeyStoreException e) {
-            LOGGER.error("The provided key cannot be stored", e);
+            byte[] key = IOUtils.toByteArray(uploadedInputStream);
+            SymmetricEncryptionAlgorithm chosenAlgorithm = SymmetricEncryptionAlgorithm.valueOf(algorithm, key);
+            int keySize = key.length;
+            SecretKey originalKey = new SecretKeySpec(key, 0, keySize, chosenAlgorithm.getName());            
+            keystore.setKeyEntry(alias, originalKey, KEYSTORE_PASSWORD.toCharArray(), null);
+            keystore.store(new FileOutputStream(this.keystorePath), KEYSTORE_PASSWORD.toCharArray());
+            return new KeyEntityType
+                .Builder(alias, algorithm)
+                .keySizeInBits(keySize)
+                .base64Key(getBase64EncodedKey(originalKey.getEncoded()))
+                .build();            
+        } catch (IOException | KeyStoreException | CertificateException | NoSuchAlgorithmException e) {
+            e.printStackTrace();
+            LOGGER.error("Error while storing a secret key", e);
+            throw new GenericKeystoreManagerException("Could not store the provided secret key");
         }
-        
-        return false;
     }
 
     @Override

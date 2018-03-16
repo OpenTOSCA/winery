@@ -17,6 +17,7 @@ package org.eclipse.winery.repository.security.csar;
 import org.eclipse.winery.repository.security.csar.datatypes.KeyEntityType;
 import org.eclipse.winery.repository.security.csar.exceptions.GenericKeystoreManagerException;
 
+import java.io.InputStream;
 import java.security.*;
 import java.security.cert.Certificate;
 import java.util.Collection;
@@ -33,11 +34,11 @@ public interface KeystoreManager {
 
     Collection<Certificate> getCertificatesList();
 
-    KeyEntityType generateSecretKeyEntry(String alias, String algorithm, int keySize);
+    KeyEntityType generateSecretKeyEntry(String alias, String algorithm, int keySize) throws GenericKeystoreManagerException;
 
     KeyPair generateKeyPairWithSelfSignedCertificate(String alias, String algorithm, int keySize);
 
-    boolean storeSecretKey(String alias, Key key);
+    KeyEntityType storeSecretKey(String alias, String algorithm, InputStream uploadedInputStream) throws GenericKeystoreManagerException;
 
     boolean storeKeyPair(String alias, KeyPair keypair);
 

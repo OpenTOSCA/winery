@@ -53,25 +53,37 @@ public class SecretKeysResource extends AbstractKeystoreEntityResource {
                                    @DefaultValue("-1") @FormDataParam("keySize") int keySize,
                                    @FormDataParam("keyFile") InputStream uploadedInputStream,
                                    @Context UriInfo uriInfo) {
-        if (Stream.of(alias, uploadedInputStream).allMatch(Objects::nonNull) || 
-            (Stream.of(alias, algo).allMatch(Objects::nonNull))) {
-            if (uploadedInputStream == null) {
-                KeyEntityType entity = keystoreManager.generateSecretKeyEntry(alias, algo, keySize);
+        alias = alias.trim();
+        if (this.keystoreManager.entityExists(alias))
+            throw new WebApplicationException(
+                Response.status(Response.Status.CONFLICT)
+                    .entity("Key with specified alias already exists")
+                    .type(MediaType.TEXT_PLAIN)
+                    .build()
+            );
+        try {
+            if (!Stream.of(alias, algo).anyMatch(Objects::isNull)) {
+                KeyEntityType entity;
+                if (uploadedInputStream == null) {
+                    entity = keystoreManager.generateSecretKeyEntry(alias, algo, keySize);
+                }
+                else {
+                    entity = keystoreManager.storeSecretKey(alias, algo, uploadedInputStream);
+                }
                 URI uri = uriInfo.getAbsolutePathBuilder().path(entity.getAlias()).build();
                 return Response.created(uri).entity(entity).build();
             }
-            else {
-                // TODO store existing 
-            }
+            else
+                throw new WebApplicationException(
+                    Response.status(Response.Status.BAD_REQUEST)
+                        .entity("Insufficient number of parameters in the request")
+                        .type(MediaType.TEXT_PLAIN)
+                        .build()
+                );
         }
-        else
-            throw new WebApplicationException(
-                Response.status(Response.Status.BAD_REQUEST)
-                    .entity("some parameters are missing")
-                    .build()
-            );
-
-        return null;
+        catch (GenericKeystoreManagerException e) {
+            throw new WebApplicationException(Response.serverError().entity(e.getMessage()).build());
+        }
     }
     
     @ApiOperation(value = "Deletes all secret keys from the keystore")
@@ -81,7 +93,7 @@ public class SecretKeysResource extends AbstractKeystoreEntityResource {
             keystoreManager.deleteAllSecretKeys();
         } catch (GenericKeystoreManagerException e) {
             throw new WebApplicationException(
-                Response.serverError().entity(e.getMessage()).build()
+                Response.serverError().entity(e.getMessage()).type(MediaType.TEXT_PLAIN).build()
             );
         }
         return Response.noContent().build();

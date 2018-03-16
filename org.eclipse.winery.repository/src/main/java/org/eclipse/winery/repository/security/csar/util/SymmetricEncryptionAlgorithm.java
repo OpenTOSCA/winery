@@ -19,23 +19,23 @@ public enum SymmetricEncryptionAlgorithm {
     AES512("AES", 512, false);
     
     private String name;
-    private int keySize;
+    private int keySizeInBits;
     private boolean isDefault;
     
-    SymmetricEncryptionAlgorithm(String algorithm, int keySize, boolean isDefault) {
+    SymmetricEncryptionAlgorithm(String algorithm, int keySizeInBits, boolean isDefault) {
         this.name = algorithm;
-        this.keySize = keySize;
+        this.keySizeInBits = keySizeInBits;
         this.isDefault = isDefault;        
     }
 
     public String getName() { return this.name; }
 
-    public int getKeySize() { return this.keySize; }
-
-    public static SymmetricEncryptionAlgorithm valueOf(String algorithm, int keySize) {
+    public int getkeySizeInBits() { return this.keySizeInBits; }
+    
+    public static SymmetricEncryptionAlgorithm valueOf(String algorithm, int keySizeInBits) {
         for (SymmetricEncryptionAlgorithm a : values()) {
-            if (keySize != -1) {
-                if (a.getName().equals(algorithm.toUpperCase()) && a.getKeySize() == keySize)
+            if (keySizeInBits != -1) {
+                if (a.getName().equals(algorithm.toUpperCase()) && a.getkeySizeInBits() == keySizeInBits)
                     return a;
             }
             else {
@@ -43,7 +43,11 @@ public enum SymmetricEncryptionAlgorithm {
                     return a;
             }
         }
-        throw new IllegalArgumentException("Chosen option is not supported: " + "@algorithm." + algorithm + " @keySize." + keySize);
+        throw new IllegalArgumentException("Chosen option is not supported: " + "@algorithm." + algorithm + " @keySize." + keySizeInBits);
+    }
+
+    public static SymmetricEncryptionAlgorithm valueOf(String algorithm, byte[] key) {
+        return valueOf(algorithm, key.length * Byte.SIZE);
     }
     
 }

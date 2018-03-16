@@ -50,7 +50,7 @@ public class SecretKeyResource extends AbstractKeystoreEntityResource {
                         output.flush();
                     } catch (Exception e) {
                         throw new WebApplicationException(
-                            Response.serverError().entity(e.getMessage()).build()
+                            Response.serverError().entity(e.getMessage()).type(MediaType.TEXT_PLAIN).build()
                         );
                     }
                 };
@@ -60,7 +60,7 @@ public class SecretKeyResource extends AbstractKeystoreEntityResource {
         } catch (GenericKeystoreManagerException e) {
             e.printStackTrace();
             throw new WebApplicationException(
-                Response.serverError().entity(e.getMessage()).build()
+                Response.serverError().entity(e.getMessage()).type(MediaType.TEXT_PLAIN).build()
             );
         }
     }
@@ -68,13 +68,14 @@ public class SecretKeyResource extends AbstractKeystoreEntityResource {
     @ApiOperation(value = "Deletes resource using its alias")
     @DELETE
     public Response deleteEntity(@PathParam("alias") String alias) {
+        alias = alias.trim();
         if (!this.keystoreManager.entityExists(alias))
             return Response.status(Response.Status.NOT_FOUND).build();
         try {
             this.keystoreManager.deleteKeystoreEntry(alias);
         } catch (GenericKeystoreManagerException e) {
             throw new WebApplicationException(
-                Response.serverError().entity(e.getMessage()).build()
+                Response.serverError().entity(e.getMessage()).type(MediaType.TEXT_PLAIN).build()
             );
         }
         return Response.noContent().build();
