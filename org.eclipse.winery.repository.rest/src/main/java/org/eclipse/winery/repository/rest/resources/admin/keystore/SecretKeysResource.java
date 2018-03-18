@@ -17,8 +17,10 @@ package org.eclipse.winery.repository.rest.resources.admin.keystore;
 import com.sun.jersey.multipart.FormDataParam;
 import io.swagger.annotations.ApiOperation;
 import org.eclipse.winery.repository.security.csar.KeystoreManager;
+import org.eclipse.winery.repository.security.csar.SecurityProcessor;
 import org.eclipse.winery.repository.security.csar.datatypes.KeyEntityType;
 import org.eclipse.winery.repository.security.csar.exceptions.GenericKeystoreManagerException;
+import org.eclipse.winery.repository.security.csar.exceptions.GenericSecurityProcessorException;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
@@ -27,14 +29,15 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import java.io.InputStream;
 import java.net.URI;
+import java.security.Key;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.stream.Stream;
 
 public class SecretKeysResource extends AbstractKeystoreEntityResource {
     
-    public SecretKeysResource(KeystoreManager keystoreManager) {
-        super(keystoreManager);
+    public SecretKeysResource(KeystoreManager keystoreManager, SecurityProcessor securityProcessor) {
+        super(keystoreManager, securityProcessor);
     }
 
     @ApiOperation(value = "Gets the list of secret keys")
@@ -65,7 +68,8 @@ public class SecretKeysResource extends AbstractKeystoreEntityResource {
             if (!Stream.of(alias, algo).anyMatch(Objects::isNull)) {
                 KeyEntityType entity;
                 if (uploadedInputStream == null) {
-                    entity = keystoreManager.generateSecretKeyEntry(alias, algo, keySize);
+                    Key key = securityProcessor.generateSecretKey(alias, algo, keySize);
+                    entity = keystoreManager.storeSecretKey(alias, key);
                 }
                 else {
                     entity = keystoreManager.storeSecretKey(alias, algo, uploadedInputStream);
@@ -81,7 +85,7 @@ public class SecretKeysResource extends AbstractKeystoreEntityResource {
                         .build()
                 );
         }
-        catch (GenericKeystoreManagerException e) {
+        catch (GenericKeystoreManagerException | GenericSecurityProcessorException e) {
             throw new WebApplicationException(Response.serverError().entity(e.getMessage()).build());
         }
     }
@@ -100,6 +104,8 @@ public class SecretKeysResource extends AbstractKeystoreEntityResource {
     }
     
     @Path("{alias}")
-    public SecretKeyResource getSecretKeyResource() { return new SecretKeyResource(keystoreManager); }
+    public SecretKeyResource getSecretKeyResource() { 
+        return new SecretKeyResource(keystoreManager, securityProcessor); 
+    }
     
 }

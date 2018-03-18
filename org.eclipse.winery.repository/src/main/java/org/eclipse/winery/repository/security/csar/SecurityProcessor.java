@@ -12,17 +12,19 @@
  * SPDX-License-Identifier: EPL-2.0 OR Apache-2.0
  *******************************************************************************/
 
-package org.eclipse.winery.repository.rest.resources.admin.keystore;
+package org.eclipse.winery.repository.security.csar;
 
-import org.eclipse.winery.repository.security.csar.KeystoreManager;
-import org.eclipse.winery.repository.security.csar.SecurityProcessor;
+import org.eclipse.winery.repository.security.csar.datatypes.CertificateType;
+import org.eclipse.winery.repository.security.csar.datatypes.KeyPairType;
+import org.eclipse.winery.repository.security.csar.exceptions.GenericSecurityProcessorException;
 
-abstract class AbstractKeystoreEntityResource {
-    protected final KeystoreManager keystoreManager;
-    protected final SecurityProcessor securityProcessor;
+import java.security.Key;
+
+public interface SecurityProcessor {
+
+    Key generateSecretKey(String alias, String algorithm, int keySize) throws GenericSecurityProcessorException;
+
+    KeyPairType generateKeyPair(String algorithm, int keySize);
     
-    public AbstractKeystoreEntityResource(KeystoreManager keystoreManager, SecurityProcessor securityProcessor) {
-        this.keystoreManager = keystoreManager;
-        this.securityProcessor = securityProcessor;        
-    }    
+    CertificateType generateSelfSignedCertificate(KeyPairType keypair);
 }

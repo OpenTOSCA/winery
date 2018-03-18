@@ -26,28 +26,21 @@ import org.eclipse.winery.repository.security.csar.support.SymmetricAlgorithm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.security.*;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.util.*;
 
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
-
 public class JCEKSKeystoreManager implements KeystoreManager {
-
+    
     private static final String KEYSTORE_PASSWORD = "password";
     private static final String KEYSTORE_TYPE = "JCEKS";
     private static final String KEYSTORE_NAME = "winery-keystore.jceks";
-    private static final String KEYSTORE_PROVIDER = "BC";
-    
     private static final Logger LOGGER = LoggerFactory.getLogger(JCEKSKeystoreManager.class);
+    
     private Configuration configuration;
     private KeyStore keystore;
     private String keystorePath;
@@ -56,7 +49,6 @@ public class JCEKSKeystoreManager implements KeystoreManager {
         // in case keystore's properties configuration is needed
         this.configuration = c;
         loadKeystore();
-        Security.addProvider(new BouncyCastleProvider());
     }
     
     private void loadKeystore() {
@@ -77,29 +69,6 @@ public class JCEKSKeystoreManager implements KeystoreManager {
             LOGGER.error("Could not generate JCEKS keystore", e);
         }        
     }
-    
-    @Override
-    public KeyEntityType generateSecretKeyEntry(String alias, String algorithm, int keySize) throws GenericKeystoreManagerException {
-        try {
-            KeyGenerator keyGenerator;
-            SymmetricAlgorithm chosenAlgorithm = SymmetricAlgorithm.valueOf(algorithm, keySize);
-            keyGenerator = KeyGenerator.getInstance(chosenAlgorithm.getName(), KEYSTORE_PROVIDER);
-            assert keyGenerator != null;
-            keyGenerator.init(chosenAlgorithm.getkeySizeInBits());
-            Key key = keyGenerator.generateKey();
-            
-            keystore.setKeyEntry(alias, key, KEYSTORE_PASSWORD.toCharArray(), null);
-            keystore.store(new FileOutputStream(this.keystorePath), KEYSTORE_PASSWORD.toCharArray());
-            return new KeyEntityType
-                .Builder(alias, algorithm, key.getFormat())
-                .keySizeInBits(keySize)
-                .base64Key(getBase64EncodedKey(key.getEncoded()))
-                .build();
-        } catch (NoSuchAlgorithmException | NoSuchProviderException | KeyStoreException | CertificateException | IOException e) {
-            LOGGER.error("Error while generating a secret key", e);
-            throw new GenericKeystoreManagerException("Could not generate the secret key with given properties");
-        }
-    }
 
     @Override
     public KeyEntityType storeSecretKey(String alias, String algorithm, InputStream uploadedInputStream) throws GenericKeystoreManagerException {
@@ -107,16 +76,25 @@ public class JCEKSKeystoreManager implements KeystoreManager {
             byte[] key = IOUtils.toByteArray(uploadedInputStream);
             SymmetricAlgorithm chosenAlgorithm = SymmetricAlgorithm.valueOf(algorithm, key);
             int keySize = key.length;
-            SecretKey originalKey = new SecretKeySpec(key, 0, keySize, chosenAlgorithm.getName());            
-            keystore.setKeyEntry(alias, originalKey, KEYSTORE_PASSWORD.toCharArray(), null);
+            SecretKey originalKey = new SecretKeySpec(key, 0, keySize, chosenAlgorithm.getName());
+            return storeSecretKey(alias, originalKey);
+        } catch (IOException e) {
+            LOGGER.error("Error while storing a secret key", e);
+            throw new GenericKeystoreManagerException("Could not store the provided secret key");
+        }
+    }
+    
+    @Override
+    public KeyEntityType storeSecretKey(String alias, Key key) throws GenericKeystoreManagerException {
+        try {
+            keystore.setKeyEntry(alias, key, KEYSTORE_PASSWORD.toCharArray(), null);
             keystore.store(new FileOutputStream(this.keystorePath), KEYSTORE_PASSWORD.toCharArray());
             return new KeyEntityType
-                .Builder(alias, algorithm, originalKey.getFormat())
-                .keySizeInBits(keySize)
-                .base64Key(getBase64EncodedKey(originalKey.getEncoded()))
-                .build();            
-        } catch (IOException | KeyStoreException | CertificateException | NoSuchAlgorithmException e) {
-            e.printStackTrace();
+                .Builder(alias, key.getAlgorithm(), key.getFormat())
+                .keySizeInBits(key.getEncoded().length)
+                .base64Key(key.getEncoded())
+                .build();
+        } catch (CertificateException | NoSuchAlgorithmException | IOException | KeyStoreException e) {
             LOGGER.error("Error while storing a secret key", e);
             throw new GenericKeystoreManagerException("Could not store the provided secret key");
         }
@@ -135,7 +113,7 @@ public class JCEKSKeystoreManager implements KeystoreManager {
                 byte[] encodedKey = key.getEncoded();
                 key.getFormat();
                 return new KeyEntityType.Builder(alias, key.getAlgorithm(), key.getFormat())
-                    .base64Key(getBase64EncodedKey(encodedKey))
+                    .base64Key(encodedKey)
                     .keySizeInBits(encodedKey.length)
                     .build();
             }
@@ -285,7 +263,7 @@ public class JCEKSKeystoreManager implements KeystoreManager {
                                 keys.add(new KeyEntityType
                                     .Builder(alias, key.getAlgorithm(), key.getFormat())
                                     .keySizeInBits(key.getEncoded().length)
-                                    .base64Key(getBase64EncodedKey(key.getEncoded()))
+                                    .base64Key(key.getEncoded())
                                     .build()
                                 );
                             
@@ -299,15 +277,6 @@ public class JCEKSKeystoreManager implements KeystoreManager {
             LOGGER.error("Could not retrieve a list of secret keys", e);
         }
         return keys;
-    }
-
-    @Override
-    public KeyPair generateKeyPairWithSelfSignedCertificate(String alias, String algorithm, int keySize) {
-        return null;
-    }
-    
-    private String getBase64EncodedKey(byte[] key) {
-        return Base64.getEncoder().encodeToString(key);
     }
     
 }

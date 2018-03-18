@@ -37,12 +37,10 @@ public interface KeystoreManager {
 
     Collection<Certificate> getCertificatesList();
 
-    KeyEntityType generateSecretKeyEntry(String alias, String algorithm, int keySize) throws GenericKeystoreManagerException;
-
-    KeyPair generateKeyPairWithSelfSignedCertificate(String alias, String algorithm, int keySize);
-
     KeyEntityType storeSecretKey(String alias, String algorithm, InputStream uploadedInputStream) throws GenericKeystoreManagerException;
 
+    KeyEntityType storeSecretKey(String alias, Key key) throws GenericKeystoreManagerException;
+    
     boolean storeKeyPair(String alias, KeyPair keypair);
 
     void storeCertificate();

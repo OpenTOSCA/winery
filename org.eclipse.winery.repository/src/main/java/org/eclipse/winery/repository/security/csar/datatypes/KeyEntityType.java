@@ -18,6 +18,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 
+import java.util.Base64;
+
 @JsonDeserialize(builder = KeyEntityType.Builder.class)
 public class KeyEntityType {
     @JsonProperty
@@ -47,9 +49,25 @@ public class KeyEntityType {
             this.keyFormat = keyFormat;
         }
         
-        public Builder keySizeInBits(int size) { keySizeInBits = size * Byte.SIZE; return this; }
-        public Builder base64Key(String key) { base64Key = key; return this; }
+        public Builder keySizeInBits(int size) { 
+            keySizeInBits = size * Byte.SIZE; 
+            return this; 
+        }
+        
+        public Builder base64Key(String key) { 
+            base64Key = key; 
+            return this; 
+        }
+        
+        public Builder base64Key(byte[] key) {
+            base64Key = getBase64EncodedKey(key); 
+            return this; 
+        }
 
+        private String getBase64EncodedKey(byte[] key) {
+            return Base64.getEncoder().encodeToString(key);
+        }
+        
         public KeyEntityType build() {
             return new KeyEntityType(this);
         }

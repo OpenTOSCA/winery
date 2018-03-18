@@ -16,6 +16,7 @@ package org.eclipse.winery.repository.rest.resources.admin.keystore;
 
 import com.sun.jersey.multipart.FormDataParam;
 import org.eclipse.winery.repository.security.csar.KeystoreManager;
+import org.eclipse.winery.repository.security.csar.SecurityProcessor;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -23,8 +24,8 @@ import javax.ws.rs.core.Response;
 import java.io.InputStream;
 
 public class CertificatesResource extends AbstractKeystoreEntityResource {
-    public CertificatesResource(KeystoreManager keystoreManager) {
-        super(keystoreManager);
+    public CertificatesResource(KeystoreManager keystoreManager, SecurityProcessor securityProcessor) {
+        super(keystoreManager, securityProcessor);
     }
 
     @GET

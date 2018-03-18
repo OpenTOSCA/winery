@@ -16,9 +16,11 @@ package org.eclipse.winery.repository.rest.resources.admin.keystore;
 
 import io.swagger.annotations.ApiOperation;
 import org.eclipse.winery.common.ids.admin.KeystoreId;
+import org.eclipse.winery.repository.security.csar.BCSecurityProcessor;
 import org.eclipse.winery.repository.security.csar.JCEKSKeystoreManager;
 import org.eclipse.winery.repository.security.csar.KeystoreManager;
 import org.eclipse.winery.repository.rest.resources.admin.AbstractAdminResource;
+import org.eclipse.winery.repository.security.csar.SecurityProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,6 +32,8 @@ public class KeyStoreAdminResource extends AbstractAdminResource {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(KeyStoreAdminResource.class);
     private final KeystoreManager keystoreManager;
+    private final SecurityProcessor securityProcessor;
+    
 
     public KeyStoreAdminResource() {
         super(new KeystoreId());
@@ -43,6 +47,7 @@ public class KeyStoreAdminResource extends AbstractAdminResource {
                     .build()
             );
         }
+        securityProcessor = new BCSecurityProcessor(this.configuration);
     }
 
     @ApiOperation(value = "Gets the list of entities in the keystore",
@@ -62,17 +67,17 @@ public class KeyStoreAdminResource extends AbstractAdminResource {
     
     @Path("keys")
     public SecretKeysResource getSecretKeysResource() {
-        return new SecretKeysResource(keystoreManager);
+        return new SecretKeysResource(keystoreManager, securityProcessor);
     }
 
     @Path("keypairs")
     public KeyPairsResource getKeyPairsResource() {
-        return new KeyPairsResource(keystoreManager);
+        return new KeyPairsResource(keystoreManager, securityProcessor);
     }
 
     @Path("certificates")
     public CertificatesResource getCertificatesResource() {
-        return new CertificatesResource(keystoreManager);
+        return new CertificatesResource(keystoreManager, securityProcessor);
     }
 
     @GET

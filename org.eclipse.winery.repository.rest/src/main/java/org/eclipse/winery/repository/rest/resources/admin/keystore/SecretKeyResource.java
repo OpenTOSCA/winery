@@ -16,6 +16,7 @@ package org.eclipse.winery.repository.rest.resources.admin.keystore;
 
 import io.swagger.annotations.ApiOperation;
 import org.eclipse.winery.repository.security.csar.KeystoreManager;
+import org.eclipse.winery.repository.security.csar.SecurityProcessor;
 import org.eclipse.winery.repository.security.csar.datatypes.KeyEntityType;
 import org.eclipse.winery.repository.security.csar.exceptions.GenericKeystoreManagerException;
 
@@ -25,8 +26,8 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
 
 public class SecretKeyResource extends AbstractKeystoreEntityResource {
-    public SecretKeyResource(KeystoreManager keystoreManager) {
-        super(keystoreManager);
+    public SecretKeyResource(KeystoreManager keystoreManager, SecurityProcessor securityProcessor) {
+        super(keystoreManager, securityProcessor);
     }
 
     @ApiOperation(value = "Gets secret key as base64-encoded string or as binary")
