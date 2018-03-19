@@ -17,6 +17,12 @@ package org.eclipse.winery.repository.rest.resources.admin.keystore;
 import org.eclipse.winery.repository.security.csar.KeystoreManager;
 import org.eclipse.winery.repository.security.csar.SecurityProcessor;
 
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import java.util.Objects;
+import java.util.stream.Stream;
+
 abstract class AbstractKeystoreEntityResource {
     protected final KeystoreManager keystoreManager;
     protected final SecurityProcessor securityProcessor;
@@ -24,5 +30,19 @@ abstract class AbstractKeystoreEntityResource {
     public AbstractKeystoreEntityResource(KeystoreManager keystoreManager, SecurityProcessor securityProcessor) {
         this.keystoreManager = keystoreManager;
         this.securityProcessor = securityProcessor;        
-    }    
+    }
+    
+    protected void verifyAlias(String alias) {
+        if (alias != null && this.keystoreManager.entityExists(alias.trim()))
+            throw new WebApplicationException(
+                Response.status(Response.Status.CONFLICT)
+                    .entity("Entity with the specified alias already exists")
+                    .type(MediaType.TEXT_PLAIN)
+                    .build()
+            );
+    }
+    
+    protected boolean parametersAreNonNull(String... params) {
+        return Stream.of(params).noneMatch(Objects::isNull);
+    }
 }

@@ -31,8 +31,6 @@ import java.io.InputStream;
 import java.net.URI;
 import java.security.Key;
 import java.util.Collection;
-import java.util.Objects;
-import java.util.stream.Stream;
 
 public class SecretKeysResource extends AbstractKeystoreEntityResource {
     
@@ -56,16 +54,9 @@ public class SecretKeysResource extends AbstractKeystoreEntityResource {
                                    @DefaultValue("-1") @FormDataParam("keySize") int keySize,
                                    @FormDataParam("keyFile") InputStream uploadedInputStream,
                                    @Context UriInfo uriInfo) {
-        alias = alias.trim();
-        if (this.keystoreManager.entityExists(alias))
-            throw new WebApplicationException(
-                Response.status(Response.Status.CONFLICT)
-                    .entity("Key with specified alias already exists")
-                    .type(MediaType.TEXT_PLAIN)
-                    .build()
-            );
+        this.verifyAlias(alias);        
         try {
-            if (!Stream.of(alias, algo).anyMatch(Objects::isNull)) {
+            if (this.parametersAreNonNull(alias, algo)) {
                 KeyEntityType entity;
                 if (uploadedInputStream == null) {
                     Key key = securityProcessor.generateSecretKey(alias, algo, keySize);
