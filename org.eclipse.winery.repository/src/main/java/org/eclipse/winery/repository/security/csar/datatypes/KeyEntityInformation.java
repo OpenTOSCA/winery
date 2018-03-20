@@ -20,8 +20,8 @@ import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 
 import java.util.Base64;
 
-@JsonDeserialize(builder = KeyEntityType.Builder.class)
-public class KeyEntityType {
+@JsonDeserialize(builder = KeyEntityInformation.Builder.class)
+public class KeyEntityInformation {
     @JsonProperty
     private final String alias;
     @JsonProperty
@@ -68,12 +68,12 @@ public class KeyEntityType {
             return Base64.getEncoder().encodeToString(key);
         }
         
-        public KeyEntityType build() {
-            return new KeyEntityType(this);
+        public KeyEntityInformation build() {
+            return new KeyEntityInformation(this);
         }
     }
     
-    private KeyEntityType(Builder builder) {
+    private KeyEntityInformation(Builder builder) {
         alias = builder.alias;
         algorithm = builder.algorithm;
         keyFormat = builder.keyFormat;

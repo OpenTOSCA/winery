@@ -17,7 +17,7 @@ package org.eclipse.winery.repository.rest.resources.admin.keystore;
 import io.swagger.annotations.ApiOperation;
 import org.eclipse.winery.repository.security.csar.KeystoreManager;
 import org.eclipse.winery.repository.security.csar.SecurityProcessor;
-import org.eclipse.winery.repository.security.csar.datatypes.KeyEntityType;
+import org.eclipse.winery.repository.security.csar.datatypes.KeyEntityInformation;
 import org.eclipse.winery.repository.security.csar.exceptions.GenericKeystoreManagerException;
 
 import javax.ws.rs.*;
@@ -40,7 +40,7 @@ public class SecretKeyResource extends AbstractKeystoreEntityResource {
 
         try {
             if (!asFile) {
-                KeyEntityType key = this.keystoreManager.loadSecretKey(alias);
+                KeyEntityInformation key = this.keystoreManager.loadSecretKey(alias);
                 return Response.ok().entity(key).build();
             }
             else {

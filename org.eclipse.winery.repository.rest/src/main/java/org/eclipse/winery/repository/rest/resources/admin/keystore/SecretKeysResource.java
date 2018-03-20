@@ -18,7 +18,7 @@ import com.sun.jersey.multipart.FormDataParam;
 import io.swagger.annotations.ApiOperation;
 import org.eclipse.winery.repository.security.csar.KeystoreManager;
 import org.eclipse.winery.repository.security.csar.SecurityProcessor;
-import org.eclipse.winery.repository.security.csar.datatypes.KeyEntityType;
+import org.eclipse.winery.repository.security.csar.datatypes.KeyEntityInformation;
 import org.eclipse.winery.repository.security.csar.exceptions.GenericKeystoreManagerException;
 import org.eclipse.winery.repository.security.csar.exceptions.GenericSecurityProcessorException;
 
@@ -41,7 +41,7 @@ public class SecretKeysResource extends AbstractKeystoreEntityResource {
     @ApiOperation(value = "Gets the list of secret keys")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Collection<KeyEntityType> getSecretKeysList(@QueryParam("withKeyEncoded") boolean withKeyEncoded) {
+    public Collection<KeyEntityInformation> getSecretKeysList(@QueryParam("withKeyEncoded") boolean withKeyEncoded) {
         return keystoreManager.getSecretKeysList(withKeyEncoded);
     }
 
@@ -57,15 +57,15 @@ public class SecretKeysResource extends AbstractKeystoreEntityResource {
         this.verifyAlias(alias);        
         try {
             if (this.parametersAreNonNull(alias, algo)) {
-                KeyEntityType entity;
+                KeyEntityInformation entity;
                 if (uploadedInputStream == null) {
-                    Key key = securityProcessor.generateSecretKey(alias, algo, keySize);
+                    Key key = securityProcessor.generateSecretKey(algo, keySize);
                     entity = keystoreManager.storeSecretKey(alias, key);
                 }
                 else {
                     entity = keystoreManager.storeSecretKey(alias, algo, uploadedInputStream);
                 }
-                URI uri = uriInfo.getAbsolutePathBuilder().path(entity.getAlias()).build();
+                URI uri = uriInfo.getAbsolutePathBuilder().path(alias).build();
                 return Response.created(uri).entity(entity).build();
             }
             else

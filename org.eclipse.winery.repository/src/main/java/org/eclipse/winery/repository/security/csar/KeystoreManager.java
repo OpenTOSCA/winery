@@ -14,9 +14,10 @@
 
 package org.eclipse.winery.repository.security.csar;
 
-import org.eclipse.winery.repository.security.csar.datatypes.KeyEntityType;
+import org.eclipse.winery.repository.security.csar.datatypes.KeyEntityInformation;
+import org.eclipse.winery.repository.security.csar.datatypes.KeyPairInformation;
 import org.eclipse.winery.repository.security.csar.exceptions.GenericKeystoreManagerException;
-import org.eclipse.winery.repository.security.csar.support.SymmetricAlgorithm;
+import org.eclipse.winery.repository.security.csar.support.SupportedEncryptionAlgorithm;
 
 import java.io.InputStream;
 import java.security.*;
@@ -29,23 +30,23 @@ public interface KeystoreManager {
     
     boolean entityExists(String alias);
     
-    Collection<SymmetricAlgorithm> getSupportedSymmetricEncryptionAlgorithms();
+    Collection<SupportedEncryptionAlgorithm> getSupportedSymmetricEncryptionAlgorithms();
     
-    Collection<KeyEntityType> getSecretKeysList(boolean withKeyEncoded);
+    Collection<KeyEntityInformation> getSecretKeysList(boolean withKeyEncoded);
 
-    Collection<KeyPair> getKeyPairsList();
+    Collection<KeyPairInformation> getKeyPairsList();
 
     Collection<Certificate> getCertificatesList();
 
-    KeyEntityType storeSecretKey(String alias, String algorithm, InputStream uploadedInputStream) throws GenericKeystoreManagerException;
+    KeyEntityInformation storeSecretKey(String alias, String algorithm, InputStream uploadedInputStream) throws GenericKeystoreManagerException;
 
-    KeyEntityType storeSecretKey(String alias, Key key) throws GenericKeystoreManagerException;
+    KeyEntityInformation storeSecretKey(String alias, Key key) throws GenericKeystoreManagerException;
     
-    boolean storeKeyPair(String alias, KeyPair keypair);
+    KeyPairInformation storeKeyPair(String alias, KeyPair keypair, Certificate cert) throws GenericKeystoreManagerException;
 
     void storeCertificate();
 
-    KeyEntityType loadSecretKey(String alias) throws GenericKeystoreManagerException;
+    KeyEntityInformation loadSecretKey(String alias) throws GenericKeystoreManagerException;
 
     byte[] loadSecretKeyAsByteArray(String alias) throws GenericKeystoreManagerException;
 

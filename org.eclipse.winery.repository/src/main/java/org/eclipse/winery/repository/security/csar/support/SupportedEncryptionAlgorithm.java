@@ -17,19 +17,23 @@ package org.eclipse.winery.repository.security.csar.support;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.Objects;
+
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
-public enum SymmetricAlgorithm {
+public enum SupportedEncryptionAlgorithm {
     AES256("AES", 256, true),
     AES512("AES", 512, false),
     DES256("DES", 256, true),
-    DES512("DES", 512, false);
+    DES512("DES", 512, false),
+    RSA1024("RSA", 1024, true),
+    RSA2048("RSA", 2048, true);
 
     private String name;
     private int keySizeInBits;
     @JsonProperty
     private boolean isDefault;
     
-    SymmetricAlgorithm(String algorithm, int keySizeInBits, boolean isDefault) {
+    SupportedEncryptionAlgorithm(String algorithm, int keySizeInBits, boolean isDefault) {
         this.name = algorithm;
         this.keySizeInBits = keySizeInBits;
         this.isDefault = isDefault;
@@ -39,21 +43,24 @@ public enum SymmetricAlgorithm {
 
     public int getkeySizeInBits() { return this.keySizeInBits; }
     
-    public static SymmetricAlgorithm valueOf(String algorithm, int keySizeInBits) {
-        for (SymmetricAlgorithm a : values()) {
-            if (keySizeInBits != -1) {
-                if (a.getName().equals(algorithm.toUpperCase()) && a.getkeySizeInBits() == keySizeInBits)
-                    return a;
-            }
-            else {
-                if (a.getName().equals(algorithm.toUpperCase()) && a.isDefault)
-                    return a;
+    public static SupportedEncryptionAlgorithm valueOf(String algorithm, int keySizeInBits) {
+        if (Objects.nonNull(algorithm)) {
+            for (SupportedEncryptionAlgorithm a : values()) {
+                if (keySizeInBits != -1) {
+                    if (a.getName().equals(algorithm.toUpperCase().trim()) && a.getkeySizeInBits() == keySizeInBits)
+                        return a;
+                }
+                else {
+                    if (a.getName().equals(algorithm.toUpperCase().trim()) && a.isDefault)
+                        return a;
+                }
             }
         }
+        
         throw new IllegalArgumentException("Chosen option is not supported: " + "@algorithm." + algorithm + " @keySize." + keySizeInBits);
     }
 
-    public static SymmetricAlgorithm valueOf(String algorithm, byte[] key) {
+    public static SupportedEncryptionAlgorithm valueOf(String algorithm, byte[] key) {
         return valueOf(algorithm, key.length * Byte.SIZE);
     }
 }

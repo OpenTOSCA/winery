@@ -20,9 +20,11 @@ import org.eclipse.winery.common.RepositoryFileReference;
 import org.eclipse.winery.common.ids.admin.KeystoreId;
 import org.eclipse.winery.repository.backend.filebased.FilebasedRepository;
 import org.eclipse.winery.repository.backend.RepositoryFactory;
-import org.eclipse.winery.repository.security.csar.datatypes.KeyEntityType;
+import org.eclipse.winery.repository.security.csar.datatypes.CertificateInformation;
+import org.eclipse.winery.repository.security.csar.datatypes.KeyEntityInformation;
+import org.eclipse.winery.repository.security.csar.datatypes.KeyPairInformation;
 import org.eclipse.winery.repository.security.csar.exceptions.GenericKeystoreManagerException;
-import org.eclipse.winery.repository.security.csar.support.SymmetricAlgorithm;
+import org.eclipse.winery.repository.security.csar.support.SupportedEncryptionAlgorithm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,6 +34,7 @@ import java.io.*;
 import java.security.*;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.*;
 
 public class JCEKSKeystoreManager implements KeystoreManager {
@@ -71,10 +74,10 @@ public class JCEKSKeystoreManager implements KeystoreManager {
     }
 
     @Override
-    public KeyEntityType storeSecretKey(String alias, String algorithm, InputStream uploadedInputStream) throws GenericKeystoreManagerException {
+    public KeyEntityInformation storeSecretKey(String alias, String algorithm, InputStream uploadedInputStream) throws GenericKeystoreManagerException {
         try {
             byte[] key = IOUtils.toByteArray(uploadedInputStream);
-            SymmetricAlgorithm chosenAlgorithm = SymmetricAlgorithm.valueOf(algorithm, key);
+            SupportedEncryptionAlgorithm chosenAlgorithm = SupportedEncryptionAlgorithm.valueOf(algorithm, key);
             int keySize = key.length;
             SecretKey originalKey = new SecretKeySpec(key, 0, keySize, chosenAlgorithm.getName());
             return storeSecretKey(alias, originalKey);
@@ -85,11 +88,11 @@ public class JCEKSKeystoreManager implements KeystoreManager {
     }
     
     @Override
-    public KeyEntityType storeSecretKey(String alias, Key key) throws GenericKeystoreManagerException {
+    public KeyEntityInformation storeSecretKey(String alias, Key key) throws GenericKeystoreManagerException {
         try {
             keystore.setKeyEntry(alias, key, KEYSTORE_PASSWORD.toCharArray(), null);
             keystore.store(new FileOutputStream(this.keystorePath), KEYSTORE_PASSWORD.toCharArray());
-            return new KeyEntityType
+            return new KeyEntityInformation
                 .Builder(alias, key.getAlgorithm(), key.getFormat())
                 .keySizeInBits(key.getEncoded().length)
                 .base64Key(key.getEncoded())
@@ -101,18 +104,41 @@ public class JCEKSKeystoreManager implements KeystoreManager {
     }
 
     @Override
-    public boolean storeKeyPair(String alias, KeyPair keypair) {
-        return false;
+    public KeyPairInformation storeKeyPair(String alias, KeyPair keypair, Certificate cert) throws GenericKeystoreManagerException {
+        try {
+            PrivateKey priv = keypair.getPrivate();
+            PublicKey pub = keypair.getPublic();
+            
+            keystore.setKeyEntry(alias, priv, KEYSTORE_PASSWORD.toCharArray(), new Certificate[]{cert});
+            keystore.store(new FileOutputStream(this.keystorePath), KEYSTORE_PASSWORD.toCharArray());
+            
+            KeyEntityInformation privateKey = new KeyEntityInformation.Builder(alias, priv.getAlgorithm(), priv.getFormat())
+                .keySizeInBits(priv.getEncoded().length)
+                .base64Key(priv.getEncoded())
+                .build();
+            KeyEntityInformation publicKey = new KeyEntityInformation.Builder(alias, pub.getAlgorithm(), pub.getFormat())
+                .keySizeInBits(pub.getEncoded().length)
+                .base64Key(pub.getEncoded())
+                .build();
+            X509Certificate x = (X509Certificate) cert;
+            CertificateInformation c = new CertificateInformation(x.getSerialNumber(), x.getSigAlgName(), x.getSubjectX500Principal().getName(),
+                x.getNotBefore(), x.getNotAfter());
+            
+            return new KeyPairInformation(privateKey, publicKey, c); 
+        } catch (CertificateException | NoSuchAlgorithmException | IOException | KeyStoreException e) {
+            LOGGER.error("Error while storing a secret key", e);
+            throw new GenericKeystoreManagerException("Could not store the provided secret key");
+        }
     }
 
     @Override
-    public KeyEntityType loadSecretKey(String alias) throws GenericKeystoreManagerException {
+    public KeyEntityInformation loadSecretKey(String alias) throws GenericKeystoreManagerException {
         try {
             Key key = this.keystore.getKey(alias, KEYSTORE_PASSWORD.toCharArray());
             if ((key instanceof SecretKey)) {
                 byte[] encodedKey = key.getEncoded();
                 key.getFormat();
-                return new KeyEntityType.Builder(alias, key.getAlgorithm(), key.getFormat())
+                return new KeyEntityInformation.Builder(alias, key.getAlgorithm(), key.getFormat())
                     .base64Key(encodedKey)
                     .keySizeInBits(encodedKey.length)
                     .build();
@@ -176,7 +202,7 @@ public class JCEKSKeystoreManager implements KeystoreManager {
     @Override
     public void deleteAllSecretKeys() throws GenericKeystoreManagerException {
         try {
-            for (KeyEntityType secretKey : getSecretKeysList(false)) {
+            for (KeyEntityInformation secretKey : getSecretKeysList(false)) {
                 deleteKeystoreEntry(secretKey.getAlias());
             }
             this.keystore.store(new FileOutputStream(this.keystorePath), KEYSTORE_PASSWORD.toCharArray());
@@ -187,9 +213,9 @@ public class JCEKSKeystoreManager implements KeystoreManager {
     }
 
     @Override
-    public Collection<KeyPair> getKeyPairsList() {
+    public Collection<KeyPairInformation> getKeyPairsList() {
         Enumeration<String> aliases;
-        Collection<KeyPair> keypairs = new ArrayList<>();
+        Collection<KeyPairInformation> keypairs = new ArrayList<>();
         try {
             aliases = this.keystore.aliases();
             while (aliases.hasMoreElements()) {
@@ -200,8 +226,21 @@ public class JCEKSKeystoreManager implements KeystoreManager {
                         key = this.keystore.getKey(alias, KEYSTORE_PASSWORD.toCharArray());
                         if ((key instanceof PrivateKey)) {
                             Certificate cert = this.keystore.getCertificate(alias);
-                            KeyPair kp = new KeyPair(cert.getPublicKey(), (PrivateKey) key);
-                            keypairs.add(kp);                            
+                            KeyEntityInformation privateKey = new KeyEntityInformation.Builder(alias, key.getAlgorithm(), key.getFormat())
+                                .keySizeInBits(key.getEncoded().length)
+                                .base64Key(key.getEncoded())
+                                .build();
+                            PublicKey pub = cert.getPublicKey();
+                            KeyEntityInformation publicKey = new KeyEntityInformation.Builder(alias, pub.getAlgorithm(), pub.getFormat())
+                                .keySizeInBits(pub.getEncoded().length)
+                                .base64Key(pub.getEncoded())
+                                .build();
+                            X509Certificate x = (X509Certificate) cert;
+                            CertificateInformation c = new CertificateInformation(x.getSerialNumber(), x.getSigAlgName(), x.getSubjectX500Principal().getName(),
+                                x.getNotBefore(), x.getNotAfter());
+
+                            KeyPairInformation kp = new KeyPairInformation(privateKey, publicKey, c);
+                            keypairs.add(kp);
                         }
                     } catch (NoSuchAlgorithmException | UnrecoverableKeyException e) {
                         e.printStackTrace();
@@ -236,14 +275,14 @@ public class JCEKSKeystoreManager implements KeystoreManager {
     }
 
     @Override
-    public Collection<SymmetricAlgorithm> getSupportedSymmetricEncryptionAlgorithms() {
-        return Arrays.asList(SymmetricAlgorithm.values());
+    public Collection<SupportedEncryptionAlgorithm> getSupportedSymmetricEncryptionAlgorithms() {
+        return Arrays.asList(SupportedEncryptionAlgorithm.values());
     }
 
     @Override
-    public Collection<KeyEntityType> getSecretKeysList(boolean withKeyEncoded) {
+    public Collection<KeyEntityInformation> getSecretKeysList(boolean withKeyEncoded) {
         Enumeration<String> aliases;
-        Collection<KeyEntityType> keys = new ArrayList<>();
+        Collection<KeyEntityInformation> keys = new ArrayList<>();
         try {
             aliases = this.keystore.aliases();
             while (aliases.hasMoreElements()) {
@@ -254,13 +293,13 @@ public class JCEKSKeystoreManager implements KeystoreManager {
                         key = this.keystore.getKey(alias, KEYSTORE_PASSWORD.toCharArray());
                         if ((key instanceof SecretKey)) {
                             if (!withKeyEncoded)
-                                keys.add(new KeyEntityType
+                                keys.add(new KeyEntityInformation
                                     .Builder(alias, key.getAlgorithm(), key.getFormat())
                                     .keySizeInBits(key.getEncoded().length)
                                     .build()
                                 );
                             else
-                                keys.add(new KeyEntityType
+                                keys.add(new KeyEntityInformation
                                     .Builder(alias, key.getAlgorithm(), key.getFormat())
                                     .keySizeInBits(key.getEncoded().length)
                                     .base64Key(key.getEncoded())

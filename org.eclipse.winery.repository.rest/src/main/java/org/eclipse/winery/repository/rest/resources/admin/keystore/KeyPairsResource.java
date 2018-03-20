@@ -19,15 +19,20 @@ import com.sun.jersey.multipart.FormDataParam;
 import io.swagger.annotations.ApiOperation;
 import org.eclipse.winery.repository.security.csar.KeystoreManager;
 import org.eclipse.winery.repository.security.csar.SecurityProcessor;
+import org.eclipse.winery.repository.security.csar.datatypes.KeyPairInformation;
 
 import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 import java.io.InputStream;
+import java.net.URI;
 import java.security.KeyPair;
+import java.security.cert.Certificate;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Stream;
 
 public class KeyPairsResource extends AbstractKeystoreEntityResource {
     public KeyPairsResource(KeystoreManager keystoreManager, SecurityProcessor securityProcessor) {
@@ -37,11 +42,8 @@ public class KeyPairsResource extends AbstractKeystoreEntityResource {
     @ApiOperation(value = "Gets the list of keypairs from the keystore")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getKeyPairsList() {
-        for (KeyPair kp : this.keystoreManager.getKeyPairsList()) {
-            
-        }
-        return Response.noContent().build();
+    public Collection<KeyPairInformation> getKeyPairsList() {
+        return this.keystoreManager.getKeyPairsList();
     }
 
     @ApiOperation(value = "Generates a new or stores an existing keypair")
@@ -49,35 +51,58 @@ public class KeyPairsResource extends AbstractKeystoreEntityResource {
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
     public Response storeKeyPair(@FormDataParam("alias") String alias,
-                                 @FormDataParam("cn") String commonName,
-                                 @FormDataParam("ou") String orgUnit,
-                                 @FormDataParam("o") String org,
-                                 @FormDataParam("l") String loc,
-                                 @FormDataParam("s") String state,
-                                 @FormDataParam("c") String country,
-                                 @FormDataParam("privateKeyFile") InputStream privateKey, 
+                                 @FormDataParam("algo") String algorithm,                                 
+                                 @FormDataParam("keySize") int keySize,
+                                 @FormDataParam("signAlgo") String signatureAlgorithm,
+                                 @FormDataParam("commonName") String commonName,
+                                 @FormDataParam("orgUnit") String orgUnit,
+                                 @FormDataParam("org") String org,
+                                 @FormDataParam("loc") String loc,
+                                 @FormDataParam("state") String state,
+                                 @FormDataParam("country") String country,
+                                 @FormDataParam("privateKeyFile") InputStream privateKey,
                                  @FormDataParam("publicKeyFile") InputStream publicKey, 
-                                 @FormDataParam("certificatesChain") List<FormDataBodyPart> certificates) {
-        
-        if (Stream.of(alias, commonName, org, loc, state, country).anyMatch(Objects::isNull))
-            throw new WebApplicationException(
-                Response.status(Response.Status.BAD_REQUEST)
-                    .entity("some parameters are missing")
-                    .build()
-            );
-        
-        if (privateKey != null && publicKey != null) {
-            // TODO: store existing keypair
-            for (FormDataBodyPart imageData : certificates) {
-                // TODO: process certificates
-                imageData.getValueAs(InputStream.class);
+                                 @FormDataParam("certificatesChain") List<FormDataBodyPart> certificates,
+                                 @Context UriInfo uriInfo) {
+        this.verifyAlias(alias);
+        try {
+            if (this.parametersAreNonNull(alias, algorithm, commonName, orgUnit, org, loc, state, country)) {
+                if (this.parametersAreNonNull(privateKey, publicKey)) {
+                    if (Objects.nonNull(certificates)) {
+                        // TODO: store existing keypair
+                        for (FormDataBodyPart imageData : certificates) {
+                            // TODO: process certificates
+                            imageData.getValueAs(InputStream.class);
+                        }
+                    }
+                    else {
+                        // TODO: generate self-signed certificate and store
+                    }
+                }
+                else {
+                    // TODO generate new keypair with self-signed cert
+                    KeyPair keypair = this.securityProcessor.generateKeyPair(algorithm, keySize);
+                    Certificate selfSignedCert = this.securityProcessor.generateSelfSignedCertificate(
+                        keypair, signatureAlgorithm, commonName, orgUnit, org, loc, state, country
+                    );
+                    KeyPairInformation entity = this.keystoreManager.storeKeyPair(alias, keypair, selfSignedCert);
+                    URI uri = uriInfo.getAbsolutePathBuilder().path(alias).build();
+                    return Response.created(uri).entity(entity).build();
+                }
+                return Response.noContent().build();
+            }
+            else {
+                throw new WebApplicationException(
+                    Response.status(Response.Status.BAD_REQUEST)
+                        .entity("some parameters are missing")
+                        .type(MediaType.TEXT_PLAIN)
+                        .build()
+                );
             }
         }
-        else {
-            // TODO generate new keypair
-        }
-        
-        return Response.noContent().build();
+        catch (Exception e) {
+            throw new WebApplicationException(Response.serverError().entity(e.getMessage()).build());
+        }       
     }
 
     @ApiOperation(value = "Gets the keypair by its alias")

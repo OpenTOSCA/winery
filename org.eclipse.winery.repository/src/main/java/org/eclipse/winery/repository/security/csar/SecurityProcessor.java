@@ -14,17 +14,18 @@
 
 package org.eclipse.winery.repository.security.csar;
 
-import org.eclipse.winery.repository.security.csar.datatypes.CertificateType;
-import org.eclipse.winery.repository.security.csar.datatypes.KeyPairType;
 import org.eclipse.winery.repository.security.csar.exceptions.GenericSecurityProcessorException;
 
 import java.security.Key;
+import java.security.KeyPair;
+import java.security.cert.Certificate;
 
 public interface SecurityProcessor {
 
-    Key generateSecretKey(String alias, String algorithm, int keySize) throws GenericSecurityProcessorException;
+    Key generateSecretKey(String algorithm, int keySize) throws GenericSecurityProcessorException;
 
-    KeyPairType generateKeyPair(String algorithm, int keySize);
+    KeyPair generateKeyPair(String algorithm, int keySize) throws GenericSecurityProcessorException;
     
-    CertificateType generateSelfSignedCertificate(KeyPairType keypair);
+    Certificate generateSelfSignedCertificate(KeyPair keypair, String signatureAlgorithm, String commonName, String orgUnit, String org, String loc, String state, String country) throws GenericSecurityProcessorException;
+    
 }

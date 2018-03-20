@@ -20,6 +20,7 @@ import org.eclipse.winery.repository.security.csar.SecurityProcessor;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.io.InputStream;
 import java.util.Objects;
 import java.util.stream.Stream;
 
@@ -43,6 +44,10 @@ abstract class AbstractKeystoreEntityResource {
     }
     
     protected boolean parametersAreNonNull(String... params) {
+        return Stream.of(params).noneMatch(Objects::isNull);
+    }
+    
+    protected boolean parametersAreNonNull(InputStream... params) {
         return Stream.of(params).noneMatch(Objects::isNull);
     }
 }
