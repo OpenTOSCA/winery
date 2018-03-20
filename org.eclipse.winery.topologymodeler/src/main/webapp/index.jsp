@@ -27,6 +27,8 @@
 <%@page import="java.util.LinkedList" %>
 <%@page import="java.util.List" %>
 <%@ page import="java.util.Optional" %>
+<%@ page import="org.eclipse.winery.common.ids.GenericId" %>
+<%@ page import="org.eclipse.winery.common.ids.definitions.ComplianceRuleId" %>
 
 <%-- nc.. = non-common .. --%>
 <%@taglib prefix="ncnt" tagdir="/WEB-INF/tags/templates/nodetemplates" %>
@@ -98,7 +100,21 @@ The repository is not available.
     }
 
     QName serviceTemplateQName = new QName(ns, id);
-    TTopologyTemplate topologyTemplate = client.getTopologyTemplate(serviceTemplateQName);
+    TTopologyTemplate topologyTemplate;
+    String parentPath;
+    String elementPath;
+    GenericId elementId;
+    if (request.getParameterMap().containsKey("parentPath") && request.getParameterMap().containsKey("elementPath")) {
+        parentPath =  "/" + request.getParameter("parentPath") + "/";
+        elementPath = "/" + request.getParameter("elementPath") + "/";
+        elementId = new ComplianceRuleId(serviceTemplateQName);
+        topologyTemplate = client.getTopologyTemplate(serviceTemplateQName, parentPath, elementPath);
+    } else {
+        parentPath = "/servicetemplates/";
+        elementPath = "/topologytemplate/";
+        elementId = new ServiceTemplateId(serviceTemplateQName);
+        topologyTemplate = client.getTopologyTemplate(serviceTemplateQName);
+    }
     if (topologyTemplate == null) {
 %>
 Something went wrong in the repository: topology template not found.
@@ -106,9 +122,10 @@ Something went wrong in the repository: topology template not found.
         return;
     }
 
-    String topologyTemplateURL = repositoryURL + "/servicetemplates/" + Util.DoubleURLencode(serviceTemplateQName) + "/topologytemplate/";
-    String doubleEncodedTopologyTemplateURL = repositoryURL + "/servicetemplates/" + Util.DoubleURLencode(Util.URLencode(serviceTemplateQName.getNamespaceURI())) + "/" + Util.DoubleURLencode(Util.URLencode(serviceTemplateQName.getLocalPart())) + "/topologytemplate/";
-    String serviceTemplateName = client.getName(new ServiceTemplateId(serviceTemplateQName));
+    String topologyTemplateURL = repositoryURL + parentPath + Util.DoubleURLencode(serviceTemplateQName) + elementPath;
+    String doubleEncodedTopologyTemplateURL = repositoryURL + parentPath + Util.DoubleURLencode(serviceTemplateQName.getNamespaceURI()) + "/" + Util.DoubleURLencode(serviceTemplateQName.getLocalPart()) + elementPath;
+    String tripleEncodedTopologyTemplateURL = repositoryURL + parentPath + Util.DoubleURLencode(Util.URLencode(serviceTemplateQName.getNamespaceURI())) + "/" + Util.DoubleURLencode(Util.URLencode(serviceTemplateQName.getLocalPart())) + elementPath;
+    String serviceTemplateName = client.getName(elementId);
 %>
 <!DOCTYPE html>
 <html>
@@ -672,6 +689,7 @@ Something went wrong in the repository: topology template not found.
             winery.events.register(winery.events.name.command.MATCH, wt.match);
             wt.setTopologyTemplateURL("<%=topologyTemplateURL%>");
             wt.setDoubleEncodedTopologyTemplateURL("<%=doubleEncodedTopologyTemplateURL%>");
+            wt.setTripleEncodedTopologyTemplateURL("<%=tripleEncodedTopologyTemplateURL%>");
         });
     </script>
     <script>
