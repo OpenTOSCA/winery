@@ -1,1 +1,4 @@
-* text=auto eol=lf
+gradlew eol=lf
+winery eol=lf
+*.sh eol=lf
+config/git-hooks/commit-msg eol=lf

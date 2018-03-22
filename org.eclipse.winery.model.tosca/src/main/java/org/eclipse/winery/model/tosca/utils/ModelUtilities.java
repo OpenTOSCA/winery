@@ -1,5 +1,5 @@
-/********************************************************************************
- * Copyright (c) 2013-2018 Contributors to the Eclipse Foundation
+/*******************************************************************************
+ * Copyright (c) 2013-2017 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -10,8 +10,7 @@
  * which is available at https://www.apache.org/licenses/LICENSE-2.0.
  *
  * SPDX-License-Identifier: EPL-2.0 OR Apache-2.0
- ********************************************************************************/
-
+ *******************************************************************************/
 package org.eclipse.winery.model.tosca.utils;
 
 import org.eclipse.winery.model.tosca.*;
@@ -49,16 +48,10 @@ public class ModelUtilities {
 
     /**
      * @deprecated Use {@link TEntityType#getWinerysPropertiesDefinition()}
-     * 
-     * @param et the entity type to query
-     * @return null if et == null
      */
     @Deprecated
     public static WinerysPropertiesDefinition getWinerysPropertiesDefinition(TEntityType et) {
-        if (et != null) {
-            return et.getWinerysPropertiesDefinition();
-        }
-        return null;
+        return et.getWinerysPropertiesDefinition();
     }
 
     /**
@@ -208,7 +201,7 @@ public class ModelUtilities {
      * Special method to get the name of an extensible element as the TOSCA specification does not have a separate super
      * type for elements with a name
      * <p>
-     * @see Util#instanceSupportsNameAttribute(java.lang.Class) is related
+     * {@link Util#instanceSupportsNameAttribute(java.lang.Class)} is related
      *
      * @param e the extensible element offering a name attribute (besides an id attribute)
      * @return the name of the extensible element
@@ -229,7 +222,7 @@ public class ModelUtilities {
     /**
      * Returns the name of the given element. If the name does not exist or is empty, the id is returned
      * <p>
-     * {@link #getName}
+     * {@see getName}
      *
      * @return the name if there is a name field, if not, the id is returned. In case there is a Name field,
      */
