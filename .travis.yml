@@ -52,14 +52,14 @@ deploy:
     skip_cleanup: true
     on:
       branch: ustutt
- - provider: pages
-   skip-cleanup: true
-   github-token: $UpdateSiteToken
-   # we should delete old versions to keep the repo small
-   keep-history: false
-   on:
-     - branch: master
-     - tags: true
-   local-dir: update-site
-   target-branch: master
-   repo: OpenTOSCA/winery-update-site
+  - provider: pages
+    skip-cleanup: true
+    github-token: $GITHUB_TOKEN
+    # we should delete old versions to keep the repo small
+    keep-history: false
+    on:
+      - branch: ustutt
+      - tags: true
+    local-dir: update-site
+    target-branch: master
+    repo: OpenTOSCA/winery-update-site
