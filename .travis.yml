@@ -48,6 +48,13 @@ deploy:
     skip_cleanup: true
     on:
       branch: ustutt
+      tags: true
+  - provider: script
+    script: "mvn org.reficio:p2-maven-plugin:site -N"
+    skip_cleanup: true
+    on:
+      branch: ustutt
+      tags: true
   - provider: pages
     skip-cleanup: true
     github-token: $GITHUB_TOKEN
@@ -56,6 +63,6 @@ deploy:
     on:
       branch: ustutt
       tags: true
-    local-dir: update-site
+    local-dir: target/repository
     target-branch: master
     repo: OpenTOSCA/winery-update-site

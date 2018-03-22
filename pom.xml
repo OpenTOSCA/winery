@@ -127,81 +127,6 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
-                <groupId>org.reficio</groupId>
-                <artifactId>p2-maven-plugin</artifactId>
-                <version>1.3.0</version>
-                <executions>
-                    <execution>
-                        <id>generate-p2-site</id>
-                        <phase>deploy</phase>
-                        <goals>
-                            <goal>site</goal>
-                        </goals>
-                        <configuration>
-                            <features>
-                                <artifact>
-                                    <id>org.eclipse.winery:org.eclipse.winery.highlevelrestapi:2.0.0-SNAPSHOT</id>
-                                    <transitive>false</transitive>
-                                    <source>false</source>
-                                </artifact>
-                                <artifact>
-                                    <id>org.eclipse.winery:org.eclipse.winery.model.bpmn4tosca:2.0.0-SNAPSHOT</id>
-                                    <transitive>false</transitive>
-                                    <source>false</source>
-                                </artifact>
-                                <artifact>
-                                    <id>org.eclipse.winery:org.eclipse.winery.model.csar.toscametafile:2.0.0-SNAPSHOT</id>
-                                    <transitive>false</transitive>
-                                    <source>false</source>
-                                </artifact>
-                                <artifact>
-                                    <id>org.eclipse.winery:org.eclipse.winery.model.selfservice:2.0.0-SNAPSHOT</id>
-                                    <transitive>false</transitive>
-                                    <source>false</source>
-                                </artifact>
-                                <artifact>
-                                    <id>org.eclipse.winery:org.eclipse.winery.model.tosca:2.0.0-SNAPSHOT</id>
-                                    <transitive>false</transitive>
-                                    <source>false</source>
-                                </artifact>
-                                <artifact>
-                                    <id>org.eclipse.winery:org.eclipse.winery.repository.client:2.0.0-SNAPSHOT</id>
-                                    <transitive>false</transitive>
-                                    <source>false</source>
-                                </artifact>
-                            </features>
-                            <destinationDirectory>update-site</destinationDirectory>
-                            <pedantic>true</pedantic>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>com.github.github</groupId>
-                <artifactId>site-maven-plugin</artifactId>
-                <version>0.12</version>
-                <configuration>
-                    <message>Maven artifacts for ${project.version}</message>  <!-- git commit message -->
-                    <noJekyll>true</noJekyll>                                  <!-- disable webpage processing -->
-                    <force>true</force>
-                    <merge>true</merge>
-                    <outputDirectory>${basedir}/target/mvn-repo</outputDirectory> <!-- matches distribution management repository url above -->
-                    <branch>refs/heads/master</branch>           <!-- remote branch name -->
-                    <includes><include>**/*</include></includes>
-                    <repositoryOwner>opentosca</repositoryOwner> <!-- github username  -->
-                    <repositoryName>mvn-repo</repositoryName>    <!-- github repo name -->
-                </configuration>
-                <executions>
-                    <!-- run site-maven-plugin's 'site' target as part of the build's normal 'deploy' phase -->
-                    <execution>
-                        <goals>
-                            <goal>site</goal>
-                        </goals>
-                        <phase>deploy</phase>
-                    </execution>
-                </executions>
-            </plugin>
         </plugins>
         <pluginManagement>
             <plugins>
@@ -273,16 +198,103 @@
                         <repositoryOwner>OpenTOSCA</repositoryOwner>
                         <repositoryName>mvn-repo</repositoryName>
                     </configuration>
-                    <!--
+                </plugin>
+                <plugin>
+                    <groupId>org.reficio</groupId>
+                    <artifactId>p2-maven-plugin</artifactId>
+                    <version>1.3.0</version>
                     <executions>
                         <execution>
-                            <goals>
-                                <goal>site</goal>
-                            </goals>
-                            <phase>site</phase>
+                            <configuration>
+                                <artifacts>
+                                    <artifact>
+                                        <id>org.eclipse.winery:org.eclipse.winery.model.bpmn4tosca:2.0.0-SNAPSHOT</id>
+                                        <transitive>false</transitive>
+                                        <source>true</source>
+                                    </artifact>
+                                    <artifact>
+                                        <id>org.eclipse.winery:org.eclipse.winery.model.csar.toscametafile:2.0.0-SNAPSHOT
+                                        </id>
+                                        <transitive>false</transitive>
+                                        <source>true</source>
+                                    </artifact>
+                                    <artifact>
+                                        <id>org.eclipse.winery:org.eclipse.winery.model.selfservice:2.0.0-SNAPSHOT</id>
+                                        <transitive>false</transitive>
+                                        <source>true</source>
+                                    </artifact>
+                                    <artifact>
+                                        <id>org.eclipse.winery:org.eclipse.winery.model.tosca:2.0.0-SNAPSHOT</id>
+                                        <transitive>false</transitive>
+                                        <source>true</source>
+                                    </artifact>
+                                    <artifact>
+                                        <id>org.eclipse.winery:org.eclipse.winery.model.tosca.yaml:2.0.0-SNAPSHOT</id>
+                                        <transitive>false</transitive>
+                                        <source>true</source>
+                                    </artifact>
+                                    <artifact>
+                                        <id>org.eclipse.winery:org.eclipse.winery.common:2.0.0-SNAPSHOT</id>
+                                        <transitive>false</transitive>
+                                        <source>true</source>
+                                    </artifact>
+                                    <artifact>
+                                        <id>org.eclipse.winery:org.eclipse.winery.yaml.common:2.0.0-SNAPSHOT</id>
+                                        <transitive>false</transitive>
+                                        <source>true</source>
+                                    </artifact>
+                                    <artifact>
+                                        <id>org.eclipse.winery:org.eclipse.winery.yaml.converter:2.0.0-SNAPSHOT</id>
+                                        <transitive>false</transitive>
+                                        <source>true</source>
+                                    </artifact>
+                                    <artifact>
+                                        <id>org.eclipse.winery:org.eclipse.winery.cli:2.0.0-SNAPSHOT</id>
+                                        <transitive>false</transitive>
+                                        <source>true</source>
+                                    </artifact>
+                                    <artifact>
+                                        <id>
+                                            org.eclipse.winery:org.eclipse.winery.bpmn4tosca.converter.tobpel:2.0.0-SNAPSHOT
+                                        </id>
+                                        <transitive>false</transitive>
+                                        <source>true</source>
+                                    </artifact>
+                                    <artifact>
+                                        <id>org.eclipse.winery:org.eclipse.winery.repository:2.0.0-SNAPSHOT</id>
+                                        <transitive>false</transitive>
+                                        <source>true</source>
+                                    </artifact>
+                                    <artifact>
+                                        <id>org.eclipse.winery:org.eclipse.winery.repository.client:2.0.0-SNAPSHOT</id>
+                                        <transitive>false</transitive>
+                                        <source>true</source>
+                                    </artifact>
+                                    <artifact>
+                                        <id>org.eclipse.winery:org.eclipse.winery.repository.configuration:2.0.0-SNAPSHOT
+                                        </id>
+                                        <transitive>false</transitive>
+                                        <source>true</source>
+                                    </artifact>
+                                    <artifact>
+                                        <id>org.eclipse.winery:org.eclipse.winery.compliance:2.0.0-SNAPSHOT</id>
+                                        <transitive>false</transitive>
+                                        <source>true</source>
+                                    </artifact>
+                                    <artifact>
+                                        <id>org.eclipse.winery:org.eclipse.winery.generators.ia:2.0.0-SNAPSHOT</id>
+                                        <transitive>false</transitive>
+                                        <source>true</source>
+                                    </artifact>
+                                    <artifact>
+                                        <id>org.eclipse.winery:org.eclipse.winery.highlevelrestapi:2.0.0-SNAPSHOT</id>
+                                        <transitive>false</transitive>
+                                        <source>true</source>
+                                    </artifact>
+                                </artifacts>
+                            </configuration>
                         </execution>
                     </executions>
-                    -->
                 </plugin>
             </plugins>
         </pluginManagement>
