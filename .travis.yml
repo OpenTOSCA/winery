@@ -43,12 +43,12 @@ deploy:
       all_branches: true
       condition: $AWSAccessKeyId
   - provider: script
-    script: "cp .travis.settings.xml $HOME/.m2/settings.xml && mvn deploy -DskipTests=true"
+    script: "cp .travis.settings.xml $HOME/.m2/settings.xml && mvn deploy -DskipTests=true -P deploy"
     skip_cleanup: true
     on:
       tags: true
   - provider: script
-    script: "cp .travis.settings.xml $HOME/.m2/settings.xml && mvn deploy -DskipTests=true"
+    script: "cp .travis.settings.xml $HOME/.m2/settings.xml && mvn deploy -DskipTests=true -P deploy"
     skip_cleanup: true
     on:
       branch: ustutt
