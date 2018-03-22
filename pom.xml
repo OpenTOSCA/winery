@@ -57,65 +57,36 @@
         <repository>
             <id>internal.repo</id>
             <name>Temporary Staging Repository</name>
-            <url>file://${project.basedir}/target/mvn-repo</url>
+            <url>file://${main.basedir}/target/mvn-repo</url>
         </repository>
     </distributionManagement>
     <properties>
         <github.global.server>github</github.global.server>
+        <main.basedir>${project.basedir}</main.basedir>
     </properties>
-    <profiles>
-        <profile>
-            <id>default</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <modules>
-                <module>org.eclipse.winery.model.bpmn4tosca</module>
-                <module>org.eclipse.winery.model.csar.toscametafile</module>
-                <module>org.eclipse.winery.model.selfservice</module>
-                <module>org.eclipse.winery.model.tosca</module>
-                <module>org.eclipse.winery.model.tosca.yaml</module>
-                <module>org.eclipse.winery.common</module>
-                <module>org.eclipse.winery.yaml.common</module>
-                <module>org.eclipse.winery.yaml.converter</module>
-                <module>org.eclipse.winery.cli</module>
-                <module>org.eclipse.winery.bpmn4tosca.converter.tobpel</module>
-                <module>org.eclipse.winery.repository</module>
-                <module>org.eclipse.winery.repository.client</module>
-                <module>org.eclipse.winery.repository.configuration</module>
-                <module>org.eclipse.winery.repository.rest</module>
-                <module>org.eclipse.winery.repository.ui</module>
-                <module>org.eclipse.winery.topologymodeler</module>
-                <module>org.eclipse.winery.topologymodeler.ui</module>
-                <module>org.eclipse.winery.workflowmodeler</module>
-                <module>org.eclipse.winery.compliance</module>
-                <module>org.eclipse.winery.generators.ia</module>
-                <module>org.eclipse.winery.highlevelrestapi</module>
-            </modules>
-        </profile>
-        <profile>
-            <id>deploy</id>
-            <modules>
-                <module>org.eclipse.winery.model.bpmn4tosca</module>
-                <module>org.eclipse.winery.model.csar.toscametafile</module>
-                <module>org.eclipse.winery.model.selfservice</module>
-                <module>org.eclipse.winery.model.tosca</module>
-                <module>org.eclipse.winery.model.tosca.yaml</module>
-                <module>org.eclipse.winery.common</module>
-                <module>org.eclipse.winery.yaml.common</module>
-                <module>org.eclipse.winery.yaml.converter</module>
-                <module>org.eclipse.winery.cli</module>
-                <module>org.eclipse.winery.bpmn4tosca.converter.tobpel</module>
-                <module>org.eclipse.winery.repository</module>
-                <module>org.eclipse.winery.repository.client</module>
-                <module>org.eclipse.winery.repository.configuration</module>
-                <module>org.eclipse.winery.repository.rest</module>
-                <module>org.eclipse.winery.compliance</module>
-                <module>org.eclipse.winery.generators.ia</module>
-                <module>org.eclipse.winery.highlevelrestapi</module>
-            </modules>
-        </profile>
-    </profiles>
+    <modules>
+        <module>org.eclipse.winery.model.bpmn4tosca</module>
+        <module>org.eclipse.winery.model.csar.toscametafile</module>
+        <module>org.eclipse.winery.model.selfservice</module>
+        <module>org.eclipse.winery.model.tosca</module>
+        <module>org.eclipse.winery.model.tosca.yaml</module>
+        <module>org.eclipse.winery.common</module>
+        <module>org.eclipse.winery.yaml.common</module>
+        <module>org.eclipse.winery.yaml.converter</module>
+        <module>org.eclipse.winery.cli</module>
+        <module>org.eclipse.winery.bpmn4tosca.converter.tobpel</module>
+        <module>org.eclipse.winery.repository</module>
+        <module>org.eclipse.winery.repository.client</module>
+        <module>org.eclipse.winery.repository.configuration</module>
+        <module>org.eclipse.winery.repository.rest</module>
+        <module>org.eclipse.winery.repository.ui</module>
+        <module>org.eclipse.winery.topologymodeler</module>
+        <module>org.eclipse.winery.topologymodeler.ui</module>
+        <module>org.eclipse.winery.workflowmodeler</module>
+        <module>org.eclipse.winery.compliance</module>
+        <module>org.eclipse.winery.generators.ia</module>
+        <module>org.eclipse.winery.highlevelrestapi</module>
+    </modules>
     <build>
         <plugins>
             <plugin>
@@ -283,7 +254,7 @@
                     <version>2.8.1</version>
                     <configuration>
                         <altDeploymentRepository>
-                            internal.repo::default::file://${project.basedir}/target/mvn-repo
+                            internal.repo::default::file://${main.basedir}/target/mvn-repo
                         </altDeploymentRepository>
                     </configuration>
                 </plugin>
@@ -292,7 +263,7 @@
                     <artifactId>site-maven-plugin</artifactId>
                     <version>0.12</version>
                     <configuration>
-                        <message>Winery artifacts for ${project.artifactId} (${project.version})</message>  <!-- git commit message -->
+                        <message>Update winery artifacts (${project.version})</message> <!-- git commit message -->
                         <noJekyll>true</noJekyll> <!-- disable webpage processing -->
                         <force>true</force>
                         <merge>true</merge>
@@ -302,15 +273,16 @@
                         <repositoryOwner>OpenTOSCA</repositoryOwner>
                         <repositoryName>mvn-repo</repositoryName>
                     </configuration>
+                    <!--
                     <executions>
-                        <!-- run site-maven-plugin's 'site' target as part of the build's normal 'deploy' phase -->
                         <execution>
                             <goals>
                                 <goal>site</goal>
                             </goals>
-                            <phase>deploy</phase>
+                            <phase>site</phase>
                         </execution>
                     </executions>
+                    -->
                 </plugin>
             </plugins>
         </pluginManagement>

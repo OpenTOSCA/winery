@@ -15,10 +15,11 @@ before_install:
   #- curl -sL https://cdn.rawgit.com/jpm4j/jpm4j.installers/6b3c5176/dist/biz.aQute.jpm.run.jar >jpm4j.jar
   #- java -jar jpm4j.jar -u init
   # - ~/jpm/bin/jpm install com.codacy:codacy-coverage-reporter:assembly
+  - cp .travis.settings.xml $HOME/.m2/settings.xml
   - mvn resources:resources -pl org.eclipse.winery.repository.configuration
 
 script:
-  - mvn package
+  - mvn deploy
   # - mvn jacoco:report-aggregate
   - mkdir build
   - mv org.eclipse.winery.cli/target/*.jar build/
@@ -43,12 +44,7 @@ deploy:
       all_branches: true
       condition: $AWSAccessKeyId
   - provider: script
-    script: "cp .travis.settings.xml $HOME/.m2/settings.xml && mvn deploy -DskipTests=true -P deploy"
-    skip_cleanup: true
-    on:
-      tags: true
-  - provider: script
-    script: "cp .travis.settings.xml $HOME/.m2/settings.xml && mvn deploy -DskipTests=true -P deploy"
+    script: "mvn com.github.github:site-maven-plugin:site -N"
     skip_cleanup: true
     on:
       branch: ustutt

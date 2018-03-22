@@ -25,6 +25,7 @@
     <artifactId>org.eclipse.winery.repository.configuration</artifactId>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <main.basedir>${project.parent.basedir}</main.basedir>
     </properties>
     <build>
         <resources>
@@ -72,10 +73,6 @@
             </plugin>
             <plugin>
                 <artifactId>maven-deploy-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>com.github.github</groupId>
-                <artifactId>site-maven-plugin</artifactId>
             </plugin>
         </plugins>
     </build>

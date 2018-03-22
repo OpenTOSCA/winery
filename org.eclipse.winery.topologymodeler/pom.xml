@@ -28,6 +28,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <checkstyle.config.location>../checkstyle.xml</checkstyle.config.location>
         <maven.deploy.skip>true</maven.deploy.skip>
+        <main.basedir>${project.parent.basedir}</main.basedir>
     </properties>
     <dependencies>
         <dependency>

@@ -50,6 +50,7 @@
     </licenses>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <main.basedir>${project.parent.basedir}</main.basedir>
     </properties>
     <build>
         <plugins>
@@ -63,10 +64,6 @@
             </plugin>
             <plugin>
                 <artifactId>maven-deploy-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>com.github.github</groupId>
-                <artifactId>site-maven-plugin</artifactId>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
