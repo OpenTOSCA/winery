@@ -48,7 +48,6 @@ deploy:
     skip_cleanup: true
     on:
       branch: ustutt
-  # Publish update-site      
   - provider: pages
     skip-cleanup: true
     github-token: $GITHUB_TOKEN
@@ -59,7 +58,6 @@ deploy:
     repo: OpenTOSCA/winery-update-site
     on:    
       branch: ustutt
-  # Publish Maven repository
   - provider: pages
     skip-cleanup: true
     github-token: $GITHUB_TOKEN
