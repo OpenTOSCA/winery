@@ -51,7 +51,6 @@ deploy:
   - provider: pages
     skip-cleanup: true
     github-token: $GITHUB_TOKEN
-    # we should delete old versions to keep the repo small
     keep-history: false
     local-dir: target/repository
     target-branch: master
@@ -61,7 +60,6 @@ deploy:
   - provider: pages
     skip-cleanup: true
     github-token: $GITHUB_TOKEN
-    # we should delete old versions to keep the repo small
     keep-history: false
     local-dir: target/mvn-repo
     target-branch: master

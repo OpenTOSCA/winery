@@ -183,6 +183,15 @@
                         </altDeploymentRepository>
                     </configuration>
                 </plugin>
+                <!-- 
+                    Plugin to generate gh-pages for GitHub. One can use to upload the local Maven repository, which is 
+                    created during 'mvn deploy'. The plugin can be run with:
+
+                        mvn com.github.github:site-maven-plugin:site -N
+
+                    This takes the content of 'target/mvn-repo' and publishes it to the repository 
+                    'OpenTOSCA/mvn-repo/master'.
+                -->
                 <plugin>
                     <groupId>com.github.github</groupId>
                     <artifactId>site-maven-plugin</artifactId>
@@ -199,6 +208,14 @@
                         <repositoryName>mvn-repo</repositoryName>
                     </configuration>
                 </plugin>
+                <!--
+                    Plugin to auto-generate an Eclipse update-site. The plugin can be run with:
+                    
+                        mvn org.reficio:p2-maven-plugin:site -N
+                        
+                    This generates the update-site to 'target/repository'. Afterwards, one can upload this bundle to
+                     a public location.
+                -->
                 <plugin>
                     <groupId>org.reficio</groupId>
                     <artifactId>p2-maven-plugin</artifactId>
