@@ -54,8 +54,8 @@ deploy:
     # we should delete old versions to keep the repo small
     keep-history: false
     local-dir: target/repository
-    target-branch: master
     repo: OpenTOSCA/winery-update-site
+    target-branch: master
     on:    
       branch: ustutt
   - provider: pages
@@ -64,7 +64,7 @@ deploy:
     # we should delete old versions to keep the repo small
     keep-history: false
     local-dir: target/mvn-repo
-    target-branch: master
     repo: OpenTOSCA/mvn-repo
+    target-branch: master
     on:    
       branch: ustutt
