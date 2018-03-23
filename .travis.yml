@@ -47,22 +47,24 @@ deploy:
     script: "mvn org.reficio:p2-maven-plugin:site -N"
     skip_cleanup: true
     on:
-      branch: ustutt
+      all_branches: true
   - provider: pages
     skip-cleanup: true
     github-token: $GITHUB_TOKEN
     keep-history: false
     local-dir: target/repository
     repo: OpenTOSCA/winery-update-site
-    target-branch: master
-    on:    
-      branch: ustutt
+    # ADR-0018
+    target-branch: $TRAVIS_BRANCH
+    on:
+      all_branches: true
   - provider: pages
     skip-cleanup: true
     github-token: $GITHUB_TOKEN
     keep-history: false
     local-dir: target/mvn-repo
     repo: OpenTOSCA/mvn-repo
-    target-branch: master
-    on:    
-      branch: ustutt
+    # ADR-0019    
+    target-branch: $TRAVIS_BRANCH
+    on:
+      all_branches: true
