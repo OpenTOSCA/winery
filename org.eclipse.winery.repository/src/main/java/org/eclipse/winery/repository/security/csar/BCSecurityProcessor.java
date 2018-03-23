@@ -16,6 +16,7 @@ package org.eclipse.winery.repository.security.csar;
 
 import com.google.common.base.Strings;
 import org.apache.commons.configuration.Configuration;
+import org.apache.commons.io.IOUtils;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x500.X500NameBuilder;
@@ -39,11 +40,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
+import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigInteger;
 import java.security.*;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.security.spec.X509EncodedKeySpec;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -146,7 +155,59 @@ public class BCSecurityProcessor implements SecurityProcessor {
             throw new GenericSecurityProcessorException("Error generating a self-signed certificate");
         }
     }
-    
+
+    @Override
+    public SecretKey getSecretKeyFromInputStream(String algorithm, InputStream secretKeyInputStream) throws GenericSecurityProcessorException {
+        try {
+            byte[] key = new byte[0];
+            key = IOUtils.toByteArray(secretKeyInputStream);
+            SupportedEncryptionAlgorithm chosenAlgorithm = SupportedEncryptionAlgorithm.valueOf(algorithm, key);
+            int keySize = key.length;
+            return new SecretKeySpec(key, 0, keySize, chosenAlgorithm.getName());
+        } catch (IOException | IllegalArgumentException e) {
+            LOGGER.error("Error processing the provided secret key", e);
+            throw new GenericSecurityProcessorException("Error processing the provided secret key");
+        }
+    }
+
+    @Override
+    public PrivateKey getPKCS8PrivateKeyFromInputStream(String algorithm, InputStream privateKeyInputStream) throws GenericSecurityProcessorException {
+        try {
+            byte[] privateKeyByteArray;
+            privateKeyByteArray = IOUtils.toByteArray(privateKeyInputStream);
+            KeyFactory keyFactory = KeyFactory.getInstance(algorithm);
+            PKCS8EncodedKeySpec privateKeySpec = new PKCS8EncodedKeySpec(privateKeyByteArray);
+            return keyFactory.generatePrivate(privateKeySpec);
+        } catch (InvalidKeySpecException | NoSuchAlgorithmException | IOException e) {
+            LOGGER.error("Error processing the provided private key", e);
+            throw new GenericSecurityProcessorException("Error processing the provided private key");
+        }
+    }
+
+    @Override
+    public PublicKey getX509EncodedPublicKeyFromInputStream(String algorithm, InputStream publicKeyInputStream) throws GenericSecurityProcessorException {
+        try {
+            KeyFactory keyFactory = KeyFactory.getInstance(algorithm);
+            byte[] publicKeyByteArray = new byte[0];
+            publicKeyByteArray = IOUtils.toByteArray(publicKeyInputStream);
+            X509EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(publicKeyByteArray);
+            return keyFactory.generatePublic(publicKeySpec);
+        } catch (IOException | NoSuchAlgorithmException | InvalidKeySpecException e) {
+            LOGGER.error("Error processing the provided public key", e);
+            throw new GenericSecurityProcessorException("Error processing the provided public key");
+        }
+    }
+
+    @Override
+    public Certificate getX509CertificateFromInputStream(InputStream certInputStream) throws GenericSecurityProcessorException {
+        try {
+            return CertificateFactory.getInstance("X509").generateCertificate(certInputStream);
+        } catch (CertificateException e) {
+            LOGGER.error("Error processing the provided X509 certificate", e);
+            throw new GenericSecurityProcessorException("Error processing the provided X509 certificate");
+        }
+    }
+
     public X500Name buildX500Name(String commonName, String orgUnit, String org, String loc, String state, String country) throws GenericSecurityProcessorException {
         
         X500NameBuilder builder = new X500NameBuilder(BCStyle.INSTANCE);

@@ -38,9 +38,9 @@ public interface KeystoreManager {
 
     Collection<Certificate> getCertificatesList();
 
-    KeyEntityInformation storeSecretKey(String alias, String algorithm, InputStream uploadedInputStream) throws GenericKeystoreManagerException;
-
     KeyEntityInformation storeSecretKey(String alias, Key key) throws GenericKeystoreManagerException;
+
+    KeyPairInformation storeKeyPair(String alias, PrivateKey privateKey, Certificate cert) throws GenericKeystoreManagerException;
     
     KeyPairInformation storeKeyPair(String alias, KeyPair keypair, Certificate cert) throws GenericKeystoreManagerException;
 

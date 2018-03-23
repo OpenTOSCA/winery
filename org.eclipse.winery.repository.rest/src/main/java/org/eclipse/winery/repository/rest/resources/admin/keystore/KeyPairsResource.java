@@ -14,7 +14,6 @@
 
 package org.eclipse.winery.repository.rest.resources.admin.keystore;
 
-import com.sun.jersey.multipart.FormDataBodyPart;
 import com.sun.jersey.multipart.FormDataParam;
 import io.swagger.annotations.ApiOperation;
 import org.eclipse.winery.repository.security.csar.KeystoreManager;
@@ -29,9 +28,10 @@ import javax.ws.rs.core.UriInfo;
 import java.io.InputStream;
 import java.net.URI;
 import java.security.KeyPair;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.security.cert.Certificate;
 import java.util.Collection;
-import java.util.List;
 import java.util.Objects;
 
 public class KeyPairsResource extends AbstractKeystoreEntityResource {
@@ -51,7 +51,7 @@ public class KeyPairsResource extends AbstractKeystoreEntityResource {
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
     public Response storeKeyPair(@FormDataParam("alias") String alias,
-                                 @FormDataParam("algo") String algorithm,                                 
+                                 @FormDataParam("algo") String algorithm,
                                  @FormDataParam("keySize") int keySize,
                                  @FormDataParam("signAlgo") String signatureAlgorithm,
                                  @FormDataParam("commonName") String commonName,
@@ -60,36 +60,38 @@ public class KeyPairsResource extends AbstractKeystoreEntityResource {
                                  @FormDataParam("loc") String loc,
                                  @FormDataParam("state") String state,
                                  @FormDataParam("country") String country,
-                                 @FormDataParam("privateKeyFile") InputStream privateKey,
-                                 @FormDataParam("publicKeyFile") InputStream publicKey, 
-                                 @FormDataParam("certificatesChain") List<FormDataBodyPart> certificates,
+                                 @FormDataParam("privateKeyFile") InputStream privateKeyInputStream,
+                                 @FormDataParam("publicKeyFile") InputStream publicKeyInputStream,
+                                 @FormDataParam("certificate") InputStream certificateInputStream,
                                  @Context UriInfo uriInfo) {
         this.verifyAlias(alias);
         try {
             if (this.parametersAreNonNull(alias, algorithm, commonName, orgUnit, org, loc, state, country)) {
-                if (this.parametersAreNonNull(privateKey, publicKey)) {
-                    if (Objects.nonNull(certificates)) {
-                        // TODO: store existing keypair
-                        for (FormDataBodyPart imageData : certificates) {
-                            // TODO: process certificates
-                            imageData.getValueAs(InputStream.class);
-                        }
+                KeyPairInformation entity;
+                if (this.parametersAreNonNull(privateKeyInputStream, publicKeyInputStream) || this.parametersAreNonNull(privateKeyInputStream, certificateInputStream)) {
+                    PrivateKey privateKey = this.securityProcessor.getPKCS8PrivateKeyFromInputStream(algorithm, privateKeyInputStream);
+                    if (Objects.nonNull(certificateInputStream)) {
+                        Certificate cert = this.securityProcessor.getX509CertificateFromInputStream(certificateInputStream); 
+                        entity = this.keystoreManager.storeKeyPair(alias, privateKey, cert);
                     }
                     else {
-                        // TODO: generate self-signed certificate and store
+                        PublicKey publicKey = this.securityProcessor.getX509EncodedPublicKeyFromInputStream(algorithm, publicKeyInputStream);
+                        KeyPair keypair = new KeyPair(publicKey, privateKey);
+                        Certificate selfSignedCert = this.securityProcessor.generateSelfSignedCertificate(
+                            keypair, signatureAlgorithm, commonName, orgUnit, org, loc, state, country
+                        );
+                        entity = this.keystoreManager.storeKeyPair(alias, keypair, selfSignedCert);
                     }
                 }
                 else {
-                    // TODO generate new keypair with self-signed cert
                     KeyPair keypair = this.securityProcessor.generateKeyPair(algorithm, keySize);
                     Certificate selfSignedCert = this.securityProcessor.generateSelfSignedCertificate(
                         keypair, signatureAlgorithm, commonName, orgUnit, org, loc, state, country
                     );
-                    KeyPairInformation entity = this.keystoreManager.storeKeyPair(alias, keypair, selfSignedCert);
-                    URI uri = uriInfo.getAbsolutePathBuilder().path(alias).build();
-                    return Response.created(uri).entity(entity).build();
+                    entity = this.keystoreManager.storeKeyPair(alias, keypair, selfSignedCert);
                 }
-                return Response.noContent().build();
+                URI uri = uriInfo.getAbsolutePathBuilder().path(alias).build();
+                return Response.created(uri).entity(entity).build();
             }
             else {
                 throw new WebApplicationException(

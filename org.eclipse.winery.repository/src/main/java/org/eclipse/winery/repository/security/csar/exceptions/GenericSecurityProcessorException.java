@@ -15,7 +15,7 @@
 package org.eclipse.winery.repository.security.csar.exceptions;
 
 public class GenericSecurityProcessorException extends Exception {
-    public GenericSecurityProcessorException() {}
+    public GenericSecurityProcessorException() { super(); }
 
     public GenericSecurityProcessorException(String message)
     {

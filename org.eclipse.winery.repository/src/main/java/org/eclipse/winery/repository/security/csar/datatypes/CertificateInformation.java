@@ -15,11 +15,20 @@
 package org.eclipse.winery.repository.security.csar.datatypes;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
+import java.io.IOException;
 import java.math.BigInteger;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class CertificateInformation {
+    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+    
     @JsonProperty
     private BigInteger serialNumber;
     @JsonProperty
@@ -28,26 +37,33 @@ public class CertificateInformation {
     private String issuerDN;
     @JsonProperty
     private String subjectDN;
-    @JsonProperty
-    private Date notBefore;
-    @JsonProperty
-    private Date notAfter;
+    @JsonSerialize(using = JsonDateSerializer.class)
+    private Date validFrom;
+    @JsonSerialize(using = JsonDateSerializer.class)
+    private Date validBefore;
     
-    public CertificateInformation(BigInteger serialNumber, String sigAlgName, String issuerDN, String subjectDN, Date notBefore, Date notAfter) {
+    public CertificateInformation(BigInteger serialNumber, String sigAlgName, String issuerDN, String subjectDN, Date validFrom, Date validBefore) {
         this.serialNumber = serialNumber;
         this.sigAlgName = sigAlgName;
         this.issuerDN = issuerDN;
         this.subjectDN = subjectDN;
-        this.notBefore = notBefore;
-        this.notAfter = notAfter;
+        this.validFrom = validFrom;
+        this.validBefore = validBefore;
     }
     
-    public CertificateInformation(BigInteger serialNumber, String sigAlgName, String subjectDN, Date notBefore, Date notAfter) {
-        this(serialNumber, sigAlgName, subjectDN, subjectDN, notBefore, notAfter);
+    public CertificateInformation(BigInteger serialNumber, String sigAlgName, String subjectDN, Date validFrom, Date validBefore) {
+        this(serialNumber, sigAlgName, subjectDN, subjectDN, validFrom, validBefore);
     }
     
-    public String getValidityPeriod() {
-        return "[" + notBefore.toString() + ", " + notAfter.toString() + "]"; 
+    public String printValidityPeriod() {
+        return "[" + dateFormat.format(validFrom) + ", " + dateFormat.format(validBefore) + "]"; 
     }
-    
+
+    private static class JsonDateSerializer extends JsonSerializer<Date> {
+        @Override
+        public void serialize(Date date, JsonGenerator gen, SerializerProvider provider) throws IOException, JsonProcessingException {
+            String formattedDate = dateFormat.format(date);
+            gen.writeString(formattedDate);
+        }
+    }
 }

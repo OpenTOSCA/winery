@@ -15,7 +15,6 @@
 package org.eclipse.winery.repository.security.csar;
 
 import org.apache.commons.configuration.Configuration;
-import org.apache.commons.io.IOUtils;
 import org.eclipse.winery.common.RepositoryFileReference;
 import org.eclipse.winery.common.ids.admin.KeystoreId;
 import org.eclipse.winery.repository.backend.filebased.FilebasedRepository;
@@ -29,7 +28,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
 import java.io.*;
 import java.security.*;
 import java.security.cert.Certificate;
@@ -74,20 +72,6 @@ public class JCEKSKeystoreManager implements KeystoreManager {
     }
 
     @Override
-    public KeyEntityInformation storeSecretKey(String alias, String algorithm, InputStream uploadedInputStream) throws GenericKeystoreManagerException {
-        try {
-            byte[] key = IOUtils.toByteArray(uploadedInputStream);
-            SupportedEncryptionAlgorithm chosenAlgorithm = SupportedEncryptionAlgorithm.valueOf(algorithm, key);
-            int keySize = key.length;
-            SecretKey originalKey = new SecretKeySpec(key, 0, keySize, chosenAlgorithm.getName());
-            return storeSecretKey(alias, originalKey);
-        } catch (IOException e) {
-            LOGGER.error("Error while storing a secret key", e);
-            throw new GenericKeystoreManagerException("Could not store the provided secret key");
-        }
-    }
-    
-    @Override
     public KeyEntityInformation storeSecretKey(String alias, Key key) throws GenericKeystoreManagerException {
         try {
             keystore.setKeyEntry(alias, key, KEYSTORE_PASSWORD.toCharArray(), null);
@@ -104,31 +88,36 @@ public class JCEKSKeystoreManager implements KeystoreManager {
     }
 
     @Override
-    public KeyPairInformation storeKeyPair(String alias, KeyPair keypair, Certificate cert) throws GenericKeystoreManagerException {
+    public KeyPairInformation storeKeyPair(String alias, PrivateKey privateKey, Certificate cert) throws GenericKeystoreManagerException {
         try {
-            PrivateKey priv = keypair.getPrivate();
-            PublicKey pub = keypair.getPublic();
-            
-            keystore.setKeyEntry(alias, priv, KEYSTORE_PASSWORD.toCharArray(), new Certificate[]{cert});
+            PublicKey pub = cert.getPublicKey();
+            // TODO: validate certificate against private key            
+            keystore.setKeyEntry(alias, privateKey, KEYSTORE_PASSWORD.toCharArray(), new Certificate[]{cert});
             keystore.store(new FileOutputStream(this.keystorePath), KEYSTORE_PASSWORD.toCharArray());
             
-            KeyEntityInformation privateKey = new KeyEntityInformation.Builder(alias, priv.getAlgorithm(), priv.getFormat())
-                .keySizeInBits(priv.getEncoded().length)
-                .base64Key(priv.getEncoded())
+            // TODO: correct the length calculation (use the length of the modulo), currently it's wrong 
+            KeyEntityInformation privateKeyInfo = new KeyEntityInformation.Builder(alias, privateKey.getAlgorithm(), privateKey.getFormat())
+                .keySizeInBits(privateKey.getEncoded().length)
+                .base64Key(privateKey.getEncoded())
                 .build();
-            KeyEntityInformation publicKey = new KeyEntityInformation.Builder(alias, pub.getAlgorithm(), pub.getFormat())
+            KeyEntityInformation publicKeyInfo = new KeyEntityInformation.Builder(alias, pub.getAlgorithm(), pub.getFormat())
                 .keySizeInBits(pub.getEncoded().length)
                 .base64Key(pub.getEncoded())
                 .build();
             X509Certificate x = (X509Certificate) cert;
-            CertificateInformation c = new CertificateInformation(x.getSerialNumber(), x.getSigAlgName(), x.getSubjectX500Principal().getName(),
+            CertificateInformation certInfo = new CertificateInformation(x.getSerialNumber(), x.getSigAlgName(), x.getSubjectX500Principal().getName(),
                 x.getNotBefore(), x.getNotAfter());
-            
-            return new KeyPairInformation(privateKey, publicKey, c); 
-        } catch (CertificateException | NoSuchAlgorithmException | IOException | KeyStoreException e) {
-            LOGGER.error("Error while storing a secret key", e);
-            throw new GenericKeystoreManagerException("Could not store the provided secret key");
+
+            return new KeyPairInformation(privateKeyInfo, publicKeyInfo, certInfo);
+        } catch (KeyStoreException | IOException | CertificateException | NoSuchAlgorithmException e) {
+            LOGGER.error("Could not store the provided keypair", e);
+            throw new GenericKeystoreManagerException("Could not store the provided keypair");
         }
+    }
+
+    @Override
+    public KeyPairInformation storeKeyPair(String alias, KeyPair keypair, Certificate cert) throws GenericKeystoreManagerException {
+        return storeKeyPair(alias, keypair.getPrivate(), cert);
     }
 
     @Override

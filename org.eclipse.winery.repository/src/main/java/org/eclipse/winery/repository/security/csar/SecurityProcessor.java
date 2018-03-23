@@ -16,8 +16,12 @@ package org.eclipse.winery.repository.security.csar;
 
 import org.eclipse.winery.repository.security.csar.exceptions.GenericSecurityProcessorException;
 
+import javax.crypto.SecretKey;
+import java.io.InputStream;
 import java.security.Key;
 import java.security.KeyPair;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.security.cert.Certificate;
 
 public interface SecurityProcessor {
@@ -28,4 +32,12 @@ public interface SecurityProcessor {
     
     Certificate generateSelfSignedCertificate(KeyPair keypair, String signatureAlgorithm, String commonName, String orgUnit, String org, String loc, String state, String country) throws GenericSecurityProcessorException;
     
+    SecretKey getSecretKeyFromInputStream(String algorithm, InputStream secretKeyInputStream) throws GenericSecurityProcessorException;
+    
+    PrivateKey getPKCS8PrivateKeyFromInputStream(String algorithm, InputStream privateKeyInputStream) throws GenericSecurityProcessorException;
+    
+    PublicKey getX509EncodedPublicKeyFromInputStream(String algorithm, InputStream publicKeyInputStream) throws GenericSecurityProcessorException;
+    
+    Certificate getX509CertificateFromInputStream(InputStream certInputStream) throws GenericSecurityProcessorException;
+
 }

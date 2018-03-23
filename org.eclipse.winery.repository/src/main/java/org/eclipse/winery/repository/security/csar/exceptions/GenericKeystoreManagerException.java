@@ -16,7 +16,7 @@ package org.eclipse.winery.repository.security.csar.exceptions;
 
 public class GenericKeystoreManagerException extends Exception {
     
-    public GenericKeystoreManagerException() {}
+    public GenericKeystoreManagerException() { super(); }
 
     public GenericKeystoreManagerException(String message)
     {

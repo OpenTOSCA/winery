@@ -31,6 +31,7 @@ import java.io.InputStream;
 import java.net.URI;
 import java.security.Key;
 import java.util.Collection;
+import java.util.Objects;
 
 public class SecretKeysResource extends AbstractKeystoreEntityResource {
     
@@ -52,29 +53,31 @@ public class SecretKeysResource extends AbstractKeystoreEntityResource {
     public Response storeSecretKey(@FormDataParam("alias") String alias,
                                    @FormDataParam("algo") String algo,
                                    @DefaultValue("-1") @FormDataParam("keySize") int keySize,
-                                   @FormDataParam("keyFile") InputStream uploadedInputStream,
+                                   @FormDataParam("keyFile") InputStream uploadedSecretKey,
                                    @Context UriInfo uriInfo) {
         this.verifyAlias(alias);        
         try {
             if (this.parametersAreNonNull(alias, algo)) {
+                Key key;
                 KeyEntityInformation entity;
-                if (uploadedInputStream == null) {
-                    Key key = securityProcessor.generateSecretKey(algo, keySize);
-                    entity = keystoreManager.storeSecretKey(alias, key);
+                if (Objects.isNull(uploadedSecretKey)) {
+                    key = securityProcessor.generateSecretKey(algo, keySize);
                 }
                 else {
-                    entity = keystoreManager.storeSecretKey(alias, algo, uploadedInputStream);
-                }
+                    key = securityProcessor.getSecretKeyFromInputStream(algo, uploadedSecretKey);
+                }                
+                entity = keystoreManager.storeSecretKey(alias, key);
                 URI uri = uriInfo.getAbsolutePathBuilder().path(alias).build();
                 return Response.created(uri).entity(entity).build();
             }
-            else
+            else {
                 throw new WebApplicationException(
                     Response.status(Response.Status.BAD_REQUEST)
                         .entity("Insufficient number of parameters in the request")
                         .type(MediaType.TEXT_PLAIN)
                         .build()
                 );
+            }
         }
         catch (GenericKeystoreManagerException | GenericSecurityProcessorException e) {
             throw new WebApplicationException(Response.serverError().entity(e.getMessage()).build());
