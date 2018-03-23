@@ -22,6 +22,7 @@ import org.eclipse.winery.repository.backend.RepositoryFactory;
 import org.eclipse.winery.repository.security.csar.datatypes.CertificateInformation;
 import org.eclipse.winery.repository.security.csar.datatypes.KeyEntityInformation;
 import org.eclipse.winery.repository.security.csar.datatypes.KeyPairInformation;
+import org.eclipse.winery.repository.security.csar.datatypes.KeyType;
 import org.eclipse.winery.repository.security.csar.exceptions.GenericKeystoreManagerException;
 import org.eclipse.winery.repository.security.csar.support.SupportedEncryptionAlgorithm;
 import org.slf4j.Logger;
@@ -31,6 +32,7 @@ import javax.crypto.SecretKey;
 import java.io.*;
 import java.security.*;
 import java.security.cert.Certificate;
+import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.*;
@@ -70,7 +72,7 @@ public class JCEKSKeystoreManager implements KeystoreManager {
             LOGGER.error("Could not generate JCEKS keystore", e);
         }        
     }
-
+    
     @Override
     public KeyEntityInformation storeSecretKey(String alias, Key key) throws GenericKeystoreManagerException {
         try {
@@ -120,46 +122,89 @@ public class JCEKSKeystoreManager implements KeystoreManager {
         return storeKeyPair(alias, keypair.getPrivate(), cert);
     }
 
-    @Override
-    public KeyEntityInformation loadSecretKey(String alias) throws GenericKeystoreManagerException {
+    private Key loadKey(String alias, KeyType type) throws GenericKeystoreManagerException {
         try {
-            Key key = this.keystore.getKey(alias, KEYSTORE_PASSWORD.toCharArray());
-            if ((key instanceof SecretKey)) {
-                byte[] encodedKey = key.getEncoded();
-                key.getFormat();
-                return new KeyEntityInformation.Builder(alias, key.getAlgorithm(), key.getFormat())
-                    .base64Key(encodedKey)
-                    .keySizeInBits(encodedKey.length)
-                    .build();
+            if (type != KeyType.PUBLIC) {
+                Key key = this.keystore.getKey(alias, KEYSTORE_PASSWORD.toCharArray());
+                if ((key instanceof SecretKey && KeyType.SECRET.equals(type)) || (key instanceof PrivateKey && KeyType.PRIVATE.equals(type))) {
+                    return key;
+                }
+                else {
+                    throw new UnrecoverableKeyException("Key with given alias does not exist");
+                }
             }
-            else
-                throw new UnrecoverableKeyException();
-        } catch (KeyStoreException | NoSuchAlgorithmException | UnrecoverableKeyException e) {
-            LOGGER.error("Error loading a secret key", e.getMessage());
-            e.printStackTrace();
-            throw new GenericKeystoreManagerException(e.getMessage());
+            else {
+                Certificate cert = this.keystore.getCertificate(alias);
+                return cert.getPublicKey();
+            }
+        } catch (UnrecoverableKeyException | NoSuchAlgorithmException | KeyStoreException e) {
+            LOGGER.error("Error loading a key using the provided alias", e.getMessage());
+            throw new GenericKeystoreManagerException("Error loading a key using the provided alias");
         }
     }
-
-    @Override
-    public byte[] loadSecretKeyAsByteArray(String alias) throws GenericKeystoreManagerException {
-        Key key;
+    
+    private Certificate loadCertificate(String alias) throws GenericKeystoreManagerException {
         try {
-            key = this.keystore.getKey(alias, KEYSTORE_PASSWORD.toCharArray());
-            if ((key instanceof SecretKey))
-                return key.getEncoded();
-            else
-                throw new UnrecoverableKeyException();
-        } catch (KeyStoreException | NoSuchAlgorithmException | UnrecoverableKeyException e) {
-            LOGGER.error("Error loading a secret key", e.getMessage());
-            e.printStackTrace();
-            throw new GenericKeystoreManagerException(e.getMessage());
+            return this.keystore.getCertificate(alias);
+        } catch (KeyStoreException e) {
+            LOGGER.error("Error loading a certificate for the provided alias", e.getMessage());
+            throw new GenericKeystoreManagerException("Error loading a certificate for the provided alias");
+        }
+    }
+    
+    @Override
+    public KeyEntityInformation loadKeyAsText(String alias, KeyType type) throws GenericKeystoreManagerException {
+        try {
+            Key key = loadKey(alias, type);
+            byte[] encodedKey = key.getEncoded();
+            return new KeyEntityInformation.Builder(alias, key.getAlgorithm(), key.getFormat())
+                .base64Key(encodedKey)
+                .keySizeInBits(encodedKey.length)
+                .build();
+        } catch (GenericKeystoreManagerException e) {
+            throw new GenericKeystoreManagerException("Error loading a key using the provided alias");
         }
     }
 
     @Override
-    public Key loadPrivateKey(String alias) {
-        return null;
+    public byte[] loadKeyAsByteArray(String alias, KeyType type) throws GenericKeystoreManagerException {
+        try {
+            Key key = loadKey(alias, type);
+            return key.getEncoded();            
+        } catch (GenericKeystoreManagerException e) {
+            throw new GenericKeystoreManagerException("Error loading a key using the provided alias");
+        }
+    }
+
+    @Override
+    public CertificateInformation loadCertificateAsText(String alias) throws GenericKeystoreManagerException {
+        try {
+            Certificate cert = loadCertificate(alias);
+            X509Certificate x = (X509Certificate) cert;
+            return new CertificateInformation(x.getSerialNumber(), x.getSigAlgName(), x.getSubjectX500Principal().getName(),
+                x.getNotBefore(), x.getNotAfter());
+        } catch (GenericKeystoreManagerException e) {
+            throw new GenericKeystoreManagerException("Error loading a certificate using the provided alias");
+        }
+    }
+
+    @Override
+    public byte[] loadCertificateAsByteArray(String alias) throws GenericKeystoreManagerException {
+        try {
+            Certificate cert = loadCertificate(alias);
+            X509Certificate x = (X509Certificate) cert;
+            return x.getEncoded();
+        } catch (GenericKeystoreManagerException | CertificateEncodingException e) {
+            throw new GenericKeystoreManagerException("Error loading a certificate using the provided alias");
+        }
+    }
+
+    @Override
+    public KeyPairInformation loadKeyPairAsText(String alias) throws GenericKeystoreManagerException {
+        KeyEntityInformation privateKey = loadKeyAsText(alias, KeyType.PRIVATE);
+        KeyEntityInformation publicKey = loadKeyAsText(alias, KeyType.PUBLIC);
+        CertificateInformation cert = loadCertificateAsText(alias);
+        return new KeyPairInformation(privateKey, publicKey, cert);
     }
 
     @Override
@@ -193,6 +238,19 @@ public class JCEKSKeystoreManager implements KeystoreManager {
         try {
             for (KeyEntityInformation secretKey : getSecretKeysList(false)) {
                 deleteKeystoreEntry(secretKey.getAlias());
+            }
+            this.keystore.store(new FileOutputStream(this.keystorePath), KEYSTORE_PASSWORD.toCharArray());
+        } catch (KeyStoreException | IOException | CertificateException | NoSuchAlgorithmException | GenericKeystoreManagerException e) {
+            e.printStackTrace();
+            throw new GenericKeystoreManagerException(e.getMessage());
+        }
+    }
+
+    @Override
+    public void deleteAllKeyPairs() throws GenericKeystoreManagerException {
+        try {
+            for (KeyPairInformation keyPair : getKeyPairsList()) {
+                deleteKeystoreEntry(keyPair.getPublicKey().getAlias());
             }
             this.keystore.store(new FileOutputStream(this.keystorePath), KEYSTORE_PASSWORD.toCharArray());
         } catch (KeyStoreException | IOException | CertificateException | NoSuchAlgorithmException | GenericKeystoreManagerException e) {

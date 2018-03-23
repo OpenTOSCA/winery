@@ -14,12 +14,13 @@
 
 package org.eclipse.winery.repository.security.csar;
 
+import org.eclipse.winery.repository.security.csar.datatypes.CertificateInformation;
 import org.eclipse.winery.repository.security.csar.datatypes.KeyEntityInformation;
 import org.eclipse.winery.repository.security.csar.datatypes.KeyPairInformation;
+import org.eclipse.winery.repository.security.csar.datatypes.KeyType;
 import org.eclipse.winery.repository.security.csar.exceptions.GenericKeystoreManagerException;
 import org.eclipse.winery.repository.security.csar.support.SupportedEncryptionAlgorithm;
 
-import java.io.InputStream;
 import java.security.*;
 import java.security.cert.Certificate;
 import java.util.Collection;
@@ -46,16 +47,22 @@ public interface KeystoreManager {
 
     void storeCertificate();
 
-    KeyEntityInformation loadSecretKey(String alias) throws GenericKeystoreManagerException;
+    KeyEntityInformation loadKeyAsText(String alias, KeyType type) throws GenericKeystoreManagerException;
 
-    byte[] loadSecretKeyAsByteArray(String alias) throws GenericKeystoreManagerException;
+    byte[] loadKeyAsByteArray(String alias, KeyType type) throws GenericKeystoreManagerException;
 
-    Key loadPrivateKey(String alias);
+    KeyPairInformation loadKeyPairAsText(String alias) throws GenericKeystoreManagerException;
     
+    CertificateInformation loadCertificateAsText(String alias) throws GenericKeystoreManagerException;
+    
+    byte[] loadCertificateAsByteArray(String alias) throws GenericKeystoreManagerException;
+
     int getKeystoreSize();
     
     void deleteKeystoreEntry(String alias) throws GenericKeystoreManagerException;
     
     void deleteAllSecretKeys() throws GenericKeystoreManagerException;
+    
+    void deleteAllKeyPairs() throws GenericKeystoreManagerException;
     
 }

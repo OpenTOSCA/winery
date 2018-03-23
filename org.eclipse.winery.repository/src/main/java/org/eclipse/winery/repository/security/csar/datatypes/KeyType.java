@@ -14,23 +14,6 @@
 
 package org.eclipse.winery.repository.security.csar.datatypes;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
-public class KeyPairInformation {
-    @JsonProperty
-    private KeyEntityInformation privateKey;
-    @JsonProperty
-    private KeyEntityInformation publicKey;
-    @JsonProperty
-    private CertificateInformation selfSignedCertificate;
-    
-    public KeyPairInformation(KeyEntityInformation privateKey, KeyEntityInformation publicKey, CertificateInformation selfSignedCertificate) {
-        this.privateKey = privateKey;
-        this.publicKey = publicKey;
-        this.selfSignedCertificate = selfSignedCertificate;
-    }
-
-    public KeyEntityInformation getPublicKey() {
-        return publicKey;
-    }
+public enum KeyType {
+    SECRET, PRIVATE, PUBLIC
 }

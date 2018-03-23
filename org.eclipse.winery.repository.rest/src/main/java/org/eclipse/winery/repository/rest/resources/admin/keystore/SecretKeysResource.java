@@ -55,7 +55,7 @@ public class SecretKeysResource extends AbstractKeystoreEntityResource {
                                    @DefaultValue("-1") @FormDataParam("keySize") int keySize,
                                    @FormDataParam("keyFile") InputStream uploadedSecretKey,
                                    @Context UriInfo uriInfo) {
-        this.verifyAlias(alias);        
+        this.checkAliasInsertEligibility(alias);
         try {
             if (this.parametersAreNonNull(alias, algo)) {
                 Key key;

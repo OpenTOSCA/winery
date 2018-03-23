@@ -80,6 +80,7 @@ public class KeyStoreAdminResource extends AbstractAdminResource {
         return new CertificatesResource(keystoreManager, securityProcessor);
     }
 
+    @ApiOperation(value = "Gets the list of supported algorithms")
     @GET
     @Path("algorithms/")
     @Produces(MediaType.APPLICATION_JSON)

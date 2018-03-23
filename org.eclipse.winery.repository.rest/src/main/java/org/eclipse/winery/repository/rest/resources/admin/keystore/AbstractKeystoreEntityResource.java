@@ -20,6 +20,7 @@ import org.eclipse.winery.repository.security.csar.SecurityProcessor;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.StreamingOutput;
 import java.io.InputStream;
 import java.util.Objects;
 import java.util.stream.Stream;
@@ -33,14 +34,19 @@ abstract class AbstractKeystoreEntityResource {
         this.securityProcessor = securityProcessor;        
     }
     
-    protected void verifyAlias(String alias) {
-        if (alias != null && this.keystoreManager.entityExists(alias.trim()))
+    protected String prepareAlias(String alias) {
+        return alias.trim().toLowerCase();
+    }
+    
+    protected void checkAliasInsertEligibility(String alias) {
+        if (alias == null || this.keystoreManager.entityExists(alias.trim().toLowerCase())) {
             throw new WebApplicationException(
                 Response.status(Response.Status.CONFLICT)
                     .entity("Entity with the specified alias already exists")
                     .type(MediaType.TEXT_PLAIN)
                     .build()
             );
+        }
     }
     
     protected boolean parametersAreNonNull(String... params) {
@@ -50,4 +56,18 @@ abstract class AbstractKeystoreEntityResource {
     protected boolean parametersAreNonNull(InputStream... params) {
         return Stream.of(params).noneMatch(Objects::isNull);
     }
+    
+    protected StreamingOutput keyToStreamingOutput(byte[] key) {
+        return output -> {
+            try {
+                output.write(key);
+                output.flush();
+            } catch (Exception e) {
+                throw new WebApplicationException(
+                    Response.serverError().entity(e.getMessage()).type(MediaType.TEXT_PLAIN).build()
+                );
+            }
+        };
+    }
+    
 }
