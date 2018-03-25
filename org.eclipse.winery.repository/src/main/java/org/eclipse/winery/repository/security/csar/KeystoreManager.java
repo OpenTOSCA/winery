@@ -14,10 +14,7 @@
 
 package org.eclipse.winery.repository.security.csar;
 
-import org.eclipse.winery.repository.security.csar.datatypes.CertificateInformation;
-import org.eclipse.winery.repository.security.csar.datatypes.KeyEntityInformation;
-import org.eclipse.winery.repository.security.csar.datatypes.KeyPairInformation;
-import org.eclipse.winery.repository.security.csar.datatypes.KeyType;
+import org.eclipse.winery.repository.security.csar.datatypes.*;
 import org.eclipse.winery.repository.security.csar.exceptions.GenericKeystoreManagerException;
 import org.eclipse.winery.repository.security.csar.support.SupportedEncryptionAlgorithm;
 
@@ -37,7 +34,9 @@ public interface KeystoreManager {
 
     Collection<KeyPairInformation> getKeyPairsList();
 
-    Collection<Certificate> getCertificatesList();
+    Collection<CertificateInformation> getCertificatesList() throws GenericKeystoreManagerException;
+    
+    KeystoreContentsInformation getKeystoreContentsInformation() throws GenericKeystoreManagerException;
 
     KeyEntityInformation storeSecretKey(String alias, Key key) throws GenericKeystoreManagerException;
 

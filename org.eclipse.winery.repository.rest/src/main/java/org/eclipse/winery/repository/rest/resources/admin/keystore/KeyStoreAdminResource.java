@@ -21,6 +21,7 @@ import org.eclipse.winery.repository.security.csar.JCEKSKeystoreManager;
 import org.eclipse.winery.repository.security.csar.KeystoreManager;
 import org.eclipse.winery.repository.rest.resources.admin.AbstractAdminResource;
 import org.eclipse.winery.repository.security.csar.SecurityProcessor;
+import org.eclipse.winery.repository.security.csar.exceptions.GenericKeystoreManagerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,12 +58,22 @@ public class KeyStoreAdminResource extends AbstractAdminResource {
     public Response listKeystoreEntities(@QueryParam("toFile") boolean asFile) {
         if (asFile) {
             // TODO: return the keystore file
+            return Response.ok("dummy-return", MediaType.TEXT_PLAIN).build();
         }
         else {
-        
+            try {
+                return Response.ok()
+                    .entity(this.keystoreManager.getKeystoreContentsInformation())
+                    .build();
+            } catch (GenericKeystoreManagerException e) {
+                throw new WebApplicationException(
+                    Response.serverError()
+                        .entity(e.getMessage())
+                        .type(MediaType.TEXT_PLAIN)
+                        .build()
+                );
+            }
         }
-        
-        return Response.ok("dummy-return", MediaType.TEXT_PLAIN).build();
     }
     
     @Path("keys")

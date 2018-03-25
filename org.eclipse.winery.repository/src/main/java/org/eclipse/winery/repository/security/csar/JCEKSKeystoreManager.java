@@ -19,10 +19,7 @@ import org.eclipse.winery.common.RepositoryFileReference;
 import org.eclipse.winery.common.ids.admin.KeystoreId;
 import org.eclipse.winery.repository.backend.filebased.FilebasedRepository;
 import org.eclipse.winery.repository.backend.RepositoryFactory;
-import org.eclipse.winery.repository.security.csar.datatypes.CertificateInformation;
-import org.eclipse.winery.repository.security.csar.datatypes.KeyEntityInformation;
-import org.eclipse.winery.repository.security.csar.datatypes.KeyPairInformation;
-import org.eclipse.winery.repository.security.csar.datatypes.KeyType;
+import org.eclipse.winery.repository.security.csar.datatypes.*;
 import org.eclipse.winery.repository.security.csar.exceptions.GenericKeystoreManagerException;
 import org.eclipse.winery.repository.security.csar.support.SupportedEncryptionAlgorithm;
 import org.slf4j.Logger;
@@ -301,8 +298,44 @@ public class JCEKSKeystoreManager implements KeystoreManager {
     }
 
     @Override
-    public Collection<Certificate> getCertificatesList() {
-        return null;
+    public Collection<CertificateInformation> getCertificatesList() throws GenericKeystoreManagerException {
+        Enumeration<String> aliases;
+        Collection<CertificateInformation> certificates = new ArrayList<>();
+        try {
+            aliases = this.keystore.aliases();
+            while (aliases.hasMoreElements()) {
+                String alias = aliases.nextElement();
+                if (this.keystore.isCertificateEntry(alias)) {
+                    Certificate cert;
+                    cert = this.keystore.getCertificate(alias);
+                    X509Certificate x = (X509Certificate) cert;
+                    CertificateInformation c = new CertificateInformation(
+                        x.getSerialNumber(), 
+                        x.getSigAlgName(), 
+                        x.getSubjectX500Principal().getName(), 
+                        x.getNotBefore(), 
+                        x.getNotAfter()
+                    );
+                    certificates.add(c);
+                }
+            }
+            return certificates;
+        } catch (KeyStoreException e) {
+            LOGGER.error("Error retrieving certificates list", e);
+            throw new GenericKeystoreManagerException("Error retrieving certificates list");
+        }
+    }
+
+    @Override
+    public KeystoreContentsInformation getKeystoreContentsInformation() throws GenericKeystoreManagerException {
+        try {
+            Collection<CertificateInformation> certs = getCertificatesList();
+            Collection<KeyEntityInformation> keys = getSecretKeysList(false);
+            Collection<KeyPairInformation> keypairs = getKeyPairsList();
+            return new KeystoreContentsInformation(keys, keypairs, certs);
+        } catch (GenericKeystoreManagerException e) {
+            throw new GenericKeystoreManagerException(e.getMessage());
+        }
     }
 
     @Override
@@ -315,7 +348,6 @@ public class JCEKSKeystoreManager implements KeystoreManager {
         try {
             return keystore.containsAlias(alias);
         } catch (KeyStoreException e) {
-            e.printStackTrace();
             LOGGER.error("Error while checking if entity exists", e.getMessage());
         }
         return false;

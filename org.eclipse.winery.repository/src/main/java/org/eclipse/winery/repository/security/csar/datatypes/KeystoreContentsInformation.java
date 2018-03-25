@@ -14,12 +14,23 @@
 
 package org.eclipse.winery.repository.security.csar.datatypes;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.Collection;
 
 public class KeystoreContentsInformation {
+    @JsonProperty
     private Collection<KeyEntityInformation> secretKeys;
+    @JsonProperty
     private Collection<KeyPairInformation> keypairs;
+    @JsonProperty
     private Collection<CertificateInformation> trustedCertificates;
     
-    
+    public KeystoreContentsInformation(Collection<KeyEntityInformation> secretKeys, 
+                                       Collection<KeyPairInformation> keypairs,
+                                       Collection<CertificateInformation> trustedCertificates) {
+        this.secretKeys = secretKeys;
+        this.keypairs = keypairs;
+        this.trustedCertificates = trustedCertificates;
+    }    
 }
