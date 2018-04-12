@@ -300,7 +300,7 @@
                                             <artifact>
                                                 <id>org.eclipse.winery:org.eclipse.winery.repository:2.0.0-SNAPSHOT</id>
                                                 <source>true</source>
-                                                <transitive>false</transitive>
+                                                <transitive>true</transitive>
                                             </artifact>
                                             <artifact>
                                                 <id>
