@@ -46,6 +46,7 @@ import { QName } from '../models/qname';
 import { ImportTopologyModalData } from '../models/importTopologyModalData';
 import { ImportTopologyService } from '../services/import-topology.service';
 import { ReqCapService } from '../services/req-cap.service';
+import { SplitMatchTopologyService } from '../services/split-match-topology.service';
 
 @Component({
     selector: 'winery-canvas',
@@ -150,6 +151,7 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit, DoChec
                 private backendService: BackendService,
                 private importTopologyService: ImportTopologyService,
                 private existsService: ExistsService,
+                private splitMatchService: SplitMatchTopologyService,
                 private reqCapService: ReqCapService) {
         this.newJsPlumbInstance = this.jsPlumbService.getJsPlumbInstance();
         this.newJsPlumbInstance.setContainer('container');
@@ -1005,6 +1007,8 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit, DoChec
             const alignmentButtonAlignH = this.navbarButtonsState.buttonsState.alignHButton;
             const alignmentButtonAlignV = this.navbarButtonsState.buttonsState.alignVButton;
             const importTopologyButton = this.navbarButtonsState.buttonsState.importTopologyButton;
+            const splitTopologyButton = this.navbarButtonsState.buttonsState.splitTopologyButton;
+            const matchTopologyButton = this.navbarButtonsState.buttonsState.matchTopologyButton;
             let selectedNodes;
             if (alignmentButtonLayout) {
                 this.layoutDirective.layoutNodes(this.nodeChildrenArray, this.allRelationshipTemplates);
@@ -1038,6 +1042,8 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit, DoChec
                 }
                 this.ngRedux.dispatch(this.topologyRendererActions.importTopology());
                 this.importTopologyModal.show();
+            } else if (splitTopologyButton) {
+                this.splitMatchService.splitTopology(this.backendService);
             }
             setTimeout(() => {
                 if (selectedNodes === true) {

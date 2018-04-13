@@ -93,6 +93,10 @@ export class NavbarComponent implements OnDestroy {
         }
     }
 
+    /**
+     * Exports the service template as a CSAR file
+     * @param event
+     */
     exportCsar(event) {
         let url = this.exportCsarUrl;
         if (event.ctrlKey) {
@@ -154,6 +158,14 @@ export class NavbarComponent implements OnDestroy {
             }
             case 'importTopology': {
                 this.ngRedux.dispatch(this.actions.importTopology());
+                break;
+            }
+            case 'split': {
+                this.ngRedux.dispatch(this.actions.splitTopology());
+                break;
+            }
+            case 'match': {
+                this.ngRedux.dispatch(this.actions.matchTopology());
                 break;
             }
         }
