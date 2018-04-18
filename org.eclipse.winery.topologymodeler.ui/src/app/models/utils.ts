@@ -60,7 +60,7 @@ export class Utils {
         }
 
         return new TNodeTemplate(
-            properties,
+            properties ? properties : {},
             node.id,
             node.type,
             node.name,
@@ -68,15 +68,15 @@ export class Utils {
             node.maxInstances,
             color,
             imageUrl,
-            node.documentation,
-            node.any,
+            node.documentation ? node.documentation : [],
+            node.any ? node.any : [],
             otherAttributes,
             node.x,
             node.y,
-            node.capabilities,
-            node.requirements,
-            node.deploymentArtifacts,
-            node.policies
+            node.capabilities ? node.capabilities : {},
+            node.requirements ? node.requirements : {},
+            node.deploymentArtifacts ? node.deploymentArtifacts : {},
+            node.policies ? node.policies : {}
         );
     }
 }

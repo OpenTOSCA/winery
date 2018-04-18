@@ -402,6 +402,16 @@ export class BackendService {
     }
 
     /**
+     * Splits the template.
+     * @returns {Observable<any>}
+     */
+    splitTopology(): Observable<any> {
+        const headers = new HttpHeaders().set('Content-Type', 'application/json');
+        const url = this.topologyTemplateURL + '/topologytemplate' + '/split';
+        return this.http.post(url + '/', { headers: headers, responseType: 'text', observe: 'response'});
+    }
+
+    /**
      * Used for creating new artifact templates on the backend.
      * @param {QNameWithTypeApiData} artifact
      * @returns {Observable<any>}
