@@ -77,10 +77,12 @@ export class TopologyRendererActions {
     importTopology(): Action {
         return { type: TopologyRendererActions.IMPORT_TOPOLOGY };
     }
-    splitTopology (): Action {
-        return {type: TopologyRendererActions.SPLIT_TOPOLOGY};
+
+    splitTopology(): Action {
+        return { type: TopologyRendererActions.SPLIT_TOPOLOGY };
     }
-    matchTopology (): Action {
-        return {type: TopologyRendererActions.MATCH_TOPOLOGY};
+
+    matchTopology(): Action {
+        return { type: TopologyRendererActions.MATCH_TOPOLOGY };
     }
 }

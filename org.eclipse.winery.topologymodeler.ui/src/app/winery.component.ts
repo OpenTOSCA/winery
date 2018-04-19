@@ -92,9 +92,10 @@ export class WineryComponent implements OnInit {
             this.loaded = { loadedData: true, generatedReduxState: false };
             this.appReadyEvent.trigger();
         });
-        // Service Template
         /*
+        // Service Template
         this.backendService.serviceTemplate$.subscribe(data => {
+            console.log(data);
             setTimeout(() => {
                 this.initTopologyTemplate(data.nodeTemplates, data.relationshipTemplates);
                 this.loaded = {loadedData: true, generatedReduxState: false};

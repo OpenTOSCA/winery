@@ -106,16 +106,18 @@
                 type="button"
                 id="split"
                 (click)="toggleButton($event)"
-                [style.background-color]="getStyle(navbarButtonsState.buttonsState.splitTopologyButton)">
-                Split
+                [style.background-color]="getStyle(navbarButtonsState.buttonsState.splitTopologyButton)"
+                [disabled]="splittingOngoing">
+                {{splittingOngoing? 'Splitting...' : 'Split'}}
             </button>
             <button
                 class="btn btn-sm align-middle dark-button-style"
                 type="button"
-                id="merge"
+                id="match"
                 (click)="toggleButton($event)"
-                [style.background-color]="getStyle(navbarButtonsState.buttonsState.matchTopologyButton)">
-                Match
+                [style.background-color]="getStyle(navbarButtonsState.buttonsState.matchTopologyButton)"
+                [disabled]="matchingOngoing">
+                {{matchingOngoing? 'Matching...' : 'Match'}}
             </button>
             <button
                 class="btn btn-sm align-middle dark-button-style"

@@ -57,6 +57,8 @@ export class NavbarComponent implements OnDestroy {
     unformattedTopologyTemplate;
     subscriptions: Array<Subscription> = [];
     exportCsarUrl: string;
+    splittingOngoing: boolean;
+    matchingOngoing: boolean;
 
     constructor(private alert: WineryAlertService,
                 private ngRedux: NgRedux<IWineryState>,
@@ -81,6 +83,12 @@ export class NavbarComponent implements OnDestroy {
      */
     setButtonsState(newButtonsState: ButtonsStateModel): void {
         this.navbarButtonsState = newButtonsState;
+        if (!this.navbarButtonsState.buttonsState.splitTopologyButton) {
+            this.splittingOngoing = false;
+        }
+        if (!this.navbarButtonsState.buttonsState.matchTopologyButton) {
+            this.matchingOngoing = false;
+        }
     }
 
     /**
@@ -162,10 +170,12 @@ export class NavbarComponent implements OnDestroy {
             }
             case 'split': {
                 this.ngRedux.dispatch(this.actions.splitTopology());
+                this.splittingOngoing = true;
                 break;
             }
             case 'match': {
                 this.ngRedux.dispatch(this.actions.matchTopology());
+                this.matchingOngoing = true;
                 break;
             }
         }

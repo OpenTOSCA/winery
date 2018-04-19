@@ -1038,12 +1038,15 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit, DoChec
                         for (const serviceTemplate of allServiceTemplates) {
                             this.importTopologyData.allTopologyTemplates.push(serviceTemplate);
                         }
+                        console.log(this.importTopologyData.allTopologyTemplates);
                     });
                 }
                 this.ngRedux.dispatch(this.topologyRendererActions.importTopology());
                 this.importTopologyModal.show();
             } else if (splitTopologyButton) {
-                this.splitMatchService.splitTopology(this.backendService);
+                this.splitMatchService.splitTopology(this.backendService, this.ngRedux, this.topologyRendererActions);
+            } else if (matchTopologyButton) {
+                this.splitMatchService.matchTopology(this.backendService, this.ngRedux, this.topologyRendererActions);
             }
             setTimeout(() => {
                 if (selectedNodes === true) {
