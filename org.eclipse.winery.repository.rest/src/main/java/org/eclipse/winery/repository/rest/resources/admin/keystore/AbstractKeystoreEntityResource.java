@@ -42,7 +42,7 @@ abstract class AbstractKeystoreEntityResource {
         if (alias == null || this.keystoreManager.entityExists(alias.trim().toLowerCase())) {
             throw new WebApplicationException(
                 Response.status(Response.Status.CONFLICT)
-                    .entity("Entity with the specified alias already exists")
+                    .entity("Key already exists in the keystore")
                     .type(MediaType.TEXT_PLAIN)
                     .build()
             );

@@ -33,6 +33,24 @@ public class KeyEntityInformation {
     @JsonProperty
     private String base64Key;
 
+    private KeyEntityInformation(Builder builder) {
+        alias = builder.alias;
+        algorithm = builder.algorithm;
+        keyFormat = builder.keyFormat;
+        keySizeInBits = builder.keySizeInBits;
+        base64Key = builder.base64Key;
+    }
+
+    public String getAlias() { return alias; }
+
+    public String getAlgorithm() { return algorithm; }
+
+    public String getKeyFormat() { return keyFormat; }
+
+    public int getKeySizeInBits() { return keySizeInBits; }
+
+    public String getBase64Key() { return base64Key; }
+    
     @JsonPOJOBuilder(withPrefix = "")
     public static class Builder {
         // Required parameters
@@ -72,22 +90,4 @@ public class KeyEntityInformation {
             return new KeyEntityInformation(this);
         }
     }
-    
-    private KeyEntityInformation(Builder builder) {
-        alias = builder.alias;
-        algorithm = builder.algorithm;
-        keyFormat = builder.keyFormat;
-        keySizeInBits = builder.keySizeInBits;
-        base64Key = builder.base64Key;
-    }
-    
-    public String getAlias() { return alias; }
-
-    public String getAlgorithm() { return algorithm; }
-
-    public String getKeyFormat() { return keyFormat; }
-
-    public int getKeySizeInBits() { return keySizeInBits; }
-
-    public String getBase64Key() { return base64Key; }
 }

@@ -21,6 +21,7 @@ import org.eclipse.winery.repository.security.csar.SecurityProcessor;
 import org.eclipse.winery.repository.security.csar.datatypes.KeyEntityInformation;
 import org.eclipse.winery.repository.security.csar.exceptions.GenericKeystoreManagerException;
 import org.eclipse.winery.repository.security.csar.exceptions.GenericSecurityProcessorException;
+import org.eclipse.winery.repository.security.csar.support.SupportedDigestAlgorithm;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
@@ -50,22 +51,23 @@ public class SecretKeysResource extends AbstractKeystoreEntityResource {
     @POST
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response storeSecretKey(@FormDataParam("alias") String alias,
-                                   @FormDataParam("algo") String algo,
-                                   @DefaultValue("-1") @FormDataParam("keySize") int keySize,
+    public Response storeSecretKey(@FormDataParam("algo") String algo,
+                                   @FormDataParam("keySize") int keySize,
                                    @FormDataParam("keyFile") InputStream uploadedSecretKey,
                                    @Context UriInfo uriInfo) {
-        this.checkAliasInsertEligibility(alias);
         try {
-            if (this.parametersAreNonNull(alias, algo)) {
+            if (this.parametersAreNonNull(algo)) {
                 Key key;
                 KeyEntityInformation entity;
+                String alias;
                 if (Objects.isNull(uploadedSecretKey)) {
                     key = securityProcessor.generateSecretKey(algo, keySize);
                 }
                 else {
                     key = securityProcessor.getSecretKeyFromInputStream(algo, uploadedSecretKey);
-                }                
+                }
+                alias = securityProcessor.calculateDigest(key.getEncoded(), SupportedDigestAlgorithm.SHA512.name());
+                this.checkAliasInsertEligibility(alias);                
                 entity = keystoreManager.storeSecretKey(alias, key);
                 URI uri = uriInfo.getAbsolutePathBuilder().path(alias).build();
                 return Response.created(uri).entity(entity).build();
@@ -79,8 +81,13 @@ public class SecretKeysResource extends AbstractKeystoreEntityResource {
                 );
             }
         }
-        catch (GenericKeystoreManagerException | GenericSecurityProcessorException e) {
-            throw new WebApplicationException(Response.serverError().entity(e.getMessage()).build());
+        catch (GenericKeystoreManagerException | GenericSecurityProcessorException | IllegalArgumentException e) {
+            throw new WebApplicationException(
+                Response.serverError()
+                    .entity(e.getMessage())
+                    .type(MediaType.TEXT_PLAIN)
+                    .build()
+            );
         }
     }
     

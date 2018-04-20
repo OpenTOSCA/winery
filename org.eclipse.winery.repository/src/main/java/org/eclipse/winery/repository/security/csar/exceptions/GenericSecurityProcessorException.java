@@ -15,6 +15,8 @@
 package org.eclipse.winery.repository.security.csar.exceptions;
 
 public class GenericSecurityProcessorException extends Exception {
+    private static final long serialVersionUID = 1L;
+    
     public GenericSecurityProcessorException() { super(); }
 
     public GenericSecurityProcessorException(String message)

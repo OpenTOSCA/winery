@@ -15,6 +15,7 @@
 package org.eclipse.winery.repository.security.csar.exceptions;
 
 public class GenericKeystoreManagerException extends Exception {
+    private static final long serialVersionUID = 1L;
     
     public GenericKeystoreManagerException() { super(); }
 

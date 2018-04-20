@@ -15,6 +15,7 @@
 package org.eclipse.winery.repository.security.csar;
 
 import com.google.common.base.Strings;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.io.IOUtils;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
@@ -39,12 +40,12 @@ import org.eclipse.winery.repository.security.csar.support.SupportedsSignatureAl
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.crypto.KeyGenerator;
-import javax.crypto.SecretKey;
+import javax.crypto.*;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 import java.security.*;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
@@ -205,6 +206,81 @@ public class BCSecurityProcessor implements SecurityProcessor {
         } catch (CertificateException e) {
             LOGGER.error("Error processing the provided X509 certificate", e);
             throw new GenericSecurityProcessorException("Error processing the provided X509 certificate");
+        }
+    }
+
+    @Override
+    public String encryptString(Key k, String text) throws GenericSecurityProcessorException {
+        try {
+            byte[] encryptedValue = encryptByteArray(k, text.getBytes());
+            return new String(encryptedValue);
+        } catch ( GenericSecurityProcessorException e) {
+            LOGGER.error("Error processing the encryption request", e);
+            throw e;
+        }
+    }
+
+    @Override
+    public byte[] encryptByteArray(Key k, byte[] sequence) throws GenericSecurityProcessorException {
+        Cipher cipher;
+        try {
+            cipher = Cipher.getInstance(k.getAlgorithm(), BouncyCastleProvider.PROVIDER_NAME);
+            cipher.init(Cipher.ENCRYPT_MODE, k);
+            byte[] encrypted = cipher.doFinal(sequence);
+            return Base64.encodeBase64(encrypted);
+        } catch (NoSuchAlgorithmException | NoSuchProviderException | NoSuchPaddingException | BadPaddingException | IllegalBlockSizeException | InvalidKeyException e) {
+            LOGGER.error("Error processing the encryption request", e);
+            throw new GenericSecurityProcessorException("Error processing the encryption request");
+        }
+    }
+
+    @Override
+    public String decryptString(Key k, String text) throws GenericSecurityProcessorException {
+        try {
+            byte[] original = decryptByteArray(k, text.getBytes());
+            return new String(original);
+        } catch (GenericSecurityProcessorException e) {
+            LOGGER.error("Error processing the decryption request", e);
+            throw e;
+        }
+    }
+
+    @Override
+    public byte[] decryptByteArray(Key k, byte[] sequence) throws GenericSecurityProcessorException {
+        Cipher cipher;
+        try {
+            cipher = Cipher.getInstance(k.getAlgorithm(), BouncyCastleProvider.PROVIDER_NAME);
+            cipher.init(Cipher.DECRYPT_MODE, k);
+            byte[] decodedBytes = Base64.decodeBase64(sequence);
+            return cipher.doFinal(decodedBytes);
+        } catch (NoSuchAlgorithmException | NoSuchProviderException | BadPaddingException | IllegalBlockSizeException | InvalidKeyException | NoSuchPaddingException e) {
+            LOGGER.error("Error processing the decryption request", e);
+            throw new GenericSecurityProcessorException("Error processing the decryption request");
+        }
+    }
+
+    @Override
+    public String calculateDigest(String str, String digestAlgorithm) throws GenericSecurityProcessorException {
+        try {
+            return calculateDigest(str.getBytes( StandardCharsets.UTF_8 ), digestAlgorithm);
+        } catch (GenericSecurityProcessorException e) {
+            LOGGER.error("Error calculating hash", e);
+            throw e;
+        }
+    }
+
+    @Override
+    public String calculateDigest(byte[] bytes, String digestAlgorithm) throws GenericSecurityProcessorException {
+        MessageDigest md = null;
+        try {
+            md = MessageDigest.getInstance(digestAlgorithm);
+            md.update(bytes);
+            byte[] digest = md.digest();
+            String hex = String.format( "%064x", new BigInteger( 1, digest ) );
+            return hex;
+        } catch (NoSuchAlgorithmException e) {
+            LOGGER.error("Error calculating hash", e);
+            throw new GenericSecurityProcessorException("Error calculating hash");
         }
     }
 

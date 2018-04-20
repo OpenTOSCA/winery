@@ -39,5 +39,17 @@ public interface SecurityProcessor {
     PublicKey getX509EncodedPublicKeyFromInputStream(String algorithm, InputStream publicKeyInputStream) throws GenericSecurityProcessorException;
     
     Certificate getX509CertificateFromInputStream(InputStream certInputStream) throws GenericSecurityProcessorException;
+    
+    String encryptString(Key k, String text) throws GenericSecurityProcessorException;
+    
+    byte[] encryptByteArray(Key k, byte[] sequence) throws GenericSecurityProcessorException;
+
+    String decryptString(Key k, String text) throws GenericSecurityProcessorException;
+
+    byte[] decryptByteArray(Key k, byte[] sequence) throws GenericSecurityProcessorException;
+    
+    String calculateDigest(String str, String digestAlgorithm) throws GenericSecurityProcessorException;
+    
+    String calculateDigest(byte[] bytes, String digestAlgorithm) throws GenericSecurityProcessorException;
 
 }

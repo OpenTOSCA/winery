@@ -46,13 +46,15 @@ public enum SupportedEncryptionAlgorithm {
     public static SupportedEncryptionAlgorithm valueOf(String algorithm, int keySizeInBits) {
         if (Objects.nonNull(algorithm)) {
             for (SupportedEncryptionAlgorithm a : values()) {
-                if (keySizeInBits != -1) {
-                    if (a.getName().equals(algorithm.toUpperCase().trim()) && a.getkeySizeInBits() == keySizeInBits)
+                if (keySizeInBits != 0) {
+                    if (a.getName().equals(algorithm.toUpperCase().trim()) && a.getkeySizeInBits() == keySizeInBits) {
                         return a;
+                    }
                 }
                 else {
-                    if (a.getName().equals(algorithm.toUpperCase().trim()) && a.isDefault)
+                    if (a.getName().equals(algorithm.toUpperCase().trim()) && a.isDefault) {
                         return a;
+                    }
                 }
             }
         }
