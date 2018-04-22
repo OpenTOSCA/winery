@@ -35,7 +35,7 @@ export class EntitiesModalService {
 
     /**
      * Requests all namespaces from the backend
-     * @returns {Observable<any>} json of namespaces
+     * @returns json of namespaces
      */
     requestNamespaces(all: boolean = false): Observable<any> {
         let URL: string;

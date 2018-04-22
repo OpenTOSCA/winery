@@ -273,7 +273,7 @@ export class BackendService {
 
     /**
      * Requests all visual appearances used for the NodeTemplates
-     * @returns {Observable<string>}
+     * @returns
      */
     requestAllNodeTemplateVisuals(): Observable<any> {
         if (this.configuration) {
@@ -283,7 +283,7 @@ export class BackendService {
 
     /**
      * Requests all policy types from the backend
-     * @returns {Observable<string>}
+     * @returns
      */
     requestPolicyTypes(): Observable<any> {
         if (this.configuration) {
@@ -293,7 +293,7 @@ export class BackendService {
 
     /**
      * Requests all requirement types from the backend
-     * @returns {Observable<string>}
+     * @returns
      */
     requestRequirementTypes(): Observable<any> {
         if (this.configuration) {
@@ -303,7 +303,7 @@ export class BackendService {
 
     /**
      * Requests all capability types from the backend
-     * @returns {Observable<string>}
+     * @returns
      */
     requestCapabilityTypes(): Observable<any> {
         if (this.configuration) {
@@ -313,7 +313,7 @@ export class BackendService {
 
     /**
      * Requests all grouped node types from the backend
-     * @returns {Observable<string>}
+     * @returns
      */
     requestGroupedNodeTypes(): Observable<any> {
         if (this.configuration) {
@@ -323,7 +323,7 @@ export class BackendService {
 
     /**
      * Requests all ungrouped node types from the backend
-     * @returns {Observable<string>}
+     * @returns
      */
     requestNodeTypes(): Observable<any> {
         if (this.configuration) {
@@ -333,7 +333,7 @@ export class BackendService {
 
     /**
      * Requests all policy templates from the backend
-     * @returns {Observable<string>}
+     * @returns
      */
     requestPolicyTemplates(): Observable<any> {
         if (this.configuration) {
@@ -343,7 +343,7 @@ export class BackendService {
 
     /**
      * Requests all artifact types from the backend
-     * @returns {Observable<string>}
+     * @returns
      */
     requestArtifactTypes(): Observable<any> {
         if (this.configuration) {
@@ -353,7 +353,7 @@ export class BackendService {
 
     /**
      * Requests all artifact templates from the backend
-     * @returns {Observable<string>}
+     * @returns
      */
     requestArtifactTemplates(): Observable<any> {
         if (this.configuration) {
@@ -363,7 +363,7 @@ export class BackendService {
 
     /**
      * Requests all relationship types from the backend
-     * @returns {Observable<string>}
+     * @returns
      */
     requestRelationshipTypes(): Observable<any> {
         if (this.configuration) {
@@ -373,7 +373,7 @@ export class BackendService {
 
     /**
      * Requests all namespaces from the backend
-     * @returns {Observable<any>} json of namespaces
+     * @returns json of namespaces
      */
     requestNamespaces(all: boolean = false): Observable<any> {
         if (this.configuration) {
@@ -389,8 +389,8 @@ export class BackendService {
 
     /**
      * This method retrieves a single Artifact Template from the backend.
-     * @param {QNameWithTypeApiData} artifact
-     * @returns {Observable<any>}
+     * @param artifact
+     * @returns
      */
     requestArtifactTemplate(artifact: QNameWithTypeApiData): Observable<any> {
         const url = this.configuration.repositoryURL + '/artifacttemplates/'
@@ -400,8 +400,8 @@ export class BackendService {
 
     /**
      * This method retrieves a single Policy Template from the backend.
-     * @param {QNameWithTypeApiData} artifact
-     * @returns {Observable<any>}
+     * @param artifact
+     * @returns
      */
     requestPolicyTemplate(artifact: QNameWithTypeApiData): Observable<any> {
         const url = this.configuration.repositoryURL + '/policytemplates/'
@@ -411,7 +411,7 @@ export class BackendService {
 
     /**
      * Saves the topologyTemplate back to the repository
-     * @returns {Observable<Response>}
+     * @returns
      */
     saveTopologyTemplate(topologyTemplate: any): Observable<any> {
         if (this.configuration) {
@@ -428,8 +428,8 @@ export class BackendService {
 
     /**
      * Used for creating new artifact templates on the backend.
-     * @param {QNameWithTypeApiData} artifact
-     * @returns {Observable<any>}
+     * @param artifact
+     * @returns
      */
     createNewArtifact(artifact: QNameWithTypeApiData): Observable<any> {
         const headers = new HttpHeaders().set('Content-Type', 'application/json');
@@ -439,8 +439,8 @@ export class BackendService {
 
     /**
      * Used for getting the newly created artifact templates for further processing on the client.
-     * @param {QNameWithTypeApiData} artifact
-     * @returns {Observable<any>}
+     * @param artifact
+     * @returns
      */
     getNewlyCreatedArtifact(artifact: QNameWithTypeApiData): Observable<any> {
         const url = this.configuration.repositoryURL + '/artifacttemplates/'

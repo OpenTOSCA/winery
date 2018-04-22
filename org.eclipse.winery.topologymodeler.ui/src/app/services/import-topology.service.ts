@@ -127,7 +127,7 @@ export class ImportTopologyService {
 
     /**
      * Requests all topology template ids
-     * @returns {Observable<string>}
+     * @returns
      */
     requestAllTopologyTemplates(): Observable<any> {
         const url = hostURL + urlElement.Winery + urlElement.ServiceTemplates;

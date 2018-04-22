@@ -19,7 +19,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { AccordionModule } from 'ngx-bootstrap/accordion';
-import { JsPlumbService } from './services/jsPlumbService';
+import { JsPlumbService } from './services/jsPlumb.service';
 import { WineryComponent } from './winery.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { WineryAlertModule } from './winery-alert/winery-alert.module';

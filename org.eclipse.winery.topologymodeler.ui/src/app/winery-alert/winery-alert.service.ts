@@ -18,13 +18,12 @@ import { DatePipe } from '@angular/common';
 
 /**
  * This is the own internal notify service of the topology renderer - may be replaced by the winery one.
- * @class
  */
 @Injectable()
 export class WineryAlertService {
 
     toastr: ToastsManager;
-    alerts: Array<WineryAlert> = [];
+    alerts: Array<any> = [];
 
     constructor(private pToastr: ToastsManager,
                 private datePipe: DatePipe) {
@@ -66,7 +65,6 @@ export class WineryAlertService {
 
     /**
      * returns the current date
-     * @returns {string}
      */
     getCurrentDate() {
         return this.datePipe.transform(Date.now(), 'short');

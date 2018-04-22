@@ -45,8 +45,7 @@ import { Hotkey, HotkeysService } from 'angular2-hotkeys';
 export class NavbarComponent implements OnDestroy {
 
     /**
-     * Boolean variables that hold the state {pressed vs. !pressed} of the navbar buttons.
-     * @type {boolean}
+     * Boolean variables that hold the state (pressed vs. !pressed) of the navbar buttons.
      */
     @Input() hideNavBarState;
 
@@ -106,7 +105,7 @@ export class NavbarComponent implements OnDestroy {
      * This function is called whenever a navbar button is clicked.
      * It contains a separate case for each button.
      * It toggles the `pressed` state of a button and publishes the respective
-     * button {id and boolean} to the subscribers of the Observable inside
+     * button id and boolean to the subscribers of the Observable inside
      * SharedNodeNavbarService.
      * @param event -- The click event of a button.
      */

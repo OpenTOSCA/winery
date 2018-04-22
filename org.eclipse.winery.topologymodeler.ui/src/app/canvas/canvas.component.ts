@@ -15,7 +15,7 @@ import {
     AfterViewInit, Component, DoCheck, ElementRef, HostListener, Input, KeyValueDiffers, NgZone, OnDestroy, OnInit,
     QueryList, Renderer2, ViewChild, ViewChildren
 } from '@angular/core';
-import { JsPlumbService } from '../services/jsPlumbService';
+import { JsPlumbService } from '../services/jsPlumb.service';
 import { EntityType, TNodeTemplate, TRelationshipTemplate } from '../models/ttopology-template';
 import { LayoutDirective } from '../layout/layout.directive';
 import { WineryActions } from '../redux/actions/winery.actions';

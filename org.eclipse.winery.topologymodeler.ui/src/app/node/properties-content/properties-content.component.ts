@@ -103,7 +103,7 @@ export class PropertiesContentComponent implements OnInit, OnChanges, OnDestroy 
     /**
      * This function determines which kind of properties the nodeType embodies.
      * We have 3 possibilities: none, XML element, or Key value pairs.
-     * @param {string} type
+     * @param type
      */
     findOutPropertyDefinitionTypeForProperties(type: string): void {
         if (this.currentNodeData.entityTypes.groupedNodeTypes) {

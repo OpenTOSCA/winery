@@ -138,8 +138,8 @@ export class WineryComponent implements OnInit {
     /**
      * Save the received Array of Entity Types inside the respective variables in the entityTypes array of arrays
      * which is getting passed to the palette and the topology renderer
-     * @param {Array<any>} entityTypeJSON
-     * @param {string} entityType
+     * @param entityTypeJSON
+     * @param entityType
      */
     initEntityType(entityTypeJSON: Array<any>, entityType: string): void {
         switch (entityType) {
