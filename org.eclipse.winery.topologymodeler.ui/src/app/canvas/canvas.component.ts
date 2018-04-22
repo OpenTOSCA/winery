@@ -26,7 +26,7 @@ import { TopologyRendererActions } from '../redux/actions/topologyRenderer.actio
 import { NodeComponent } from '../node/node.component';
 import { Hotkey, HotkeysService } from 'angular2-hotkeys';
 import { ModalDirective } from 'ngx-bootstrap';
-import { GridTemplate } from 'app/models/gridTemplate';
+import { GridTemplate } from '../models/gridTemplate';
 import { Subscription } from 'rxjs/Subscription';
 import { CapabilitiesModalData } from '../models/capabilitiesModalData';
 import { RequirementsModalData } from '../models/requirementsModalData';
