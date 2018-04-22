@@ -13,7 +13,7 @@
  ********************************************************************************/
 
 import 'rxjs/add/operator/do';
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { EntityType, TNodeTemplate, TRelationshipTemplate, TTopologyTemplate, Visuals } from './models/ttopology-template';
 import { ILoaded, LoadedService } from './services/loaded.service';
 import { AppReadyEventService } from './services/app-ready-event.service';
@@ -35,6 +35,8 @@ import { Utils } from './models/utils';
     styleUrls: ['./winery.component.css']
 })
 export class WineryComponent implements OnInit {
+
+    @Input() topologyModelerData: any;
 
     nodeTemplates: Array<TNodeTemplate> = [];
     relationshipTemplates: Array<TRelationshipTemplate> = [];

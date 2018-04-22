@@ -52,7 +52,7 @@ import { ReqCapService } from './services/req-cap.service';
         SidebarComponent,
         PrintViewComponent,
     ],
-    exports: [],
+    exports: [WineryComponent],
     imports: [
         BrowserModule,
         FormsModule,
