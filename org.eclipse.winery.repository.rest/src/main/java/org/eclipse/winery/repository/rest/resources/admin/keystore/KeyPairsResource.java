@@ -18,8 +18,11 @@ import com.sun.jersey.multipart.FormDataParam;
 import io.swagger.annotations.ApiOperation;
 import org.eclipse.winery.repository.security.csar.KeystoreManager;
 import org.eclipse.winery.repository.security.csar.SecurityProcessor;
+import org.eclipse.winery.repository.security.csar.datatypes.DistinguishedName;
 import org.eclipse.winery.repository.security.csar.datatypes.KeyPairInformation;
 import org.eclipse.winery.repository.security.csar.exceptions.GenericKeystoreManagerException;
+import org.eclipse.winery.repository.security.csar.exceptions.GenericSecurityProcessorException;
+import org.eclipse.winery.repository.security.csar.support.SupportedDigestAlgorithm;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
@@ -51,26 +54,26 @@ public class KeyPairsResource extends AbstractKeystoreEntityResource {
     @POST
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response storeKeyPair(@FormDataParam("alias") String alias,
-                                 @FormDataParam("algo") String algorithm,
+    public Response storeKeyPair(@FormDataParam("algo") String algorithm,
                                  @FormDataParam("keySize") int keySize,
-                                 @FormDataParam("signAlgo") String signatureAlgorithm,
-                                 @FormDataParam("commonName") String commonName,
-                                 @FormDataParam("orgUnit") String orgUnit,
-                                 @FormDataParam("org") String org,
-                                 @FormDataParam("loc") String loc,
-                                 @FormDataParam("state") String state,
-                                 @FormDataParam("country") String country,
+                                 @FormDataParam("dn") String distinguishedName,
                                  @FormDataParam("privateKeyFile") InputStream privateKeyInputStream,
                                  @FormDataParam("publicKeyFile") InputStream publicKeyInputStream,
                                  @FormDataParam("certificate") InputStream certificateInputStream,
                                  @Context UriInfo uriInfo) {
-        this.checkAliasInsertEligibility(alias);
         try {
-            if (this.parametersAreNonNull(alias, algorithm, commonName, orgUnit, org, loc, state, country)) {
+            if (this.parametersAreNonNull(algorithm, distinguishedName)) {
+                String alias;
+                DistinguishedName dn = new DistinguishedName(distinguishedName);
                 KeyPairInformation entity;
-                if (this.parametersAreNonNull(privateKeyInputStream, publicKeyInputStream) || this.parametersAreNonNull(privateKeyInputStream, certificateInputStream)) {
+                
+                if (this.parametersAreNonNull(privateKeyInputStream, publicKeyInputStream) || 
+                    this.parametersAreNonNull(privateKeyInputStream, certificateInputStream)) {
+                    
                     PrivateKey privateKey = this.securityProcessor.getPKCS8PrivateKeyFromInputStream(algorithm, privateKeyInputStream);
+                    alias = securityProcessor.calculateDigest(privateKey.getEncoded(), SupportedDigestAlgorithm.SHA512.name());
+                    this.checkAliasInsertEligibility(alias);
+                    
                     if (Objects.nonNull(certificateInputStream)) {
                         Certificate cert = this.securityProcessor.getX509CertificateFromInputStream(certificateInputStream); 
                         entity = this.keystoreManager.storeKeyPair(alias, privateKey, cert);
@@ -78,17 +81,15 @@ public class KeyPairsResource extends AbstractKeystoreEntityResource {
                     else {
                         PublicKey publicKey = this.securityProcessor.getX509EncodedPublicKeyFromInputStream(algorithm, publicKeyInputStream);
                         KeyPair keypair = new KeyPair(publicKey, privateKey);
-                        Certificate selfSignedCert = this.securityProcessor.generateSelfSignedCertificate(
-                            keypair, signatureAlgorithm, commonName, orgUnit, org, loc, state, country
-                        );
+                        Certificate selfSignedCert = this.securityProcessor.generateSelfSignedCertificate(keypair, dn);
                         entity = this.keystoreManager.storeKeyPair(alias, keypair, selfSignedCert);
                     }
                 }
                 else {
                     KeyPair keypair = this.securityProcessor.generateKeyPair(algorithm, keySize);
-                    Certificate selfSignedCert = this.securityProcessor.generateSelfSignedCertificate(
-                        keypair, signatureAlgorithm, commonName, orgUnit, org, loc, state, country
-                    );
+                    alias = securityProcessor.calculateDigest(keypair.getPrivate().getEncoded(), SupportedDigestAlgorithm.SHA512.name());
+                    this.checkAliasInsertEligibility(alias);
+                    Certificate selfSignedCert = this.securityProcessor.generateSelfSignedCertificate(keypair, dn);
                     entity = this.keystoreManager.storeKeyPair(alias, keypair, selfSignedCert);
                 }
                 URI uri = uriInfo.getAbsolutePathBuilder().path(alias).build();
@@ -103,9 +104,16 @@ public class KeyPairsResource extends AbstractKeystoreEntityResource {
                 );
             }
         }
-        catch (Exception e) {
-            throw new WebApplicationException(Response.serverError().entity(e.getMessage()).build());
-        }       
+        catch (WebApplicationException e) {
+            throw e;
+        } catch (GenericSecurityProcessorException | GenericKeystoreManagerException e) {
+            throw new WebApplicationException(
+                Response.status(Response.Status.BAD_REQUEST)
+                    .entity(e.getMessage())
+                    .type(MediaType.TEXT_PLAIN)
+                    .build()
+            );
+        }
     }
 
     @Path("{alias}")

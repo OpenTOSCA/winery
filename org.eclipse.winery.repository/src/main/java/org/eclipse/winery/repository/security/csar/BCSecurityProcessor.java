@@ -14,7 +14,6 @@
 
 package org.eclipse.winery.repository.security.csar;
 
-import com.google.common.base.Strings;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.io.IOUtils;
@@ -34,6 +33,7 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.operator.ContentSigner;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
+import org.eclipse.winery.repository.security.csar.datatypes.DistinguishedName;
 import org.eclipse.winery.repository.security.csar.exceptions.GenericSecurityProcessorException;
 import org.eclipse.winery.repository.security.csar.support.SupportedEncryptionAlgorithm;
 import org.eclipse.winery.repository.security.csar.support.SupportedsSignatureAlgorithm;
@@ -56,6 +56,7 @@ import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Map;
 
 public class BCSecurityProcessor implements SecurityProcessor {
     
@@ -105,17 +106,16 @@ public class BCSecurityProcessor implements SecurityProcessor {
     }
 
     @Override
-    public Certificate generateSelfSignedCertificate(KeyPair keypair, String signatureAlgorithm, String commonName, String orgUnit, String org, String loc, String state, String country) throws GenericSecurityProcessorException {
-        if (Strings.isNullOrEmpty(signatureAlgorithm)) {
-            try {
-                signatureAlgorithm = SupportedsSignatureAlgorithm.getDefaultOptionForAlgorithm(keypair.getPrivate().getAlgorithm());
-            } catch (IllegalArgumentException e) {
-                LOGGER.error("Requested signature algorithm is not supported", e);
-                throw new GenericSecurityProcessorException("Requested signature algorithm is not supported");
-            }
+    public Certificate generateSelfSignedCertificate(KeyPair keypair, DistinguishedName distinguishedName) throws GenericSecurityProcessorException {
+        String signatureAlgorithm;
+        try {
+            signatureAlgorithm = SupportedsSignatureAlgorithm.getDefaultOptionForAlgorithm(keypair.getPrivate().getAlgorithm());
+        } catch (IllegalArgumentException e) {
+            LOGGER.error("Signature algorithm for keypair algorithm is not found", e);
+            throw new GenericSecurityProcessorException("Signature algorithm for keypair algorithm is not found");
         }
         try {
-            X500Name dn = buildX500Name(commonName, orgUnit, org, loc, state, country);
+            X500Name dn = buildX500Name(distinguishedName);
             
             long now = System.currentTimeMillis();
             Date startDate = new Date(now);
@@ -284,16 +284,27 @@ public class BCSecurityProcessor implements SecurityProcessor {
         }
     }
 
-    public X500Name buildX500Name(String commonName, String orgUnit, String org, String loc, String state, String country) throws GenericSecurityProcessorException {
-        
-        X500NameBuilder builder = new X500NameBuilder(BCStyle.INSTANCE);
-        builder.addRDN(BCStyle.CN, commonName);
-        builder.addRDN(BCStyle.OU, orgUnit);
-        builder.addRDN(BCStyle.O, org);
-        builder.addRDN(BCStyle.L, loc);
-        builder.addRDN(BCStyle.ST, state);
-        builder.addRDN(BCStyle.C, country);
+    public X500Name buildX500Name(DistinguishedName distinguishedName) throws GenericSecurityProcessorException {
+        if (distinguishedName.isValid()) {
+            Map<String, String> rdns = distinguishedName.getIdentityData();
+            
+            X500NameBuilder builder = new X500NameBuilder(BCStyle.INSTANCE);
+            builder.addRDN(BCStyle.CN, rdns.get("CN"));
+            builder.addRDN(BCStyle.O, rdns.get("O"));
+            builder.addRDN(BCStyle.C, rdns.get("C"));
+            if (rdns.containsKey("OU")) {
+                builder.addRDN(BCStyle.OU, rdns.get("OU"));
+            }
+            if (rdns.containsKey("L")) {
+                builder.addRDN(BCStyle.L, rdns.get("L"));
+            }
+            if (rdns.containsKey("ST")) {
+                builder.addRDN(BCStyle.ST, rdns.get("ST"));
+            }
 
-        return builder.build();
+            return builder.build();
+        }
+        
+        throw new GenericSecurityProcessorException("The provided distinguished name either is not valid or incomplete");
     }
 }
