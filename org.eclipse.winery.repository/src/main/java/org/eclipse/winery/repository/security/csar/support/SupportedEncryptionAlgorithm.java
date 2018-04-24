@@ -26,7 +26,7 @@ public enum SupportedEncryptionAlgorithm {
     DES256("DES", 256, true),
     DES512("DES", 512, false),
     RSA1024("RSA", 1024, true),
-    RSA2048("RSA", 2048, true);
+    RSA2048("RSA", 2048, false);
 
     private String name;
     private int keySizeInBits;
