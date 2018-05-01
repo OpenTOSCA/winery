@@ -22,19 +22,14 @@ export class SplitMatchTopologyService {
     splitTopology(backendService: BackendService, ngRedux: NgRedux<IWineryState>, topologyRendererActions: TopologyRendererActions): void {
 
         backendService.splitTopology().subscribe(res => {
-            ngRedux.dispatch(topologyRendererActions.splitTopology());
-            console.log(res);
-            this.url = backendService.configuration.uiURL + '#' + '/servicetemplates/'
-                + encodeURIComponent(encodeURIComponent(backendService.configuration.ns)) + '/'
-                + backendService.configuration.id + '-split';
-            console.log(this.url);
-            if (res.ok) {
-                this.alert.success('<p>Successfully split.<br>' + '<a target=\"_blank\" href=\""' + this.url +
-            '>Open split service template</a>');
-            }
-        },
+                ngRedux.dispatch(topologyRendererActions.splitTopology());
+                if (res.ok) {
+                    const url = res.headers.get('location');
+                    this.alert.success('', 'Successfully split.');
+                    window.open(url, '_blank');
+                }
+            },
             error => {
-                console.log(error);
                 this.handleError(error);
                 ngRedux.dispatch(topologyRendererActions.splitTopology());
             });
@@ -48,15 +43,14 @@ export class SplitMatchTopologyService {
      */
     matchTopology(backendService: BackendService, ngRedux: NgRedux<IWineryState>, topologyRendererActions: TopologyRendererActions): void {
         backendService.matchTopology().subscribe(res => {
-            ngRedux.dispatch(topologyRendererActions.matchTopology());
-            console.log(res);
-            res.ok === true ? this.alert.success('<p>Successfully matched.<br>' + 'Response Status: '
-                + res.statusText + ' ' + res.status + '</p>')
-                : this.alert.info('<p>Something went wrong! <br>' + 'Response Status: '
-                + res.statusText + ' ' + res.status + '</p>');
-        },
+                ngRedux.dispatch(topologyRendererActions.matchTopology());
+                if (res.ok) {
+                    const url = res.headers.get('location');
+                    this.alert.success('', 'Successfully matched.');
+                    window.open(url, '_blank');
+                }
+            },
             error => {
-            console.log(error);
                 this.handleError(error);
                 ngRedux.dispatch(topologyRendererActions.matchTopology());
             });

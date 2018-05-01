@@ -130,12 +130,6 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit, DoChec
 
     private longPressing: boolean;
     private timeout: any;
-    duration: 300;
-
-    @HostListener('mouseup')
-    onMouseUp() {
-        this.endPress();
-    }
 
     constructor(private jsPlumbService: JsPlumbService,
                 private eref: ElementRef,
@@ -177,34 +171,29 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit, DoChec
         this.importTopologyData = new ImportTopologyModalData();
     }
 
+    /**
+     * Needed for the optimal user experience when dragging a selection box.
+     * Upon detecting a long mouse down the navbar and the palette fade out for maximum dragging space.
+     * Resets the values.
+     */
+    @HostListener('mouseup')
+    onMouseUp() {
+        this.longPressing = false;
+    }
+
+    /**
+     * Needed for the optimal user experience when dragging a selection box.
+     * Upon detecting a long mouse down the navbar and the palette fade out for maximum dragging space.
+     * Sets the values upon detecting a long mouse down press.
+     */
     @HostListener('mousedown', ['$event'])
     onMouseDown(event) {
         // don't do right/middle clicks
         if (event.which !== 1) {
             return;
         }
-
         this.longPressing = false;
-
-        this.timeout = setTimeout(() => {
-            this.longPressing = true;
-            this.loop(event);
-        }, this.duration);
-
-        this.loop(event);
-    }
-
-    loop(event) {
-        if (this.longPressing) {
-            this.timeout = setTimeout(() => {
-                this.loop(event);
-            }, 50);
-        }
-    }
-
-    endPress() {
-        clearTimeout(this.timeout);
-        this.longPressing = false;
+        setTimeout(() => this.longPressing = true, 250);
     }
 
     /**
