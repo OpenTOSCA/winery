@@ -129,7 +129,6 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit, DoChec
     duplicateId = false;
 
     private longPressing: boolean;
-    private timeout: any;
 
     constructor(private jsPlumbService: JsPlumbService,
                 private eref: ElementRef,
