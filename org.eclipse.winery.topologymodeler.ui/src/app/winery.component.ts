@@ -84,7 +84,6 @@ export class WineryComponent implements OnInit {
         */
         this.backendService.topologyTemplateAndVisuals$.subscribe(JSON => {
             const topologyTemplate = JSON[0];
-            console.log(topologyTemplate);
             this.entityTypes.nodeVisuals = JSON[1];
             // init the NodeTemplates and RelationshipTemplates to start their rendering
             this.initTopologyTemplate(topologyTemplate.nodeTemplates, topologyTemplate.relationshipTemplates);

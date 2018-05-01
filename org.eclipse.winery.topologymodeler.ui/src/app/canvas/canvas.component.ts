@@ -1900,6 +1900,9 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit, DoChec
                 const currentSourceIdValid = this.allNodeTemplates.some(node => node.id === sourceElement);
                 if (sourceElement && currentTypeValid && currentSourceIdValid) {
                     const targetElement = info.targetId;
+                    const lastRel = this.allRelationshipTemplates[this.allRelationshipTemplates.length - 1].id;
+                    const lastRelCount = lastRel.substring(lastRel.indexOf('_') + 1);
+                    console.log(lastRelCount);
                     const relationshipId = `${sourceElement}_${this.currentType}_${targetElement}`;
                     const relTypeExists = this.allRelationshipTemplates.some(rel => rel.id === relationshipId);
                     if (relTypeExists === false && sourceElement !== targetElement) {

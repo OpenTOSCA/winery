@@ -35,6 +35,7 @@ export class NodeRelationshipTemplatesGeneratorService {
         }
         // init relationship templates
         if (relationshipTemplateArray.length > 0) {
+            let relationshipCount = 1;
             relationshipTemplateArray.forEach(relationship => {
                 const relationshipType = relationship.type;
                 relationshipTemplates.push(
@@ -42,13 +43,14 @@ export class NodeRelationshipTemplatesGeneratorService {
                         relationship.sourceElement,
                         relationship.targetElement,
                         relationship.name,
-                        `${relationship.sourceElement.ref}_${relationshipType.substring(relationshipType.indexOf('}') + 1)}_${relationship.targetElement.ref}`,
+                        'con_' + relationshipCount.toString(),
                         relationshipType,
                         relationship.documentation,
                         relationship.any,
                         relationship.otherAttributes
                     )
                 );
+                relationshipCount += 1;
             });
         }
         const nodeAndRelationshipTemplates = [];
