@@ -22,14 +22,17 @@ import { AbstractControl, NgForm, ValidatorFn } from '@angular/forms';
 import { Utils } from '../wineryUtils/utils';
 import { isNullOrUndefined } from 'util';
 import { SectionData } from '../section/sectionData';
-import { ModalDirective } from 'ngx-bootstrap';
+import { ModalDirective, TooltipConfig } from 'ngx-bootstrap';
 import { WineryNamespaceSelectorComponent } from '../wineryNamespaceSelector/wineryNamespaceSelector.component';
 import { InheritanceService } from '../instance/sharedComponents/inheritance/inheritance.service';
 import { WineryVersion } from '../wineryInterfaces/wineryVersion';
 import { AddComponentValidation } from './addComponentValidation';
 import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
 import { ExistService } from '../wineryUtils/existService';
-import { catchError, retry } from 'rxjs/operators';
+
+export function getToolTip(): TooltipConfig {
+    return Object.assign(new TooltipConfig(), { placement: 'right' });
+}
 
 @Component({
     selector: 'winery-add-component',
@@ -37,6 +40,10 @@ import { catchError, retry } from 'rxjs/operators';
     providers: [
         SectionService,
         InheritanceService,
+        {
+            provide: TooltipConfig,
+            useFactory: getToolTip
+        }
     ]
 })
 
@@ -51,6 +58,8 @@ export class WineryAddComponent {
 
     addModalType: string;
     typeRequired = false;
+    hideHelp: boolean;
+    storage: Storage = localStorage;
 
     newComponentNamespace: string;
     newComponentName: string;
@@ -68,12 +77,15 @@ export class WineryAddComponent {
     @ViewChild('namespaceInput') namespaceInput: WineryNamespaceSelectorComponent;
     useStartNamespace = true;
 
+    private readonly storageKey = 'hideVersionHelp';
+
     constructor(private sectionService: SectionService,
                 private existService: ExistService,
                 private inheritanceService: InheritanceService,
                 private change: ChangeDetectorRef,
                 private notify: WineryNotificationService,
                 private router: Router) {
+        this.hideHelp = this.storage.getItem(this.storageKey) === 'true';
     }
 
     onAdd() {
@@ -157,6 +169,15 @@ export class WineryAddComponent {
 
             return null;
         };
+    }
+
+    showHelp() {
+        if (this.hideHelp) {
+            this.storage.removeItem(this.storageKey);
+        } else {
+            this.storage.setItem(this.storageKey, 'true');
+        }
+        this.hideHelp = !this.hideHelp;
     }
 
     private handleTypes(types: SelectData[]): void {

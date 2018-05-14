@@ -59,7 +59,8 @@ export class InstanceComponent implements OnDestroy {
             .data
             .subscribe(data => {
                     this.newVersionAvailable = false;
-                    this.editable = false;
+                    // For convenience, we accept editing already existing components  without versions
+                    this.editable = true;
                     this.toscaComponent = data['resolveData'] ? data['resolveData'] : new ToscaComponent(ToscaTypes.Admin, '', '');
 
                     this.service.setSharedData(this.toscaComponent);

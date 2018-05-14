@@ -18,7 +18,7 @@ import { NgRedux } from '@angular-redux/store';
 import { IWineryState } from '../../redux/store/winery.store';
 import { WineryActions } from '../../redux/actions/winery.actions';
 import { Subscription } from 'rxjs/Subscription';
-import { isNullOrUndefined } from 'util';
+import { JsPlumbService } from '../../services/jsPlumbService';
 
 @Component({
     selector: 'winery-properties-content',
@@ -29,14 +29,14 @@ export class PropertiesContentComponent implements OnInit, OnChanges, OnDestroy 
 
     properties: Subject<string> = new Subject<string>();
     keyOfEditedKVProperty: Subject<string> = new Subject<string>();
-    propertyDefinitionType: string;
     @Input() currentNodeData: any;
     key: string;
     nodeProperties: any;
     subscriptions: Array<Subscription> = [];
 
     constructor(private $ngRedux: NgRedux<IWineryState>,
-                private actions: WineryActions) {
+                private actions: WineryActions,
+                private jsPlumbService: JsPlumbService) {
     }
 
     /**
@@ -48,9 +48,9 @@ export class PropertiesContentComponent implements OnInit, OnChanges, OnDestroy 
                 if (changes.currentNodeData.currentValue.nodeTemplate.properties) {
                     try {
                         const currentProperties = changes.currentNodeData.currentValue.nodeTemplate.properties;
-                        if (this.propertyDefinitionType === 'KV') {
+                        if (this.currentNodeData.propertyDefinitionType === 'KV') {
                             this.nodeProperties = currentProperties.kvproperties;
-                        } else if (this.propertyDefinitionType === 'XML') {
+                        } else if (this.currentNodeData.propertyDefinitionType === 'XML') {
                             this.nodeProperties = currentProperties.any;
                         }
                     } catch (e) {
@@ -58,15 +58,26 @@ export class PropertiesContentComponent implements OnInit, OnChanges, OnDestroy 
                 }
             }
         }, 1);
+        // repaint jsPlumb to account for height change of the accordion
+        setTimeout(() => this.jsPlumbService.getJsPlumbInstance().repaintEverything(), 1);
     }
 
     /**
      * Angular lifecycle event.
      */
     ngOnInit() {
-        // find out which type of properties shall be displayed
-        if (this.currentNodeData.currentNodePart === 'PROPERTIES') {
-            this.findOutPropertyDefinitionTypeForProperties(this.currentNodeData.nodeTemplate.type);
+
+        if (this.currentNodeData.nodeTemplate.properties) {
+            console.log(this.currentNodeData);
+            try {
+                const currentProperties = this.currentNodeData.nodeTemplate.properties;
+                if (this.currentNodeData.propertyDefinitionType === 'KV') {
+                    this.nodeProperties = currentProperties.kvproperties;
+                } else if (this.currentNodeData.propertyDefinitionType === 'XML') {
+                    this.nodeProperties = currentProperties.any;
+                }
+            } catch (e) {
+            }
         }
 
         // find out which row was edited by key
@@ -81,7 +92,7 @@ export class PropertiesContentComponent implements OnInit, OnChanges, OnDestroy 
             .debounceTime(300)
             .distinctUntilChanged()
             .subscribe(value => {
-                if (this.propertyDefinitionType === 'KV') {
+                if (this.currentNodeData.propertyDefinitionType === 'KV') {
                     this.nodeProperties[this.key] = value;
                 } else {
                     this.nodeProperties = value;
@@ -91,7 +102,7 @@ export class PropertiesContentComponent implements OnInit, OnChanges, OnDestroy 
                         this.$ngRedux.dispatch(this.actions.setProperty({
                             nodeProperty: {
                                 newProperty: this.nodeProperties,
-                                propertyType: this.propertyDefinitionType,
+                                propertyType: this.currentNodeData.propertyDefinitionType,
                                 nodeId: this.currentNodeData.nodeTemplate.id
                             }
                         }));

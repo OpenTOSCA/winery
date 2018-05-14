@@ -43,6 +43,7 @@ public class WineryVersion implements Comparable<WineryVersion> {
         this.workInProgressVersion = Math.abs(workInProgressVersion);
         this.latestVersion = false;
         this.releasable = false;
+        // to support editing of not versioned definitions
         this.editable = !this.isVersionedInWinery();
     }
 
