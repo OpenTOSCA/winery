@@ -14,3 +14,4 @@ target/
 node_modules/
 winery-debug.log
 **/gen/**
+**/dist.tgz
