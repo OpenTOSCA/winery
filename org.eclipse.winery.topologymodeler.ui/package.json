@@ -33,7 +33,7 @@
     "font-awesome": "4.7.0",
     "jsplumb": "2.6.7",
     "ng2-toastr": "4.0.1",
-    "ngx-bootstrap": "1.8.1",
+    "ngx-bootstrap": "2.0.4",
     "redux": "3.7.2",
     "rxjs": "5.4.3",
     "zone.js": "0.8.16"
