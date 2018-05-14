@@ -12,6 +12,8 @@
  * SPDX-License-Identifier: EPL-2.0 OR Apache-2.0
  ********************************************************************************/
 
+import { TTopologyTemplate, Visuals } from './ttopology-template';
+
 /**
  * Internal representation of entity Types
  */
@@ -27,4 +29,15 @@ export interface EntityTypesModel {
     requirementTypes: any;
     unGroupedNodeTypes: any;
     deploymentArtifacts: any;
+}
+
+/**
+ * How data passed to the TopologyModeler has to look
+ */
+export interface TopologyModelerInputDataFormat {
+        configuration: {
+            readonly: boolean,
+        };
+        topologyTemplate: TTopologyTemplate;
+        visuals: Visuals;
 }
