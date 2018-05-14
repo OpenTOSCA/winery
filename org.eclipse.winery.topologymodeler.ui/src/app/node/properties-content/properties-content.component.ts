@@ -18,7 +18,7 @@ import { NgRedux } from '@angular-redux/store';
 import { IWineryState } from '../../redux/store/winery.store';
 import { WineryActions } from '../../redux/actions/winery.actions';
 import { Subscription } from 'rxjs/Subscription';
-import { JsPlumbService } from '../../services/jsPlumbService';
+import { JsPlumbService } from '../../services/jsPlumb.service';
 
 @Component({
     selector: 'winery-properties-content',
@@ -109,34 +109,6 @@ export class PropertiesContentComponent implements OnInit, OnChanges, OnDestroy 
                         break;
                 }
             }));
-    }
-
-    /**
-     * This function determines which kind of properties the nodeType embodies.
-     * We have 3 possibilities: none, XML element, or Key value pairs.
-     * @param type
-     */
-    findOutPropertyDefinitionTypeForProperties(type: string): void {
-        if (this.currentNodeData.entityTypes.groupedNodeTypes) {
-            for (const nameSpace of this.currentNodeData.entityTypes.groupedNodeTypes) {
-                for (const nodeTypeVar of nameSpace.children) {
-                    if (nodeTypeVar.id === type) {
-                        // if PropertiesDefinition doesn't exist then it must be of type NONE
-                        if (isNullOrUndefined(nodeTypeVar.full.serviceTemplateOrNodeTypeOrNodeTypeImplementation[0].propertiesDefinition)) {
-                            this.propertyDefinitionType = 'NONE';
-                        } else {
-                            // if no XML element inside PropertiesDefinition then it must be of type Key Value
-                            if (!nodeTypeVar.full.serviceTemplateOrNodeTypeOrNodeTypeImplementation[0].propertiesDefinition.element) {
-                                this.propertyDefinitionType = 'KV';
-                            } else {
-                                // else we have XML
-                                this.propertyDefinitionType = 'XML';
-                            }
-                        }
-                    }
-                }
-            }
-        }
     }
 
     ngOnDestroy() {
