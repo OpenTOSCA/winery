@@ -23,7 +23,7 @@ export class NodeRelationshipTemplatesGeneratorService {
     }
 
     generateNodeAndRelationshipTemplates(nodeTemplateArray: Array<TNodeTemplate>, relationshipTemplateArray: Array<TRelationshipTemplate>,
-                                         nodeVisuals: Visuals[]): Array<any> {
+                                         nodeVisuals: Visuals[], allRelationshipTemplates: Array<TRelationshipTemplate>): Array<any> {
         const nodeTemplates: Array<TNodeTemplate> = [];
         const relationshipTemplates: Array<TRelationshipTemplate> = [];
 
@@ -35,22 +35,19 @@ export class NodeRelationshipTemplatesGeneratorService {
         }
         // init relationship templates
         if (relationshipTemplateArray.length > 0) {
-            let relationshipCount = 1;
+            let relIdCount;
+            if (allRelationshipTemplates.length > 0) {
+                const lastRelId = allRelationshipTemplates[allRelationshipTemplates.length - 1].id;
+                relIdCount = parseInt(lastRelId.substring(lastRelId.indexOf('_') + 1), 10) + 1;
+            } else {
+                relIdCount = 1;
+            }
             relationshipTemplateArray.forEach(relationship => {
                 const relationshipType = relationship.type;
                 relationshipTemplates.push(
-                    new TRelationshipTemplate(
-                        relationship.sourceElement,
-                        relationship.targetElement,
-                        relationship.name,
-                        'con_' + relationshipCount.toString(),
-                        relationshipType,
-                        relationship.documentation,
-                        relationship.any,
-                        relationship.otherAttributes
-                    )
+                    Utils.createTRelationshipTemplateFromObject(relationship, relIdCount)
                 );
-                relationshipCount += 1;
+                relIdCount += 1;
             });
         }
         const nodeAndRelationshipTemplates = [];

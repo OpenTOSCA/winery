@@ -19,11 +19,12 @@ import { ActivatedRoute } from '@angular/router';
 import { backendBaseURL } from '../models/configuration';
 import { Subject } from 'rxjs/Subject';
 import { isNullOrUndefined } from 'util';
-import { TTopologyTemplate, Visuals } from '../models/ttopology-template';
+import { EntityType, TTopologyTemplate, Visuals } from '../models/ttopology-template';
 import { QNameWithTypeApiData } from '../models/generateArtifactApiData';
 import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
 import { WineryAlertService } from '../winery-alert/winery-alert.service';
 import { urlElement } from '../models/enums';
+import { ToscaDiff } from '../models/ToscaDiff';
 
 /**
  * Responsible for interchanging data between the app and the server.
@@ -34,7 +35,7 @@ export class BackendService {
     // readonly options = new RequestOptions({headers: this.headers});
 
     entityLoaded = {
-        topologyTemplateAndVisuals: false,
+        topologyTemplatesDiffAndVisuals: false,
         artifactTypes: false,
         artifactTemplates: false,
         policyTypes: false,
@@ -83,8 +84,8 @@ export class BackendService {
     private relationshipTypes = new Subject<any>();
     relationshipTypes$ = this.relationshipTypes.asObservable();
 
-    private topologyTemplateAndVisuals = new Subject<[TTopologyTemplate, Visuals]>();
-    topologyTemplateAndVisuals$ = this.topologyTemplateAndVisuals.asObservable();
+    private topologyTemplatesDiffAndVisuals = new Subject<[TTopologyTemplate, Visuals, ToscaDiff, TTopologyTemplate]>();
+    topologyTemplatesDiffAndVisuals$ = this.topologyTemplatesDiffAndVisuals.asObservable();
 
     constructor(private http: HttpClient,
                 private activatedRoute: ActivatedRoute,
@@ -112,8 +113,8 @@ export class BackendService {
                 });
                 // TopologyTemplate and Visuals together
                 this.requestTopologyTemplateAndVisuals().subscribe(data => {
-                    this.entityLoaded.topologyTemplateAndVisuals = true;
-                    this.topologyTemplateAndVisuals.next(data);
+                    this.entityLoaded.topologyTemplatesDiffAndVisuals = true;
+                    this.topologyTemplatesDiffAndVisuals.next(data);
                 });
                 // Policy Types
                 this.requestPolicyTypes().subscribe(data => {
@@ -185,7 +186,7 @@ export class BackendService {
 
     everythingLoaded() {
         return new Promise((resolve) => {
-            if (this.entityLoaded.topologyTemplateAndVisuals &&
+            if (this.entityLoaded.topologyTemplatesDiffAndVisuals &&
                 this.entityLoaded.artifactTypes &&
                 this.entityLoaded.artifactTemplates &&
                 this.entityLoaded.policyTypes &&
@@ -203,21 +204,39 @@ export class BackendService {
     }
 
     /**
-     * Requests topologyTemplate and visualappearances together.
-     * We use Observable.forkJoin to await both responses from the backend.
+     * Requests topologyTemplate and visualappearances together. If the topology should be compared, it also gets
+     * the old topology as well as the diff representation.
+     * We use Observable.forkJoin to await all responses from the backend.
      * This is required
      * @returns data  The JSON from the server
      */
-    requestTopologyTemplateAndVisuals(): Observable<[TTopologyTemplate, Visuals]> {
+    requestTopologyTemplateAndVisuals(): Observable<any> {
         if (this.configuration) {
             const url = this.configuration.repositoryURL + '/servicetemplates/'
-                + encodeURIComponent(encodeURIComponent(this.configuration.ns)) + '/'
-                + this.configuration.id + '/topologytemplate/';
+                + encodeURIComponent(encodeURIComponent(this.configuration.ns)) + '/';
+            const currentUrl = url + this.configuration.id + '/topologytemplate/';
+            const visualsUrl = backendBaseURL + '/nodetypes/allvisualappearancedata';
             // This is required because the information has to be returned together
-            return Observable.forkJoin(
-                this.http.get<TTopologyTemplate>(url, { headers: this.headers }),
-                this.http.get<Visuals>(backendBaseURL + '/nodetypes/allvisualappearancedata', { headers: this.headers })
-            );
+
+            if (isNullOrUndefined(this.configuration.compareTo)) {
+                return Observable.forkJoin(
+                    this.http.get<TTopologyTemplate>(currentUrl),
+                    this.http.get<Visuals>(visualsUrl)
+                );
+            } else {
+                const compareUrl = url
+                    + this.configuration.id + '/?compareTo='
+                    + this.configuration.compareTo;
+                const templateUrl = url
+                    + this.configuration.compareTo + '/topologytemplate';
+
+                return Observable.forkJoin(
+                    this.http.get<TTopologyTemplate>(currentUrl),
+                    this.http.get<Visuals>(visualsUrl),
+                    this.http.get<ToscaDiff>(compareUrl),
+                    this.http.get<TTopologyTemplate>(templateUrl)
+                );
+            }
         }
     }
 
@@ -238,12 +257,18 @@ export class BackendService {
      * Returns data that is later used by jsPlumb to render a relationship connector
      * @returns data The JSON from the server
      */
-    requestRelationshipTypeVisualappearance(namespace: string, id: string): Observable<any> {
+    requestRelationshipTypeVisualappearance(namespace: string, id: string): Observable<EntityType> {
         if (this.configuration) {
             const url = this.configuration.repositoryURL + '/relationshiptypes/'
                 + encodeURIComponent(encodeURIComponent(namespace)) + '/'
                 + id + '/visualappearance/';
-            return this.http.get(url, { headers: this.headers });
+            return this.http.get<EntityType>(url, { headers: this.headers })
+                .map(relationship => {
+                    if (!isNullOrUndefined(this.configuration.compareTo)) {
+                        relationship.color = 'grey';
+                    }
+                    return relationship;
+                });
         }
     }
 
@@ -459,4 +484,5 @@ export class TopologyModelerConfiguration {
     readonly ns: string;
     readonly repositoryURL: string;
     readonly uiURL: string;
+    readonly compareTo: string;
 }

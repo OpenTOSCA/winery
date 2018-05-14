@@ -77,7 +77,7 @@ export class PaletteComponent implements OnInit, OnDestroy {
     // All Node Types grouped by their namespaces
     allNodeTemplates: TNodeTemplate[] = [];
     readonly newNodePositionOffsetX = 108;
-    readonly newNodePositionOffsetY = 30;
+    readonly newNodePositionOffsetY = 60;
 
     constructor(private ngRedux: NgRedux<IWineryState>,
                 private actions: WineryActions,
@@ -150,16 +150,16 @@ export class PaletteComponent implements OnInit, OnDestroy {
             1,
             1,
             newIdTypeColorProperties.color,
-            undefined,
-            undefined,
-            undefined,
+            '',
+            [],
+            [],
             {},
             x,
             y,
-            undefined,
-            undefined,
-            undefined,
-            undefined
+            {},
+            {},
+            {},
+            {}
         );
         this.ngRedux.dispatch(this.actions.saveNodeTemplate(newNode));
     }
