@@ -15,8 +15,9 @@
     <winery-navbar
         [hideNavBarState]="hideNavBarState">
     </winery-navbar>
-    <winery-canvas [entityTypes]="this.entityTypes"
-                   [relationshipTypes]="relationshipTypes" [diffMode]="diffMode">
+    <winery-canvas [entityTypes]="entityTypes"
+                   [relationshipTypes]="relationshipTypes"
+                   [diffMode]="diffMode">
     </winery-canvas>
 
     <div *ngIf="diffMode" style="position: fixed; right: 0;" class="sidebar-root">

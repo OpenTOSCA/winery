@@ -13,7 +13,7 @@
  ********************************************************************************/
 
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewContainerRef } from '@angular/core';
-import { WineryAlertService } from '../winery-alert/winery-alert.service';
+import { ToastrService } from 'ngx-toastr';
 import { DifferenceStates, ToscaDiff } from '../models/ToscaDiff';
 import { TNodeTemplate, TRelationshipTemplate, TTopologyTemplate } from '../models/ttopology-template';
 import { isNullOrUndefined } from 'util';
@@ -21,7 +21,7 @@ import { NgRedux } from '@angular-redux/store';
 import { WineryActions } from '../redux/actions/winery.actions';
 import { IWineryState } from '../redux/store/winery.store';
 import { ILoaded } from '../services/loaded.service';
-import { Subscription } from 'rxjs/Subscription';
+import { Subscription } from 'rxjs';
 import { Utils } from '../models/utils';
 
 /**
@@ -52,10 +52,9 @@ export class TopologyRendererComponent implements OnInit, OnDestroy {
     constructor(private ngRedux: NgRedux<IWineryState>,
                 private actions: WineryActions,
                 vcr: ViewContainerRef,
-                private notify: WineryAlertService) {
+                private notify: ToastrService) {
         this.subscriptions.push(this.ngRedux.select(state => state.wineryState.hideNavBarAndPaletteState)
             .subscribe(hideNavBar => this.hideNavBarState = hideNavBar));
-        this.notify.init(vcr);
     }
 
     ngOnInit() {

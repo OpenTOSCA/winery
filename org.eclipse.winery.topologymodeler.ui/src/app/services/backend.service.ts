@@ -12,17 +12,20 @@
  * SPDX-License-Identifier: EPL-2.0 OR Apache-2.0
  ********************************************************************************/
 
+
+import {forkJoin as observableForkJoin,  Subject } from 'rxjs';
+
+import {map} from 'rxjs/operators';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Rx';
-import 'rxjs/add/operator/catch';
+
 import { ActivatedRoute } from '@angular/router';
 import { backendBaseURL } from '../models/configuration';
-import { Subject } from 'rxjs/Subject';
 import { isNullOrUndefined } from 'util';
 import { EntityType, TTopologyTemplate, Visuals } from '../models/ttopology-template';
 import { QNameWithTypeApiData } from '../models/generateArtifactApiData';
 import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
-import { WineryAlertService } from '../winery-alert/winery-alert.service';
+import { ToastrService } from 'ngx-toastr';
 import { urlElement } from '../models/enums';
 import { ToscaDiff } from '../models/ToscaDiff';
 
@@ -89,7 +92,7 @@ export class BackendService {
 
     constructor(private http: HttpClient,
                 private activatedRoute: ActivatedRoute,
-                private alert: WineryAlertService) {
+                private alert: ToastrService) {
 
         this.activatedRoute.queryParams.subscribe((params: TopologyModelerConfiguration) => {
             if (!(isNullOrUndefined(params.id) &&
@@ -219,7 +222,7 @@ export class BackendService {
             // This is required because the information has to be returned together
 
             if (isNullOrUndefined(this.configuration.compareTo)) {
-                return Observable.forkJoin(
+                return observableForkJoin(
                     this.http.get<TTopologyTemplate>(currentUrl),
                     this.http.get<Visuals>(visualsUrl)
                 );
@@ -230,7 +233,7 @@ export class BackendService {
                 const templateUrl = url
                     + this.configuration.compareTo + '/topologytemplate';
 
-                return Observable.forkJoin(
+                return observableForkJoin(
                     this.http.get<TTopologyTemplate>(currentUrl),
                     this.http.get<Visuals>(visualsUrl),
                     this.http.get<ToscaDiff>(compareUrl),
@@ -242,7 +245,6 @@ export class BackendService {
 
     /**
      * Requests data from the server
-     * @returns data  The JSON from the server
      */
     requestServiceTemplate(): Observable<Object> {
         if (this.configuration) {
@@ -255,26 +257,24 @@ export class BackendService {
 
     /**
      * Returns data that is later used by jsPlumb to render a relationship connector
-     * @returns data The JSON from the server
      */
     requestRelationshipTypeVisualappearance(namespace: string, id: string): Observable<EntityType> {
         if (this.configuration) {
             const url = this.configuration.repositoryURL + '/relationshiptypes/'
                 + encodeURIComponent(encodeURIComponent(namespace)) + '/'
                 + id + '/visualappearance/';
-            return this.http.get<EntityType>(url, { headers: this.headers })
-                .map(relationship => {
+            return this.http.get<EntityType>(url, { headers: this.headers }).pipe(
+                map(relationship => {
                     if (!isNullOrUndefined(this.configuration.compareTo)) {
                         relationship.color = 'grey';
                     }
                     return relationship;
-                });
+                }));
         }
     }
 
     /**
      * Requests all visual appearances used for the NodeTemplates
-     * @returns
      */
     requestAllNodeTemplateVisuals(): Observable<any> {
         if (this.configuration) {
@@ -284,7 +284,6 @@ export class BackendService {
 
     /**
      * Requests all policy types from the backend
-     * @returns
      */
     requestPolicyTypes(): Observable<any> {
         if (this.configuration) {
@@ -294,7 +293,6 @@ export class BackendService {
 
     /**
      * Requests all requirement types from the backend
-     * @returns
      */
     requestRequirementTypes(): Observable<any> {
         if (this.configuration) {
@@ -304,7 +302,6 @@ export class BackendService {
 
     /**
      * Requests all capability types from the backend
-     * @returns
      */
     requestCapabilityTypes(): Observable<any> {
         if (this.configuration) {
@@ -314,7 +311,6 @@ export class BackendService {
 
     /**
      * Requests all grouped node types from the backend
-     * @returns
      */
     requestGroupedNodeTypes(): Observable<any> {
         if (this.configuration) {
@@ -324,7 +320,6 @@ export class BackendService {
 
     /**
      * Requests all ungrouped node types from the backend
-     * @returns
      */
     requestNodeTypes(): Observable<any> {
         if (this.configuration) {
@@ -334,7 +329,6 @@ export class BackendService {
 
     /**
      * Requests all policy templates from the backend
-     * @returns
      */
     requestPolicyTemplates(): Observable<any> {
         if (this.configuration) {
@@ -344,7 +338,6 @@ export class BackendService {
 
     /**
      * Requests all artifact types from the backend
-     * @returns
      */
     requestArtifactTypes(): Observable<any> {
         if (this.configuration) {
@@ -354,7 +347,6 @@ export class BackendService {
 
     /**
      * Requests all artifact templates from the backend
-     * @returns
      */
     requestArtifactTemplates(): Observable<any> {
         if (this.configuration) {
@@ -364,7 +356,6 @@ export class BackendService {
 
     /**
      * Requests all relationship types from the backend
-     * @returns
      */
     requestRelationshipTypes(): Observable<any> {
         if (this.configuration) {
@@ -374,7 +365,6 @@ export class BackendService {
 
     /**
      * Requests all namespaces from the backend
-     * @returns json of namespaces
      */
     requestNamespaces(all: boolean = false): Observable<any> {
         if (this.configuration) {
@@ -391,7 +381,6 @@ export class BackendService {
     /**
      * This method retrieves a single Artifact Template from the backend.
      * @param artifact
-     * @returns
      */
     requestArtifactTemplate(artifact: QNameWithTypeApiData): Observable<any> {
         const url = this.configuration.repositoryURL + '/artifacttemplates/'
@@ -402,7 +391,6 @@ export class BackendService {
     /**
      * This method retrieves a single Policy Template from the backend.
      * @param artifact
-     * @returns
      */
     requestPolicyTemplate(artifact: QNameWithTypeApiData): Observable<any> {
         const url = this.configuration.repositoryURL + '/policytemplates/'
@@ -412,7 +400,6 @@ export class BackendService {
 
     /**
      * Saves the topologyTemplate back to the repository
-     * @returns
      */
     saveTopologyTemplate(topologyTemplate: any): Observable<any> {
         if (this.configuration) {
@@ -429,7 +416,6 @@ export class BackendService {
 
     /**
      * Splits the template.
-     * @returns {Observable<any>}
      */
     splitTopology(): Observable<HttpResponse<string>> {
         const headers = new HttpHeaders().set('Content-Type', 'application/json');
@@ -439,7 +425,6 @@ export class BackendService {
 
     /**
      * Matches the template.
-     * @returns {Observable<any>}
      */
     matchTopology(): Observable<HttpResponse<string>> {
         const headers = new HttpHeaders().set('Content-Type', 'application/json');
@@ -450,7 +435,6 @@ export class BackendService {
     /**
      * Used for creating new artifact templates on the backend.
      * @param artifact
-     * @returns
      */
     createNewArtifact(artifact: QNameWithTypeApiData): Observable<any> {
         const headers = new HttpHeaders().set('Content-Type', 'application/json');
@@ -461,7 +445,6 @@ export class BackendService {
     /**
      * Used for getting the newly created artifact templates for further processing on the client.
      * @param artifact
-     * @returns
      */
     getNewlyCreatedArtifact(artifact: QNameWithTypeApiData): Observable<any> {
         const url = this.configuration.repositoryURL + '/artifacttemplates/'

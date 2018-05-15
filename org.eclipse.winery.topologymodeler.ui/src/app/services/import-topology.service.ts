@@ -12,6 +12,8 @@
  * SPDX-License-Identifier: EPL-2.0 OR Apache-2.0
  *******************************************************************************/
 
+
+import {map} from 'rxjs/operators';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Rx';
 import { backendBaseURL, hostURL } from '../models/configuration';
@@ -49,7 +51,7 @@ export class ImportTopologyService {
         const url = backendBaseURL + urlElement.ServiceTemplates + encodeURIComponent(encodeURIComponent(qName.nameSpace))
             + '/' + qName.localName + urlElement.TopologyTemplate;
         // This is required because the information has to be returned together
-        return this.http.get(url, this.options).map(res => res.json());
+        return this.http.get(url, this.options).pipe(map(res => res.json()));
     }
 
     /**
@@ -130,8 +132,8 @@ export class ImportTopologyService {
      */
     requestAllTopologyTemplates(): Observable<any> {
         const url = hostURL + urlElement.Winery + urlElement.ServiceTemplates;
-        return this.http.get(url, this.options)
-            .map(res => res.json());
+        return this.http.get(url, this.options).pipe(
+            map(res => res.json()));
     }
 
 }
