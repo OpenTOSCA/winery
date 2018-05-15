@@ -12,7 +12,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR Apache-2.0
  ********************************************************************************/
 
-import 'rxjs/add/operator/do';
+
 import { Component, Input, OnInit } from '@angular/core';
 import {
     EntityType,
@@ -24,7 +24,7 @@ import {
 import { ILoaded, LoadedService } from './services/loaded.service';
 import { AppReadyEventService } from './services/app-ready-event.service';
 import { BackendService } from './services/backend.service';
-import { Subscription } from 'rxjs/Subscription';
+import { Subscription } from 'rxjs';
 import { NgRedux } from '@angular-redux/store';
 import { IWineryState } from './redux/store/winery.store';
 import { NodeRelationshipTemplatesGeneratorService } from './services/node-relationship-templates-generator.service';
@@ -44,7 +44,7 @@ import { TopologyModelerInputDataFormat } from './models/entityTypesModel';
 export class WineryComponent implements OnInit {
 
     // if this input variable is not null, it means that data is passed to the topologymodeler to be rendered
-    @Input() topologyModelerData: any;
+    @Input() topologyModelerData: TopologyModelerInputDataFormat;
 
     nodeTemplates: Array<TNodeTemplate> = [];
     relationshipTemplates: Array<TRelationshipTemplate> = [];
@@ -80,6 +80,7 @@ export class WineryComponent implements OnInit {
      */
     ngOnInit() {
         // If data is passed to the topologymodeler directly, rendering is initiated immediately without backend calls
+        console.log(this.topologyModelerData);
         this.topologyModelerData ? this.initiateLocalRendering(this.topologyModelerData) : this.initiateBackendCalls();
     }
 
