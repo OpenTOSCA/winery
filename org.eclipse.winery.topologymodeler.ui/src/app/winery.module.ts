@@ -22,9 +22,7 @@ import { AccordionModule } from 'ngx-bootstrap/accordion';
 import { JsPlumbService } from './services/jsPlumb.service';
 import { WineryComponent } from './winery.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { WineryAlertModule } from './winery-alert/winery-alert.module';
-import { ToastModule, ToastOptions } from 'ng2-toastr/ng2-toastr';
-import { WineryCustomOption } from './winery-alert/winery-alert-options';
+import { ToastrModule } from 'ngx-toastr';
 import { PaletteComponent } from './palette/palette.component';
 import { SidebarComponent } from './sidebar/sidebar.component';
 import { TopologyRendererModule } from './topology-renderer/topology-renderer.module';
@@ -62,8 +60,7 @@ import { SplitMatchTopologyService } from './services/split-match-topology.servi
         BrowserAnimationsModule,
         NgReduxModule,
         BsDropdownModule.forRoot(),
-        WineryAlertModule.forRoot(),
-        ToastModule.forRoot(),
+        ToastrModule.forRoot(),
         AccordionModule.forRoot(),
         TopologyRendererModule.forRoot(),
         HotkeyModule.forRoot(),
@@ -71,7 +68,7 @@ import { SplitMatchTopologyService } from './services/split-match-topology.servi
         TypeaheadModule.forRoot()
     ],
     providers: [
-        { provide: ToastOptions, useClass: WineryCustomOption },
+        // { provide: ToastOptions, useClass: WineryCustomOption },
         JsPlumbService,
         WineryActions,
         TopologyRendererActions,
