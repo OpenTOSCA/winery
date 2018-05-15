@@ -21,7 +21,7 @@ import { TNodeTemplate } from '../models/ttopology-template';
 import { BackendService } from '../services/backend.service';
 import { NewNodeIdTypeColorPropertiesModel } from '../models/newNodeIdTypeColorModel';
 import { isNullOrUndefined } from 'util';
-import { Subscription } from 'rxjs/Subscription';
+import { Subscription } from 'rxjs';
 
 /**
  * This is the left sidebar, where nodes can be created from.

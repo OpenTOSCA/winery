@@ -141,7 +141,6 @@ export class NodeComponent implements OnInit, AfterViewInit, OnDestroy, DoCheck 
     /**
      * This function determines which kind of properties the nodeType embodies.
      * We have 3 possibilities: none, XML element, or Key value pairs.
-     * @param {string} type
      */
     findOutPropertyDefinitionTypeForProperties(type: string, groupedNodeTypes: any): string {
         for (const nameSpace of groupedNodeTypes) {
@@ -168,7 +167,7 @@ export class NodeComponent implements OnInit, AfterViewInit, OnDestroy, DoCheck 
      * Angular lifecycle event.
      */
     ngOnInit() {
-        this.differ = this.differs.find([]).create(null);
+        this.differ = this.differs.find([]).create();
         this.backendService.requestGroupedNodeTypes().subscribe((groupedNodeTypes) => {
             this.groupedNodeTypes = groupedNodeTypes;
             this.propertyDefinitionType = this.findOutPropertyDefinitionTypeForProperties(this.nodeTemplate.type, groupedNodeTypes);
@@ -203,7 +202,6 @@ export class NodeComponent implements OnInit, AfterViewInit, OnDestroy, DoCheck 
 
     /**
      * Stops the event propagation to the canvas etc. and repaints.
-     * @param $event
      */
     repaint($event) {
         $event.stopPropagation();
@@ -212,7 +210,6 @@ export class NodeComponent implements OnInit, AfterViewInit, OnDestroy, DoCheck 
 
     /**
      * Sets the current type of a node.
-     * @param $event
      */
     passCurrentType($event): void {
         $event.stopPropagation();
@@ -228,7 +225,6 @@ export class NodeComponent implements OnInit, AfterViewInit, OnDestroy, DoCheck 
 
     /**
      * Handler for mousedown events, toggles visibility of node attributes
-     * @param $event
      */
     mouseDownHandler($event): void {
         this.unmarkConnections.emit();
@@ -245,8 +241,8 @@ export class NodeComponent implements OnInit, AfterViewInit, OnDestroy, DoCheck 
             this.parentEl = $event.target.parentElement.className;
         }
         if (this.parentEl !== 'accordion-toggle' && this.parentEl !== 'ng-tns-c6-2' && this.parentEl) {
-            const offsetLeft = this.elRef.nativeElement.firstChild.nextElementSibling.offsetLeft;
-            const offsetTop = this.elRef.nativeElement.firstChild.nextElementSibling.offsetTop;
+            const offsetLeft = this.elRef.nativeElement.firstChild.offsetLeft;
+            const offsetTop = this.elRef.nativeElement.firstChild.offsetTop;
             this.previousPosition = {
                 x: offsetLeft,
                 y: offsetTop
@@ -259,11 +255,10 @@ export class NodeComponent implements OnInit, AfterViewInit, OnDestroy, DoCheck 
 
     /**
      * If a node is moved, this saves the current position of the node into the store.
-     * @param $event
      */
     mouseMove($event): void {
-        const offsetLeft = this.elRef.nativeElement.firstChild.nextElementSibling.offsetLeft;
-        const offsetTop = this.elRef.nativeElement.firstChild.nextElementSibling.offsetTop;
+        const offsetLeft = this.elRef.nativeElement.firstChild.offsetLeft;
+        const offsetTop = this.elRef.nativeElement.firstChild.offsetTop;
         this.currentPosition = {
             x: offsetLeft,
             y: offsetTop
@@ -272,7 +267,6 @@ export class NodeComponent implements OnInit, AfterViewInit, OnDestroy, DoCheck 
 
     /**
      * Checks if it was a click or a drag operation on the node.
-     * @param $event
      */
     mouseUpHandler($event): void {
         // mouseup
@@ -308,7 +302,6 @@ export class NodeComponent implements OnInit, AfterViewInit, OnDestroy, DoCheck 
 
     /**
      * If it was a click operation, close the connector endpoints for relations
-     * @param $event
      */
     closeConnectorEndpoints($event): void {
         $event.stopPropagation();
@@ -320,7 +313,6 @@ export class NodeComponent implements OnInit, AfterViewInit, OnDestroy, DoCheck 
 
     /**
      * Creates a dragoperation for nodes
-     * @param $event
      */
     makeSource($event): void {
         const dragSourceInfo = {
@@ -332,7 +324,6 @@ export class NodeComponent implements OnInit, AfterViewInit, OnDestroy, DoCheck 
 
     /**
      * Only display the sidebar if the click is no longpress (drag)
-     * @param $event
      */
     openSidebar($event): void {
         $event.stopPropagation();
@@ -367,7 +358,7 @@ export class NodeComponent implements OnInit, AfterViewInit, OnDestroy, DoCheck 
 
     /**
      * Navigates to the corresponding node type in the management UI
-     * @param $event
+     *  $event
      */
     linkType($event: any): void {
         const qName = new QName(this.nodeTemplate.type);
@@ -379,7 +370,6 @@ export class NodeComponent implements OnInit, AfterViewInit, OnDestroy, DoCheck 
 
     /**
      * Displays a box of the whole text if the text doesn't fit in the original element
-     * @param cell
      */
     isEllipsisActive(cell) {
         return (cell.offsetWidth < cell.scrollWidth);
@@ -397,7 +387,7 @@ export class NodeComponent implements OnInit, AfterViewInit, OnDestroy, DoCheck 
 
     /**
      * Checks if it was a click or a drag operation on the node.
-     * @param $event
+     *  $event
      */
     private testTimeDifference($event): void {
         if ((this.endTime - this.startTime) < 200) {

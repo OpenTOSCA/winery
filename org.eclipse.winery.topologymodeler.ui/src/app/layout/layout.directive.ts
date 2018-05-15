@@ -15,7 +15,7 @@
 import { Directive, ElementRef, } from '@angular/core';
 import ELK from 'elkjs/lib/elk.bundled.js';
 import { TNodeTemplate, TRelationshipTemplate } from '../models/ttopology-template';
-import { WineryAlertService } from '../winery-alert/winery-alert.service';
+import { ToastrService } from 'ngx-toastr';
 import { LayoutChildNodeModel } from '../models/layoutChildNodeModel';
 import { NodeComponent } from '../node/node.component';
 import { align } from '../models/enums';
@@ -31,7 +31,7 @@ export class LayoutDirective {
     readonly nodeYOffset = 50;
     private jsPlumbInstance: any;
 
-    constructor(private alert: WineryAlertService,
+    constructor(private alert: ToastrService,
                 private elRef: ElementRef) {
     }
 

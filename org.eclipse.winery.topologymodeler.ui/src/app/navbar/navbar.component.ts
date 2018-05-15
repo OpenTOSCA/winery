@@ -14,13 +14,13 @@
 
 import { Component, ElementRef, Input, OnDestroy, ViewChild } from '@angular/core';
 import { animate, style, transition, trigger } from '@angular/animations';
-import { WineryAlertService } from '../winery-alert/winery-alert.service';
+import { ToastrService } from 'ngx-toastr';
 import { NgRedux } from '@angular-redux/store';
 import { TopologyRendererActions } from '../redux/actions/topologyRenderer.actions';
 import { ButtonsStateModel } from '../models/buttonsState.model';
 import { IWineryState } from '../redux/store/winery.store';
 import { BackendService } from '../services/backend.service';
-import { Subscription } from 'rxjs/Subscription';
+import { Subscription } from 'rxjs';
 import { Hotkey, HotkeysService } from 'angular2-hotkeys';
 
 /**
@@ -59,7 +59,7 @@ export class NavbarComponent implements OnDestroy {
     splittingOngoing: boolean;
     matchingOngoing: boolean;
 
-    constructor(private alert: WineryAlertService,
+    constructor(private alert: ToastrService,
                 private ngRedux: NgRedux<IWineryState>,
                 private actions: TopologyRendererActions,
                 private backendService: BackendService,

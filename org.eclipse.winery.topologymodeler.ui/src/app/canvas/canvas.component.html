@@ -38,14 +38,14 @@
                      [allRelationshipTypesColors]="allRelationshipTypesColors"
                      (sendId)="activateNewNode($event)"
                      [navbarButtonsState]="navbarButtonsState"
-                     (askForRepaint)="revalidateContainer($event)"
+                     (askForRepaint)="revalidateContainer()"
                      (askForRemoval)="removeElement($event)"
                      (setDragSource)="setDragSource($event)"
                      (closedEndpoint)="toggleClosedEndpoint($event)"
                      (sendCurrentType)="setCurrentType($event)"
                      [dragSource]="nodeTemplate.id + '_Endpoint'"
                      (handleNodeClickedActions)="handleNodeClickedActions($event)"
-                     (updateSelectedNodes)="updateSelectedNodes($event)"
+                     (updateSelectedNodes)="updateSelectedNodes()"
                      (unmarkConnections)="unmarkConnections()"
                      (sendNodeData)="toggleModalHandler($event)">
         </winery-node>
@@ -124,7 +124,7 @@
 
                 <div class="form-group" *ngIf="showCurrentCapability || showDefaultProperties">
                     <div *ngIf="capabilities.propertyType === 'KV'">
-                        <div *ngFor="let key of capabilities.properties | keysPipe; let i = index">
+                        <div *ngFor="let key of capabilities.properties | keysPipe">
                             <label for="CapKVPropertyDisplay" class="control-label">{{key.key}}</label>
                             <textarea
                                 id="CapKVPropertyDisplay"
@@ -240,7 +240,7 @@
                 </div>
                 <div class="form-group" *ngIf="showCurrentRequirement || showDefaultProperties">
                     <div *ngIf="requirements.propertyType === 'KV'">
-                        <div *ngFor="let key of requirements.properties | keysPipe; let i = index">
+                        <div *ngFor="let key of requirements.properties | keysPipe">
                             <label for="reqKVPropertyDisplay" class="control-label">{{key.key}}</label>
                             <textarea
                                 id="reqKVPropertyDisplay"

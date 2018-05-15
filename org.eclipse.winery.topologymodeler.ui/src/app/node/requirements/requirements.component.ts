@@ -17,7 +17,7 @@ import { EntityTypesModel } from '../../models/entityTypesModel';
 import { TNodeTemplate } from '../../models/ttopology-template';
 import { NgRedux } from '@angular-redux/store';
 import { IWineryState } from '../../redux/store/winery.store';
-import { Subscription } from 'rxjs/Subscription';
+import { Subscription } from 'rxjs';
 import { RequirementModel } from '../../models/requirementModel';
 
 @Component({

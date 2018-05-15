@@ -27,12 +27,12 @@ import { NodeComponent } from '../node/node.component';
 import { Hotkey, HotkeysService } from 'angular2-hotkeys';
 import { ModalDirective } from 'ngx-bootstrap';
 import { GridTemplate } from '../models/gridTemplate';
-import { Subscription } from 'rxjs/Subscription';
+import { Subscription } from 'rxjs';
 import { CapabilitiesModalData } from '../models/capabilitiesModalData';
 import { RequirementsModalData } from '../models/requirementsModalData';
 import { NodeIdAndFocusModel } from '../models/nodeIdAndFocusModel';
 import { ToggleModalDataModel } from '../models/toggleModalDataModel';
-import { WineryAlertService } from '../winery-alert/winery-alert.service';
+import { ToastrService } from 'ngx-toastr';
 import { BackendService } from '../services/backend.service';
 import { hostURL } from '../models/configuration';
 import { CapabilityModel } from '../models/capabilityModel';
@@ -142,7 +142,7 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit, DoChec
                 private zone: NgZone,
                 private hotkeysService: HotkeysService,
                 private renderer: Renderer2,
-                private alert: WineryAlertService,
+                private alert: ToastrService,
                 private differs: KeyValueDiffers,
                 private backendService: BackendService,
                 private importTopologyService: ImportTopologyService,
@@ -1091,15 +1091,15 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit, DoChec
     setNewCoordinates(nodeTemplate: any): void {
         let nodeIndex;
         this.allNodeTemplates.some((node, index) => {
-            if (node.id === nodeTemplate.firstChild.nextElementSibling.id) {
+            if (node.id === nodeTemplate.firstChild.id) {
                 nodeIndex = index;
                 return true;
             }
         });
         const nodeCoordinates = {
-            id: nodeTemplate.firstChild.nextElementSibling.id,
-            x: nodeTemplate.firstChild.nextElementSibling.offsetLeft.toString(),
-            y: nodeTemplate.firstChild.nextElementSibling.offsetTop.toString()
+            id: nodeTemplate.firstChild.id,
+            x: nodeTemplate.firstChild.offsetLeft.toString(),
+            y: nodeTemplate.firstChild.offsetTop.toString()
         };
         this.allNodeTemplates[nodeIndex].x = nodeCoordinates.x;
         this.allNodeTemplates[nodeIndex].y = nodeCoordinates.y;
@@ -1112,7 +1112,7 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit, DoChec
     updateSelectedNodes(): void {
         if (this.selectedNodes.length > 0 && this.child) {
             for (const nodeTemplate of this.child.nativeElement.children) {
-                if (this.selectedNodes.some(node => node.id === nodeTemplate.firstChild.nextElementSibling.id)) {
+                if (this.selectedNodes.some(node => node.id === nodeTemplate.firstChild.id)) {
                     this.setNewCoordinates(nodeTemplate);
                 }
             }
@@ -1523,7 +1523,7 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit, DoChec
                 }
             }
         });
-        this.differ = this.differs.find([]).create(null);
+        this.differ = this.differs.find([]).create();
     }
 
     /*
