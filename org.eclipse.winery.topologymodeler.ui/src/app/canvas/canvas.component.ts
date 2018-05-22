@@ -76,6 +76,7 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit, DoChec
     // current data emitted from a node
     currentModalData: any;
     dragSourceActive = false;
+    event;
     currentType: string;
     nodeChildrenIdArray: Array<string>;
     nodeChildrenArray: Array<NodeComponent>;
@@ -1422,7 +1423,7 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit, DoChec
 
     /**
      * Checks if array 'Nodes' contains 'id'.
-     * @param Nodes
+     * @param nodes
      * @param id
      * @returns Boolean True if 'Nodes' contains 'id'.
      */
