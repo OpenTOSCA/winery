@@ -15,10 +15,13 @@
 package org.eclipse.winery.repository.rest.resources.admin.keystore;
 
 import io.swagger.annotations.ApiOperation;
+import org.eclipse.winery.model.tosca.constants.QNames;
+import org.eclipse.winery.repository.rest.RestUtils;
+import org.eclipse.winery.repository.rest.resources.apiData.QNameWithTypeApiData;
 import org.eclipse.winery.repository.security.csar.KeystoreManager;
 import org.eclipse.winery.repository.security.csar.SecurityProcessor;
-import org.eclipse.winery.repository.security.csar.datatypes.CertificateInformation;
 import org.eclipse.winery.repository.security.csar.datatypes.KeyEntityInformation;
+import org.eclipse.winery.repository.security.csar.datatypes.KeyPairInformation;
 import org.eclipse.winery.repository.security.csar.datatypes.KeyType;
 import org.eclipse.winery.repository.security.csar.exceptions.GenericKeystoreManagerException;
 
@@ -62,7 +65,10 @@ public class KeyPairResource extends AbstractKeystoreEntityResource {
             else {
                 byte[] key = keystoreManager.loadKeyAsByteArray(preparedAlias, KeyType.PRIVATE);
                 StreamingOutput stream = keyToStreamingOutput(key);
-                return Response.ok(stream).header("content-disposition","attachment; filename = " + preparedAlias + "." + KeyType.PRIVATE + ".key").build();
+                return Response.ok(stream)
+                    .header("content-disposition","attachment; filename = " + preparedAlias + "." + KeyType.PRIVATE + ".key")
+                    .type(MediaType.APPLICATION_OCTET_STREAM)
+                    .build();
             }
         } catch (GenericKeystoreManagerException e) {
             throw new WebApplicationException(
@@ -80,12 +86,15 @@ public class KeyPairResource extends AbstractKeystoreEntityResource {
         try {
             if (!asFile) {
                 KeyEntityInformation key = this.keystoreManager.loadKeyAsText(preparedAlias, KeyType.PUBLIC);
-                return Response.ok().entity(key).build();
+                return Response.ok().entity(key).type(MediaType.TEXT_PLAIN).build();
             }
             else {
                 byte[] key = keystoreManager.loadKeyAsByteArray(preparedAlias, KeyType.PUBLIC);
                 StreamingOutput stream = keyToStreamingOutput(key);
-                return Response.ok(stream).header("content-disposition","attachment; filename = " + preparedAlias + "." + KeyType.PUBLIC + ".key").build();
+                return Response.ok(stream)
+                    .header("content-disposition","attachment; filename = " + preparedAlias + "." + KeyType.PUBLIC + ".key")
+                    .type(MediaType.APPLICATION_OCTET_STREAM)
+                    .build();
             }
         } catch (GenericKeystoreManagerException e) {
             throw new WebApplicationException(
@@ -102,19 +111,56 @@ public class KeyPairResource extends AbstractKeystoreEntityResource {
         String preparedAlias = prepareAlias(alias);
         try {
             if (!asFile) {
-                CertificateInformation certInfo = this.keystoreManager.loadCertificateAsText(preparedAlias);
-                return Response.ok().entity(certInfo).build();
-            }
-            else {
+                String certInfo = this.keystoreManager.loadX509PEMCertificatesAsText(preparedAlias);
+                return Response.ok().entity(certInfo).type(MediaType.TEXT_PLAIN).build();
+            } else {
                 byte[] cert = keystoreManager.loadCertificateAsByteArray(preparedAlias);
                 StreamingOutput stream = keyToStreamingOutput(cert);
-                return Response.ok(stream).header("content-disposition","attachment; filename = " + preparedAlias + ".der").build();
+                return Response.ok(stream)
+                    .header("content-disposition","attachment; filename = " + preparedAlias + ".crt")
+                    .type(MediaType.APPLICATION_OCTET_STREAM)
+                    .build();
             }
         } catch (GenericKeystoreManagerException e) {
             throw new WebApplicationException(
                 Response.serverError().entity(e.getMessage()).type(MediaType.TEXT_PLAIN).build()
             );
         }
+    }
+
+    @ApiOperation(value = "Generates a body of a Policy Template for chosen secret key")
+    @GET
+    @Path("/signingpolicy")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getSigningPolicyTemplate(@PathParam("alias") String alias) {
+        String preparedAlias = prepareAlias(alias);
+        if (!this.keystoreManager.entityExists(preparedAlias))
+            return Response.status(Response.Status.NOT_FOUND).build();
+
+        return RestUtils.generateSecurityPolicyTemplateBody(alias, QNames.WINERY_SIGNING_POLICY_TYPE);
+    }
+
+    @ApiOperation(value = "Generates a Policy Template for chosen secret key")
+    @PUT
+    @Path("/signingpolicy")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response saveSigningPolicyTemplate(QNameWithTypeApiData jsonData) {
+        String preparedAlias = prepareAlias(jsonData.localname);
+        if (!this.keystoreManager.entityExists(preparedAlias))
+            return Response.status(Response.Status.NOT_FOUND).build();
+
+        try {
+            KeyPairInformation kp = this.keystoreManager.loadKeyPairAsText(preparedAlias);
+            RestUtils.createSigningPolicyTemplate(jsonData, kp);
+
+        } catch (GenericKeystoreManagerException e)
+        {
+            throw new WebApplicationException(
+                Response.serverError().entity(e.getMessage()).type(MediaType.TEXT_PLAIN).build()
+            );
+        }
+
+        return Response.ok().build();
     }
     
 }

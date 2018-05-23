@@ -39,7 +39,7 @@ public interface SecurityProcessor {
     
     PublicKey getX509EncodedPublicKeyFromInputStream(String algorithm, InputStream publicKeyInputStream) throws GenericSecurityProcessorException;
     
-    Certificate getX509CertificateFromInputStream(InputStream certInputStream) throws GenericSecurityProcessorException;
+    Certificate[] getX509CertificateChainFromInputStream(InputStream certInputStream) throws GenericSecurityProcessorException;
     
     String encryptString(Key k, String text) throws GenericSecurityProcessorException;
     

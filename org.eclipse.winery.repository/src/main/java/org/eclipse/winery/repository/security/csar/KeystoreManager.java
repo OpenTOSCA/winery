@@ -32,7 +32,7 @@ public interface KeystoreManager {
     
     Collection<KeyEntityInformation> getSecretKeysList(boolean withKeyEncoded);
 
-    Collection<KeyPairInformation> getKeyPairsList();
+    Collection<KeyPairInformation> getKeyPairsList() throws GenericKeystoreManagerException;
 
     Collection<CertificateInformation> getCertificatesList() throws GenericKeystoreManagerException;
     
@@ -40,28 +40,26 @@ public interface KeystoreManager {
 
     KeyEntityInformation storeSecretKey(String alias, Key key) throws GenericKeystoreManagerException;
 
-    KeyPairInformation storeKeyPair(String alias, PrivateKey privateKey, Certificate cert) throws GenericKeystoreManagerException;
-    
-    KeyPairInformation storeKeyPair(String alias, KeyPair keypair, Certificate cert) throws GenericKeystoreManagerException;
-
-    void storeCertificate();
-
     KeyEntityInformation loadKeyAsText(String alias, KeyType type) throws GenericKeystoreManagerException;
 
     byte[] loadKeyAsByteArray(String alias, KeyType type) throws GenericKeystoreManagerException;
 
-    KeyPairInformation loadKeyPairAsText(String alias) throws GenericKeystoreManagerException;
-    
-    CertificateInformation loadCertificateAsText(String alias) throws GenericKeystoreManagerException;
-    
-    byte[] loadCertificateAsByteArray(String alias) throws GenericKeystoreManagerException;
+    KeyPairInformation storeKeyPair(String alias, PrivateKey privateKey, Certificate[] certificates) throws GenericKeystoreManagerException;
 
-    int getKeystoreSize();
+    KeyPairInformation loadKeyPairAsText(String alias) throws GenericKeystoreManagerException;
+
+    String loadX509PEMCertificatesAsText(String alias) throws GenericKeystoreManagerException;
+
+    byte[] loadCertificateAsByteArray(String alias) throws GenericKeystoreManagerException;
     
+    int getKeystoreSize() throws GenericKeystoreManagerException;
+
     void deleteKeystoreEntry(String alias) throws GenericKeystoreManagerException;
-    
+
     void deleteAllSecretKeys() throws GenericKeystoreManagerException;
-    
+
     void deleteAllKeyPairs() throws GenericKeystoreManagerException;
+    
+    //CertificateInformation loadCertificateInformation(String alias) throws GenericKeystoreManagerException;
     
 }

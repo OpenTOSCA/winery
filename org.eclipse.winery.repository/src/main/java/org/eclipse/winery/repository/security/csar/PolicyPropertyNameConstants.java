@@ -12,26 +12,14 @@
  * SPDX-License-Identifier: EPL-2.0 OR Apache-2.0
  *******************************************************************************/
 
-package org.eclipse.winery.repository.security.csar.datatypes;
+package org.eclipse.winery.repository.security.csar;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
-public class KeyPairInformation {
-    @JsonProperty
-    private KeyEntityInformation privateKey;
-    @JsonProperty
-    private String certificateChain;
+public class PolicyPropertyNameConstants {
+    public static final String SEC_POL_KEYHASH_PROPERTY = "keyHash";
     
-    public KeyPairInformation(KeyEntityInformation privateKey, String certificateChain) {
-        this.privateKey = privateKey;
-        this.certificateChain = certificateChain;
-    }
+    public static final String ENC_POL_ALGO_PROPERTY = "algorithm";
+    public static final String ENC_POL_KEYSIZE_PROPERTY = "keySize";
 
-    public KeyEntityInformation getPrivateKey() {
-        return privateKey;
-    }
-
-    public String getCertificateChain() {
-        return certificateChain;
-    }
+    public static final String SIGN_POL_CERT_PROPERTY = "certificateChain";
+    
 }

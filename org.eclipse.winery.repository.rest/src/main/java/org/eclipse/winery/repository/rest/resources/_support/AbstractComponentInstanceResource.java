@@ -193,11 +193,11 @@ public abstract class AbstractComponentInstanceResource implements Comparable<Ab
 
     @GET
     @Produces(MimeTypes.MIMETYPE_ZIP)
-    public final Response getCSAR() {
+    public final Response getCSAR(@QueryParam("secure") boolean secure) {
         if (!RepositoryFactory.getRepository().exists(this.id)) {
             return Response.status(Status.NOT_FOUND).build();
         }
-        return RestUtils.getCSARofSelectedResource(this);
+        return RestUtils.getCSARofSelectedResource(this, secure);
     }
 
     /**
@@ -211,6 +211,7 @@ public abstract class AbstractComponentInstanceResource implements Comparable<Ab
     public Response getDefinitionsAsResponse(
         @QueryParam(value = "csar") String csar,
         @QueryParam(value = "yaml") String yaml,
+        @QueryParam("secure") boolean secure,
         @Context UriInfo uriInfo
     ) {
         final IRepository repository = RepositoryFactory.getRepository();
@@ -229,7 +230,7 @@ public abstract class AbstractComponentInstanceResource implements Comparable<Ab
             // we cannot use this.definitions as that definitions is Winery's internal representation of the data and not the full blown definitions (including imports to referenced elements)
             return RestUtils.getDefinitionsOfSelectedResource(this, uriInfo.getBaseUri());
         } else {
-            return RestUtils.getCSARofSelectedResource(this);
+            return RestUtils.getCSARofSelectedResource(this, secure);
         }
     }
 
@@ -238,12 +239,13 @@ public abstract class AbstractComponentInstanceResource implements Comparable<Ab
     public Response redirectToAngularUi(
         @QueryParam(value = "csar") String csar,
         @QueryParam(value = "yaml") String yaml,
+        @QueryParam("secure") boolean secure,
         @Context UriInfo uriInfo) {
         // in case there is an URL requested directly via the browser UI, the accept cannot be put at the link.
         // thus, there is the hack with ?csar and ?yaml
         // the hack is implemented at getDefinitionsAsResponse
         if ((csar != null) || (yaml != null)) {
-            return this.getDefinitionsAsResponse(csar, yaml, uriInfo);
+            return this.getDefinitionsAsResponse(csar, yaml, secure, uriInfo);
         }
         String repositoryUiUrl = Environment.getUrlConfiguration().getRepositoryUiUrl();
         String uri = uriInfo.getAbsolutePath().toString();

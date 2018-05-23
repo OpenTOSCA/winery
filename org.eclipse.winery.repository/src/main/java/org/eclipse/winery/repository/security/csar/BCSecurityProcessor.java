@@ -42,8 +42,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.crypto.*;
 import javax.crypto.spec.SecretKeySpec;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.*;
@@ -54,9 +53,7 @@ import java.security.cert.X509Certificate;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Map;
+import java.util.*;
 
 public class BCSecurityProcessor implements SecurityProcessor {
     
@@ -200,13 +197,44 @@ public class BCSecurityProcessor implements SecurityProcessor {
     }
 
     @Override
-    public Certificate getX509CertificateFromInputStream(InputStream certInputStream) throws GenericSecurityProcessorException {
+    public Certificate[] getX509CertificateChainFromInputStream(InputStream certInputStream) throws GenericSecurityProcessorException {
         try {
-            return CertificateFactory.getInstance("X509").generateCertificate(certInputStream);
-        } catch (CertificateException e) {
+            return createCertificates(certInputStream);
+        } catch (Exception e) {
             LOGGER.error("Error processing the provided X509 certificate", e);
-            throw new GenericSecurityProcessorException("Error processing the provided X509 certificate");
+            throw new GenericSecurityProcessorException("Error processing the provided X509 certificate chain");
         }
+    }
+
+    private X509Certificate[] createCertificates(InputStream certInputStream) throws Exception {
+        final CertificateFactory factory = CertificateFactory.getInstance("X.509");
+        final List<X509Certificate> result = new ArrayList<>();
+        final BufferedReader r = new BufferedReader(new InputStreamReader(certInputStream));
+        
+        String s = r.readLine();
+        if (s == null || !s.contains("BEGIN CERTIFICATE")) {
+            r.close();
+            throw new GenericSecurityProcessorException("Error processing the provided X509 certificate chain");
+        }
+  
+        StringBuilder b = new StringBuilder();
+        while (s != null) {
+            if (s.contains("END CERTIFICATE")) {
+                String hexString = b.toString();
+                final byte[] bytes = Base64.decodeBase64(hexString);                
+                X509Certificate cert = (X509Certificate) factory.generateCertificate(new ByteArrayInputStream(bytes));
+                result.add(cert);
+                b = new StringBuilder();
+            } else {
+                if (!s.startsWith("----")) {
+                    b.append(s);
+                }
+            }
+            s = r.readLine();
+        }
+        r.close();
+
+        return result.toArray(new X509Certificate[result.size()]);
     }
 
     @Override

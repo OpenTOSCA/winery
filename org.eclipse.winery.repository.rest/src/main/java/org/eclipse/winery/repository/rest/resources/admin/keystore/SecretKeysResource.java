@@ -35,7 +35,7 @@ import java.util.Collection;
 import java.util.Objects;
 
 public class SecretKeysResource extends AbstractKeystoreEntityResource {
-    
+
     public SecretKeysResource(KeystoreManager keystoreManager, SecurityProcessor securityProcessor) {
         super(keystoreManager, securityProcessor);
     }
@@ -66,7 +66,7 @@ public class SecretKeysResource extends AbstractKeystoreEntityResource {
                 else {
                     key = securityProcessor.getSecretKeyFromInputStream(algo, uploadedSecretKey);
                 }
-                alias = securityProcessor.calculateDigest(key.getEncoded(), SupportedDigestAlgorithm.SHA512.name());
+                alias = securityProcessor.calculateDigest(key.getEncoded(), SupportedDigestAlgorithm.SHA256.name());
                 this.checkAliasInsertEligibility(alias);                
                 entity = keystoreManager.storeSecretKey(alias, key);
                 URI uri = uriInfo.getAbsolutePathBuilder().path(alias).build();

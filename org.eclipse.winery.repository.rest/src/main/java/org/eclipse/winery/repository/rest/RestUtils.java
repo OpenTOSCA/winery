@@ -27,10 +27,12 @@ import org.eclipse.winery.common.ids.Namespace;
 import org.eclipse.winery.common.ids.XmlId;
 import org.eclipse.winery.common.ids.definitions.ArtifactTemplateId;
 import org.eclipse.winery.common.ids.definitions.DefinitionsChildId;
+import org.eclipse.winery.common.ids.definitions.PolicyTemplateId;
 import org.eclipse.winery.common.ids.definitions.ServiceTemplateId;
 import org.eclipse.winery.common.ids.elements.ToscaElementId;
 import org.eclipse.winery.model.selfservice.Application;
 import org.eclipse.winery.model.tosca.*;
+import org.eclipse.winery.model.tosca.constants.Namespaces;
 import org.eclipse.winery.model.tosca.utils.ModelUtilities;
 import org.eclipse.winery.repository.Constants;
 import org.eclipse.winery.repository.backend.BackendUtils;
@@ -48,8 +50,13 @@ import org.eclipse.winery.repository.rest.resources._support.ResourceCreationRes
 import org.eclipse.winery.repository.rest.resources.apiData.QNameWithTypeApiData;
 import org.eclipse.winery.repository.rest.resources.entitytemplates.artifacttemplates.ArtifactTemplateResource;
 import org.eclipse.winery.repository.rest.resources.entitytemplates.artifacttemplates.ArtifactTemplatesResource;
+import org.eclipse.winery.repository.rest.resources.entitytemplates.policytemplates.PolicyTemplateResource;
+import org.eclipse.winery.repository.rest.resources.entitytemplates.policytemplates.PolicyTemplatesResource;
 import org.eclipse.winery.repository.rest.resources.entitytypes.TopologyGraphElementEntityTypeResource;
 import org.eclipse.winery.repository.rest.resources.servicetemplates.ServiceTemplateResource;
+import org.eclipse.winery.repository.security.csar.PolicyPropertyNameConstants;
+import org.eclipse.winery.repository.security.csar.datatypes.KeyEntityInformation;
+import org.eclipse.winery.repository.security.csar.datatypes.KeyPairInformation;
 import org.eclipse.winery.yaml.common.exception.MultiException;
 import org.eclipse.winery.yaml.converter.Converter;
 import org.slf4j.ext.XLogger;
@@ -176,7 +183,7 @@ public class RestUtils {
         return Response.ok().type(MediaType.APPLICATION_XML).entity(so).build();
     }
 
-    public static Response getCSARofSelectedResource(final AbstractComponentInstanceResource resource) {
+    public static Response getCSARofSelectedResource(final AbstractComponentInstanceResource resource, final boolean secure) {
         final CsarExporter exporter = new CsarExporter();
         StreamingOutput so = output -> {
             try {
@@ -507,6 +514,44 @@ public class RestUtils {
         atRes.getFilesResource().onPost(uploadedInputStream, fileDetail, body, uriInfo);
 
         return artifactTemplateId;
+    }
+    
+    public static Response generateSecurityPolicyTemplateBody(String alias, QName type) {
+        QNameWithTypeApiData qNameApiData = new QNameWithTypeApiData();
+        qNameApiData.localname = alias;
+        qNameApiData.namespace = Namespaces.URI_OPENTOSCA_SECURE_POLICYTEMPLATE;
+        qNameApiData.type = type.toString();
+        
+        return Response.ok(qNameApiData).type(MediaType.APPLICATION_JSON).build();
+    }
+
+    private static PolicyTemplateId createSecurityPolicyTemplate(QNameWithTypeApiData qNameApiData, Map<String, String> properties) {
+        PolicyTemplatesResource templatesResource = new PolicyTemplatesResource();
+        templatesResource.onJsonPost(qNameApiData);
+
+        PolicyTemplateId policyTemplateId = new PolicyTemplateId(qNameApiData.namespace, qNameApiData.localname, false);
+        PolicyTemplateResource policyTemplateResource = new PolicyTemplateResource(policyTemplateId);
+
+        policyTemplateResource.getPropertiesResource().setProperties(properties);
+
+        return policyTemplateId;
+    }
+    
+    public static PolicyTemplateId createEncryptionPolicyTemplate(QNameWithTypeApiData qNameApiData, KeyEntityInformation key) {
+        Map<String, String> properties = new HashMap<>();
+        properties.put(PolicyPropertyNameConstants.SEC_POL_KEYHASH_PROPERTY, key.getAlias());
+        properties.put(PolicyPropertyNameConstants.ENC_POL_ALGO_PROPERTY, key.getAlgorithm());
+        properties.put(PolicyPropertyNameConstants.ENC_POL_KEYSIZE_PROPERTY, String.valueOf(key.getKeySizeInBits()));
+
+        return createSecurityPolicyTemplate(qNameApiData, properties);
+    }
+
+    public static PolicyTemplateId createSigningPolicyTemplate(QNameWithTypeApiData qNameApiData, KeyPairInformation kp) {
+        Map<String, String> properties = new HashMap<>();
+        properties.put(PolicyPropertyNameConstants.SEC_POL_KEYHASH_PROPERTY, kp.getPrivateKey().getAlias());
+        properties.put(PolicyPropertyNameConstants.SIGN_POL_CERT_PROPERTY, kp.getCertificateChain());
+        
+        return createSecurityPolicyTemplate(qNameApiData, properties);
     }
 
     public static String getTagValue(TServiceTemplate serviceTemplate, String tagKey) {

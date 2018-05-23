@@ -39,6 +39,10 @@ public class JCEKSKeystoreManager implements KeystoreManager {
     private static final String KEYSTORE_PASSWORD = "password";
     private static final String KEYSTORE_TYPE = "JCEKS";
     private static final String KEYSTORE_NAME = "winery-keystore.jceks";
+    private static final String BEGIN_CERT = "-----BEGIN CERTIFICATE-----";
+    private static final String END_CERT = "-----END CERTIFICATE-----";
+    private static final String LINE_SEPARATOR = System.getProperty("line.separator");
+    
     private static final Logger LOGGER = LoggerFactory.getLogger(JCEKSKeystoreManager.class);
     
     private Configuration configuration;
@@ -87,11 +91,10 @@ public class JCEKSKeystoreManager implements KeystoreManager {
     }
 
     @Override
-    public KeyPairInformation storeKeyPair(String alias, PrivateKey privateKey, Certificate cert) throws GenericKeystoreManagerException {
+    public KeyPairInformation storeKeyPair(String alias, PrivateKey privateKey, Certificate[] certificates) throws GenericKeystoreManagerException {
         try {
-            PublicKey pub = cert.getPublicKey();
             // TODO: validate certificate against private key            
-            keystore.setKeyEntry(alias, privateKey, KEYSTORE_PASSWORD.toCharArray(), new Certificate[]{cert});
+            keystore.setKeyEntry(alias, privateKey, KEYSTORE_PASSWORD.toCharArray(), certificates);
             keystore.store(new FileOutputStream(this.keystorePath), KEYSTORE_PASSWORD.toCharArray());
             
             // TODO: correct the length calculation (use the length of the modulo), currently it's wrong 
@@ -99,24 +102,13 @@ public class JCEKSKeystoreManager implements KeystoreManager {
                 .keySizeInBits(privateKey.getEncoded().length)
                 .base64Key(privateKey.getEncoded())
                 .build();
-            KeyEntityInformation publicKeyInfo = new KeyEntityInformation.Builder(alias, pub.getAlgorithm(), pub.getFormat())
-                .keySizeInBits(pub.getEncoded().length)
-                .base64Key(pub.getEncoded())
-                .build();
-            X509Certificate x = (X509Certificate) cert;
-            CertificateInformation certInfo = new CertificateInformation(x.getSerialNumber(), x.getSigAlgName(), x.getSubjectX500Principal().getName(),
-                x.getNotBefore(), x.getNotAfter());
-
-            return new KeyPairInformation(privateKeyInfo, publicKeyInfo, certInfo);
+            
+            return new KeyPairInformation(privateKeyInfo, concatenateBase64PEMCertificates(certificates));
+            
         } catch (KeyStoreException | IOException | CertificateException | NoSuchAlgorithmException e) {
             LOGGER.error("Could not store the provided keypair", e);
             throw new GenericKeystoreManagerException("Could not store the provided keypair");
         }
-    }
-
-    @Override
-    public KeyPairInformation storeKeyPair(String alias, KeyPair keypair, Certificate cert) throws GenericKeystoreManagerException {
-        return storeKeyPair(alias, keypair.getPrivate(), cert);
     }
 
     private Key loadKey(String alias, KeyType type) throws GenericKeystoreManagerException {
@@ -137,15 +129,6 @@ public class JCEKSKeystoreManager implements KeystoreManager {
         } catch (UnrecoverableKeyException | NoSuchAlgorithmException | KeyStoreException e) {
             LOGGER.error("Error loading a key using the provided alias", e.getMessage());
             throw new GenericKeystoreManagerException("Error loading a key using the provided alias");
-        }
-    }
-    
-    private Certificate loadCertificate(String alias) throws GenericKeystoreManagerException {
-        try {
-            return this.keystore.getCertificate(alias);
-        } catch (KeyStoreException e) {
-            LOGGER.error("Error loading a certificate for the provided alias", e.getMessage());
-            throw new GenericKeystoreManagerException("Error loading a certificate for the provided alias");
         }
     }
     
@@ -173,14 +156,38 @@ public class JCEKSKeystoreManager implements KeystoreManager {
         }
     }
 
-    @Override
-    public CertificateInformation loadCertificateAsText(String alias) throws GenericKeystoreManagerException {
+    private String convertToBase64PEMString(Certificate x509) throws GenericKeystoreManagerException {
         try {
-            Certificate cert = loadCertificate(alias);
-            X509Certificate x = (X509Certificate) cert;
-            return new CertificateInformation(x.getSerialNumber(), x.getSigAlgName(), x.getSubjectX500Principal().getName(),
-                x.getNotBefore(), x.getNotAfter());
-        } catch (GenericKeystoreManagerException e) {
+            final Base64.Encoder encoder = Base64.getMimeEncoder(64, LINE_SEPARATOR.getBytes());
+            final byte[] rawCrtText = x509.getEncoded();
+            final String encodedCertText = new String(encoder.encode(rawCrtText));
+            final StringBuilder sb = new StringBuilder();
+            sb.append(BEGIN_CERT);
+            sb.append(LINE_SEPARATOR);
+            sb.append(encodedCertText);
+            sb.append(LINE_SEPARATOR);
+            sb.append(END_CERT);  
+            
+            return  sb.toString();
+        } catch (CertificateEncodingException e) {
+            throw new GenericKeystoreManagerException("Error converting a certificate to PEM string");
+        }
+    }
+    
+    private String concatenateBase64PEMCertificates(Certificate[] certs) throws GenericKeystoreManagerException {
+        final StringBuilder sb = new StringBuilder();
+        for (Certificate c : certs) {
+            sb.append(convertToBase64PEMString(c));
+        }
+        return sb.toString();
+    }
+    
+    @Override
+    public String loadX509PEMCertificatesAsText(String alias) throws GenericKeystoreManagerException {
+        try {
+            final Certificate[] certs = this.keystore.getCertificateChain(alias);            
+            return concatenateBase64PEMCertificates(certs);
+        } catch (KeyStoreException e) {
             throw new GenericKeystoreManagerException("Error loading a certificate using the provided alias");
         }
     }
@@ -188,10 +195,8 @@ public class JCEKSKeystoreManager implements KeystoreManager {
     @Override
     public byte[] loadCertificateAsByteArray(String alias) throws GenericKeystoreManagerException {
         try {
-            Certificate cert = loadCertificate(alias);
-            X509Certificate x = (X509Certificate) cert;
-            return x.getEncoded();
-        } catch (GenericKeystoreManagerException | CertificateEncodingException e) {
+            return loadX509PEMCertificatesAsText(alias).getBytes();
+        } catch (GenericKeystoreManagerException e) {
             throw new GenericKeystoreManagerException("Error loading a certificate using the provided alias");
         }
     }
@@ -199,24 +204,18 @@ public class JCEKSKeystoreManager implements KeystoreManager {
     @Override
     public KeyPairInformation loadKeyPairAsText(String alias) throws GenericKeystoreManagerException {
         KeyEntityInformation privateKey = loadKeyAsText(alias, KeyType.PRIVATE);
-        KeyEntityInformation publicKey = loadKeyAsText(alias, KeyType.PUBLIC);
-        CertificateInformation cert = loadCertificateAsText(alias);
-        return new KeyPairInformation(privateKey, publicKey, cert);
+        String cert = loadX509PEMCertificatesAsText(alias);
+        return new KeyPairInformation(privateKey, cert);
     }
 
     @Override
-    public void storeCertificate() {
-
-    }
-
-    @Override
-    public int getKeystoreSize() {
+    public int getKeystoreSize() throws GenericKeystoreManagerException {
         try {
             return this.keystore.size();
         } catch (KeyStoreException e) {
             LOGGER.error("Error while checking the size of the keystore", e);
+            throw new GenericKeystoreManagerException(e.getMessage());
         }
-        return -1;
     }
 
     @Override
@@ -247,7 +246,7 @@ public class JCEKSKeystoreManager implements KeystoreManager {
     public void deleteAllKeyPairs() throws GenericKeystoreManagerException {
         try {
             for (KeyPairInformation keyPair : getKeyPairsList()) {
-                deleteKeystoreEntry(keyPair.getPublicKey().getAlias());
+                deleteKeystoreEntry(keyPair.getPrivateKey().getAlias());
             }
             this.keystore.store(new FileOutputStream(this.keystorePath), KEYSTORE_PASSWORD.toCharArray());
         } catch (KeyStoreException | IOException | CertificateException | NoSuchAlgorithmException | GenericKeystoreManagerException e) {
@@ -257,7 +256,7 @@ public class JCEKSKeystoreManager implements KeystoreManager {
     }
 
     @Override
-    public Collection<KeyPairInformation> getKeyPairsList() {
+    public Collection<KeyPairInformation> getKeyPairsList() throws GenericKeystoreManagerException {
         Enumeration<String> aliases;
         Collection<KeyPairInformation> keypairs = new ArrayList<>();
         try {
@@ -269,25 +268,27 @@ public class JCEKSKeystoreManager implements KeystoreManager {
                     try {
                         key = this.keystore.getKey(alias, KEYSTORE_PASSWORD.toCharArray());
                         if ((key instanceof PrivateKey)) {
-                            Certificate cert = this.keystore.getCertificate(alias);
+                            Certificate[] cert = this.keystore.getCertificateChain(alias);
                             KeyEntityInformation privateKey = new KeyEntityInformation.Builder(alias, key.getAlgorithm(), key.getFormat())
                                 .keySizeInBits(key.getEncoded().length)
                                 .base64Key(key.getEncoded())
                                 .build();
-                            PublicKey pub = cert.getPublicKey();
-                            KeyEntityInformation publicKey = new KeyEntityInformation.Builder(alias, pub.getAlgorithm(), pub.getFormat())
-                                .keySizeInBits(pub.getEncoded().length)
-                                .base64Key(pub.getEncoded())
-                                .build();
-                            X509Certificate x = (X509Certificate) cert;
-                            CertificateInformation c = new CertificateInformation(x.getSerialNumber(), x.getSigAlgName(), x.getSubjectX500Principal().getName(),
-                                x.getNotBefore(), x.getNotAfter());
+                            
+                            StringBuilder sb = new StringBuilder();
+                            for (Certificate c : cert) {
+                                sb.append(convertToBase64PEMString(c));
+                                
+                            }
 
-                            KeyPairInformation kp = new KeyPairInformation(privateKey, publicKey, c);
+                            KeyPairInformation kp = new KeyPairInformation(privateKey, sb.toString());
                             keypairs.add(kp);
                         }
                     } catch (NoSuchAlgorithmException | UnrecoverableKeyException e) {
-                        e.printStackTrace();
+                        LOGGER.error("Error retrieving keypairs list", e);
+                        throw new GenericKeystoreManagerException("Error retrieving keypairs list");
+                    } catch (GenericKeystoreManagerException exception) {
+                        LOGGER.error("Error retrieving keypairs list", exception);
+                        throw exception;
                     }
                 }                    
             }

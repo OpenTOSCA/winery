@@ -33,10 +33,8 @@ import java.io.InputStream;
 import java.net.URI;
 import java.security.KeyPair;
 import java.security.PrivateKey;
-import java.security.PublicKey;
 import java.security.cert.Certificate;
 import java.util.Collection;
-import java.util.Objects;
 
 public class KeyPairsResource extends AbstractKeystoreEntityResource {
     public KeyPairsResource(KeystoreManager keystoreManager, SecurityProcessor securityProcessor) {
@@ -47,7 +45,13 @@ public class KeyPairsResource extends AbstractKeystoreEntityResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Collection<KeyPairInformation> getKeyPairsList() {
-        return this.keystoreManager.getKeyPairsList();
+        try {
+            return this.keystoreManager.getKeyPairsList();
+        } catch (GenericKeystoreManagerException e) {
+            throw new WebApplicationException(
+                Response.serverError().entity(e.getMessage()).type(MediaType.TEXT_PLAIN).build()
+            );
+        }
     }
 
     @ApiOperation(value = "Generates a new or stores an existing keypair")
@@ -58,44 +62,32 @@ public class KeyPairsResource extends AbstractKeystoreEntityResource {
                                  @FormDataParam("keySize") int keySize,
                                  @FormDataParam("dn") String distinguishedName,
                                  @FormDataParam("privateKeyFile") InputStream privateKeyInputStream,
-                                 @FormDataParam("publicKeyFile") InputStream publicKeyInputStream,
-                                 @FormDataParam("certificate") InputStream certificateInputStream,
+                                 @FormDataParam("certificate") InputStream certificatesInputStream,
                                  @Context UriInfo uriInfo) {
         try {
+            String alias;
+            KeyPairInformation entity;
+            
             if (this.parametersAreNonNull(algorithm, distinguishedName)) {
-                String alias;
                 DistinguishedName dn = new DistinguishedName(distinguishedName);
-                KeyPairInformation entity;
                 
-                if (this.parametersAreNonNull(privateKeyInputStream, publicKeyInputStream) || 
-                    this.parametersAreNonNull(privateKeyInputStream, certificateInputStream)) {
-                    
-                    PrivateKey privateKey = this.securityProcessor.getPKCS8PrivateKeyFromInputStream(algorithm, privateKeyInputStream);
-                    alias = securityProcessor.calculateDigest(privateKey.getEncoded(), SupportedDigestAlgorithm.SHA512.name());
-                    this.checkAliasInsertEligibility(alias);
-                    
-                    if (Objects.nonNull(certificateInputStream)) {
-                        Certificate cert = this.securityProcessor.getX509CertificateFromInputStream(certificateInputStream); 
-                        entity = this.keystoreManager.storeKeyPair(alias, privateKey, cert);
-                    }
-                    else {
-                        PublicKey publicKey = this.securityProcessor.getX509EncodedPublicKeyFromInputStream(algorithm, publicKeyInputStream);
-                        KeyPair keypair = new KeyPair(publicKey, privateKey);
-                        Certificate selfSignedCert = this.securityProcessor.generateSelfSignedCertificate(keypair, dn);
-                        entity = this.keystoreManager.storeKeyPair(alias, keypair, selfSignedCert);
-                    }
-                }
-                else {
-                    KeyPair keypair = this.securityProcessor.generateKeyPair(algorithm, keySize);
-                    alias = securityProcessor.calculateDigest(keypair.getPrivate().getEncoded(), SupportedDigestAlgorithm.SHA512.name());
-                    this.checkAliasInsertEligibility(alias);
-                    Certificate selfSignedCert = this.securityProcessor.generateSelfSignedCertificate(keypair, dn);
-                    entity = this.keystoreManager.storeKeyPair(alias, keypair, selfSignedCert);
-                }
-                URI uri = uriInfo.getAbsolutePathBuilder().path(alias).build();
-                return Response.created(uri).entity(entity).build();
-            }
-            else {
+                KeyPair keypair = this.securityProcessor.generateKeyPair(algorithm, keySize);
+                alias = securityProcessor.calculateDigest(keypair.getPrivate().getEncoded(), SupportedDigestAlgorithm.SHA256.name());
+                this.checkAliasInsertEligibility(alias);
+                
+                Certificate[] selfSignedCert = new Certificate[]{ this.securityProcessor.generateSelfSignedCertificate(keypair, dn) };
+                
+                entity = this.keystoreManager.storeKeyPair(alias, keypair.getPrivate(), selfSignedCert);
+                
+            } else if (this.parametersAreNonNull(privateKeyInputStream, certificatesInputStream)) {
+                PrivateKey privateKey = this.securityProcessor.getPKCS8PrivateKeyFromInputStream(algorithm, privateKeyInputStream);
+                alias = securityProcessor.calculateDigest(privateKey.getEncoded(), SupportedDigestAlgorithm.SHA256.name());
+                this.checkAliasInsertEligibility(alias);
+
+                Certificate[] cert = this.securityProcessor.getX509CertificateChainFromInputStream(certificatesInputStream);
+                entity = this.keystoreManager.storeKeyPair(alias, privateKey, cert);
+
+            } else {
                 throw new WebApplicationException(
                     Response.status(Response.Status.BAD_REQUEST)
                         .entity("some parameters are missing")
@@ -103,6 +95,10 @@ public class KeyPairsResource extends AbstractKeystoreEntityResource {
                         .build()
                 );
             }
+
+            URI uri = uriInfo.getAbsolutePathBuilder().path(alias).build();
+            return Response.created(uri).entity(entity).build();
+            
         }
         catch (WebApplicationException e) {
             throw e;
