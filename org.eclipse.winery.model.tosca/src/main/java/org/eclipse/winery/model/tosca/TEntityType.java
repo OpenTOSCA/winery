@@ -18,12 +18,14 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.github.adr.embedded.ADR;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.winery.model.tosca.constants.Namespaces;
 import org.eclipse.winery.model.tosca.kvproperties.WinerysPropertiesDefinition;
 
 import javax.xml.bind.annotation.*;
 import javax.xml.bind.annotation.adapters.CollapsedStringAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import javax.xml.namespace.QName;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -71,6 +73,7 @@ import java.util.Objects;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "tEntityType", propOrder = {
+    "policies",
     "tags",
     "derivedFrom",
     "propertiesDefinition"
@@ -84,6 +87,8 @@ import java.util.Objects;
     TPolicyType.class
 })
 public class TEntityType extends TExtensibleElements implements HasName, HasInheritance, HasTargetNamespace {
+    @XmlElement(name = "Policies", namespace = Namespaces.TOSCA_WINERY_EXTENSIONS_NAMESPACE)
+    protected TEntityType.Policies policies;
     @XmlElement(name = "Tags")
     protected TTags tags;
     @XmlElement(name = "DerivedFrom")
@@ -304,6 +309,44 @@ public class TEntityType extends TExtensibleElements implements HasName, HasInhe
         return res;
     }
 
+    @XmlAccessorType(XmlAccessType.FIELD)
+    @XmlType(name = "", propOrder = {
+        "policy"
+    })
+    public static class Policies {
+
+        @XmlElement(name = "Policy", namespace = Namespaces.TOSCA_NAMESPACE, required = true)
+        protected List<TPolicy> policy;
+
+        /**
+         * Gets the value of the policies property.
+         * <p>
+         * <p>
+         * This accessor method returns a reference to the live list,
+         * not a snapshot. Therefore any modification you make to the
+         * returned list will be present inside the JAXB object.
+         * This is why there is not a <CODE>set</CODE> method for the wineryExtensionPolicies property.
+         * <p>
+         * <p>
+         * For example, to add a new item, do as follows:
+         * <pre>
+         *    getPolicies().add(newItem);
+         * </pre>
+         * <p>
+         * <p>
+         * <p>
+         * Objects of the following type(s) are allowed in the list
+         * {@link TPolicy }
+         */
+        @NonNull
+        public List<TPolicy> getPolicies() {
+            if (policy == null) {
+                policy = new ArrayList<>();
+            }
+            return this.policy;
+        }
+    }
+    
     /**
      * <p>Java class for anonymous complex type.
      * <p>

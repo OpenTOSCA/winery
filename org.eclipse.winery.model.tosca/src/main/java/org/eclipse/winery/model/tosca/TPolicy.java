@@ -16,11 +16,9 @@ package org.eclipse.winery.model.tosca;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.winery.model.tosca.constants.Namespaces;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.*;
 import javax.xml.namespace.QName;
 import java.util.Objects;
 
@@ -46,6 +44,8 @@ import java.util.Objects;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "tPolicy")
 public class TPolicy extends TExtensibleElements {
+    @XmlAttribute(name = "applied", namespace = Namespaces.TOSCA_WINERY_EXTENSIONS_NAMESPACE)
+    protected boolean isApplied;
     @XmlAttribute(name = "name")
     protected String name;
     @XmlAttribute(name = "policyType", required = true)

@@ -25,4 +25,7 @@ public class QNames {
 
     // follows the naming conventions by https://github.com/OpenTOSCA/tosca-definitions/
     public static final QName QNAME_ARTIFACT_TYPE_WAR = new QName("http://www.opentosca.org/artifacttypes", "WAR");
+
+    public static final QName WINERY_ENCRYPTION_POLICY_TYPE = new QName(Namespaces.URI_OPENTOSCA_SECURE_POLICYTYPE, "EncryptionPolicyType");
+    public static final QName WINERY_SIGNING_POLICY_TYPE = new QName(Namespaces.URI_OPENTOSCA_SECURE_POLICYTYPE, "SigningPolicyType");
 }
