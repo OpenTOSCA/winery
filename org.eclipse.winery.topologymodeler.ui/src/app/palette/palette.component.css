@@ -40,7 +40,8 @@
 }
 
 accordion-group {
-    font-size: medium;
+
+    font-size: x-small !important;
     max-width: 300px;
     text-overflow: ellipsis !important;
     overflow: hidden !important;

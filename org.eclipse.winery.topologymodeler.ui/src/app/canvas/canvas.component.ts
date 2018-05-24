@@ -1365,7 +1365,7 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit, DoChec
             const bElem = node.firstChild;
             const result = this.isObjectInSelection(aElem, bElem);
             if (result) {
-                this.enhanceDragSelection(node.firstChild.nextElementSibling.id);
+                this.enhanceDragSelection(node.firstChild.id);
             }
         }
         this.unbindAll();
@@ -1786,12 +1786,12 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit, DoChec
     private isObjectInSelection(selectionArea, object): boolean {
         const selectionRect = selectionArea.getBoundingClientRect();
         return (
-            ((selectionRect.top + selectionRect.height) > (object.nextElementSibling.offsetTop +
-                object.nextElementSibling.offsetHeight - this.scrollOffset)) &&
-            (selectionRect.top < (object.nextElementSibling.offsetTop - this.scrollOffset)) &&
-            ((selectionRect.left + selectionArea.getBoundingClientRect().width) > (object.nextElementSibling.offsetLeft +
-                object.nextElementSibling.offsetWidth)) &&
-            (selectionRect.left < (object.nextElementSibling.offsetLeft))
+            ((selectionRect.top + selectionRect.height) > (object.offsetTop +
+                object.offsetHeight - this.scrollOffset)) &&
+            (selectionRect.top < (object.offsetTop - this.scrollOffset)) &&
+            ((selectionRect.left + selectionArea.getBoundingClientRect().width) > (object.offsetLeft +
+                object.offsetWidth)) &&
+            (selectionRect.left < (object.offsetLeft))
         );
     }
 

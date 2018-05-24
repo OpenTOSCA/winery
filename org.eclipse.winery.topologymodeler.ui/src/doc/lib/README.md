@@ -1,5 +1,5 @@
 ## @Winery/Topologymodeler
-This package makes the [Eclipse/Winery topologymodeler](https://github.com/eclipse/winery) module available as npm package.
+This makes the [OpenTOSCA/Winery topologymodeler](https://github.com/OpenTOSCA/winery) module available as npm package.
 
 ### Install
 `npm install @winery/topologymodeler --save`
@@ -16,9 +16,18 @@ The topologyModelerData has to be of this type:
 export interface TopologyModelerInputDataFormat {
         configuration: {
             readonly: boolean,
+            endpointConfig: TopologyModelerConfiguration
         };
         topologyTemplate: TTopologyTemplate;
         visuals: Visuals;
+}
+
+TopologyModelerConfiguration {
+    readonly id: string;
+    readonly ns: string;
+    readonly repositoryURL: string;
+    readonly uiURL: string;
+    readonly compareTo: string;
 }
 ```
 
