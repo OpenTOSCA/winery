@@ -54,6 +54,10 @@ public class JCEKSKeystoreManager implements KeystoreManager {
         this.configuration = c;
         loadKeystore();
     }
+
+    public JCEKSKeystoreManager() {
+        this(null);
+    }
     
     private void loadKeystore() {
         RepositoryFileReference keystoreRef = new RepositoryFileReference(new KeystoreId(), KEYSTORE_NAME);
@@ -111,6 +115,16 @@ public class JCEKSKeystoreManager implements KeystoreManager {
         }
     }
 
+    @Override
+    public Key loadKey(String alias) throws GenericKeystoreManagerException {
+        try {
+            return this.keystore.getKey(alias, KEYSTORE_PASSWORD.toCharArray());
+        } catch (KeyStoreException | NoSuchAlgorithmException | UnrecoverableKeyException e) {
+            LOGGER.error("Error loading a key using the provided alias", e.getMessage());
+            throw new GenericKeystoreManagerException("Error loading a key using the provided alias");
+        }
+    }
+    
     private Key loadKey(String alias, KeyType type) throws GenericKeystoreManagerException {
         try {
             if (type != KeyType.PUBLIC) {

@@ -64,6 +64,12 @@ public class BCSecurityProcessor implements SecurityProcessor {
     public BCSecurityProcessor(Configuration c) {
         this.configuration = c;
         Security.addProvider(new BouncyCastleProvider());
+        // Available since Java8u151, allows 256bit key usage
+        Security.setProperty("crypto.policy", "unlimited");
+    }
+
+    public BCSecurityProcessor() {
+        this(null);
     }
     
     @Override
@@ -252,6 +258,7 @@ public class BCSecurityProcessor implements SecurityProcessor {
     public byte[] encryptByteArray(Key k, byte[] sequence) throws GenericSecurityProcessorException {
         Cipher cipher;
         try {
+            // TODO: plain AES mode is not safe, use AES/CBC/PKCS5Padding or AES/CTR/NoPadding
             cipher = Cipher.getInstance(k.getAlgorithm(), BouncyCastleProvider.PROVIDER_NAME);
             cipher.init(Cipher.ENCRYPT_MODE, k);
             byte[] encrypted = cipher.doFinal(sequence);

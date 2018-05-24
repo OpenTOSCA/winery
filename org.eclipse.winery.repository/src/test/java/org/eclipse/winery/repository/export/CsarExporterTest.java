@@ -23,6 +23,7 @@ import org.junit.Test;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -32,7 +33,7 @@ public class CsarExporterTest extends TestWithGitBackedRepository {
         setRevisionTo(commitId);
         CsarExporter exporter = new CsarExporter();
         ByteArrayOutputStream os = new ByteArrayOutputStream();
-        exporter.writeCsar(RepositoryFactory.getRepository(), id, os);
+        exporter.writeCsar(RepositoryFactory.getRepository(), id, os, new HashMap<>());
         return new ByteArrayInputStream(os.toByteArray());
     }
 

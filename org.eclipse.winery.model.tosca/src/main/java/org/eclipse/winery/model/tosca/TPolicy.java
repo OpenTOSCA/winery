@@ -99,6 +99,24 @@ public class TPolicy extends TExtensibleElements {
     }
 
     /**
+     * Gets the value of the isApplied property.
+     *
+     * @return possible type is boolean
+     */
+    public boolean getIsApplied() {
+        return isApplied;
+    }
+    
+    /**
+     * Sets the value of the isApplied property.
+     *
+     * @param value allowed type is boolean
+     */
+    public void setIsApplied(boolean value) {
+        this.isApplied = value;
+    }
+    
+    /**
      * Gets the value of the policyType property.
      *
      * @return possible object is {@link QName }

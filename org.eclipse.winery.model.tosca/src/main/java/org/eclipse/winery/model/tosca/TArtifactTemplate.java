@@ -109,7 +109,7 @@ public class TArtifactTemplate
     /**
      * Gets the value of the first available encrypted policy if there is one.
      *
-     * @return possible object is {@link TArtifactTemplate.Policies}
+     * @return possible object is {@link TPolicy}
      */
     public TPolicy getEncryptionPolicy() {
         for (TPolicy p : policies.getPolicies()) {

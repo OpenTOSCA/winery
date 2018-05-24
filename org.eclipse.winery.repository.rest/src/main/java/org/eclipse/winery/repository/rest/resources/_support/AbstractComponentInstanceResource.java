@@ -28,6 +28,7 @@ import org.eclipse.winery.repository.backend.IRepository;
 import org.eclipse.winery.repository.backend.RepositoryFactory;
 import org.eclipse.winery.repository.backend.constants.MediaTypes;
 import org.eclipse.winery.repository.configuration.Environment;
+import org.eclipse.winery.repository.export.ToscaExportUtil;
 import org.eclipse.winery.repository.rest.RestUtils;
 import org.eclipse.winery.repository.rest.resources.apiData.QNameApiData;
 import org.eclipse.winery.repository.rest.resources.documentation.DocumentationResource;
@@ -54,6 +55,9 @@ import javax.xml.parsers.DocumentBuilder;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * Resource for a component (
@@ -193,11 +197,14 @@ public abstract class AbstractComponentInstanceResource implements Comparable<Ab
 
     @GET
     @Produces(MimeTypes.MIMETYPE_ZIP)
-    public final Response getCSAR(@QueryParam("secure") boolean secure) {
+    public final Response getCSAR(@QueryParam(value = "secure") String secure) {
         if (!RepositoryFactory.getRepository().exists(this.id)) {
             return Response.status(Status.NOT_FOUND).build();
         }
-        return RestUtils.getCSARofSelectedResource(this, secure);
+        Map<String, Object> exportConfigurations = new HashMap<>();
+        exportConfigurations.put(ToscaExportUtil.ExportProperties.APPLY_SECURITY_POLICIES.name(), Objects.nonNull(secure));
+        
+        return RestUtils.getCSARofSelectedResource(this, exportConfigurations);
     }
 
     /**
@@ -211,7 +218,7 @@ public abstract class AbstractComponentInstanceResource implements Comparable<Ab
     public Response getDefinitionsAsResponse(
         @QueryParam(value = "csar") String csar,
         @QueryParam(value = "yaml") String yaml,
-        @QueryParam("secure") boolean secure,
+        @QueryParam(value = "secure") String secure,
         @Context UriInfo uriInfo
     ) {
         final IRepository repository = RepositoryFactory.getRepository();
@@ -230,7 +237,10 @@ public abstract class AbstractComponentInstanceResource implements Comparable<Ab
             // we cannot use this.definitions as that definitions is Winery's internal representation of the data and not the full blown definitions (including imports to referenced elements)
             return RestUtils.getDefinitionsOfSelectedResource(this, uriInfo.getBaseUri());
         } else {
-            return RestUtils.getCSARofSelectedResource(this, secure);
+            Map<String, Object> exportConfigurations = new HashMap<>();
+            exportConfigurations.put(ToscaExportUtil.ExportProperties.APPLY_SECURITY_POLICIES.name(), Objects.nonNull(secure));
+
+            return RestUtils.getCSARofSelectedResource(this, exportConfigurations);
         }
     }
 
@@ -239,7 +249,7 @@ public abstract class AbstractComponentInstanceResource implements Comparable<Ab
     public Response redirectToAngularUi(
         @QueryParam(value = "csar") String csar,
         @QueryParam(value = "yaml") String yaml,
-        @QueryParam("secure") boolean secure,
+        @QueryParam(value = "secure") String secure,
         @Context UriInfo uriInfo) {
         // in case there is an URL requested directly via the browser UI, the accept cannot be put at the link.
         // thus, there is the hack with ?csar and ?yaml

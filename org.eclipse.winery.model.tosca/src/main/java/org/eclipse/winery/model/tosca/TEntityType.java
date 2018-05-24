@@ -19,6 +19,7 @@ import io.github.adr.embedded.ADR;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.winery.model.tosca.constants.Namespaces;
+import org.eclipse.winery.model.tosca.constants.QNames;
 import org.eclipse.winery.model.tosca.kvproperties.WinerysPropertiesDefinition;
 
 import javax.xml.bind.annotation.*;
@@ -325,7 +326,7 @@ public class TEntityType extends TExtensibleElements implements HasName, HasInhe
          * This accessor method returns a reference to the live list,
          * not a snapshot. Therefore any modification you make to the
          * returned list will be present inside the JAXB object.
-         * This is why there is not a <CODE>set</CODE> method for the wineryExtensionPolicies property.
+         * This is why there is not a <CODE>set</CODE> method for the policies property.
          * <p>
          * <p>
          * For example, to add a new item, do as follows:
@@ -345,6 +346,24 @@ public class TEntityType extends TExtensibleElements implements HasName, HasInhe
             }
             return this.policy;
         }
+    }
+
+    public TEntityType.Policies getPolicies() {
+        return this.policies;
+    }
+
+    /**
+     * Gets the value of the first available matching policy if there is one.
+     *
+     * @return possible object is {@link TPolicy}
+     */
+    public TPolicy getPolicyByQName(QName qname) {
+        for (TPolicy p : policies.getPolicies()) {
+            if (qname.equals(p.getPolicyType())) {
+                return p;
+            }
+        }
+        return null;
     }
     
     /**

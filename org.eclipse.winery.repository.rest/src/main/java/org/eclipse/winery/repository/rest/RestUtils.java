@@ -54,7 +54,7 @@ import org.eclipse.winery.repository.rest.resources.entitytemplates.policytempla
 import org.eclipse.winery.repository.rest.resources.entitytemplates.policytemplates.PolicyTemplatesResource;
 import org.eclipse.winery.repository.rest.resources.entitytypes.TopologyGraphElementEntityTypeResource;
 import org.eclipse.winery.repository.rest.resources.servicetemplates.ServiceTemplateResource;
-import org.eclipse.winery.repository.security.csar.PolicyPropertyNameConstants;
+import org.eclipse.winery.repository.security.csar.SecurityPolicyConstants;
 import org.eclipse.winery.repository.security.csar.datatypes.KeyEntityInformation;
 import org.eclipse.winery.repository.security.csar.datatypes.KeyPairInformation;
 import org.eclipse.winery.yaml.common.exception.MultiException;
@@ -183,11 +183,11 @@ public class RestUtils {
         return Response.ok().type(MediaType.APPLICATION_XML).entity(so).build();
     }
 
-    public static Response getCSARofSelectedResource(final AbstractComponentInstanceResource resource, final boolean secure) {
+    public static Response getCSARofSelectedResource(final AbstractComponentInstanceResource resource, Map<String, Object> exportConfigurations) {
         final CsarExporter exporter = new CsarExporter();
         StreamingOutput so = output -> {
             try {
-                exporter.writeCsar(RepositoryFactory.getRepository(), resource.getId(), output);
+                exporter.writeCsar(RepositoryFactory.getRepository(), resource.getId(), output, exportConfigurations);
             } catch (Exception e) {
                 throw new WebApplicationException(e);
             }
@@ -539,17 +539,17 @@ public class RestUtils {
     
     public static PolicyTemplateId createEncryptionPolicyTemplate(QNameWithTypeApiData qNameApiData, KeyEntityInformation key) {
         Map<String, String> properties = new HashMap<>();
-        properties.put(PolicyPropertyNameConstants.SEC_POL_KEYHASH_PROPERTY, key.getAlias());
-        properties.put(PolicyPropertyNameConstants.ENC_POL_ALGO_PROPERTY, key.getAlgorithm());
-        properties.put(PolicyPropertyNameConstants.ENC_POL_KEYSIZE_PROPERTY, String.valueOf(key.getKeySizeInBits()));
+        properties.put(SecurityPolicyConstants.SEC_POL_KEYHASH_PROPERTY, key.getAlias());
+        properties.put(SecurityPolicyConstants.ENC_POL_ALGO_PROPERTY, key.getAlgorithm());
+        properties.put(SecurityPolicyConstants.ENC_POL_KEYSIZE_PROPERTY, String.valueOf(key.getKeySizeInBits()));
 
         return createSecurityPolicyTemplate(qNameApiData, properties);
     }
 
     public static PolicyTemplateId createSigningPolicyTemplate(QNameWithTypeApiData qNameApiData, KeyPairInformation kp) {
         Map<String, String> properties = new HashMap<>();
-        properties.put(PolicyPropertyNameConstants.SEC_POL_KEYHASH_PROPERTY, kp.getPrivateKey().getAlias());
-        properties.put(PolicyPropertyNameConstants.SIGN_POL_CERT_PROPERTY, kp.getCertificateChain());
+        properties.put(SecurityPolicyConstants.SEC_POL_KEYHASH_PROPERTY, kp.getPrivateKey().getAlias());
+        properties.put(SecurityPolicyConstants.SIGN_POL_CERT_PROPERTY, kp.getCertificateChain());
         
         return createSecurityPolicyTemplate(qNameApiData, properties);
     }

@@ -316,7 +316,7 @@ public class ConsistencyChecker {
         CsarExporter exporter = new CsarExporter();
         try (OutputStream outputStream = Files.newOutputStream(tempCsar, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
             try {
-                exporter.writeCsar(RepositoryFactory.getRepository(), id, outputStream);
+                exporter.writeCsar(RepositoryFactory.getRepository(), id, outputStream, new HashMap<>());
             } catch (ArchiveException e) {
                 LOGGER.debug("Error during checking ZIP", e);
                 printAndAddError(errorLogger, verbosity, id, "Invalid zip file: " + e.getMessage());

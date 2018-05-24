@@ -35,6 +35,8 @@ public class Namespaces {
     public static final String URI_BPEL20_ABSTRACT = "http://docs.oasis-open.org/wsbpel/2.0/process/abstract";
     public static final String URI_BPEL20_EXECUTABLE = "http://docs.oasis-open.org/wsbpel/2.0/process/executable";
     public static final String URI_OPENTOSCA_NODETYPE = "http://www.opentosca.org/nodetypes";
+    public static final String URI_OPENTOSCA_ARTIFACTTYPE = "http://opentosca.org/artifacttypes";
+    public static final String URI_OPENTOSCA_ARTIFACTTEMPLATE = "http://opentosca.org/artifacttemplates";
     public static final String URI_OPENTOSCA_SECURE_POLICYTYPE = "http://opentosca.org/policytypes/security/csar";
     public static final String URI_OPENTOSCA_SECURE_POLICYTEMPLATE = "http://opentosca.org/policytemplates/security/csar";
 

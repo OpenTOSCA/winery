@@ -40,6 +40,8 @@ public interface KeystoreManager {
 
     KeyEntityInformation storeSecretKey(String alias, Key key) throws GenericKeystoreManagerException;
 
+    Key loadKey(String alias) throws GenericKeystoreManagerException;
+    
     KeyEntityInformation loadKeyAsText(String alias, KeyType type) throws GenericKeystoreManagerException;
 
     byte[] loadKeyAsByteArray(String alias, KeyType type) throws GenericKeystoreManagerException;

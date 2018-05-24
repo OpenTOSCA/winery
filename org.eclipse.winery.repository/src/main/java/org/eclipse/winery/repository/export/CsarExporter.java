@@ -105,7 +105,7 @@ public class CsarExporter {
      * @param entryId the id of the service template to export
      * @param out     the output stream to write to
      */
-    public void writeCsar(IRepository repository, DefinitionsChildId entryId, OutputStream out) throws ArchiveException, IOException, JAXBException, RepositoryCorruptException {
+    public void writeCsar(IRepository repository, DefinitionsChildId entryId, OutputStream out, Map<String, Object> exportConfigurations) throws ArchiveException, IOException, JAXBException, RepositoryCorruptException {
         CsarExporter.LOGGER.trace("Starting CSAR export with {}", entryId.toString());
 
         Map<RepositoryFileReference, String> refMap = new HashMap<>();
@@ -113,7 +113,6 @@ public class CsarExporter {
 
         try (final ArchiveOutputStream zos = new ArchiveStreamFactory().createArchiveOutputStream("zip", out)) {
             ToscaExportUtil exporter = new ToscaExportUtil();
-            Map<String, Object> conf = new HashMap<>();
 
             ExportedState exportedState = new ExportedState();
 
@@ -124,7 +123,7 @@ public class CsarExporter {
 
                 zos.putArchiveEntry(new ZipArchiveEntry(defName));
                 Collection<DefinitionsChildId> referencedIds;
-                referencedIds = exporter.exportTOSCA(repository, currentId, zos, refMap, conf);
+                referencedIds = exporter.exportTOSCA(repository, currentId, zos, refMap, exportConfigurations);
                 zos.closeArchiveEntry();
 
                 exportedState.flagAsExported(currentId);

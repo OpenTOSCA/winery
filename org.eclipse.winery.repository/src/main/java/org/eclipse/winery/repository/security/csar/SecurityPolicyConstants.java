@@ -14,12 +14,11 @@
 
 package org.eclipse.winery.repository.security.csar;
 
-public class PolicyPropertyNameConstants {
+public class SecurityPolicyConstants {
     public static final String SEC_POL_KEYHASH_PROPERTY = "keyHash";
-    
+    public static final String SEC_POL_PROPGROUPING_PROPERTY = "propertyNames";
     public static final String ENC_POL_ALGO_PROPERTY = "algorithm";
     public static final String ENC_POL_KEYSIZE_PROPERTY = "keySize";
-
     public static final String SIGN_POL_CERT_PROPERTY = "certificateChain";
     
 }

@@ -19,10 +19,8 @@ import org.eclipse.winery.common.ids.definitions.*;
 import org.eclipse.winery.common.ids.definitions.imports.GenericImportId;
 import org.eclipse.winery.common.ids.elements.PlanId;
 import org.eclipse.winery.common.ids.elements.PlansId;
-import org.eclipse.winery.model.tosca.Definitions;
-import org.eclipse.winery.model.tosca.TEntityType;
+import org.eclipse.winery.model.tosca.*;
 import org.eclipse.winery.model.tosca.TEntityType.PropertiesDefinition;
-import org.eclipse.winery.model.tosca.TImport;
 import org.eclipse.winery.model.tosca.constants.Namespaces;
 import org.eclipse.winery.model.tosca.constants.QNames;
 import org.eclipse.winery.model.tosca.kvproperties.WinerysPropertiesDefinition;
@@ -35,6 +33,9 @@ import org.eclipse.winery.repository.datatypes.ids.elements.ArtifactTemplateFile
 import org.eclipse.winery.repository.datatypes.ids.elements.DirectoryId;
 import org.eclipse.winery.repository.datatypes.ids.elements.VisualAppearanceId;
 import org.eclipse.winery.repository.exceptions.RepositoryCorruptException;
+import org.eclipse.winery.repository.security.csar.*;
+import org.eclipse.winery.repository.security.csar.exceptions.GenericKeystoreManagerException;
+import org.eclipse.winery.repository.security.csar.exceptions.GenericSecurityProcessorException;
 import org.slf4j.ext.XLogger;
 import org.slf4j.ext.XLoggerFactory;
 import org.w3c.dom.Document;
@@ -46,6 +47,7 @@ import javax.xml.namespace.QName;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URI;
+import java.security.Key;
 import java.util.*;
 
 public class ToscaExportUtil {
@@ -68,7 +70,7 @@ public class ToscaExportUtil {
     private Map<String, Object> exportConfiguration;
 
     public enum ExportProperties {
-        INCLUDEXYCOORDINATES, REPOSITORY_URI
+        INCLUDEXYCOORDINATES, REPOSITORY_URI, APPLY_SECURITY_POLICIES
     }
 
     /**
@@ -249,10 +251,150 @@ public class ToscaExportUtil {
         }
 
         // END: Definitions modification
-
+        
+        // Enforce security policies for definitions
+        if (this.exportConfiguration.containsKey(ExportProperties.APPLY_SECURITY_POLICIES.name()) &&
+            (Boolean) this.exportConfiguration.get(ExportProperties.APPLY_SECURITY_POLICIES.name())) {
+            this.enforceSecurityPoliciesForProperties(repository, entryDefinitions, referencedDefinitionsChildIds);
+        }
+        
+        // references to files are already contained here
+        // System.out.println(this.referencesToPathInCSARMap);
+        
         this.writeDefinitionsElement(entryDefinitions, out);
 
         return referencedDefinitionsChildIds;
+    }
+    
+    private void enforceSecurityPoliciesForProperties(IRepository repository, Definitions entryDefinitions, Collection<DefinitionsChildId> referencedDefinitionsChildIds) {
+        for (TExtensibleElements element: entryDefinitions.getServiceTemplateOrNodeTypeOrNodeTypeImplementation()) {
+            if (element instanceof TServiceTemplate) {
+                for (TNodeTemplate templ: ((TServiceTemplate) element).getTopologyTemplate().getNodeTemplates()) {
+                    NodeTypeId nTypeId = BackendUtils.getDefinitionsChildId(NodeTypeId.class, templ.getType());
+                    TEntityType nodeType = repository.getElement(nTypeId);
+
+                    if (Objects.nonNull(nodeType.getPolicies())) {
+                        KeystoreManager keystoreManager = new JCEKSKeystoreManager();
+                        SecurityProcessor securityProcessor = new BCSecurityProcessor();
+                        
+                        TPolicy encPolicy = nodeType.getPolicyByQName(QNames.WINERY_ENCRYPTION_POLICY_TYPE);
+                        TPolicy encPropsPolicy = nodeType.getPolicyByQName(QNames.WINERY_ENCRYPTEDPROP_POLICY_TYPE);
+                        
+                        if (Objects.nonNull(encPolicy) && Objects.nonNull(encPropsPolicy)) {
+                            PolicyTypeId encPolicyTypeId = BackendUtils.getDefinitionsChildId(PolicyTypeId.class, encPolicy.getPolicyType());
+                            PolicyTypeId encPropsPolicyTypeId = BackendUtils.getDefinitionsChildId(PolicyTypeId.class, encPropsPolicy.getPolicyType());
+                            referencedDefinitionsChildIds.add(encPolicyTypeId);
+                            referencedDefinitionsChildIds.add(encPropsPolicyTypeId);
+                            
+                            PolicyTemplateId encPolicyTemplateId = BackendUtils.getDefinitionsChildId(PolicyTemplateId.class, encPolicy.getPolicyRef());
+                            PolicyTemplateId encPropsPolicyTemplateId = BackendUtils.getDefinitionsChildId(PolicyTemplateId.class, encPropsPolicy.getPolicyRef());
+                            referencedDefinitionsChildIds.add(encPolicyTemplateId);
+                            referencedDefinitionsChildIds.add(encPropsPolicyTemplateId);
+                            
+                            TPolicyTemplate encPropsPolicyTemplate = repository.getElement(encPropsPolicyTemplateId);
+                            
+                            String keyAlias = encPolicy.getPolicyRef().getLocalPart();
+                            String props = encPropsPolicyTemplate.getProperties().getKVProperties().get(SecurityPolicyConstants.SEC_POL_PROPGROUPING_PROPERTY);
+                            
+                            if (keystoreManager.entityExists(keyAlias) && props.length() > 0) {
+                                int numPropsSecured = 0;
+                                try {
+                                    Key encryptionKey = keystoreManager.loadKey(keyAlias);
+                                    LinkedHashMap<String, String> templKVProperties = templ.getProperties().getKVProperties();
+                                    for (String p : Arrays.asList(props.split("\\s+"))) {
+                                        String encValue = securityProcessor.encryptString(encryptionKey, templKVProperties.get(p));
+                                        templKVProperties.replace(p, encValue);
+                                        numPropsSecured++;
+                                    }
+                                    templ.getProperties().setKVProperties(templKVProperties);
+                                    if (numPropsSecured > 0) {
+                                        encPolicy.setIsApplied(true);
+                                        if (templ.getPolicies() == null) {
+                                            templ.setPolicies(new TNodeTemplate.Policies());
+                                        }
+                                        templ.getPolicies().getPolicy().add(encPolicy);
+                                    }
+                                    
+                                } catch (GenericKeystoreManagerException | GenericSecurityProcessorException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+
+                        TPolicy signPolicy = nodeType.getPolicyByQName(QNames.WINERY_SIGNING_POLICY_TYPE);
+                        TPolicy signPropsPolicy = nodeType.getPolicyByQName(QNames.WINERY_SIGNEDPROP_POLICY_TYPE);
+                        if (Objects.nonNull(signPolicy) && Objects.nonNull(signPropsPolicy)) {
+                            PolicyTemplateId signPropsPolicyTemplateId = BackendUtils.getDefinitionsChildId(PolicyTemplateId.class, signPropsPolicy.getPolicyRef());
+                            TPolicyTemplate signPropsPolicyTemplate = repository.getElement(signPropsPolicyTemplateId);
+
+                            String keyAlias = signPolicy.getPolicyRef().getLocalPart();
+                            String props = signPropsPolicyTemplate.getProperties().getKVProperties().get(SecurityPolicyConstants.SEC_POL_PROPGROUPING_PROPERTY);
+
+                            if (keystoreManager.entityExists(keyAlias) && props.length() > 0) {
+                                int numPropsSecured = 0;
+                                try {
+                                    Key signingKey = keystoreManager.loadKey(keyAlias);
+                                    LinkedHashMap<String, String> templKVProperties = templ.getProperties().getKVProperties();
+                                    
+                                    ArtifactTemplateId signatureArtifactTemplateId = generateSignatureArtifactTemplate(repository, templ.getName(), signPropsPolicyTemplate.getName());
+                                    TArtifactTemplate signatureArtifactTemplate = repository.getElement(signatureArtifactTemplateId);
+                                    referencedDefinitionsChildIds.add(signatureArtifactTemplateId);
+                                    
+                                    for (String p : Arrays.asList(props.split("\\s+"))) {
+                                        
+                                        numPropsSecured++;
+                                    }
+                                    
+                                    if (numPropsSecured > 0) {
+                                        signPolicy.setIsApplied(true);
+                                        if (templ.getPolicies() == null) {
+                                            templ.setPolicies(new TNodeTemplate.Policies());
+                                        }
+                                        templ.getPolicies().getPolicy().add(signPolicy);
+                                        TDeploymentArtifacts dArtifacts = new TDeploymentArtifacts();
+                                        
+                                        dArtifacts.getDeploymentArtifact().add(
+                                            new TDeploymentArtifact.Builder("DA_".concat(signatureArtifactTemplate.getName()), QNames.WINERY_SIGNATURE_ARTIFACT_TYPE)
+                                                .setArtifactRef(signatureArtifactTemplateId.getQName())
+                                                .build()
+                                        );
+                                        
+                                        templ.setDeploymentArtifacts(dArtifacts);
+                                    }
+
+                                } catch (GenericKeystoreManagerException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+
+                        }
+                        
+                    }
+                }
+            }
+        }
+    }
+    
+    private ArtifactTemplateId generateSignatureArtifactTemplate(IRepository repository, String nodeTemplateName, String signedPropsPolicyName) {
+        String id = nodeTemplateName + "_" + signedPropsPolicyName;        
+        DefinitionsChildId tcId = BackendUtils.getDefinitionsChildId(ArtifactTemplateId.class, Namespaces.URI_OPENTOSCA_ARTIFACTTEMPLATE, id, false);
+
+        if (!repository.exists(tcId)) {
+            repository.flagAsExisting(tcId);
+            final Definitions definitions = repository.getDefinitions(tcId);
+            final TExtensibleElements element = definitions.getElement();
+            ((HasType) element).setType(QNames.WINERY_SIGNATURE_ARTIFACT_TYPE);
+            ((HasName) element).setName(id);
+            BackendUtils.initializeProperties(repository, (TEntityTemplate) element);
+
+            try {
+                BackendUtils.persist(tcId, definitions);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        //referencedDefinitionsChildIds.add(ArtifactTemplateId)
+        return (ArtifactTemplateId) tcId;
     }
 
     /**
