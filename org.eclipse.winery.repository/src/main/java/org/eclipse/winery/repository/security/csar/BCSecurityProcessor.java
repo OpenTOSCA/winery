@@ -319,6 +319,47 @@ public class BCSecurityProcessor implements SecurityProcessor {
         }
     }
 
+    @Override
+    public String signText(Key privateKey, String text) throws GenericSecurityProcessorException {
+        return signBytes(privateKey, text.getBytes(StandardCharsets.UTF_8));
+    }
+
+    @Override
+    public String signBytes(Key privateKey, byte[] text) throws GenericSecurityProcessorException {
+        try {
+            String algo = SupportedsSignatureAlgorithm.getDefaultOptionForAlgorithm(privateKey.getAlgorithm());
+            Signature privateSignature = Signature.getInstance(algo);
+            privateSignature.initSign((PrivateKey) privateKey);
+            privateSignature.update(text);
+
+            return Base64.encodeBase64String(privateSignature.sign());
+        } catch (SignatureException | InvalidKeyException | NoSuchAlgorithmException e) {
+            LOGGER.error("Error calculating hash", e);
+            throw new GenericSecurityProcessorException("Error signing the provided string");
+        }
+    }
+
+    @Override
+    public boolean verifyText(Certificate cert, String text, byte[] signature) throws GenericSecurityProcessorException {
+        return verifyBytes(cert, text.getBytes(StandardCharsets.UTF_8), signature);
+    }
+
+    @Override
+    public boolean verifyBytes(Certificate cert, byte[] text, byte[] signature) throws GenericSecurityProcessorException {
+        try {
+            PublicKey publicKey = cert.getPublicKey();
+            String algo = SupportedsSignatureAlgorithm.getDefaultOptionForAlgorithm(publicKey.getAlgorithm());
+            Signature publicSignature = Signature.getInstance(algo);
+            publicSignature.initVerify(publicKey);
+            publicSignature.update(text);
+
+            return publicSignature.verify(signature);
+        } catch (SignatureException | InvalidKeyException | NoSuchAlgorithmException e) {
+            LOGGER.error("Error calculating hash", e);
+            throw new GenericSecurityProcessorException("Error signing the provided string");
+        }
+    }
+
     public X500Name buildX500Name(DistinguishedName distinguishedName) throws GenericSecurityProcessorException {
         if (distinguishedName.isValid()) {
             Map<String, String> rdns = distinguishedName.getIdentityData();

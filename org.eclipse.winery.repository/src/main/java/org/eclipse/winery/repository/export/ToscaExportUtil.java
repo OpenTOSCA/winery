@@ -13,6 +13,7 @@
  *******************************************************************************/
 package org.eclipse.winery.repository.export;
 
+import org.apache.tika.mime.MediaType;
 import org.eclipse.winery.common.RepositoryFileReference;
 import org.eclipse.winery.common.Util;
 import org.eclipse.winery.common.ids.definitions.*;
@@ -28,7 +29,10 @@ import org.eclipse.winery.model.tosca.utils.ModelUtilities;
 import org.eclipse.winery.repository.JAXBSupport;
 import org.eclipse.winery.repository.backend.BackendUtils;
 import org.eclipse.winery.repository.backend.IRepository;
+import org.eclipse.winery.repository.backend.RepositoryFactory;
 import org.eclipse.winery.repository.backend.constants.Filename;
+import org.eclipse.winery.repository.backend.filebased.FilebasedRepository;
+import org.eclipse.winery.repository.configuration.Environment;
 import org.eclipse.winery.repository.datatypes.ids.elements.ArtifactTemplateFilesDirectoryId;
 import org.eclipse.winery.repository.datatypes.ids.elements.DirectoryId;
 import org.eclipse.winery.repository.datatypes.ids.elements.VisualAppearanceId;
@@ -36,6 +40,7 @@ import org.eclipse.winery.repository.exceptions.RepositoryCorruptException;
 import org.eclipse.winery.repository.security.csar.*;
 import org.eclipse.winery.repository.security.csar.exceptions.GenericKeystoreManagerException;
 import org.eclipse.winery.repository.security.csar.exceptions.GenericSecurityProcessorException;
+import org.eclipse.winery.repository.security.csar.support.SupportedDigestAlgorithm;
 import org.slf4j.ext.XLogger;
 import org.slf4j.ext.XLoggerFactory;
 import org.w3c.dom.Document;
@@ -47,6 +52,7 @@ import javax.xml.namespace.QName;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URI;
+import java.nio.file.Files;
 import java.security.Key;
 import java.util.*;
 
@@ -63,7 +69,10 @@ public class ToscaExportUtil {
     // the CSAR MANIFEST
     // this allows to use other paths in the CSAR than on the local storage
     private Map<RepositoryFileReference, String> referencesToPathInCSARMap = null;
-
+    
+    private SecurityProcessor securityProcessor = null;
+    private KeystoreManager keystoreManager = null;
+    
     /**
      * Currently a very simple approach to configure the export
      */
@@ -162,7 +171,7 @@ public class ToscaExportUtil {
                 if (!loc.startsWith("../")) {
                     LOGGER.warn("Location is not relative for id " + tcId.toReadableString());
                 }
-                ;
+                
                 loc = loc.substring(3);
                 loc = uri + loc;
                 // now the location is an absolute URL
@@ -255,6 +264,8 @@ public class ToscaExportUtil {
         // Enforce security policies for definitions
         if (this.exportConfiguration.containsKey(ExportProperties.APPLY_SECURITY_POLICIES.name()) &&
             (Boolean) this.exportConfiguration.get(ExportProperties.APPLY_SECURITY_POLICIES.name())) {
+            this.securityProcessor = new BCSecurityProcessor();
+            this.keystoreManager = new JCEKSKeystoreManager();            
             this.enforceSecurityPoliciesForProperties(repository, entryDefinitions, referencedDefinitionsChildIds);
         }
         
@@ -269,134 +280,340 @@ public class ToscaExportUtil {
     private void enforceSecurityPoliciesForProperties(IRepository repository, Definitions entryDefinitions, Collection<DefinitionsChildId> referencedDefinitionsChildIds) {
         for (TExtensibleElements element: entryDefinitions.getServiceTemplateOrNodeTypeOrNodeTypeImplementation()) {
             if (element instanceof TServiceTemplate) {
-                for (TNodeTemplate templ: ((TServiceTemplate) element).getTopologyTemplate().getNodeTemplates()) {
-                    NodeTypeId nTypeId = BackendUtils.getDefinitionsChildId(NodeTypeId.class, templ.getType());
-                    TEntityType nodeType = repository.getElement(nTypeId);
+                
+                //TODO
+                // entryDefinitions.getImport();
+                
+                TServiceTemplate serviceTemplate = (TServiceTemplate) element;
+                for (TNodeTemplate nodeTemplate: serviceTemplate.getTopologyTemplate().getNodeTemplates()) {
+                    enforcePropertyEncryption(repository, entryDefinitions, nodeTemplate, referencedDefinitionsChildIds);
+                    enforcePropertySigning(repository, entryDefinitions, nodeTemplate, referencedDefinitionsChildIds);                    
+                }
+            }
+        }
+    }
 
-                    if (Objects.nonNull(nodeType.getPolicies())) {
-                        KeystoreManager keystoreManager = new JCEKSKeystoreManager();
-                        SecurityProcessor securityProcessor = new BCSecurityProcessor();
-                        
-                        TPolicy encPolicy = nodeType.getPolicyByQName(QNames.WINERY_ENCRYPTION_POLICY_TYPE);
-                        TPolicy encPropsPolicy = nodeType.getPolicyByQName(QNames.WINERY_ENCRYPTEDPROP_POLICY_TYPE);
-                        
-                        if (Objects.nonNull(encPolicy) && Objects.nonNull(encPropsPolicy)) {
-                            PolicyTypeId encPolicyTypeId = BackendUtils.getDefinitionsChildId(PolicyTypeId.class, encPolicy.getPolicyType());
-                            PolicyTypeId encPropsPolicyTypeId = BackendUtils.getDefinitionsChildId(PolicyTypeId.class, encPropsPolicy.getPolicyType());
-                            referencedDefinitionsChildIds.add(encPolicyTypeId);
-                            referencedDefinitionsChildIds.add(encPropsPolicyTypeId);
-                            
-                            PolicyTemplateId encPolicyTemplateId = BackendUtils.getDefinitionsChildId(PolicyTemplateId.class, encPolicy.getPolicyRef());
-                            PolicyTemplateId encPropsPolicyTemplateId = BackendUtils.getDefinitionsChildId(PolicyTemplateId.class, encPropsPolicy.getPolicyRef());
-                            referencedDefinitionsChildIds.add(encPolicyTemplateId);
-                            referencedDefinitionsChildIds.add(encPropsPolicyTemplateId);
-                            
-                            TPolicyTemplate encPropsPolicyTemplate = repository.getElement(encPropsPolicyTemplateId);
-                            
-                            String keyAlias = encPolicy.getPolicyRef().getLocalPart();
-                            String props = encPropsPolicyTemplate.getProperties().getKVProperties().get(SecurityPolicyConstants.SEC_POL_PROPGROUPING_PROPERTY);
-                            
-                            if (keystoreManager.entityExists(keyAlias) && props.length() > 0) {
-                                int numPropsSecured = 0;
-                                try {
-                                    Key encryptionKey = keystoreManager.loadKey(keyAlias);
-                                    LinkedHashMap<String, String> templKVProperties = templ.getProperties().getKVProperties();
-                                    for (String p : Arrays.asList(props.split("\\s+"))) {
-                                        String encValue = securityProcessor.encryptString(encryptionKey, templKVProperties.get(p));
-                                        templKVProperties.replace(p, encValue);
-                                        numPropsSecured++;
-                                    }
-                                    templ.getProperties().setKVProperties(templKVProperties);
-                                    if (numPropsSecured > 0) {
-                                        encPolicy.setIsApplied(true);
-                                        if (templ.getPolicies() == null) {
-                                            templ.setPolicies(new TNodeTemplate.Policies());
-                                        }
-                                        templ.getPolicies().getPolicy().add(encPolicy);
-                                    }
+    private void enforcePropertySigning(IRepository repository, Definitions entryDefinitions, TNodeTemplate nodeTemplate, Collection<DefinitionsChildId> referencedDefinitionsChildIds) {
+        final NodeTypeId nTypeId = BackendUtils.getDefinitionsChildId(NodeTypeId.class, nodeTemplate.getType());
+        final TEntityType nodeType = repository.getElement(nTypeId);
+
+        if (Objects.nonNull(nodeType.getPolicies())) {
+            TPolicy signTypeLevelPolicy = nodeType.getPolicyByQName(QNames.WINERY_SIGNING_POLICY_TYPE);
+            TPolicy signTypeLevelPropsPolicy = nodeType.getPolicyByQName(QNames.WINERY_SIGNEDPROP_POLICY_TYPE);
+
+            TPolicy signTemplateLevelPolicy = nodeTemplate.getPolicyByQName(QNames.WINERY_SIGNING_POLICY_TYPE);
+            
+            if (Objects.nonNull(signTypeLevelPolicy) && Objects.nonNull(signTypeLevelPropsPolicy)) {
+                if (Objects.isNull(signTemplateLevelPolicy) || !signTemplateLevelPolicy.getIsApplied()) {
+                    
+                    PolicyTypeId signPolicyTypeId = BackendUtils.getDefinitionsChildId(PolicyTypeId.class, signTypeLevelPolicy.getPolicyType());
+                    PolicyTypeId signPropsPolicyTypeId = BackendUtils.getDefinitionsChildId(PolicyTypeId.class, signTypeLevelPropsPolicy.getPolicyType());
+                    referencedDefinitionsChildIds.add(signPolicyTypeId);
+                    referencedDefinitionsChildIds.add(signPropsPolicyTypeId);
+
+                    PolicyTemplateId signPolicyTemplateId = BackendUtils.getDefinitionsChildId(PolicyTemplateId.class, signTypeLevelPolicy.getPolicyRef());
+                    PolicyTemplateId signPropsPolicyTemplateId = BackendUtils.getDefinitionsChildId(PolicyTemplateId.class, signTypeLevelPropsPolicy.getPolicyRef());
+                    referencedDefinitionsChildIds.add(signPolicyTemplateId);
+                    referencedDefinitionsChildIds.add(signPropsPolicyTemplateId);
+
+                    Collection<TImport> imports = new ArrayList<>();
+                    this.addToImports(repository, signPolicyTypeId, imports);
+                    this.addToImports(repository, signPropsPolicyTypeId, imports);
+                    this.addToImports(repository, signPolicyTemplateId, imports);
+                    this.addToImports(repository, signPropsPolicyTemplateId, imports);
+                    
+                    TPolicyTemplate signPropsPolicyTemplate = repository.getElement(signPropsPolicyTemplateId);
+
+                    String keyAlias = signTypeLevelPolicy.getPolicyRef().getLocalPart();
+                    String spaceSeparatedPropertyNames = signPropsPolicyTemplate.getProperties().getKVProperties().get(SecurityPolicyConstants.SEC_POL_PROPGROUPING_PROPERTY);
+
+                    if (this.keystoreManager.entityExists(keyAlias)) {
+                        List<String> propertyNames = Arrays.asList(spaceSeparatedPropertyNames.split("\\s+"));
+
+                        if (propertyNames.size() > 0) {
+                            try {
+                                Key signingKey = this.keystoreManager.loadKey(keyAlias);
+
+                                // Generate Atempl and add it to referencedDefinitionsChildIds so that it's exported
+                                String signatureATName = generateSignatureArtifactTemplateName(nodeTemplate.getName(), signPropsPolicyTemplate.getName());
+                                ArtifactTemplateId signatureArtifactTemplateId = generateArtifactTemplate(repository, QNames.WINERY_SIGNATURE_ARTIFACT_TYPE, signatureATName, true);
+                                TArtifactTemplate signatureArtifactTemplate = repository.getElement(signatureArtifactTemplateId);
+                                ArtifactTypeId signatureArtifactTypeId = BackendUtils.getDefinitionsChildId(ArtifactTypeId.class, signatureArtifactTemplate.getType());
+
+                                String digestAlgorithm = SupportedDigestAlgorithm.SHA256.name();
+                                Map<String, String> artifactTemplateKVProperties = nodeTemplate.getProperties().getKVProperties();
+                                Map<String, String> propertiesDigests = calculatePropertiesDigests(digestAlgorithm, propertyNames, artifactTemplateKVProperties); 
+                                String signedPropertiesManifestContent = generateSignedPropertiesManifestContent(propertiesDigests, digestAlgorithm);
+
+                                if (!signedPropertiesManifestContent.isEmpty()) {
+                                    // generate Properties Digests Manifest
+                                    String manifestName = generateSignedPropertiesManifestName(signatureArtifactTemplate.getId());
+                                    RepositoryFileReference manifestPathRef = addFileToArtifactTemplate(signatureArtifactTemplateId, signatureArtifactTemplate, manifestName, signedPropertiesManifestContent);
+                                    String manifestPath = BackendUtils.getPathInsideRepo(manifestPathRef);
+                                    this.referencesToPathInCSARMap.put(manifestPathRef, manifestPath);
                                     
-                                } catch (GenericKeystoreManagerException | GenericSecurityProcessorException e) {
-                                    e.printStackTrace();
+                                    TDeploymentArtifacts dArtifacts = new TDeploymentArtifacts();
+                                    TDeploymentArtifact propsManifest = new TDeploymentArtifact.Builder("DA_".concat(manifestName), QNames.WINERY_SIGNATURE_ARTIFACT_TYPE)
+                                        .setArtifactRef(signatureArtifactTemplateId.getQName())
+                                        .build();
+                                    dArtifacts.getDeploymentArtifact().add(propsManifest);
+
+                                    // generate SF
+                                    byte[] manifestBytes = Files.readAllBytes(((FilebasedRepository) repository).ref2AbsolutePath(manifestPathRef)); 
+                                    String manifestDigest = this.securityProcessor.calculateDigest(manifestBytes, digestAlgorithm);
+                                    String signedPropertiesSignatureFileContent = generateSignedPropertiesSignatureFile(digestAlgorithm, manifestDigest, propertiesDigests);
+                                    String signedPropertiesSignatureFileName = generatePropertiesSignatureFileName(signatureArtifactTemplate.getId());
+                                    RepositoryFileReference signedPropertiesSignatureFileRef = addFileToArtifactTemplate(signatureArtifactTemplateId, signatureArtifactTemplate, signedPropertiesSignatureFileName, signedPropertiesSignatureFileContent);
+                                    String signedPropertiesSignatureFilePath = BackendUtils.getPathInsideRepo(signedPropertiesSignatureFileRef);
+                                    this.referencesToPathInCSARMap.put(signedPropertiesSignatureFileRef, signedPropertiesSignatureFilePath);
+
+                                    TDeploymentArtifact signedPropertiesSignatureFile = new TDeploymentArtifact.Builder("DA_".concat(signedPropertiesSignatureFileName), QNames.WINERY_SIGNATURE_ARTIFACT_TYPE)
+                                        .setArtifactRef(signatureArtifactTemplateId.getQName())
+                                        .build();
+                                    dArtifacts.getDeploymentArtifact().add(signedPropertiesSignatureFile);
+
+                                    // generate signature block file
+                                    byte[] signatureFileBytes = Files.readAllBytes(((FilebasedRepository) repository).ref2AbsolutePath(signedPropertiesSignatureFileRef));
+                                    String blockSignatureFileContent =  this.securityProcessor.signBytes(signingKey, signatureFileBytes);
+                                    String blockSignatureFileName = signatureArtifactTemplate.getId().concat(".").concat(signingKey.getAlgorithm());
+                                    RepositoryFileReference blockSignatureFileRef = addFileToArtifactTemplate(signatureArtifactTemplateId, signatureArtifactTemplate, blockSignatureFileName, blockSignatureFileContent);
+                                    String blockSignatureFilePath = BackendUtils.getPathInsideRepo(blockSignatureFileRef);
+                                    this.referencesToPathInCSARMap.put(blockSignatureFileRef, blockSignatureFilePath);
+
+                                    TDeploymentArtifact blockSignatureFile = new TDeploymentArtifact.Builder("DA_".concat(blockSignatureFileName), QNames.WINERY_SIGNATURE_ARTIFACT_TYPE)
+                                        .setArtifactRef(signatureArtifactTemplateId.getQName())
+                                        .build();
+                                    dArtifacts.getDeploymentArtifact().add(blockSignatureFile);
+                                    
+                                    // add all newly generated signature-related DAs to the Node Template
+                                    nodeTemplate.setDeploymentArtifacts(dArtifacts);
+
+                                    signTypeLevelPolicy.setIsApplied(true);
+                                    if (nodeTemplate.getPolicies() == null) {
+                                        nodeTemplate.setPolicies(new TNodeTemplate.Policies());
+                                    }
+                                    nodeTemplate.getPolicies().getPolicy().add(signTypeLevelPolicy);
+
                                 }
+
+                                referencedDefinitionsChildIds.add(signatureArtifactTypeId);
+                                referencedDefinitionsChildIds.add(signatureArtifactTemplateId);
+
+                                this.addToImports(repository, signatureArtifactTypeId, imports);
+                                this.addToImports(repository, signatureArtifactTemplateId, imports);
+                                entryDefinitions.getImport().addAll(imports);
+
+                            } catch (GenericKeystoreManagerException | GenericSecurityProcessorException | IOException e) {
+                                e.printStackTrace();
                             }
                         }
-
-                        TPolicy signPolicy = nodeType.getPolicyByQName(QNames.WINERY_SIGNING_POLICY_TYPE);
-                        TPolicy signPropsPolicy = nodeType.getPolicyByQName(QNames.WINERY_SIGNEDPROP_POLICY_TYPE);
-                        if (Objects.nonNull(signPolicy) && Objects.nonNull(signPropsPolicy)) {
-                            PolicyTemplateId signPropsPolicyTemplateId = BackendUtils.getDefinitionsChildId(PolicyTemplateId.class, signPropsPolicy.getPolicyRef());
-                            TPolicyTemplate signPropsPolicyTemplate = repository.getElement(signPropsPolicyTemplateId);
-
-                            String keyAlias = signPolicy.getPolicyRef().getLocalPart();
-                            String props = signPropsPolicyTemplate.getProperties().getKVProperties().get(SecurityPolicyConstants.SEC_POL_PROPGROUPING_PROPERTY);
-
-                            if (keystoreManager.entityExists(keyAlias) && props.length() > 0) {
-                                int numPropsSecured = 0;
-                                try {
-                                    Key signingKey = keystoreManager.loadKey(keyAlias);
-                                    LinkedHashMap<String, String> templKVProperties = templ.getProperties().getKVProperties();
-                                    
-                                    ArtifactTemplateId signatureArtifactTemplateId = generateSignatureArtifactTemplate(repository, templ.getName(), signPropsPolicyTemplate.getName());
-                                    TArtifactTemplate signatureArtifactTemplate = repository.getElement(signatureArtifactTemplateId);
-                                    referencedDefinitionsChildIds.add(signatureArtifactTemplateId);
-                                    
-                                    for (String p : Arrays.asList(props.split("\\s+"))) {
-                                        
-                                        numPropsSecured++;
-                                    }
-                                    
-                                    if (numPropsSecured > 0) {
-                                        signPolicy.setIsApplied(true);
-                                        if (templ.getPolicies() == null) {
-                                            templ.setPolicies(new TNodeTemplate.Policies());
-                                        }
-                                        templ.getPolicies().getPolicy().add(signPolicy);
-                                        TDeploymentArtifacts dArtifacts = new TDeploymentArtifacts();
-                                        
-                                        dArtifacts.getDeploymentArtifact().add(
-                                            new TDeploymentArtifact.Builder("DA_".concat(signatureArtifactTemplate.getName()), QNames.WINERY_SIGNATURE_ARTIFACT_TYPE)
-                                                .setArtifactRef(signatureArtifactTemplateId.getQName())
-                                                .build()
-                                        );
-                                        
-                                        templ.setDeploymentArtifacts(dArtifacts);
-                                    }
-
-                                } catch (GenericKeystoreManagerException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-
-                        }
-                        
                     }
                 }
             }
         }
     }
     
-    private ArtifactTemplateId generateSignatureArtifactTemplate(IRepository repository, String nodeTemplateName, String signedPropsPolicyName) {
-        String id = nodeTemplateName + "_" + signedPropsPolicyName;        
-        DefinitionsChildId tcId = BackendUtils.getDefinitionsChildId(ArtifactTemplateId.class, Namespaces.URI_OPENTOSCA_ARTIFACTTEMPLATE, id, false);
-
-        if (!repository.exists(tcId)) {
-            repository.flagAsExisting(tcId);
-            final Definitions definitions = repository.getDefinitions(tcId);
-            final TExtensibleElements element = definitions.getElement();
-            ((HasType) element).setType(QNames.WINERY_SIGNATURE_ARTIFACT_TYPE);
-            ((HasName) element).setName(id);
-            BackendUtils.initializeProperties(repository, (TEntityTemplate) element);
-
+    private Map<String, String> calculatePropertiesDigests(String digestAlgorithm, List<String> propertyNames, Map<String, String> artifactTemplateKVProperties) {
+        Map<String, String> propDiests = new HashMap<>();
+        String digest = null;
+        for (String p : propertyNames) {
             try {
-                BackendUtils.persist(tcId, definitions);
-            } catch (IOException e) {
+                digest = this.securityProcessor.calculateDigest(artifactTemplateKVProperties.get(p), digestAlgorithm);
+                propDiests.put(p, digest);
+            } catch (GenericSecurityProcessorException e) {
                 e.printStackTrace();
-            }
+            }            
         }
-        //referencedDefinitionsChildIds.add(ArtifactTemplateId)
-        return (ArtifactTemplateId) tcId;
+        return propDiests;
+    }
+    
+    private String generateSignedPropertiesManifestContent(Map<String, String> propertiesDigests, String digestAlgorithm) {
+        if (propertiesDigests.size() == 0) {
+            return "";
+        }
+        
+        StringBuilder sb = new StringBuilder();
+        sb.append("Signed-Properties-Manifest: 1.0");
+        sb.append(System.lineSeparator());
+        sb.append("Digest-Algorithm: ");
+        sb.append(digestAlgorithm);
+        sb.append(System.lineSeparator());
+        sb.append("Created-By: Winery ");
+        sb.append(Environment.getVersion());
+        sb.append(System.lineSeparator());
+
+        for (String p : propertiesDigests.keySet()) {
+            sb.append(System.lineSeparator());
+            sb.append("Name: ");
+            sb.append(p);
+            sb.append(System.lineSeparator());
+            sb.append("Digest: ");
+            sb.append(propertiesDigests.get(p));
+            sb.append(System.lineSeparator());
+        }
+        
+        return sb.toString();
     }
 
+    private String generateSignedPropertiesSignatureFile(String digestAlgorithm, String manifestDigest, Map<String, String> propsDigests) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Signature-Version: 1.0");
+        sb.append(System.lineSeparator());
+        sb.append("Digest-Algorithm: ");
+        sb.append(digestAlgorithm);
+        sb.append(System.lineSeparator());
+        sb.append("Digest-Manifest: ");
+        sb.append(manifestDigest);
+        sb.append(System.lineSeparator());
+        sb.append("Created-By: Winery ");
+        sb.append(Environment.getVersion());
+        sb.append(System.lineSeparator());
+        String digest;
+        for (String p : propsDigests.keySet()) {
+            try {
+                digest = this.securityProcessor.calculateDigest(propsDigests.get(p), digestAlgorithm);
+                sb.append(System.lineSeparator());
+                sb.append("Name: ");
+                sb.append(p);
+                sb.append(System.lineSeparator());
+                sb.append("Digest: ");
+                sb.append(digest);
+                sb.append(System.lineSeparator());
+            } catch (GenericSecurityProcessorException e) {
+                e.printStackTrace();
+            }            
+        }
+        
+        return sb.toString();
+    }
+
+    private void enforcePropertyEncryption(IRepository repository, Definitions entryDefinitions, TNodeTemplate nodeTemplate, Collection<DefinitionsChildId> referencedDefinitionsChildIds) {
+        final NodeTypeId nTypeId = BackendUtils.getDefinitionsChildId(NodeTypeId.class, nodeTemplate.getType());
+        final TEntityType nodeType = repository.getElement(nTypeId);
+
+        if (Objects.nonNull(nodeType.getPolicies())) {
+            
+            TPolicy encTypeLevelPolicy = nodeType.getPolicyByQName(QNames.WINERY_ENCRYPTION_POLICY_TYPE);
+            TPolicy encTypeLevelPropsPolicy = nodeType.getPolicyByQName(QNames.WINERY_ENCRYPTEDPROP_POLICY_TYPE);
+
+            TPolicy encTemplateLevelPolicy = nodeTemplate.getPolicyByQName(QNames.WINERY_ENCRYPTION_POLICY_TYPE);
+            
+            if (Objects.nonNull(encTypeLevelPolicy) && Objects.nonNull(encTypeLevelPropsPolicy)) {
+                if (Objects.isNull(encTemplateLevelPolicy) || !encTemplateLevelPolicy.getIsApplied()) {
+                    PolicyTypeId encPolicyTypeId = BackendUtils.getDefinitionsChildId(PolicyTypeId.class, encTypeLevelPolicy.getPolicyType());
+                    PolicyTypeId encPropsPolicyTypeId = BackendUtils.getDefinitionsChildId(PolicyTypeId.class, encTypeLevelPropsPolicy.getPolicyType());
+                    referencedDefinitionsChildIds.add(encPolicyTypeId);
+                    referencedDefinitionsChildIds.add(encPropsPolicyTypeId);
+
+                    PolicyTemplateId encPolicyTemplateId = BackendUtils.getDefinitionsChildId(PolicyTemplateId.class, encTypeLevelPolicy.getPolicyRef());
+                    PolicyTemplateId encPropsPolicyTemplateId = BackendUtils.getDefinitionsChildId(PolicyTemplateId.class, encTypeLevelPropsPolicy.getPolicyRef());
+                    referencedDefinitionsChildIds.add(encPolicyTemplateId);
+                    referencedDefinitionsChildIds.add(encPropsPolicyTemplateId);
+
+                    Collection<TImport> imports = new ArrayList<>();
+                    this.addToImports(repository, encPolicyTypeId, imports);
+                    this.addToImports(repository, encPropsPolicyTypeId, imports);
+                    this.addToImports(repository, encPolicyTemplateId, imports);
+                    this.addToImports(repository, encPropsPolicyTemplateId, imports);
+                    entryDefinitions.getImport().addAll(imports);
+                    
+                    TPolicyTemplate encPropsPolicyTemplate = repository.getElement(encPropsPolicyTemplateId);
+                    String keyAlias = encTypeLevelPolicy.getPolicyRef().getLocalPart();
+                    String props = encPropsPolicyTemplate.getProperties().getKVProperties().get(SecurityPolicyConstants.SEC_POL_PROPGROUPING_PROPERTY);
+
+                    if (this.keystoreManager.entityExists(keyAlias) && props.length() > 0) {
+                        int numPropsSecured = 0;
+                        try {
+                            Key encryptionKey = this.keystoreManager.loadKey(keyAlias);
+                            LinkedHashMap<String, String> templKVProperties = nodeTemplate.getProperties().getKVProperties();
+                            for (String p : Arrays.asList(props.split("\\s+"))) {
+                                String encValue = this.securityProcessor.encryptString(encryptionKey, templKVProperties.get(p));
+                                templKVProperties.replace(p, encValue);
+                                numPropsSecured++;
+                            }
+                            nodeTemplate.getProperties().setKVProperties(templKVProperties);
+                            if (numPropsSecured > 0) {
+                                encTypeLevelPolicy.setIsApplied(true);
+                                if (nodeTemplate.getPolicies() == null) {
+                                    nodeTemplate.setPolicies(new TNodeTemplate.Policies());
+                                }
+                                nodeTemplate.getPolicies().getPolicy().add(encTypeLevelPolicy);
+                            }
+
+                        } catch (GenericKeystoreManagerException | GenericSecurityProcessorException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }                
+            }
+        }
+    }
+    
+    private String generateSignatureArtifactTemplateName(String nodeTemplateName, String signedPropsPolicyName) {
+        return nodeTemplateName.concat("_").concat(signedPropsPolicyName);
+    }
+
+    private String generateSignedPropertiesManifestName(String fileName) {
+        return fileName.concat(SecurityPolicyConstants.ARTIFACT_SIGNPROP_MANIFEST_EXTENSION);
+    }
+
+    private String generatePropertiesSignatureFileName(String fileName) {
+        return fileName.concat(SecurityPolicyConstants.ARTIFACT_SIGNPROP_SF_EXTENSION);
+    }
+    
+    private ArtifactTemplateId generateArtifactTemplate(IRepository repository, QName artifactType, String id, boolean overwrite) {
+        ArtifactTemplateId atId = BackendUtils.getDefinitionsChildId(ArtifactTemplateId.class, Namespaces.URI_OPENTOSCA_ARTIFACTTEMPLATE, id, false);
+        try {
+            if (repository.exists(atId)) {
+                if (overwrite) {
+                    repository.forceDelete(atId);
+                }
+                else {
+                    return atId;
+                }
+            }
+            repository.flagAsExisting(atId);
+            final TArtifactTemplate artifactTemplate = repository.getElement(atId);
+            artifactTemplate.setType(artifactType);
+            artifactTemplate.setName(id);
+            BackendUtils.initializeProperties(repository, artifactTemplate);
+            BackendUtils.persist(atId, artifactTemplate);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return atId;
+    }
+    
+    private RepositoryFileReference addFileToArtifactTemplate(ArtifactTemplateId atId, TArtifactTemplate artifactTemplate, String name, String content) {
+        DirectoryId fileDir = new ArtifactTemplateFilesDirectoryId(atId);
+        
+        TArtifactTemplate.ArtifactReferences artifactReferences = new TArtifactTemplate.ArtifactReferences();
+        artifactTemplate.setArtifactReferences(artifactReferences);
+        List<TArtifactReference> artRefList = artifactReferences.getArtifactReference();
+
+        RepositoryFileReference ref = new RepositoryFileReference(fileDir, name);
+        String path = Util.getUrlPath(ref);
+
+        try {
+            RepositoryFactory.getRepository().putContentToFile(ref,content, MediaType.TEXT_PLAIN);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        TArtifactReference artRef = new TArtifactReference();
+        artRef.setReference(path);
+        artRefList.add(artRef);
+
+        try {
+            BackendUtils.persist(atId, artifactTemplate);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        
+        return ref;
+    }
+    
     /**
      * Prepares the given id for export. Mostly, the contained files are added to the CSAR.
      */

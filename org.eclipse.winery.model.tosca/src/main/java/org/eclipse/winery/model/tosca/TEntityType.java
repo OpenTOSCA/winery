@@ -19,7 +19,6 @@ import io.github.adr.embedded.ADR;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.winery.model.tosca.constants.Namespaces;
-import org.eclipse.winery.model.tosca.constants.QNames;
 import org.eclipse.winery.model.tosca.kvproperties.WinerysPropertiesDefinition;
 
 import javax.xml.bind.annotation.*;
@@ -340,7 +339,7 @@ public class TEntityType extends TExtensibleElements implements HasName, HasInhe
          * {@link TPolicy }
          */
         @NonNull
-        public List<TPolicy> getPolicies() {
+        public List<TPolicy> getPolicy() {
             if (policy == null) {
                 policy = new ArrayList<>();
             }
@@ -358,7 +357,10 @@ public class TEntityType extends TExtensibleElements implements HasName, HasInhe
      * @return possible object is {@link TPolicy}
      */
     public TPolicy getPolicyByQName(QName qname) {
-        for (TPolicy p : policies.getPolicies()) {
+        if (Objects.isNull(policies)) {
+            return null;
+        }        
+        for (TPolicy p : policies.getPolicy()) {
             if (qname.equals(p.getPolicyType())) {
                 return p;
             }

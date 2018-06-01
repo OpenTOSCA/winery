@@ -21,4 +21,6 @@ public class SecurityPolicyConstants {
     public static final String ENC_POL_KEYSIZE_PROPERTY = "keySize";
     public static final String SIGN_POL_CERT_PROPERTY = "certificateChain";
     
+    public static final String ARTIFACT_SIGNPROP_MANIFEST_EXTENSION = ".MF";
+    public static final String ARTIFACT_SIGNPROP_SF_EXTENSION = ".SF";
 }

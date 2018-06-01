@@ -279,6 +279,24 @@ public class TNodeTemplate extends RelationshipSourceOrTarget {
         }
     }
 
+    /**
+     * Gets the value of the first available matching policy if there is one.
+     *
+     * @return possible object is {@link TPolicy}
+     */
+    public TPolicy getPolicyByQName(QName qname) {
+        if (Objects.isNull(policies)) {
+            return null;
+        }
+        
+        for (TPolicy p : policies.getPolicy()) {
+            if (qname.equals(p.getPolicyType())) {
+                return p;
+            }
+        }
+        return null;
+    }
+
     @XmlAccessorType(XmlAccessType.FIELD)
     @XmlType(name = "", propOrder = {
         "requirement"

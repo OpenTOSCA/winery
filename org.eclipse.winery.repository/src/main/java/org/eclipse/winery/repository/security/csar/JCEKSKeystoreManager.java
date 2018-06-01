@@ -62,6 +62,7 @@ public class JCEKSKeystoreManager implements KeystoreManager {
     private void loadKeystore() {
         RepositoryFileReference keystoreRef = new RepositoryFileReference(new KeystoreId(), KEYSTORE_NAME);
         FilebasedRepository fr = (FilebasedRepository) RepositoryFactory.getRepository();
+        fr.flagAsExisting(keystoreRef.getParent());
         this.keystorePath = fr.ref2AbsolutePath(keystoreRef).toString();
         try {
             KeyStore keystore = KeyStore.getInstance(KEYSTORE_TYPE);
