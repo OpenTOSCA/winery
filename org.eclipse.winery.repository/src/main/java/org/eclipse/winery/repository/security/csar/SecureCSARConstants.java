@@ -14,7 +14,7 @@
 
 package org.eclipse.winery.repository.security.csar;
 
-public class SecurityPolicyConstants {
+public class SecureCSARConstants {
     public static final String SEC_POL_KEYHASH_PROPERTY = "keyHash";
     public static final String SEC_POL_PROPGROUPING_PROPERTY = "propertyNames";
     public static final String ENC_POL_ALGO_PROPERTY = "algorithm";
@@ -23,4 +23,7 @@ public class SecurityPolicyConstants {
     
     public static final String ARTIFACT_SIGNPROP_MANIFEST_EXTENSION = ".MF";
     public static final String ARTIFACT_SIGNPROP_SF_EXTENSION = ".SF";
+    
+    public static final String ACL_FILE_EXTENSION = ".properties";
+    public static final String ACL_FILE_HEADER = "partner policyId";
 }

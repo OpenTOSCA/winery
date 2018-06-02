@@ -325,7 +325,7 @@ public class ToscaExportUtil {
                     TPolicyTemplate signPropsPolicyTemplate = repository.getElement(signPropsPolicyTemplateId);
 
                     String keyAlias = signTypeLevelPolicy.getPolicyRef().getLocalPart();
-                    String spaceSeparatedPropertyNames = signPropsPolicyTemplate.getProperties().getKVProperties().get(SecurityPolicyConstants.SEC_POL_PROPGROUPING_PROPERTY);
+                    String spaceSeparatedPropertyNames = signPropsPolicyTemplate.getProperties().getKVProperties().get(SecureCSARConstants.SEC_POL_PROPGROUPING_PROPERTY);
 
                     if (this.keystoreManager.entityExists(keyAlias)) {
                         List<String> propertyNames = Arrays.asList(spaceSeparatedPropertyNames.split("\\s+"));
@@ -519,7 +519,7 @@ public class ToscaExportUtil {
                     
                     TPolicyTemplate encPropsPolicyTemplate = repository.getElement(encPropsPolicyTemplateId);
                     String keyAlias = encTypeLevelPolicy.getPolicyRef().getLocalPart();
-                    String props = encPropsPolicyTemplate.getProperties().getKVProperties().get(SecurityPolicyConstants.SEC_POL_PROPGROUPING_PROPERTY);
+                    String props = encPropsPolicyTemplate.getProperties().getKVProperties().get(SecureCSARConstants.SEC_POL_PROPGROUPING_PROPERTY);
 
                     if (this.keystoreManager.entityExists(keyAlias) && props.length() > 0) {
                         int numPropsSecured = 0;
@@ -554,11 +554,11 @@ public class ToscaExportUtil {
     }
 
     private String generateSignedPropertiesManifestName(String fileName) {
-        return fileName.concat(SecurityPolicyConstants.ARTIFACT_SIGNPROP_MANIFEST_EXTENSION);
+        return fileName.concat(SecureCSARConstants.ARTIFACT_SIGNPROP_MANIFEST_EXTENSION);
     }
 
     private String generatePropertiesSignatureFileName(String fileName) {
-        return fileName.concat(SecurityPolicyConstants.ARTIFACT_SIGNPROP_SF_EXTENSION);
+        return fileName.concat(SecureCSARConstants.ARTIFACT_SIGNPROP_SF_EXTENSION);
     }
     
     private ArtifactTemplateId generateArtifactTemplate(IRepository repository, QName artifactType, String id, boolean overwrite) {

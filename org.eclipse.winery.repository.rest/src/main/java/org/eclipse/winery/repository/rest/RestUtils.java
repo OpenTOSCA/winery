@@ -54,7 +54,7 @@ import org.eclipse.winery.repository.rest.resources.entitytemplates.policytempla
 import org.eclipse.winery.repository.rest.resources.entitytemplates.policytemplates.PolicyTemplatesResource;
 import org.eclipse.winery.repository.rest.resources.entitytypes.TopologyGraphElementEntityTypeResource;
 import org.eclipse.winery.repository.rest.resources.servicetemplates.ServiceTemplateResource;
-import org.eclipse.winery.repository.security.csar.SecurityPolicyConstants;
+import org.eclipse.winery.repository.security.csar.SecureCSARConstants;
 import org.eclipse.winery.repository.security.csar.datatypes.KeyEntityInformation;
 import org.eclipse.winery.repository.security.csar.datatypes.KeyPairInformation;
 import org.eclipse.winery.yaml.common.exception.MultiException;
@@ -539,21 +539,21 @@ public class RestUtils {
     
     public static PolicyTemplateId createEncryptionPolicyTemplate(QNameWithTypeApiData qNameApiData, KeyEntityInformation key) {
         Map<String, String> properties = new HashMap<>();
-        properties.put(SecurityPolicyConstants.SEC_POL_KEYHASH_PROPERTY, key.getAlias());
-        properties.put(SecurityPolicyConstants.ENC_POL_ALGO_PROPERTY, key.getAlgorithm());
-        properties.put(SecurityPolicyConstants.ENC_POL_KEYSIZE_PROPERTY, String.valueOf(key.getKeySizeInBits()));
+        properties.put(SecureCSARConstants.SEC_POL_KEYHASH_PROPERTY, key.getAlias());
+        properties.put(SecureCSARConstants.ENC_POL_ALGO_PROPERTY, key.getAlgorithm());
+        properties.put(SecureCSARConstants.ENC_POL_KEYSIZE_PROPERTY, String.valueOf(key.getKeySizeInBits()));
 
         return createSecurityPolicyTemplate(qNameApiData, properties);
     }
 
     public static PolicyTemplateId createSigningPolicyTemplate(QNameWithTypeApiData qNameApiData, KeyPairInformation kp) {
         Map<String, String> properties = new HashMap<>();
-        properties.put(SecurityPolicyConstants.SEC_POL_KEYHASH_PROPERTY, kp.getPrivateKey().getAlias());
-        properties.put(SecurityPolicyConstants.SIGN_POL_CERT_PROPERTY, kp.getCertificateChain());
+        properties.put(SecureCSARConstants.SEC_POL_KEYHASH_PROPERTY, kp.getPrivateKey().getAlias());
+        properties.put(SecureCSARConstants.SIGN_POL_CERT_PROPERTY, kp.getCertificateChain());
         
         return createSecurityPolicyTemplate(qNameApiData, properties);
     }
-
+    
     public static String getTagValue(TServiceTemplate serviceTemplate, String tagKey) {
         if (serviceTemplate.getTags() != null) {
             for (TTag tag : serviceTemplate.getTags().getTag()) {
