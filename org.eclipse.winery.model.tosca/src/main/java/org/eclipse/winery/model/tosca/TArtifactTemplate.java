@@ -112,6 +112,9 @@ public class TArtifactTemplate
      * @return possible object is {@link TPolicy}
      */
     public TPolicy getEncryptionPolicy() {
+        if (Objects.isNull(policies)) {
+            return null;
+        }
         for (TPolicy p : policies.getPolicies()) {
             if (QNames.WINERY_ENCRYPTION_POLICY_TYPE.equals(p.getPolicyType())) {
                 return p;
@@ -126,6 +129,9 @@ public class TArtifactTemplate
      * @return possible object is {@link TPolicy}
      */
     public TPolicy getSigningPolicy() {
+        if (Objects.isNull(policies)) {
+            return null;
+        }
         for (TPolicy p : policies.getPolicies()) {
             if (QNames.WINERY_SIGNING_POLICY_TYPE.equals(p.getPolicyType())) {
                 return p;

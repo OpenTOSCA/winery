@@ -266,7 +266,8 @@ public class ToscaExportUtil {
             (Boolean) this.exportConfiguration.get(ExportProperties.APPLY_SECURITY_POLICIES.name())) {
             this.securityProcessor = new BCSecurityProcessor();
             this.keystoreManager = new JCEKSKeystoreManager();            
-            this.enforceSecurityPoliciesForProperties(repository, entryDefinitions, referencedDefinitionsChildIds);
+            this.enforceSecurityPoliciesForProperties(repository, tcId, entryDefinitions, referencedDefinitionsChildIds);
+            
         }
         
         // references to files are already contained here
@@ -277,13 +278,9 @@ public class ToscaExportUtil {
         return referencedDefinitionsChildIds;
     }
     
-    private void enforceSecurityPoliciesForProperties(IRepository repository, Definitions entryDefinitions, Collection<DefinitionsChildId> referencedDefinitionsChildIds) {
+    private void enforceSecurityPoliciesForProperties(IRepository repository, DefinitionsChildId tcId, Definitions entryDefinitions, Collection<DefinitionsChildId> referencedDefinitionsChildIds) {
         for (TExtensibleElements element: entryDefinitions.getServiceTemplateOrNodeTypeOrNodeTypeImplementation()) {
             if (element instanceof TServiceTemplate) {
-                
-                //TODO
-                // entryDefinitions.getImport();
-                
                 TServiceTemplate serviceTemplate = (TServiceTemplate) element;
                 for (TNodeTemplate nodeTemplate: serviceTemplate.getTopologyTemplate().getNodeTemplates()) {
                     enforcePropertyEncryption(repository, entryDefinitions, nodeTemplate, referencedDefinitionsChildIds);
@@ -291,8 +288,92 @@ public class ToscaExportUtil {
                 }
             }
         }
+        for (TArtifactTemplate element: entryDefinitions.getArtifactTemplates()) {
+            enforceArtifactsSigning(repository, (ArtifactTemplateId) tcId, entryDefinitions, element, referencedDefinitionsChildIds);
+            enforceArtifactsEncryption(repository, (ArtifactTemplateId) tcId, entryDefinitions, element, referencedDefinitionsChildIds);
+        }
+        
     }
 
+    private void enforceArtifactsEncryption(IRepository repository, ArtifactTemplateId tcId, Definitions entryDefinitions, TArtifactTemplate artifactTemplate, Collection<DefinitionsChildId> referencedDefinitionsChildIds) {
+        final TPolicy encPolicy = artifactTemplate.getEncryptionPolicy();
+        DirectoryId fileDir = new ArtifactTemplateFilesDirectoryId(tcId);
+        SortedSet<RepositoryFileReference> files = RepositoryFactory.getRepository().getContainedFiles(fileDir);
+
+        if (Objects.nonNull(encPolicy)) {
+            PolicyTypeId encPolicyTypeId = BackendUtils.getDefinitionsChildId(PolicyTypeId.class, encPolicy.getPolicyType());
+            referencedDefinitionsChildIds.add(encPolicyTypeId);
+            PolicyTemplateId encPolicyTemplateId = BackendUtils.getDefinitionsChildId(PolicyTemplateId.class, encPolicy.getPolicyRef());
+            referencedDefinitionsChildIds.add(encPolicyTemplateId);
+
+            Collection<TImport> imports = new ArrayList<>();
+            this.addToImports(repository, encPolicyTypeId, imports);
+            this.addToImports(repository, encPolicyTemplateId, imports);
+            entryDefinitions.getImport().addAll(imports);
+
+            TArtifactTemplate.ArtifactReferences refs = artifactTemplate.getArtifactReferences();
+
+            if (Objects.nonNull(refs) && refs.getArtifactReference().size() > 0) {
+                String keyAlias = encPolicy.getPolicyRef().getLocalPart();
+                try {
+                    Key encryptionKey = this.keystoreManager.loadKey(keyAlias);
+                    for (RepositoryFileReference fileRef : files) {
+                        byte[] signatureFileBytes = Files.readAllBytes(((FilebasedRepository) repository).ref2AbsolutePath(fileRef));
+                        
+
+                        artifactTemplate.getSigningPolicy().setIsApplied(true);
+
+                    }
+                } catch (GenericKeystoreManagerException | IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        
+    }
+
+    private void enforceArtifactsSigning(IRepository repository, ArtifactTemplateId tcId, Definitions entryDefinitions, TArtifactTemplate artifactTemplate, Collection<DefinitionsChildId> referencedDefinitionsChildIds) {
+        final TPolicy signingPolicy = artifactTemplate.getSigningPolicy();
+        
+        DirectoryId fileDir = new ArtifactTemplateFilesDirectoryId(tcId);
+        SortedSet<RepositoryFileReference> files = RepositoryFactory.getRepository().getContainedFiles(fileDir);
+        
+        if (Objects.nonNull(signingPolicy)) {
+            PolicyTypeId signPolicyTypeId = BackendUtils.getDefinitionsChildId(PolicyTypeId.class, signingPolicy.getPolicyType());
+            referencedDefinitionsChildIds.add(signPolicyTypeId);
+            PolicyTemplateId signPolicyTemplateId = BackendUtils.getDefinitionsChildId(PolicyTemplateId.class, signingPolicy.getPolicyRef());
+            referencedDefinitionsChildIds.add(signPolicyTemplateId);
+
+            Collection<TImport> imports = new ArrayList<>();
+            this.addToImports(repository, signPolicyTypeId, imports);
+            this.addToImports(repository, signPolicyTemplateId, imports);
+            entryDefinitions.getImport().addAll(imports);
+
+            TArtifactTemplate.ArtifactReferences refs = artifactTemplate.getArtifactReferences();
+            
+            if (Objects.nonNull(refs) && refs.getArtifactReference().size() > 0) {
+                String keyAlias = signingPolicy.getPolicyRef().getLocalPart();
+                try {
+                    Key signingKey = this.keystoreManager.loadKey(keyAlias);
+                    for (RepositoryFileReference fileRef : files) {
+                        byte[] signatureFileBytes = Files.readAllBytes(((FilebasedRepository) repository).ref2AbsolutePath(fileRef));
+                        String blockSignatureFileContent =  this.securityProcessor.signBytes(signingKey, signatureFileBytes);
+                        // generate signature block file                
+                        String blockSignatureFileName = fileRef.getFileName().concat(".").concat(signingKey.getAlgorithm());
+                        RepositoryFileReference blockSignatureFileRef = addFileToArtifactTemplate(tcId, artifactTemplate, blockSignatureFileName, blockSignatureFileContent);
+                        String blockSignatureFilePath = BackendUtils.getPathInsideRepo(blockSignatureFileRef);
+                        this.referencesToPathInCSARMap.put(blockSignatureFileRef, blockSignatureFilePath);
+
+                        artifactTemplate.getSigningPolicy().setIsApplied(true);
+                        
+                    }
+                } catch (GenericKeystoreManagerException | IOException | GenericSecurityProcessorException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+    
     private void enforcePropertySigning(IRepository repository, Definitions entryDefinitions, TNodeTemplate nodeTemplate, Collection<DefinitionsChildId> referencedDefinitionsChildIds) {
         final NodeTypeId nTypeId = BackendUtils.getDefinitionsChildId(NodeTypeId.class, nodeTemplate.getType());
         final TEntityType nodeType = repository.getElement(nTypeId);
@@ -321,7 +402,7 @@ public class ToscaExportUtil {
                     this.addToImports(repository, signPropsPolicyTypeId, imports);
                     this.addToImports(repository, signPolicyTemplateId, imports);
                     this.addToImports(repository, signPropsPolicyTemplateId, imports);
-                    
+
                     TPolicyTemplate signPropsPolicyTemplate = repository.getElement(signPropsPolicyTemplateId);
 
                     String keyAlias = signTypeLevelPolicy.getPolicyRef().getLocalPart();
@@ -352,11 +433,14 @@ public class ToscaExportUtil {
                                     String manifestPath = BackendUtils.getPathInsideRepo(manifestPathRef);
                                     this.referencesToPathInCSARMap.put(manifestPathRef, manifestPath);
                                     
-                                    TDeploymentArtifacts dArtifacts = new TDeploymentArtifacts();
+                                    if (Objects.isNull(nodeTemplate.getDeploymentArtifacts())) {
+                                        nodeTemplate.setDeploymentArtifacts(new TDeploymentArtifacts());
+                                    }
+
                                     TDeploymentArtifact propsManifest = new TDeploymentArtifact.Builder("DA_".concat(manifestName), QNames.WINERY_SIGNATURE_ARTIFACT_TYPE)
                                         .setArtifactRef(signatureArtifactTemplateId.getQName())
                                         .build();
-                                    dArtifacts.getDeploymentArtifact().add(propsManifest);
+                                    nodeTemplate.getDeploymentArtifacts().getDeploymentArtifact().add(propsManifest);
 
                                     // generate SF
                                     byte[] manifestBytes = Files.readAllBytes(((FilebasedRepository) repository).ref2AbsolutePath(manifestPathRef)); 
@@ -370,7 +454,7 @@ public class ToscaExportUtil {
                                     TDeploymentArtifact signedPropertiesSignatureFile = new TDeploymentArtifact.Builder("DA_".concat(signedPropertiesSignatureFileName), QNames.WINERY_SIGNATURE_ARTIFACT_TYPE)
                                         .setArtifactRef(signatureArtifactTemplateId.getQName())
                                         .build();
-                                    dArtifacts.getDeploymentArtifact().add(signedPropertiesSignatureFile);
+                                    nodeTemplate.getDeploymentArtifacts().getDeploymentArtifact().add(signedPropertiesSignatureFile);
 
                                     // generate signature block file
                                     byte[] signatureFileBytes = Files.readAllBytes(((FilebasedRepository) repository).ref2AbsolutePath(signedPropertiesSignatureFileRef));
@@ -383,11 +467,8 @@ public class ToscaExportUtil {
                                     TDeploymentArtifact blockSignatureFile = new TDeploymentArtifact.Builder("DA_".concat(blockSignatureFileName), QNames.WINERY_SIGNATURE_ARTIFACT_TYPE)
                                         .setArtifactRef(signatureArtifactTemplateId.getQName())
                                         .build();
-                                    dArtifacts.getDeploymentArtifact().add(blockSignatureFile);
+                                    nodeTemplate.getDeploymentArtifacts().getDeploymentArtifact().add(blockSignatureFile);
                                     
-                                    // add all newly generated signature-related DAs to the Node Template
-                                    nodeTemplate.setDeploymentArtifacts(dArtifacts);
-
                                     signTypeLevelPolicy.setIsApplied(true);
                                     if (nodeTemplate.getPolicies() == null) {
                                         nodeTemplate.setPolicies(new TNodeTemplate.Policies());
@@ -588,9 +669,10 @@ public class ToscaExportUtil {
     private RepositoryFileReference addFileToArtifactTemplate(ArtifactTemplateId atId, TArtifactTemplate artifactTemplate, String name, String content) {
         DirectoryId fileDir = new ArtifactTemplateFilesDirectoryId(atId);
         
-        TArtifactTemplate.ArtifactReferences artifactReferences = new TArtifactTemplate.ArtifactReferences();
-        artifactTemplate.setArtifactReferences(artifactReferences);
-        List<TArtifactReference> artRefList = artifactReferences.getArtifactReference();
+        if (Objects.isNull(artifactTemplate.getArtifactReferences())) {
+            artifactTemplate.setArtifactReferences(new TArtifactTemplate.ArtifactReferences());
+        }
+        List<TArtifactReference> artRefList = artifactTemplate.getArtifactReferences().getArtifactReference();
 
         RepositoryFileReference ref = new RepositoryFileReference(fileDir, name);
         String path = Util.getUrlPath(ref);
