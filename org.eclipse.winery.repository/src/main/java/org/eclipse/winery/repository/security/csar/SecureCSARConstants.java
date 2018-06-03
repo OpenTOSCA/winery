@@ -25,5 +25,7 @@ public class SecureCSARConstants {
     public static final String ARTIFACT_SIGNPROP_SF_EXTENSION = ".SF";
     
     public static final String ACL_FILE_EXTENSION = ".properties";
-    public static final String ACL_FILE_HEADER = "partner policyId";
+    
+    public static final String ARTIFACT_SIGN_MODE_PLAIN = "#PLAIN#";
+    public static final String ARTIFACT_SIGN_MODE_ENCRYPTED = "#ENCRYPTED#";
 }
