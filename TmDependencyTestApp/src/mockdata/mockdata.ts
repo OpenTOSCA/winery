@@ -1,5 +1,3 @@
-import {TTopologyTemplate} from "@winery/topologymodeler/ttopology-template";
-
 export const visuals = [{
   "color": "#1ec453",
   "nodeTypeId": "{http://www.winery.opentosca.org/test/targetallocation/nodetypes}LargeStall_-w1-wip1"
