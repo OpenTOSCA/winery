@@ -267,7 +267,7 @@ public class ToscaExportUtil {
             (Boolean) this.exportConfiguration.get(ExportProperties.APPLY_SECURITY_POLICIES.name())) {
             this.securityProcessor = new BCSecurityProcessor();
             this.keystoreManager = new JCEKSKeystoreManager();            
-            this.enforceSecurityPoliciesForProperties(repository, tcId, entryDefinitions, referencedDefinitionsChildIds);
+            this.enforceSecurityPolicies(repository, tcId, entryDefinitions, referencedDefinitionsChildIds);
             
         }
         
@@ -279,7 +279,7 @@ public class ToscaExportUtil {
         return referencedDefinitionsChildIds;
     }
     
-    private void enforceSecurityPoliciesForProperties(IRepository repository, DefinitionsChildId tcId, Definitions entryDefinitions, Collection<DefinitionsChildId> referencedDefinitionsChildIds) {
+    private void enforceSecurityPolicies(IRepository repository, DefinitionsChildId tcId, Definitions entryDefinitions, Collection<DefinitionsChildId> referencedDefinitionsChildIds) {
         for (TExtensibleElements element: entryDefinitions.getServiceTemplateOrNodeTypeOrNodeTypeImplementation()) {
             if (element instanceof TServiceTemplate) {
                 TServiceTemplate serviceTemplate = (TServiceTemplate) element;
@@ -290,54 +290,13 @@ public class ToscaExportUtil {
             }
         }
         for (TArtifactTemplate element: entryDefinitions.getArtifactTemplates()) {
-            enforceArtifactsSigning(repository, (ArtifactTemplateId) tcId, entryDefinitions, element, referencedDefinitionsChildIds, SecureCSARConstants.ARTIFACT_SIGN_MODE_PLAIN);
-            enforceArtifactsEncryption(repository, (ArtifactTemplateId) tcId, entryDefinitions, element, referencedDefinitionsChildIds);
-            enforceArtifactsSigning(repository, (ArtifactTemplateId) tcId, entryDefinitions, element, referencedDefinitionsChildIds, SecureCSARConstants.ARTIFACT_SIGN_MODE_ENCRYPTED);
+            enforceArtifactsSigningAndEncryption(repository, (ArtifactTemplateId) tcId, entryDefinitions, element, referencedDefinitionsChildIds);
         }        
     }
 
-    private void enforceArtifactsEncryption(IRepository repository, ArtifactTemplateId tcId, Definitions entryDefinitions, TArtifactTemplate artifactTemplate, Collection<DefinitionsChildId> referencedDefinitionsChildIds) {
-        final TPolicy encPolicy = artifactTemplate.getEncryptionPolicy();
-        DirectoryId fileDir = new ArtifactTemplateFilesDirectoryId(tcId);
-        SortedSet<RepositoryFileReference> files = RepositoryFactory.getRepository().getContainedFiles(fileDir);
-
-        if (Objects.nonNull(encPolicy) && !encPolicy.getIsApplied()) {
-            PolicyTypeId encPolicyTypeId = BackendUtils.getDefinitionsChildId(PolicyTypeId.class, encPolicy.getPolicyType());
-            referencedDefinitionsChildIds.add(encPolicyTypeId);
-            PolicyTemplateId encPolicyTemplateId = BackendUtils.getDefinitionsChildId(PolicyTemplateId.class, encPolicy.getPolicyRef());
-            referencedDefinitionsChildIds.add(encPolicyTemplateId);
-
-            Collection<TImport> imports = new ArrayList<>();
-            this.addToImports(repository, encPolicyTypeId, imports);
-            this.addToImports(repository, encPolicyTemplateId, imports);
-            entryDefinitions.getImport().addAll(imports);
-
-            TArtifactTemplate.ArtifactReferences refs = artifactTemplate.getArtifactReferences();
-
-            if (Objects.nonNull(refs) && refs.getArtifactReference().size() > 0) {
-                String keyAlias = encPolicy.getPolicyRef().getLocalPart();
-                try {
-                    Key encryptionKey = this.keystoreManager.loadKey(keyAlias);
-                    for (RepositoryFileReference fileRef : files) {
-                        Path p = ((FilebasedRepository) repository).ref2AbsolutePath(fileRef);
-                        byte[] fileBytes = Files.readAllBytes(p);
-                        byte[] encryptedFileBytes = this.securityProcessor.encryptByteArray(encryptionKey, fileBytes);
-                        // side-effect: file in the repository is encrypted now
-                        Files.write(p, encryptedFileBytes);
-                        
-                        artifactTemplate.getEncryptionPolicy().setIsApplied(true);
-
-                    }
-                } catch (GenericKeystoreManagerException | IOException | GenericSecurityProcessorException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-        
-    }
-
-    private void enforceArtifactsSigning(IRepository repository, ArtifactTemplateId tcId, Definitions entryDefinitions, TArtifactTemplate artifactTemplate, Collection<DefinitionsChildId> referencedDefinitionsChildIds, String mode) {
+    private void enforceArtifactsSigningAndEncryption(IRepository repository, ArtifactTemplateId tcId, Definitions entryDefinitions, TArtifactTemplate artifactTemplate, Collection<DefinitionsChildId> referencedDefinitionsChildIds) {
         final TPolicy signingPolicy = artifactTemplate.getSigningPolicy();
+        final TPolicy encPolicy = artifactTemplate.getEncryptionPolicy();
         
         DirectoryId fileDir = new ArtifactTemplateFilesDirectoryId(tcId);
         SortedSet<RepositoryFileReference> files = RepositoryFactory.getRepository().getContainedFiles(fileDir);
@@ -356,26 +315,73 @@ public class ToscaExportUtil {
             TArtifactTemplate.ArtifactReferences refs = artifactTemplate.getArtifactReferences();
             
             if (Objects.nonNull(refs) && refs.getArtifactReference().size() > 0) {
-                String keyAlias = signingPolicy.getPolicyRef().getLocalPart();
+                String signingKeyAlias = signingPolicy.getPolicyRef().getLocalPart();
                 try {
-                    Key signingKey = this.keystoreManager.loadKey(keyAlias);
-                    for (RepositoryFileReference fileRef : files) {
-                        if (!fileRef.getFileName().contains(mode)) {
-                            byte[] fileBytes = Files.readAllBytes(((FilebasedRepository) repository).ref2AbsolutePath(fileRef));
-                            String blockSignatureFileContent =  this.securityProcessor.signBytes(signingKey, fileBytes);
-                            // generate signature block file                
-                            String blockSignatureFileName = fileRef.getFileName().concat(mode).concat(signingKey.getAlgorithm());
-                            RepositoryFileReference blockSignatureFileRef = addFileToArtifactTemplate(tcId, artifactTemplate, blockSignatureFileName, blockSignatureFileContent);
-                            String blockSignatureFilePath = BackendUtils.getPathInsideRepo(blockSignatureFileRef);
-                            this.referencesToPathInCSARMap.put(blockSignatureFileRef, blockSignatureFilePath);
+                    Key signingKey = this.keystoreManager.loadKey(signingKeyAlias);
+                    signFilesOfArtifactTemplate(repository, tcId, artifactTemplate, signingKey, files, SecureCSARConstants.ARTIFACT_SIGN_MODE_PLAIN);
 
-                            artifactTemplate.getSigningPolicy().setIsApplied(true);
-                        }                        
+                    if (Objects.nonNull(encPolicy) && !encPolicy.getIsApplied()) {
+                        String ecnryptionKeyAlias = encPolicy.getPolicyRef().getLocalPart();
+                        Key encryptionKey = this.keystoreManager.loadKey(ecnryptionKeyAlias);
+                        encryptFilesOfArtifactTemplate(repository, artifactTemplate, encryptionKey, files);
+                        // Sign encrypted artifact as well
+                        signFilesOfArtifactTemplate(repository, tcId, artifactTemplate, signingKey, files, SecureCSARConstants.ARTIFACT_SIGN_MODE_ENCRYPTED);
                     }
-                } catch (GenericKeystoreManagerException | IOException | GenericSecurityProcessorException e) {
+                    
+                } catch (GenericKeystoreManagerException e) {
                     e.printStackTrace();
                 }
             }
+        }
+        else {
+            if (Objects.nonNull(encPolicy) && !encPolicy.getIsApplied()) {
+                try {
+                    String ecnryptionKeyAlias = encPolicy.getPolicyRef().getLocalPart();
+                    Key encryptionKey = this.keystoreManager.loadKey(ecnryptionKeyAlias);
+                    encryptFilesOfArtifactTemplate(repository, artifactTemplate, encryptionKey, files);
+                } catch (GenericKeystoreManagerException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+    
+    private void signFilesOfArtifactTemplate(IRepository repository, ArtifactTemplateId tcId, TArtifactTemplate artifactTemplate, Key signingKey, Set<RepositoryFileReference> files, String mode) {
+        try {
+            for (RepositoryFileReference fileRef : files) {
+                System.out.println(fileRef.getFileName());
+                if (!fileRef.getFileName().contains(SecureCSARConstants.ARTIFACT_SIGN_MODE_PLAIN) || !fileRef.getFileName().contains(SecureCSARConstants.ARTIFACT_SIGN_MODE_ENCRYPTED)) {
+                    byte[] fileBytes = Files.readAllBytes(((FilebasedRepository) repository).ref2AbsolutePath(fileRef));
+                    String blockSignatureFileContent = this.securityProcessor.signBytes(signingKey, fileBytes);
+                    // generate signature block file                
+                    String blockSignatureFileName = fileRef.getFileName().concat(mode).concat(signingKey.getAlgorithm());
+                    RepositoryFileReference blockSignatureFileRef = addFileToArtifactTemplate(tcId, artifactTemplate, blockSignatureFileName, blockSignatureFileContent);
+                    String blockSignatureFilePath = BackendUtils.getPathInsideRepo(blockSignatureFileRef);
+                    this.referencesToPathInCSARMap.put(blockSignatureFileRef, blockSignatureFilePath);
+
+                    artifactTemplate.getSigningPolicy().setIsApplied(true);
+                }
+            }
+        } catch ( IOException | GenericSecurityProcessorException e) {
+            e.printStackTrace();
+        }        
+    }
+
+    private void encryptFilesOfArtifactTemplate(IRepository repository, TArtifactTemplate artifactTemplate, Key encryptionKey, Set<RepositoryFileReference> files) {
+        try {
+            for (RepositoryFileReference fileRef : files) {
+                if (!fileRef.getFileName().contains(SecureCSARConstants.ARTIFACT_SIGN_MODE_PLAIN) || !fileRef.getFileName().contains(SecureCSARConstants.ARTIFACT_SIGN_MODE_ENCRYPTED)) {
+                    Path p = ((FilebasedRepository) repository).ref2AbsolutePath(fileRef);
+                    byte[] fileBytes = Files.readAllBytes(p);
+                    byte[] encryptedFileBytes = this.securityProcessor.encryptByteArray(encryptionKey, fileBytes);
+                    // side-effect: file in the repository is encrypted now
+                    Files.write(p, encryptedFileBytes);
+
+                    artifactTemplate.getEncryptionPolicy().setIsApplied(true);
+                }
+            }
+        } catch ( IOException | GenericSecurityProcessorException e) {
+            e.printStackTrace();
         }
     }
     
