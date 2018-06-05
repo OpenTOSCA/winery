@@ -20,6 +20,7 @@ import { Router } from '@angular/router';
 import { EntityService } from './entity.service';
 import { ToscaTypes } from '../../wineryInterfaces/enums';
 import { WineryNotificationService } from '../../wineryNotificationModule/wineryNotification.service';
+import { TargetAllocationComponent } from '../../wineryTargetAllocation/targetAllocation.component';
 
 @Component({
     selector: 'winery-entity',
@@ -37,12 +38,14 @@ export class EntityComponent implements OnInit {
     @Input() maxWidth: number;
     @Output() deleted = new EventEmitter<string>();
 
+    @ViewChild('targetAllocationModal') targetAllocationModal: TargetAllocationComponent;
     @ViewChild('confirmDeleteModal') confirmDeleteModal: ModalDirective;
 
     imageUrl: string;
     backendLink: string;
     editButtonToolTip = 'Edit.';
     showButtons = true;
+    showTargetAllocationButton: boolean;
     containerSizeClass: string;
 
     constructor(private existService: ExistService, private router: Router,
@@ -72,6 +75,7 @@ export class EntityComponent implements OnInit {
         }
 
         this.showButtons = this.toscaType !== ToscaTypes.Imports;
+        this.showTargetAllocationButton = this.toscaType === ToscaTypes.ServiceTemplate;
 
         if (this.maxWidth === 380) {
             this.containerSizeClass = 'smallContainer';
@@ -94,6 +98,11 @@ export class EntityComponent implements OnInit {
             url += '/' + this.data.id;
         }
         this.router.navigateByUrl(url);
+    }
+
+    targetAllocation(event: MouseEvent) {
+        event.stopPropagation();
+        this.targetAllocationModal.showModal(this.backendLink);
     }
 
     exportComponent(event: MouseEvent) {

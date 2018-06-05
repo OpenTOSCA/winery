@@ -31,6 +31,7 @@ import { WineryPipesModule } from '../wineryPipes/wineryPipes.module';
 import { XaasPackagerComponent } from './xaasPackager/xaasPackager.component';
 import { TagInputModule } from 'ngx-chips';
 import { WineryAddModule } from '../wineryAddComponentModule/addComponent.moudle';
+import { TargetAllocationModule } from '../wineryTargetAllocation/targetAllocation.module';
 import { EntityComponent } from './entityContainer/entity.component';
 
 @NgModule({
@@ -50,6 +51,7 @@ import { EntityComponent } from './entityContainer/entity.component';
         WineryPipesModule,
         TagInputModule,
         WineryAddModule,
+        TargetAllocationModule
     ],
     exports: [SectionComponent],
     declarations: [

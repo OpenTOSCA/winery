@@ -44,6 +44,8 @@ import org.eclipse.winery.repository.rest.RestUtils;
 import org.eclipse.winery.repository.rest.resources._support.dataadapter.composeadapter.CompositionData;
 import org.eclipse.winery.repository.rest.resources.servicetemplates.ServiceTemplateResource;
 import org.eclipse.winery.repository.splitting.Splitting;
+import org.eclipse.winery.repository.targetallocation.Allocation;
+import org.eclipse.winery.repository.targetallocation.util.AllocationRequest;
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource.Builder;
@@ -216,7 +218,7 @@ public class TopologyTemplateResource {
         "getTopologyTemplate(QName)} consumes this template</p>" +
         "<p>@return The XML representation of the topology template <em>without</em>" +
         "associated artifacts and without the parent service template </p>")
-    @Produces({MediaType.APPLICATION_XML, MediaType.TEXT_XML})
+    @Produces( {MediaType.APPLICATION_XML, MediaType.TEXT_XML})
     // @formatter:on
     public Response getComponentInstanceXML() {
         return RestUtils.getXML(TTopologyTemplate.class, this.topologyTemplate);
@@ -252,10 +254,29 @@ public class TopologyTemplateResource {
         return Response.created(url).build();
     }
 
+    @Path("allocate/")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @POST
+    public Response allocate(@Context UriInfo uriInfo, AllocationRequest allocationRequest) {
+        try {
+            Allocation allocation = new Allocation(allocationRequest);
+            List<ServiceTemplateId> allocatedIds = allocation.allocate((ServiceTemplateId) this.serviceTemplateRes.getId());
+            List<URI> urls = new ArrayList<>();
+            for (ServiceTemplateId id : allocatedIds) {
+                urls.add(uriInfo.getBaseUri().resolve(RestUtils.getAbsoluteURL(id)));
+            }
+            return Response.ok(urls, MediaType.APPLICATION_JSON).build();
+        } catch (Exception e) {
+            LOGGER.debug("Error allocating", e);
+            return Response.serverError().entity(e.getMessage()).build();
+        }
+    }
+
     @POST
     @Path("compose/")
-    @Consumes({MediaType.APPLICATION_XML, MediaType.TEXT_XML, MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_XML, MediaType.TEXT_XML, MediaType.APPLICATION_JSON})
+    @Consumes( {MediaType.APPLICATION_XML, MediaType.TEXT_XML, MediaType.APPLICATION_JSON})
+    @Produces( {MediaType.APPLICATION_XML, MediaType.TEXT_XML, MediaType.APPLICATION_JSON})
     public Response composeServiceTemplates(CompositionData compositionData, @Context UriInfo uriInfo) {
         Splitting splitting = new Splitting();
         String newComposedSolutionServiceTemplateId = compositionData.getTargetid();
