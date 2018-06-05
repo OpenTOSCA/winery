@@ -17,6 +17,7 @@ package org.eclipse.winery.repository.rest.resources.admin.keystore;
 import com.sun.jersey.multipart.FormDataParam;
 import io.swagger.annotations.ApiOperation;
 import org.eclipse.winery.repository.security.csar.KeystoreManager;
+import org.eclipse.winery.repository.security.csar.SecureCSARConstants;
 import org.eclipse.winery.repository.security.csar.SecurityProcessor;
 import org.eclipse.winery.repository.security.csar.datatypes.DistinguishedName;
 import org.eclipse.winery.repository.security.csar.datatypes.KeyPairInformation;
@@ -35,6 +36,7 @@ import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.cert.Certificate;
 import java.util.Collection;
+import java.util.Objects;
 
 public class KeyPairsResource extends AbstractKeystoreEntityResource {
     public KeyPairsResource(KeystoreManager keystoreManager, SecurityProcessor securityProcessor) {
@@ -63,6 +65,7 @@ public class KeyPairsResource extends AbstractKeystoreEntityResource {
                                  @FormDataParam("dn") String distinguishedName,
                                  @FormDataParam("privateKeyFile") InputStream privateKeyInputStream,
                                  @FormDataParam("certificate") InputStream certificatesInputStream,
+                                 @QueryParam(value = "masterKey") String setMasterKey,
                                  @Context UriInfo uriInfo) {
         try {
             String alias;
@@ -70,23 +73,29 @@ public class KeyPairsResource extends AbstractKeystoreEntityResource {
             
             if (this.parametersAreNonNull(algorithm, distinguishedName)) {
                 DistinguishedName dn = new DistinguishedName(distinguishedName);
-                
                 KeyPair keypair = this.securityProcessor.generateKeyPair(algorithm, keySize);
-                alias = securityProcessor.calculateDigest(keypair.getPrivate().getEncoded(), SupportedDigestAlgorithm.SHA256.name());
-                this.checkAliasInsertEligibility(alias);
-                
+                if (Objects.nonNull(setMasterKey)) {
+                    alias = SecureCSARConstants.MASTER_SIGNING_KEYNAME;
+                }
+                else {
+                    alias = securityProcessor.calculateDigest(keypair.getPrivate().getEncoded(), SupportedDigestAlgorithm.SHA256.name());
+                    this.checkAliasInsertEligibility(alias);
+                }
                 Certificate[] selfSignedCert = new Certificate[]{ this.securityProcessor.generateSelfSignedCertificate(keypair, dn) };
                 
                 entity = this.keystoreManager.storeKeyPair(alias, keypair.getPrivate(), selfSignedCert);
                 
             } else if (this.parametersAreNonNull(privateKeyInputStream, certificatesInputStream)) {
                 PrivateKey privateKey = this.securityProcessor.getPKCS8PrivateKeyFromInputStream(algorithm, privateKeyInputStream);
-                alias = securityProcessor.calculateDigest(privateKey.getEncoded(), SupportedDigestAlgorithm.SHA256.name());
-                this.checkAliasInsertEligibility(alias);
-
                 Certificate[] cert = this.securityProcessor.getX509CertificateChainFromInputStream(certificatesInputStream);
+                if (Objects.nonNull(setMasterKey)) {
+                    alias = SecureCSARConstants.MASTER_SIGNING_KEYNAME;
+                }
+                else {
+                    alias = securityProcessor.calculateDigest(privateKey.getEncoded(), SupportedDigestAlgorithm.SHA256.name());
+                    this.checkAliasInsertEligibility(alias);
+                }
                 entity = this.keystoreManager.storeKeyPair(alias, privateKey, cert);
-
             } else {
                 throw new WebApplicationException(
                     Response.status(Response.Status.BAD_REQUEST)

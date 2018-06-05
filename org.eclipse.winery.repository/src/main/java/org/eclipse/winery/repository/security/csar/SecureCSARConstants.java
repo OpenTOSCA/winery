@@ -21,11 +21,14 @@ public class SecureCSARConstants {
     public static final String ENC_POL_KEYSIZE_PROPERTY = "keySize";
     public static final String SIGN_POL_CERT_PROPERTY = "certificateChain";
     
-    public static final String ARTIFACT_SIGNPROP_MANIFEST_EXTENSION = ".MF";
-    public static final String ARTIFACT_SIGNPROP_SF_EXTENSION = ".SF";
+    public static final String ARTIFACT_SIGNPROP_MANIFEST_EXTENSION = ".mf";
+    public static final String ARTIFACT_SIGNPROP_SF_EXTENSION = ".sf";
+    public static final String ARTIFACT_SIGNEXTENSION = ".sig";
     
     public static final String ACL_FILE_EXTENSION = ".properties";
     
-    public static final String ARTIFACT_SIGN_MODE_PLAIN = "#PLAIN#";
-    public static final String ARTIFACT_SIGN_MODE_ENCRYPTED = "#ENCRYPTED#";
+    public static final String ARTIFACT_SIGN_MODE_PLAIN = ".plain";
+    public static final String ARTIFACT_SIGN_MODE_ENCRYPTED = ".encrypted";
+
+    public static final String MASTER_SIGNING_KEYNAME = "master";
 }
