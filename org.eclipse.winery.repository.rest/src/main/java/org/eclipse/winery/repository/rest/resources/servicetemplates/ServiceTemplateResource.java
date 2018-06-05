@@ -70,7 +70,6 @@ public class ServiceTemplateResource extends AbstractComponentInstanceWithRefere
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ServiceTemplateResource.class);
 
-
     public ServiceTemplateResource(ServiceTemplateId id) {
         super(id);
     }
@@ -169,7 +168,7 @@ public class ServiceTemplateResource extends AbstractComponentInstanceWithRefere
 
     @GET
     @Path("injector/options")
-    @Produces({MediaType.APPLICATION_XML, MediaType.TEXT_XML, MediaType.APPLICATION_JSON})
+    @Produces( {MediaType.APPLICATION_XML, MediaType.TEXT_XML, MediaType.APPLICATION_JSON})
     public Response getInjectorOptions() {
         Splitting splitting = new Splitting();
         TTopologyTemplate topologyTemplate = this.getServiceTemplate().getTopologyTemplate();
@@ -214,8 +213,8 @@ public class ServiceTemplateResource extends AbstractComponentInstanceWithRefere
 
     @POST
     @Path("injector/replace")
-    @Consumes({MediaType.APPLICATION_XML, MediaType.TEXT_XML, MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_XML, MediaType.TEXT_XML, MediaType.APPLICATION_JSON})
+    @Consumes( {MediaType.APPLICATION_XML, MediaType.TEXT_XML, MediaType.APPLICATION_JSON})
+    @Produces( {MediaType.APPLICATION_XML, MediaType.TEXT_XML, MediaType.APPLICATION_JSON})
     public Response injectNodeTemplates(InjectorReplaceData injectorReplaceData, @Context UriInfo uriInfo) throws Exception, IOException, ParserConfigurationException, SAXException, SplittingException {
 
         if (injectorReplaceData.hostInjections != null) {
@@ -254,7 +253,7 @@ public class ServiceTemplateResource extends AbstractComponentInstanceWithRefere
         // End Output check
 
         if (requirementsAndMatchingBasisCapabilityTypes.containsValue("Container")) {
-            matchedHostsTopologyTemplate = splitting.injectNodeTemplates(this.getServiceTemplate().getTopologyTemplate(), injectorReplaceData.hostInjections);
+            matchedHostsTopologyTemplate = splitting.injectNodeTemplates(this.getServiceTemplate().getTopologyTemplate(), injectorReplaceData.hostInjections, Splitting.InjectRemoval.REMOVE_REPLACED_AND_SUCCESSORS);
 
             if (requirementsAndMatchingBasisCapabilityTypes.containsValue("Endpoint")) {
                 matchedConnectedTopologyTemplate = splitting.injectConnectionNodeTemplates(matchedHostsTopologyTemplate, injectorReplaceData.connectionInjections);

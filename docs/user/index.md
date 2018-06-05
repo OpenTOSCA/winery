@@ -29,6 +29,7 @@ The repository is also responsible for importing and  exporting CSARs, the excha
 ## Features
 
 - [Splitting](Splitting) - splitting functionality
+- [Target Allocation](TargetAllocation) - select best suited Cloud Provider for topologies
 - [TopologyCompletion](TopologyCompletion) - topology completion with a [Tutorial](TopologyCompletionTutorial)
 - [XaaSPackager](XaaSPackager) - Enables reusing modeled topologies as templates for single applications
 
