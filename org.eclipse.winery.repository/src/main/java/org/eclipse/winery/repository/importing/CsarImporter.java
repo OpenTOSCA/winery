@@ -834,14 +834,17 @@ public class CsarImporter {
                 errors.add(String.format("File %1$s does not exist", p.toString()));
                 return;
             }
-            Path subDirectory = rootPath.relativize(p).getParent();
             RepositoryFileReference fref;
+            // directoryId already identifies the subdirectory 
+            /*Path subDirectory = rootPath.relativize(p).getParent();
             // files are stored in "files/" or in "sources/"
             if ((subDirectory == null) || (subDirectory.getParent().toString().endsWith(pathInsideRepo))) {
                 fref = new RepositoryFileReference(directoryId, p.getFileName().toString());
             } else {
                 fref = new RepositoryFileReference(directoryId, subDirectory, p.getFileName().toString());
-            }
+            }*/
+            
+            fref = new RepositoryFileReference(directoryId, p.getFileName().toString());
             importFile(p, fref, tmf, rootPath, errors);
         }
     }
