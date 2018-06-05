@@ -320,19 +320,19 @@ public class BCSecurityProcessor implements SecurityProcessor {
     }
 
     @Override
-    public String signText(Key privateKey, String text) throws GenericSecurityProcessorException {
+    public byte[] signText(Key privateKey, String text) throws GenericSecurityProcessorException {
         return signBytes(privateKey, text.getBytes(StandardCharsets.UTF_8));
     }
 
     @Override
-    public String signBytes(Key privateKey, byte[] text) throws GenericSecurityProcessorException {
+    public byte[] signBytes(Key privateKey, byte[] text) throws GenericSecurityProcessorException {
         try {
             String algo = SupportedsSignatureAlgorithm.getDefaultOptionForAlgorithm(privateKey.getAlgorithm());
             Signature privateSignature = Signature.getInstance(algo);
             privateSignature.initSign((PrivateKey) privateKey);
             privateSignature.update(text);
 
-            return Base64.encodeBase64String(privateSignature.sign());
+            return privateSignature.sign();
         } catch (SignatureException | InvalidKeyException | NoSuchAlgorithmException e) {
             LOGGER.error("Error calculating hash", e);
             throw new GenericSecurityProcessorException("Error signing the provided string");

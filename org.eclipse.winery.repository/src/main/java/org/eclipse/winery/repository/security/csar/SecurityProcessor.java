@@ -53,9 +53,9 @@ public interface SecurityProcessor {
     
     String calculateDigest(byte[] bytes, String digestAlgorithm) throws GenericSecurityProcessorException;
     
-    String signText(Key privateKey, String text) throws GenericSecurityProcessorException;
+    byte[] signText(Key privateKey, String text) throws GenericSecurityProcessorException;
 
-    String signBytes(Key privateKey, byte[] text) throws GenericSecurityProcessorException;
+    byte[] signBytes(Key privateKey, byte[] text) throws GenericSecurityProcessorException;
     
     boolean verifyText(Certificate cert, String text, byte[] signature) throws GenericSecurityProcessorException;
     
