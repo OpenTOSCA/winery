@@ -45,11 +45,16 @@ import org.eclipse.winery.repository.backend.IGenericRepository;
 import org.eclipse.winery.repository.backend.IRepository;
 import org.eclipse.winery.repository.backend.SelfServiceMetaDataUtils;
 import org.eclipse.winery.repository.backend.constants.MediaTypes;
+import org.eclipse.winery.repository.backend.filebased.FilebasedRepository;
 import org.eclipse.winery.repository.configuration.Environment;
 import org.eclipse.winery.repository.datatypes.ids.elements.DirectoryId;
 import org.eclipse.winery.repository.datatypes.ids.elements.SelfServiceMetaDataId;
 import org.eclipse.winery.repository.datatypes.ids.elements.ServiceTemplateSelfServiceFilesDirectoryId;
 import org.eclipse.winery.repository.exceptions.RepositoryCorruptException;
+import org.eclipse.winery.repository.security.csar.*;
+import org.eclipse.winery.repository.security.csar.exceptions.GenericKeystoreManagerException;
+import org.eclipse.winery.repository.security.csar.exceptions.GenericSecurityProcessorException;
+import org.eclipse.winery.repository.security.csar.support.SupportedDigestAlgorithm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -66,6 +71,7 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.Key;
 import java.util.*;
 
 /**
@@ -95,7 +101,7 @@ public class CsarExporter {
         return CsarExporter.getDefinitionsName(repository, id) + Constants.SUFFIX_TOSCA_DEFINITIONS;
     }
 
-    private static String getDefinitionsPathInsideCSAR(IGenericRepository repository, DefinitionsChildId id) {
+    public static String getDefinitionsPathInsideCSAR(IGenericRepository repository, DefinitionsChildId id) {
         return CsarExporter.DEFINITONS_PATH_PREFIX + CsarExporter.getDefinitionsFileName(repository, id);
     }
 
@@ -105,7 +111,7 @@ public class CsarExporter {
      * @param entryId the id of the service template to export
      * @param out     the output stream to write to
      */
-    public void writeCsar(IRepository repository, DefinitionsChildId entryId, OutputStream out, Map<String, Object> exportConfigurations) throws ArchiveException, IOException, JAXBException, RepositoryCorruptException {
+    public void writeCsar(IRepository repository, DefinitionsChildId entryId, OutputStream out, Map<String, Object> exportConfiguration) throws ArchiveException, IOException, JAXBException, RepositoryCorruptException {
         CsarExporter.LOGGER.trace("Starting CSAR export with {}", entryId.toString());
 
         Map<RepositoryFileReference, String> refMap = new HashMap<>();
@@ -123,7 +129,7 @@ public class CsarExporter {
 
                 zos.putArchiveEntry(new ZipArchiveEntry(defName));
                 Collection<DefinitionsChildId> referencedIds;
-                referencedIds = exporter.exportTOSCA(repository, currentId, zos, refMap, exportConfigurations);
+                referencedIds = exporter.exportTOSCA(repository, currentId, zos, refMap, exportConfiguration);
                 zos.closeArchiveEntry();
 
                 exportedState.flagAsExported(currentId);
@@ -142,7 +148,7 @@ public class CsarExporter {
             // now, refMap contains all files to be added to the CSAR
 
             // write manifest directly after the definitions to have it more at the beginning of the ZIP rather than having it at the very end
-            this.addManifest(repository, entryId, definitionNames, refMap, zos);
+            this.addManifest(repository, entryId, definitionNames, refMap, exporter, exportConfiguration, zos);
 
             // used for generated XSD schemas
             TransformerFactory tFactory = TransformerFactory.newInstance();
@@ -253,7 +259,7 @@ public class CsarExporter {
         ArchiveEntry archiveEntry = new ZipArchiveEntry(archivePath);
         zos.putArchiveEntry(archiveEntry);
         CsarExporter.LOGGER.trace("Special treatment for generated XSDs");
-        Document document = ref.getDocument();
+        Document document = ref.getDocument(); 
         DOMSource source = new DOMSource(document);
         StreamResult result = new StreamResult(zos);
         try {
@@ -478,42 +484,161 @@ public class CsarExporter {
             });
     }
 
-    private void addManifest(IRepository repository, DefinitionsChildId id, Collection<String> definitionNames, Map<RepositoryFileReference, String> refMap, ArchiveOutputStream out) throws IOException {
+    private void addManifest(IRepository repository, DefinitionsChildId id, Collection<String> definitionNames, Map<RepositoryFileReference, String> refMap, ToscaExportUtil exporter, Map<String, Object> exportConfiguration, ArchiveOutputStream out) throws IOException {
+        boolean isSecureExport = false;
+        SecurityProcessor securityProcessor = null;
+        KeystoreManager keystoreManager = null;
+        String digestAlgorithm = null;
+        List<TOSCAMetaEntry> entries = null;
+        
+        if (exportConfiguration.containsKey(ToscaExportUtil.ExportProperties.APPLY_SECURITY_POLICIES.name()) &&
+            (Boolean) exportConfiguration.get(ToscaExportUtil.ExportProperties.APPLY_SECURITY_POLICIES.name())) {
+            isSecureExport = true;
+            securityProcessor = new BCSecurityProcessor();
+            keystoreManager = new JCEKSKeystoreManager();
+            entries = new ArrayList<>();
+            digestAlgorithm = SupportedDigestAlgorithm.SHA256.name();
+        }
+        
         String entryDefinitionsReference = CsarExporter.getDefinitionsPathInsideCSAR(repository, id);
 
         out.putArchiveEntry(new ZipArchiveEntry("TOSCA-Metadata/TOSCA.meta"));
-        PrintWriter pw = new PrintWriter(out);
+        StringBuilder sb = new StringBuilder();
         // Setting Versions
-        pw.println("TOSCA-Meta-Version: 1.0");
-        pw.println("CSAR-Version: 1.0");
-        String versionString = "Created-By: Winery " + Environment.getVersion();
-        pw.println(versionString);
+        sb.append("TOSCA-Meta-Version: 1.0");
+        sb.append(System.lineSeparator());
+        sb.append("CSAR-Version: 1.0");
+        sb.append(System.lineSeparator());
+        sb.append("Created-By: Winery ");
+        sb.append(Environment.getVersion());
+        sb.append(System.lineSeparator());
+        
         // Winery currently is unaware of tDefinitions, therefore, we use the
         // name of the service template
-        pw.println("Entry-Definitions: " + entryDefinitionsReference);
-        pw.println();
-
+        sb.append("Entry-Definitions: ");
+        sb.append(entryDefinitionsReference);
+        sb.append(System.lineSeparator());
+        
+        Map<String, String> definitionsDigests = exporter.getDefinitionsDigests();
+        
         assert (definitionNames.contains(entryDefinitionsReference));
         for (String name : definitionNames) {
-            pw.println("Name: " + name);
-            pw.println("Content-Type: " + org.eclipse.winery.common.constants.MimeTypes.MIMETYPE_TOSCA_DEFINITIONS);
-            pw.println();
+            TOSCAMetaEntry entry;
+            if (!isSecureExport) {
+                entry = new TOSCAMetaEntry.Builder(name, org.eclipse.winery.common.constants.MimeTypes.MIMETYPE_TOSCA_DEFINITIONS).build();
+            }
+            else {
+                entry = new TOSCAMetaEntry.Builder(name, org.eclipse.winery.common.constants.MimeTypes.MIMETYPE_TOSCA_DEFINITIONS)
+                    .digestAlgorithm(digestAlgorithm)
+                    .digestValue(definitionsDigests.get(name))
+                    .build();
+                
+                entries.add(entry);
+            }
+            sb.append(entry.toString());
         }
 
         // Setting other files, mainly files belonging to artifacts
         for (RepositoryFileReference ref : refMap.keySet()) {
             String archivePath = refMap.get(ref);
-            pw.println("Name: " + archivePath);
             String mimeType;
             if (ref instanceof DummyRepositoryFileReferenceForGeneratedXSD) {
                 mimeType = MimeTypes.MIMETYPE_XSD;
             } else {
                 mimeType = repository.getMimeType(ref);
             }
-            pw.println("Content-Type: " + mimeType);
-            pw.println();
+            
+            TOSCAMetaEntry entry = null;
+            if (!isSecureExport) {
+                entry = new TOSCAMetaEntry.Builder(archivePath, mimeType).build();
+            }
+            else {
+                if (!(ref instanceof DummyRepositoryFileReferenceForGeneratedXSD)) {
+                    try {
+                        byte[] fileBytes = Files.readAllBytes(((FilebasedRepository) repository).ref2AbsolutePath(ref));
+                        String digest = securityProcessor.calculateDigest(fileBytes, digestAlgorithm);
+                        entry = new TOSCAMetaEntry.Builder(archivePath, mimeType)
+                            .digestAlgorithm(digestAlgorithm)
+                            .digestValue(digest)
+                            .build();
+                    } catch (GenericSecurityProcessorException e) {
+                        e.printStackTrace();
+                    }
+                }
+                else {
+                    try {
+                        Document document = ((DummyRepositoryFileReferenceForGeneratedXSD) ref).getDocument();
+                        DOMSource source = new DOMSource(document);
+                        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                        StreamResult result = new StreamResult(bos);
+                        TransformerFactory transformerFactory = TransformerFactory.newInstance();
+                        Transformer transformer = transformerFactory.newTransformer();
+                        transformer.transform(source, result);
+                        byte[] dummyPropertiesContent = bos.toByteArray();
+                        String digest = securityProcessor.calculateDigest(dummyPropertiesContent, digestAlgorithm);
+                        entry = new TOSCAMetaEntry.Builder(archivePath, mimeType)
+                            .digestAlgorithm(digestAlgorithm)
+                            .digestValue(digest)
+                            .build();
+                    } catch (TransformerException | GenericSecurityProcessorException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                entries.add(entry);                    
+            }
+            if (Objects.nonNull(entry)) {
+                sb.append(entry.toString());
+            }
         }
-        pw.flush();
+        String plainManifest = sb.toString();
+        out.write(plainManifest.getBytes());
         out.closeArchiveEntry();
+
+        if (isSecureExport) {
+            try {
+                String manifestDigest = securityProcessor.calculateDigest(plainManifest, digestAlgorithm);
+                out.putArchiveEntry(new ZipArchiveEntry("TOSCA-Metadata/TOSCA.sf"));
+                StringBuilder sigFileBuilder = new StringBuilder();
+                // Set header
+                sigFileBuilder.append("Signature-Version: 1.0");
+                sigFileBuilder.append(System.lineSeparator());
+                sigFileBuilder.append("Created-By: Winery ");
+                sigFileBuilder.append(Environment.getVersion());
+                sigFileBuilder.append(System.lineSeparator());
+                sigFileBuilder.append("Digest-Algorithm: ");
+                sigFileBuilder.append(digestAlgorithm);
+                sigFileBuilder.append(System.lineSeparator());
+                sigFileBuilder.append("Digest-Manifest: ");
+                sigFileBuilder.append(manifestDigest);
+                sigFileBuilder.append(System.lineSeparator());
+                // Winery currently is unaware of tDefinitions, therefore, we use the
+                // name of the service template
+                sigFileBuilder.append("Entry-Definitions: ");
+                sigFileBuilder.append(entryDefinitionsReference);
+                sigFileBuilder.append(System.lineSeparator());
+                
+                for (TOSCAMetaEntry e : entries) {
+                    String digestOfTheDigest = securityProcessor.calculateDigest(e.getDigestValue(), digestAlgorithm);
+                    e.setDigestValue(digestOfTheDigest);
+                    sigFileBuilder.append(e.toString());
+                }
+                
+                out.write(sigFileBuilder.toString().getBytes());
+                out.closeArchiveEntry();
+                
+                Key signingKey = keystoreManager.loadKey(SecureCSARConstants.MASTER_SIGNING_KEYNAME);
+                // master key is set
+                if (Objects.nonNull(signingKey)) {
+                    byte[] blockSignatureFileContent = securityProcessor.signBytes(signingKey, sigFileBuilder.toString().getBytes());
+                    out.putArchiveEntry(new ZipArchiveEntry("TOSCA-Metadata/TOSCA.sig"));
+                    out.write(blockSignatureFileContent);
+                    out.closeArchiveEntry();
+                }
+            } catch (GenericSecurityProcessorException | GenericKeystoreManagerException e) {
+                e.printStackTrace();
+            }
+        }
+        
     }
 }

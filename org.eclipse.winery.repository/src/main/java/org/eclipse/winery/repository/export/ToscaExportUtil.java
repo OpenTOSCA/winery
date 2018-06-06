@@ -49,10 +49,7 @@ import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.namespace.QName;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -60,7 +57,7 @@ import java.security.Key;
 import java.util.*;
 
 public class ToscaExportUtil {
-
+    
     private static final XLogger LOGGER = XLoggerFactory.getXLogger(ToscaExportUtil.class);
 
     /*
@@ -75,6 +72,8 @@ public class ToscaExportUtil {
     
     private SecurityProcessor securityProcessor = null;
     private KeystoreManager keystoreManager = null;
+    private String digestAlgorithm;
+    private Map<String, String> definitionsDigests = new HashMap<>();
     
     /**
      * Currently a very simple approach to configure the export
@@ -268,17 +267,28 @@ public class ToscaExportUtil {
         if (this.exportConfiguration.containsKey(ExportProperties.APPLY_SECURITY_POLICIES.name()) &&
             (Boolean) this.exportConfiguration.get(ExportProperties.APPLY_SECURITY_POLICIES.name())) {
             this.securityProcessor = new BCSecurityProcessor();
-            this.keystoreManager = new JCEKSKeystoreManager();            
+            this.keystoreManager = new JCEKSKeystoreManager();
+            this.digestAlgorithm = SupportedDigestAlgorithm.SHA256.name();
             this.enforceSecurityPolicies(repository, tcId, entryDefinitions, referencedDefinitionsChildIds);
-            
+
+            try {
+                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                this.writeDefinitionsElement(entryDefinitions, byteArrayOutputStream);
+                String checksum = securityProcessor.calculateDigest(byteArrayOutputStream.toByteArray(), this.digestAlgorithm);
+                String defName = CsarExporter.getDefinitionsPathInsideCSAR(repository, tcId);
+                definitionsDigests.put(defName, checksum);
+            } catch (GenericSecurityProcessorException e) {
+                e.printStackTrace();
+            }
         }
-        
-        // references to files are already contained here
-        // System.out.println(this.referencesToPathInCSARMap);
         
         this.writeDefinitionsElement(entryDefinitions, out);
 
         return referencedDefinitionsChildIds;
+    }
+    
+    public Map<String, String> getDefinitionsDigests() {
+        return this.definitionsDigests;
     }
     
     private void enforceSecurityPolicies(IRepository repository, DefinitionsChildId tcId, Definitions entryDefinitions, Collection<DefinitionsChildId> referencedDefinitionsChildIds) {
@@ -443,10 +453,9 @@ public class ToscaExportUtil {
                                 TArtifactTemplate signatureArtifactTemplate = repository.getElement(signatureArtifactTemplateId);
                                 ArtifactTypeId signatureArtifactTypeId = BackendUtils.getDefinitionsChildId(ArtifactTypeId.class, signatureArtifactTemplate.getType());
 
-                                String digestAlgorithm = SupportedDigestAlgorithm.SHA256.name();
                                 Map<String, String> artifactTemplateKVProperties = nodeTemplate.getProperties().getKVProperties();
-                                Map<String, String> propertiesDigests = calculatePropertiesDigests(digestAlgorithm, propertyNames, artifactTemplateKVProperties); 
-                                String signedPropertiesManifestContent = generateSignedPropertiesManifestContent(propertiesDigests, digestAlgorithm);
+                                Map<String, String> propertiesDigests = calculatePropertiesDigests(propertyNames, artifactTemplateKVProperties); 
+                                String signedPropertiesManifestContent = generateSignedPropertiesManifestContent(propertiesDigests);
 
                                 if (!signedPropertiesManifestContent.isEmpty()) {
                                     // generate Properties Digests Manifest
@@ -466,8 +475,8 @@ public class ToscaExportUtil {
 
                                     // generate SF
                                     byte[] manifestBytes = Files.readAllBytes(((FilebasedRepository) repository).ref2AbsolutePath(manifestPathRef)); 
-                                    String manifestDigest = this.securityProcessor.calculateDigest(manifestBytes, digestAlgorithm);
-                                    String signedPropertiesSignatureFileContent = generateSignedPropertiesSignatureFile(digestAlgorithm, manifestDigest, propertiesDigests);
+                                    String manifestDigest = this.securityProcessor.calculateDigest(manifestBytes, this.digestAlgorithm);
+                                    String signedPropertiesSignatureFileContent = generateSignedPropertiesSignatureFile(manifestDigest, propertiesDigests);
                                     String signedPropertiesSignatureFileName = generatePropertiesSignatureFileName(signatureArtifactTemplate.getId());
                                     RepositoryFileReference signedPropertiesSignatureFileRef = addFileToArtifactTemplate(signatureArtifactTemplateId, signatureArtifactTemplate, signedPropertiesSignatureFileName, signedPropertiesSignatureFileContent);
                                     String signedPropertiesSignatureFilePath = BackendUtils.getPathInsideRepo(signedPropertiesSignatureFileRef);
@@ -517,12 +526,12 @@ public class ToscaExportUtil {
         }
     }
     
-    private Map<String, String> calculatePropertiesDigests(String digestAlgorithm, List<String> propertyNames, Map<String, String> artifactTemplateKVProperties) {
+    private Map<String, String> calculatePropertiesDigests(List<String> propertyNames, Map<String, String> artifactTemplateKVProperties) {
         Map<String, String> propDiests = new HashMap<>();
         String digest;
         for (String p : propertyNames) {
             try {
-                digest = this.securityProcessor.calculateDigest(artifactTemplateKVProperties.get(p), digestAlgorithm);
+                digest = this.securityProcessor.calculateDigest(artifactTemplateKVProperties.get(p), this.digestAlgorithm);
                 propDiests.put(p, digest);
             } catch (GenericSecurityProcessorException e) {
                 e.printStackTrace();
@@ -531,7 +540,7 @@ public class ToscaExportUtil {
         return propDiests;
     }
     
-    private String generateSignedPropertiesManifestContent(Map<String, String> propertiesDigests, String digestAlgorithm) {
+    private String generateSignedPropertiesManifestContent(Map<String, String> propertiesDigests) {
         if (propertiesDigests.size() == 0) {
             return "";
         }
@@ -540,7 +549,7 @@ public class ToscaExportUtil {
         sb.append("Signed-Properties-Manifest: 1.0");
         sb.append(System.lineSeparator());
         sb.append("Digest-Algorithm: ");
-        sb.append(digestAlgorithm);
+        sb.append(this.digestAlgorithm);
         sb.append(System.lineSeparator());
         sb.append("Created-By: Winery ");
         sb.append(Environment.getVersion());
@@ -559,12 +568,12 @@ public class ToscaExportUtil {
         return sb.toString();
     }
 
-    private String generateSignedPropertiesSignatureFile(String digestAlgorithm, String manifestDigest, Map<String, String> propsDigests) {
+    private String generateSignedPropertiesSignatureFile(String manifestDigest, Map<String, String> propsDigests) {
         StringBuilder sb = new StringBuilder();
         sb.append("Signature-Version: 1.0");
         sb.append(System.lineSeparator());
         sb.append("Digest-Algorithm: ");
-        sb.append(digestAlgorithm);
+        sb.append(this.digestAlgorithm);
         sb.append(System.lineSeparator());
         sb.append("Digest-Manifest: ");
         sb.append(manifestDigest);
@@ -575,7 +584,7 @@ public class ToscaExportUtil {
         String digest;
         for (String p : propsDigests.keySet()) {
             try {
-                digest = this.securityProcessor.calculateDigest(propsDigests.get(p), digestAlgorithm);
+                digest = this.securityProcessor.calculateDigest(propsDigests.get(p), this.digestAlgorithm);
                 sb.append(System.lineSeparator());
                 sb.append("Name: ");
                 sb.append(p);
