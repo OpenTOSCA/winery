@@ -12,13 +12,14 @@ export class AppComponent {
 
   mockData: TopologyModelerInputDataFormat = {
     configuration: {
-      endpointConfig: {
+      /*endpointConfig: {
         id: 'FieldProvider',
         ns: 'http:%2F%2Fwww.opentosca.org%2Fproviders%2FFieldProvider',
         repositoryURL: 'http:%2F%2Flocalhost:8080%2Fwinery',
         uiURL: 'http:%2F%2Flocalhost:8080%2F%23%2F',
         compareTo: null
-      },
+      },*/
+      endpointConfig: undefined,
       readonly: true
     },
     topologyTemplate: topologytemplate,

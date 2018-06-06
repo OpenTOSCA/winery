@@ -27,6 +27,7 @@ import { WineryActions } from '../../redux/actions/winery.actions';
 })
 export class TargetLocationsComponent implements OnInit, OnChanges {
     properties: Subject<string> = new Subject<string>();
+    @Input() readonly: boolean;
     @Input() currentNodeData: any;
     @Output() sendTargetLocation: EventEmitter<any>;
     targetLocation: string;

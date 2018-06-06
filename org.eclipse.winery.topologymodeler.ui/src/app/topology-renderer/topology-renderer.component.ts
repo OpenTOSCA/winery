@@ -34,6 +34,7 @@ import { Utils } from '../models/utils';
 })
 export class TopologyRendererComponent implements OnInit, OnDestroy {
 
+    @Input() readonly: boolean;
     @Input() entityTypes: any;
     @Input() relationshipTypes: Array<any> = [];
     @Input() differencesData: [ToscaDiff, TTopologyTemplate];

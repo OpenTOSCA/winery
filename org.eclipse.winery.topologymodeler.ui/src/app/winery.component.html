@@ -11,10 +11,10 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR Apache-2.0
 -->
-
-<router-outlet></router-outlet>
+<router-outlet *ngIf="!readonly"></router-outlet>
 
 <winery-topology-renderer *ngIf="loaded?.loadedData"
+                          [readonly]="readonly"
                           [entityTypes]="this.entityTypes"
                           [relationshipTypes]="relationshipTypes"
                           [differencesData]="topologyDifferences"
@@ -25,7 +25,7 @@
 
 <div *ngIf="loaded?.generatedReduxState">
     <div *ngIf="!hideNavBarState">
-        <winery-palette-component *ngIf="!topologyDifferences"
+        <winery-palette-component *ngIf="!topologyDifferences || !readonly"
                                   style="width:200px;float:left;margin-top:50px"
                                   [entityTypes]="this.entityTypes">
         </winery-palette-component>

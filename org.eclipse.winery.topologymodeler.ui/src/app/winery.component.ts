@@ -58,6 +58,8 @@ export class WineryComponent implements OnInit {
     entityTypes: any = {};
     hideNavBarState: boolean;
     subscriptions: Array<Subscription> = [];
+    // This variable is set via the topologyModelerData input and decides if the editing functionalities are enabled
+    readonly: boolean;
 
     topologyDifferences: [ToscaDiff, TTopologyTemplate];
 
@@ -79,6 +81,10 @@ export class WineryComponent implements OnInit {
      * inside the Redux store of this application.
      */
     ngOnInit() {
+        if (this.topologyModelerData.configuration.readonly) {
+            this.readonly = true;
+        }
+
         // If data is passed to the topologymodeler directly, rendering is initiated immediately without backend calls
         console.log(this.topologyModelerData);
         this.topologyModelerData ? this.initiateLocalRendering(this.topologyModelerData) : this.initiateBackendCalls();

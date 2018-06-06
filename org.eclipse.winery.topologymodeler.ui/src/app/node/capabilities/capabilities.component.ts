@@ -30,6 +30,7 @@ import { CapabilityModel } from '../../models/capabilityModel';
  */
 export class CapabilitiesComponent implements OnInit, OnChanges, OnDestroy {
     @Output() toggleModalHandler: EventEmitter<any>;
+    @Input() readonly: boolean;
     @Input() currentNodeData: any;
     capabilities: any[] = [];
     capabilitiesExist: boolean;

@@ -13,9 +13,11 @@
 -->
 <div *ngIf="loader?.generatedReduxState">
     <winery-navbar
+        [readonly]="readonly"
         [hideNavBarState]="hideNavBarState">
     </winery-navbar>
-    <winery-canvas [entityTypes]="entityTypes"
+    <winery-canvas [readonly]="readonly"
+                   [entityTypes]="entityTypes"
                    [relationshipTypes]="relationshipTypes"
                    [diffMode]="diffMode">
     </winery-canvas>

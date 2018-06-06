@@ -30,6 +30,7 @@ export class PropertiesContentComponent implements OnInit, OnChanges, OnDestroy 
 
     properties: Subject<string> = new Subject<string>();
     keyOfEditedKVProperty: Subject<string> = new Subject<string>();
+    @Input() readonly: boolean;
     @Input() currentNodeData: any;
     key: string;
     nodeProperties: any;

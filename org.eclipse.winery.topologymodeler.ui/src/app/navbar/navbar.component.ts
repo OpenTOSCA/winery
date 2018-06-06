@@ -48,6 +48,7 @@ export class NavbarComponent implements OnDestroy {
      * Boolean variables that hold the state (pressed vs. !pressed) of the navbar buttons.
      */
     @Input() hideNavBarState;
+    @Input() readonly: boolean;
 
     @ViewChild('exportCsarButton')
     private exportCsarButtonRef: ElementRef;

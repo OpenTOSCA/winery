@@ -76,6 +76,7 @@ export class NodeComponent implements OnInit, AfterViewInit, OnDestroy, DoCheck 
     artifactTypes: any;
     removeZIndex: any;
     propertyDefinitionType: string;
+    @Input() readonly: boolean;
     @Input() entityTypes: any;
     @Input() dragSource: string;
     @Input() navbarButtonsState: ButtonsStateModel;

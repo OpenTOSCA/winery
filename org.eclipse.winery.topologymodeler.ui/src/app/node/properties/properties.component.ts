@@ -23,6 +23,7 @@ import { BackendService } from '../../services/backend.service';
 })
 export class PropertiesComponent implements OnInit {
     @Input() currentNodeData: any;
+    @Input() readonly: boolean;
 
     constructor() {
     }

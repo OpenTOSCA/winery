@@ -30,6 +30,7 @@ import { RequirementModel } from '../../models/requirementModel';
  */
 export class RequirementsComponent implements OnInit, OnChanges, OnDestroy {
     @Output() toggleModalHandler: EventEmitter<any>;
+    @Input() readonly: boolean;
     @Input() currentNodeData: any;
     requirements: any[] = [];
     requirementsExist: boolean;

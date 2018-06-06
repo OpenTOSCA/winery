@@ -1,3 +1,8 @@
+export const configuration = {
+    readonly: true,
+    endpointConfig: undefined
+};
+
 export const visuals = [{
   "color": "#1ec453",
   "nodeTypeId": "{http://www.winery.opentosca.org/test/targetallocation/nodetypes}LargeStall_-w1-wip1"
