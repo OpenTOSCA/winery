@@ -65,6 +65,7 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit, DoChec
     @ViewChild('capabilitiesModal') capabilitiesModal: ModalDirective;
     @ViewChild('requirementsModal') requirementsModal: ModalDirective;
     @ViewChild('importTopologyModal') importTopologyModal: ModalDirective;
+    @Input() readonly: boolean;
     @Input() entityTypes: EntityTypesModel;
     @Input() relationshipTypes: Array<any> = [];
     @Input() diffMode = false;
