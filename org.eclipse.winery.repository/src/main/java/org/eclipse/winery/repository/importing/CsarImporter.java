@@ -51,6 +51,9 @@ import org.eclipse.winery.repository.datatypes.ids.elements.DirectoryId;
 import org.eclipse.winery.repository.datatypes.ids.elements.SelfServiceMetaDataId;
 import org.eclipse.winery.repository.datatypes.ids.elements.VisualAppearanceId;
 import org.eclipse.winery.repository.export.CsarExporter;
+import org.eclipse.winery.repository.security.csar.*;
+import org.eclipse.winery.repository.security.csar.exceptions.GenericKeystoreManagerException;
+import org.eclipse.winery.repository.security.csar.exceptions.GenericSecurityProcessorException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
@@ -59,6 +62,7 @@ import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import java.io.BufferedInputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
@@ -66,6 +70,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.security.cert.Certificate;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -89,7 +94,7 @@ import static java.nio.file.FileVisitResult.SKIP_SUBTREE;
  * One instance for each import
  */
 public class CsarImporter {
-
+    public static final String SECURE_CSAR_IMPORT = "secure";
     private static final Logger LOGGER = LoggerFactory.getLogger(CsarImporter.class);
 
     // ExecutorService for XSD schema initialization
@@ -99,7 +104,9 @@ public class CsarImporter {
     private static final ExecutorService entityTypeAdjestmentService = Executors.newFixedThreadPool(10);
 
     private static final Pattern GENERATED_PREFIX_PATTERN = Pattern.compile("^ns\\d+$");
-
+    
+    private Map<String, Object> importConfigurations;
+    
     /**
      * Reads the CSAR from the given inputstream
      *
@@ -108,11 +115,11 @@ public class CsarImporter {
      * @param asyncWPDParsing true if WPD should be parsed asynchronously to speed up the import. Required, because
      *                        JUnit terminates the used ExecutorService
      */
-    public ImportMetaInformation readCSAR(InputStream in, boolean overwrite, final boolean asyncWPDParsing) throws IOException {
+    public ImportMetaInformation readCSAR(InputStream in, boolean overwrite, final boolean asyncWPDParsing, Map<String, Object> importConfigurations) throws IOException {
         // we have to extract the file to a temporary directory as
         // the .definitions file does not necessarily have to be the first entry in the archive
         Path csarDir = Files.createTempDirectory("winery");
-
+        this.importConfigurations = importConfigurations;
         try (ZipInputStream zis = new ZipInputStream(in)) {
             ZipEntry entry;
             while ((entry = zis.getNextEntry()) != null) {
@@ -143,10 +150,35 @@ public class CsarImporter {
     public ImportMetaInformation importFromDir(final Path path, final boolean overwrite, final boolean asyncWPDParsing) throws IOException {
         final ImportMetaInformation importMetaInformation = new ImportMetaInformation();
         Path toscaMetaPath = path.resolve("TOSCA-Metadata/TOSCA.meta");
+        KeystoreManager km = new JCEKSKeystoreManager();
+        SecurityProcessor sp = new BCSecurityProcessor();
+        
         if (!Files.exists(toscaMetaPath)) {
             importMetaInformation.errors.add("TOSCA.meta does not exist");
             return importMetaInformation;
         }
+        if ((Boolean) importConfigurations.get(SECURE_CSAR_IMPORT)) {
+            try {
+                Path sigFileToscaMetaPath = path.resolve("TOSCA-Metadata/TOSCA.sf");
+                Path sigBlockFileToscaMetaPath = path.resolve("TOSCA-Metadata/TOSCA.sig");
+                Path certToscaMetaPath = path.resolve("TOSCA-Metadata/TOSCA.crt");
+                if (!Files.exists(sigBlockFileToscaMetaPath) && !Files.exists(certToscaMetaPath)) {
+                    importMetaInformation.errors.add("Incomplete signature");
+                    return importMetaInformation;
+                }
+                byte[] sigFileToscaMeta = Files.readAllBytes(sigFileToscaMetaPath);
+                byte[] sigBlockFileToscaMeta = Files.readAllBytes(sigBlockFileToscaMetaPath);
+                Certificate c = km.storeCertificate(SecureCSARConstants.MASTER_CERT_KEYNAME, new FileInputStream(certToscaMetaPath.toFile()));
+                if (!sp.verifyBytes(c, sigFileToscaMeta, sigBlockFileToscaMeta)) {
+                    importMetaInformation.errors.add("Corrupt signature");
+                    return importMetaInformation;
+                }
+                
+            } catch (GenericKeystoreManagerException | GenericSecurityProcessorException e) {
+                e.printStackTrace();
+            }
+        }
+        
         final TOSCAMetaFileParser tmfp = new TOSCAMetaFileParser();
         final TOSCAMetaFile tmf = tmfp.parse(toscaMetaPath);
 

@@ -28,6 +28,7 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.HashMap;
 
 public class Showcase extends AbstractTestX2Y {
     public Showcase() {
@@ -43,7 +44,7 @@ public class Showcase extends AbstractTestX2Y {
         InputStream fis = new FileInputStream(path);
         IRepository repository = RepositoryFactory.getRepository(Utils.getTmpDir(Paths.get("repository")));
         CsarImporter csarImporter = new CsarImporter();
-        csarImporter.readCSAR(fis, true, true);
+        csarImporter.readCSAR(fis, true, true, new HashMap<>());
 
         // Read the csar again and convert it to yaml the resulting yaml service templates
         // are written to a temporary dir and converted to a input stream of a zip file

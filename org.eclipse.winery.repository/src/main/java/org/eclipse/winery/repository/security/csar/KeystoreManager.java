@@ -18,6 +18,7 @@ import org.eclipse.winery.repository.security.csar.datatypes.*;
 import org.eclipse.winery.repository.security.csar.exceptions.GenericKeystoreManagerException;
 import org.eclipse.winery.repository.security.csar.support.SupportedEncryptionAlgorithm;
 
+import java.io.InputStream;
 import java.security.*;
 import java.security.cert.Certificate;
 import java.util.Collection;
@@ -49,7 +50,9 @@ public interface KeystoreManager {
     KeyPairInformation storeKeyPair(String alias, PrivateKey privateKey, Certificate[] certificates) throws GenericKeystoreManagerException;
 
     KeyPairInformation loadKeyPairAsText(String alias) throws GenericKeystoreManagerException;
-
+    
+    Certificate storeCertificate(String alias, InputStream is) throws GenericKeystoreManagerException;
+    
     String loadX509PEMCertificatesAsText(String alias) throws GenericKeystoreManagerException;
 
     byte[] loadCertificateAsByteArray(String alias) throws GenericKeystoreManagerException;

@@ -31,4 +31,5 @@ public class SecureCSARConstants {
     public static final String ARTIFACT_SIGN_MODE_ENCRYPTED = ".encrypted";
 
     public static final String MASTER_SIGNING_KEYNAME = "master";
+    public static final String MASTER_CERT_KEYNAME = "import";
 }

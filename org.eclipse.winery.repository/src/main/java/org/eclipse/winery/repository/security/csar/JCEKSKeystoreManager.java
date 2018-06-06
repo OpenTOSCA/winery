@@ -28,10 +28,8 @@ import org.slf4j.LoggerFactory;
 import javax.crypto.SecretKey;
 import java.io.*;
 import java.security.*;
+import java.security.cert.*;
 import java.security.cert.Certificate;
-import java.security.cert.CertificateEncodingException;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
 import java.util.*;
 
 public class JCEKSKeystoreManager implements KeystoreManager {
@@ -221,6 +219,19 @@ public class JCEKSKeystoreManager implements KeystoreManager {
         KeyEntityInformation privateKey = loadKeyAsText(alias, KeyType.PRIVATE);
         String cert = loadX509PEMCertificatesAsText(alias);
         return new KeyPairInformation(privateKey, cert);
+    }
+
+    @Override
+    public Certificate storeCertificate(String alias, InputStream is) throws GenericKeystoreManagerException {
+        try {
+            Certificate c = CertificateFactory.getInstance("X509").generateCertificate(is);
+            keystore.setCertificateEntry(alias, c);
+            keystore.store(new FileOutputStream(this.keystorePath), KEYSTORE_PASSWORD.toCharArray());
+            return c;
+        } catch (CertificateException | NoSuchAlgorithmException | IOException | KeyStoreException e) {
+            LOGGER.error("Error while storing a certificate", e);
+            throw new GenericKeystoreManagerException("Could not store the provided certificate");
+        }
     }
 
     @Override

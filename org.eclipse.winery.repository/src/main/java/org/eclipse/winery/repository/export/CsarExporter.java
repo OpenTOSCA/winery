@@ -628,11 +628,15 @@ public class CsarExporter {
                 out.closeArchiveEntry();
                 
                 Key signingKey = keystoreManager.loadKey(SecureCSARConstants.MASTER_SIGNING_KEYNAME);
-                // master key is set
                 if (Objects.nonNull(signingKey)) {
                     byte[] blockSignatureFileContent = securityProcessor.signBytes(signingKey, sigFileBuilder.toString().getBytes());
                     out.putArchiveEntry(new ZipArchiveEntry("TOSCA-Metadata/TOSCA.sig"));
                     out.write(blockSignatureFileContent);
+                    out.closeArchiveEntry();
+                    
+                    byte[] cert = keystoreManager.loadCertificateAsByteArray(SecureCSARConstants.MASTER_SIGNING_KEYNAME);
+                    out.putArchiveEntry(new ZipArchiveEntry("TOSCA-Metadata/TOSCA.crt"));
+                    out.write(cert);
                     out.closeArchiveEntry();
                 }
             } catch (GenericSecurityProcessorException | GenericKeystoreManagerException e) {

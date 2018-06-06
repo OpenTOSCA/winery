@@ -46,8 +46,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * All paths listed here have to be listed in Jersey's filter configuration
@@ -168,14 +167,16 @@ public class MainResource {
     public Response importCSAR(
         @FormDataParam("file") InputStream uploadedInputStream, @FormDataParam("file") FormDataContentDisposition fileDetail,
         @FormDataParam("overwrite") @ApiParam(value = "true: content of CSAR overwrites existing content. false (default): existing content is kept") Boolean overwrite,
-        @Context UriInfo uriInfo) {
+        @QueryParam(value = "secure") String secure, @Context UriInfo uriInfo) {
         // @formatter:on
         CsarImporter importer = new CsarImporter();
+        Map<String, Object> importConfigurations = new HashMap<>();
+        importConfigurations.put(CsarImporter.SECURE_CSAR_IMPORT, Objects.nonNull(secure));
         boolean ow;
         ow = (overwrite != null) && overwrite;
         ImportMetaInformation importMetaInformation;
         try {
-            importMetaInformation = importer.readCSAR(uploadedInputStream, ow, true);
+            importMetaInformation = importer.readCSAR(uploadedInputStream, ow, true, importConfigurations);
         } catch (Exception e) {
             return Response.serverError().entity("Could not import CSAR").entity(e.getMessage()).build();
         }
