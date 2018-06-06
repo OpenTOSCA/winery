@@ -37,7 +37,7 @@
     "rxjs": "^6.2.0",
     "zone.js": "^0.8.26",
     "rxjs-compat": "^6.0.0-rc.0",
-    "@winery/topologymodeler": "0.4.5"
+    "@winery/topologymodeler": "0.4.6"
   },
   "devDependencies": {
     "@angular/cli": "6.0.3",

@@ -6,6 +6,11 @@
     "sourceMap": true,
     "declaration": false,
     "moduleResolution": "node",
+    "paths": {
+      "@angular/*": [
+        "./node_modules/@angular/*"
+      ]
+    },
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "target": "es5",
