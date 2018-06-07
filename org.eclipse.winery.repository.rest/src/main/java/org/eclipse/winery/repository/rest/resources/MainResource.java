@@ -167,11 +167,11 @@ public class MainResource {
     public Response importCSAR(
         @FormDataParam("file") InputStream uploadedInputStream, @FormDataParam("file") FormDataContentDisposition fileDetail,
         @FormDataParam("overwrite") @ApiParam(value = "true: content of CSAR overwrites existing content. false (default): existing content is kept") Boolean overwrite,
-        @QueryParam(value = "secure") String secure, @Context UriInfo uriInfo) {
+        @FormDataParam("secure") Boolean secure, @Context UriInfo uriInfo) {
         // @formatter:on
         CsarImporter importer = new CsarImporter();
         Map<String, Object> importConfigurations = new HashMap<>();
-        importConfigurations.put(CsarImporter.SECURE_CSAR_IMPORT, Objects.nonNull(secure));
+        importConfigurations.put(CsarImporter.SECURE_CSAR_IMPORT, Objects.nonNull(secure) && secure);
         boolean ow;
         ow = (overwrite != null) && overwrite;
         ImportMetaInformation importMetaInformation;

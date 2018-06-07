@@ -26,6 +26,7 @@ import org.eclipse.winery.common.ids.definitions.imports.XSDImportId;
 import org.eclipse.winery.common.ids.elements.PlanId;
 import org.eclipse.winery.common.ids.elements.PlansId;
 import org.eclipse.winery.model.csar.toscametafile.TOSCAMetaFile;
+import org.eclipse.winery.model.csar.toscametafile.TOSCAMetaFileAttributes;
 import org.eclipse.winery.model.csar.toscametafile.TOSCAMetaFileParser;
 import org.eclipse.winery.model.tosca.*;
 import org.eclipse.winery.model.tosca.TArtifactReference.Exclude;
@@ -152,16 +153,20 @@ public class CsarImporter {
         Path toscaMetaPath = path.resolve("TOSCA-Metadata/TOSCA.meta");
         KeystoreManager km = new JCEKSKeystoreManager();
         SecurityProcessor sp = new BCSecurityProcessor();
+        Boolean isSecureImport = (Boolean) importConfigurations.get(SECURE_CSAR_IMPORT);
         
         if (!Files.exists(toscaMetaPath)) {
             importMetaInformation.errors.add("TOSCA.meta does not exist");
             return importMetaInformation;
         }
-        if ((Boolean) importConfigurations.get(SECURE_CSAR_IMPORT)) {
+        final TOSCAMetaFileParser tmfp = new TOSCAMetaFileParser();
+        TOSCAMetaFile signatureFile = null;
+        
+        if (isSecureImport) {
+            Path sigFileToscaMetaPath = path.resolve("TOSCA-Metadata/TOSCA.sf");
+            Path sigBlockFileToscaMetaPath = path.resolve("TOSCA-Metadata/TOSCA.sig");
+            Path certToscaMetaPath = path.resolve("TOSCA-Metadata/TOSCA.crt");
             try {
-                Path sigFileToscaMetaPath = path.resolve("TOSCA-Metadata/TOSCA.sf");
-                Path sigBlockFileToscaMetaPath = path.resolve("TOSCA-Metadata/TOSCA.sig");
-                Path certToscaMetaPath = path.resolve("TOSCA-Metadata/TOSCA.crt");
                 if (!Files.exists(sigBlockFileToscaMetaPath) && !Files.exists(certToscaMetaPath)) {
                     importMetaInformation.errors.add("Incomplete signature");
                     return importMetaInformation;
@@ -169,20 +174,54 @@ public class CsarImporter {
                 byte[] sigFileToscaMeta = Files.readAllBytes(sigFileToscaMetaPath);
                 byte[] sigBlockFileToscaMeta = Files.readAllBytes(sigBlockFileToscaMetaPath);
                 Certificate c = km.storeCertificate(SecureCSARConstants.MASTER_CERT_KEYNAME, new FileInputStream(certToscaMetaPath.toFile()));
-                if (!sp.verifyBytes(c, sigFileToscaMeta, sigBlockFileToscaMeta)) {
+                boolean isSFSignatureCorrect = sp.verifyBytes(c, sigFileToscaMeta, sigBlockFileToscaMeta);
+                // Verify the signature file
+                if (!isSFSignatureCorrect) {                    
                     importMetaInformation.errors.add("Corrupt signature");
                     return importMetaInformation;
                 }
-                
+                // Parse signature file to perform comparison with original meta
+                signatureFile = tmfp.parse(sigFileToscaMetaPath, true);
             } catch (GenericKeystoreManagerException | GenericSecurityProcessorException e) {
                 e.printStackTrace();
             }
         }
         
-        final TOSCAMetaFileParser tmfp = new TOSCAMetaFileParser();
-        final TOSCAMetaFile tmf = tmfp.parse(toscaMetaPath);
-
-        // we do NOT do any sanity checks, of TOSAC.meta
+        final TOSCAMetaFile tmf = tmfp.parse(toscaMetaPath, false);
+        
+        if (isSecureImport) {
+            String digestAlgorithm = signatureFile.getBlock0().get(TOSCAMetaFileAttributes.DIGEST_ALGORITHM);
+            // Validate TOSCAMetaFile against its digest in SignatureFile 
+            try {
+                String manifestDigest = signatureFile.getBlock0().get(TOSCAMetaFileAttributes.DIGEST_MANIFEST);
+                // Compare digest of the TOSCAMetaFile with the one given in the signature file
+                byte[] toscaMetaFile = Files.readAllBytes(toscaMetaPath);
+                String digest = sp.calculateDigest(toscaMetaFile, digestAlgorithm);
+                if (!manifestDigest.equals(digest)) {
+                    importMetaInformation.errors.add("Corrupt signature");
+                    return importMetaInformation;
+                }
+            } catch (GenericSecurityProcessorException e) {
+                e.printStackTrace();
+            }
+            // Validate digests of all files against their digests in TOSCAMetaFile
+            try {
+                for (Map<String, String> fileBlock : tmf.getFileBlocks()) {
+                    Path p = path.resolve(fileBlock.get(TOSCAMetaFileAttributes.NAME));
+                    byte[] bytes = Files.readAllBytes(p);
+                    String digest = sp.calculateDigest(bytes, digestAlgorithm);
+                    if (!fileBlock.get(TOSCAMetaFileAttributes.DIGEST).equals(digest)) {
+                        importMetaInformation.errors.add("Corrupt signature");
+                        return importMetaInformation;
+                    }
+                }                
+            } catch (GenericSecurityProcessorException e) {
+                e.printStackTrace();
+            }
+        }
+        
+        
+        // we do NOT do any sanity checks, of TOSCA.meta
         // and just start parsing
 
         if (tmf.getEntryDefinitions() != null) {
@@ -866,17 +905,8 @@ public class CsarImporter {
                 errors.add(String.format("File %1$s does not exist", p.toString()));
                 return;
             }
-            RepositoryFileReference fref;
             // directoryId already identifies the subdirectory 
-            /*Path subDirectory = rootPath.relativize(p).getParent();
-            // files are stored in "files/" or in "sources/"
-            if ((subDirectory == null) || (subDirectory.getParent().toString().endsWith(pathInsideRepo))) {
-                fref = new RepositoryFileReference(directoryId, p.getFileName().toString());
-            } else {
-                fref = new RepositoryFileReference(directoryId, subDirectory, p.getFileName().toString());
-            }*/
-            
-            fref = new RepositoryFileReference(directoryId, p.getFileName().toString());
+            RepositoryFileReference fref = new RepositoryFileReference(directoryId, p.getFileName().toString());
             importFile(p, fref, tmf, rootPath, errors);
         }
     }

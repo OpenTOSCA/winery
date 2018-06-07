@@ -28,8 +28,15 @@ public class TOSCAMetaFileAttributes {
     final public static String TOPOLOGY = "Topology";
     final public static String DESCRIPTION = "Description";
 
+    // of signature file block 0
+    final public static String TOSCA_SIGNATURE_VERSION = "Signature-Version";
+    final public static String TOSCA_SIGNATURE_VERSION_VALUE = "1.0";
+    final public static String DIGEST_MANIFEST = "Digest-Manifest";
+    
     // of blocks > 0 (file blocks)
     final public static String NAME = "Name";
     final public static String CONTENT_TYPE = "Content-Type";
-
+    final public static String DIGEST_ALGORITHM = "Digest-Algorithm";
+    final public static String DIGEST = "Digest";
+    
 }

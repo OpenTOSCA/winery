@@ -43,7 +43,7 @@ public class TOSCAMetaFileParser {
      * the TOSCA meta file. If the given file doesn't exist or is
      * invalid <code>null</code>.
      */
-    public TOSCAMetaFile parse(Path toscaMetaFile) {
+    public TOSCAMetaFile parse(Path toscaMetaFile, boolean isSignatureFile) {
         // counts the errors during parsing
         int numErrors = 0;
 
@@ -63,8 +63,12 @@ public class TOSCAMetaFileParser {
                 this.logManifestProblem(problem);
                 numErrors++;
             }
-
-            numErrors += this.validateBlock0(manifestContent);
+            if (!isSignatureFile) {
+                numErrors += this.validateBlock0(manifestContent);
+            }
+            else {
+                numErrors += this.validateSignatureBlock0(manifestContent);
+            }
             numErrors += this.validateFileBlocks(manifestContent);
 
             if (numErrors == 0) {
@@ -88,6 +92,56 @@ public class TOSCAMetaFileParser {
         }
 
         return toscaMetaFileContent;
+    }
+
+    private int validateSignatureBlock0(ManifestContents manifestContent) {
+        int numErrors = 0;
+
+        String signatureVersion;
+        String createdBy;
+        String entryDefinitions;
+        String digestAlgorithm;
+        String manifestDigest;
+
+        Map<String, String> mainAttr = manifestContent.getMainAttributes();
+
+        signatureVersion = mainAttr.get(TOSCAMetaFileAttributes.TOSCA_SIGNATURE_VERSION);
+        if (signatureVersion == null) {
+            this.logAttrMissing(TOSCAMetaFileAttributes.TOSCA_SIGNATURE_VERSION, 0);
+            numErrors++;
+        } else if (!signatureVersion.trim().equals(TOSCAMetaFileAttributes.TOSCA_SIGNATURE_VERSION_VALUE)) {
+            this.logAttrWrongVal(TOSCAMetaFileAttributes.TOSCA_SIGNATURE_VERSION, 0, TOSCAMetaFileAttributes.TOSCA_SIGNATURE_VERSION_VALUE);
+            numErrors++;
+        }
+
+        createdBy = mainAttr.get(TOSCAMetaFileAttributes.CREATED_BY);
+        if (createdBy == null) {
+            this.logAttrMissing(TOSCAMetaFileAttributes.CREATED_BY, 0);
+            numErrors++;
+        } else if ((createdBy.trim()).isEmpty()) {
+            this.logAttrValEmpty(TOSCAMetaFileAttributes.CREATED_BY, 0);
+            numErrors++;
+        }
+
+        entryDefinitions = mainAttr.get(TOSCAMetaFileAttributes.ENTRY_DEFINITIONS);
+        if ((entryDefinitions != null) && entryDefinitions.trim().isEmpty()) {
+            this.logAttrValEmpty(TOSCAMetaFileAttributes.ENTRY_DEFINITIONS, 0);
+            numErrors++;
+        }
+
+        digestAlgorithm = mainAttr.get(TOSCAMetaFileAttributes.DIGEST_ALGORITHM);
+        if ((digestAlgorithm != null) && digestAlgorithm.trim().isEmpty()) {
+            this.logAttrValEmpty(TOSCAMetaFileAttributes.DIGEST_ALGORITHM, 0);
+            numErrors++;
+        }
+
+        manifestDigest = mainAttr.get(TOSCAMetaFileAttributes.DIGEST_MANIFEST);
+        if ((manifestDigest != null) && manifestDigest.trim().isEmpty()) {
+            this.logAttrValEmpty(TOSCAMetaFileAttributes.DIGEST_MANIFEST, 0);
+            numErrors++;
+        }
+
+        return numErrors;
     }
 
     /**

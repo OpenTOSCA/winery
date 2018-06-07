@@ -91,7 +91,7 @@ public class Converter {
         Path fileOutPath = filePath.resolve("tmp");
         try {
             TOSCAMetaFileParser parser = new TOSCAMetaFileParser();
-            TOSCAMetaFile metaFile = parser.parse(filePath.resolve("TOSCA-Metadata").resolve("TOSCA.meta"));
+            TOSCAMetaFile metaFile = parser.parse(filePath.resolve("TOSCA-Metadata").resolve("TOSCA.meta"), false);
 
             org.eclipse.winery.yaml.common.reader.xml.Reader reader = new org.eclipse.winery.yaml.common.reader.xml.Reader();
             try {
