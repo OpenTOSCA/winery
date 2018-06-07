@@ -468,11 +468,6 @@ public class ToscaExportUtil {
                                         nodeTemplate.setDeploymentArtifacts(new TDeploymentArtifacts());
                                     }
 
-                                    TDeploymentArtifact propsManifest = new TDeploymentArtifact.Builder("DA_".concat(manifestName), QNames.WINERY_SIGNATURE_ARTIFACT_TYPE)
-                                        .setArtifactRef(signatureArtifactTemplateId.getQName())
-                                        .build();
-                                    nodeTemplate.getDeploymentArtifacts().getDeploymentArtifact().add(propsManifest);
-
                                     // generate SF
                                     byte[] manifestBytes = Files.readAllBytes(((FilebasedRepository) repository).ref2AbsolutePath(manifestPathRef)); 
                                     String manifestDigest = this.securityProcessor.calculateDigest(manifestBytes, this.digestAlgorithm);
@@ -482,11 +477,6 @@ public class ToscaExportUtil {
                                     String signedPropertiesSignatureFilePath = BackendUtils.getPathInsideRepo(signedPropertiesSignatureFileRef);
                                     this.referencesToPathInCSARMap.put(signedPropertiesSignatureFileRef, signedPropertiesSignatureFilePath);
 
-                                    TDeploymentArtifact signedPropertiesSignatureFile = new TDeploymentArtifact.Builder("DA_".concat(signedPropertiesSignatureFileName), QNames.WINERY_SIGNATURE_ARTIFACT_TYPE)
-                                        .setArtifactRef(signatureArtifactTemplateId.getQName())
-                                        .build();
-                                    nodeTemplate.getDeploymentArtifacts().getDeploymentArtifact().add(signedPropertiesSignatureFile);
-
                                     // generate signature block file
                                     byte[] signatureFileBytes = Files.readAllBytes(((FilebasedRepository) repository).ref2AbsolutePath(signedPropertiesSignatureFileRef));
                                     byte[] blockSignatureFileContent =  this.securityProcessor.signBytes(signingKey, signatureFileBytes);
@@ -495,10 +485,10 @@ public class ToscaExportUtil {
                                     String blockSignatureFilePath = BackendUtils.getPathInsideRepo(blockSignatureFileRef);
                                     this.referencesToPathInCSARMap.put(blockSignatureFileRef, blockSignatureFilePath);
 
-                                    TDeploymentArtifact blockSignatureFile = new TDeploymentArtifact.Builder("DA_".concat(blockSignatureFileName), QNames.WINERY_SIGNATURE_ARTIFACT_TYPE)
+                                    TDeploymentArtifact propsSignatureDA = new TDeploymentArtifact.Builder("DA_".concat(signPropsPolicyTemplate.getName()), QNames.WINERY_SIGNATURE_ARTIFACT_TYPE)
                                         .setArtifactRef(signatureArtifactTemplateId.getQName())
                                         .build();
-                                    nodeTemplate.getDeploymentArtifacts().getDeploymentArtifact().add(blockSignatureFile);
+                                    nodeTemplate.getDeploymentArtifacts().getDeploymentArtifact().add(propsSignatureDA);
                                     
                                     signTypeLevelPolicy.setIsApplied(true);
                                     if (nodeTemplate.getPolicies() == null) {

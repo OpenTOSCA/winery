@@ -16,14 +16,14 @@ package org.eclipse.winery.repository.export;
 
 import java.util.Objects;
 
-public class TOSCAMetaEntry {
+public class ToscaMetaEntry {
     
     private String name;
     private String contentType;
     private String digestAlgorithm;
     private String digestValue;
         
-    private TOSCAMetaEntry(Builder builder) {
+    private ToscaMetaEntry(Builder builder) {
         this.name = builder.name;
         this.contentType = builder.contentType;
         this.digestAlgorithm = builder.digestAlgorithm;
@@ -53,8 +53,8 @@ public class TOSCAMetaEntry {
             return this;
         }
 
-        public TOSCAMetaEntry build() {
-            return new TOSCAMetaEntry(this);
+        public ToscaMetaEntry build() {
+            return new ToscaMetaEntry(this);
         }
     }
     
