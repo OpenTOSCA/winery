@@ -7,9 +7,7 @@
     "declaration": false,
     "moduleResolution": "node",
     "paths": {
-      "@angular/*": [
-        "./node_modules/@angular/*"
-      ]
+      "@angular/core": ["./node_modules/@angular/core"]
     },
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
