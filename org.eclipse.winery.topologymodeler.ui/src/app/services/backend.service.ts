@@ -17,7 +17,7 @@ import {forkJoin as observableForkJoin,  Subject } from 'rxjs';
 
 import {map} from 'rxjs/operators';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs/Rx';
+import { Observable } from 'rxjs/Observable';
 
 import { ActivatedRoute } from '@angular/router';
 import { backendBaseURL } from '../models/configuration';

@@ -15,7 +15,7 @@
 
 import {map} from 'rxjs/operators';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs/Rx';
+import { Observable } from 'rxjs/Observable';
 import { backendBaseURL, hostURL } from '../models/configuration';
 import { urlElement } from '../models/enums';
 import { Headers, Http, RequestOptions } from '@angular/http';
