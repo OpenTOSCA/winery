@@ -72,7 +72,7 @@ import { ErrorHandlerService } from './services/error-handler.service';
         }),
         AccordionModule.forRoot(),
         TopologyRendererModule.forRoot(),
-        HotkeyModule.forRoot(),
+        HotkeyModule.forRoot({cheatSheetHotkey: 'mod+space'}),
         WineryModalModule,
         TypeaheadModule.forRoot()
     ],

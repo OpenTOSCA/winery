@@ -69,11 +69,16 @@ export class NavbarComponent implements OnDestroy {
             .subscribe(newButtonsState => this.setButtonsState(newButtonsState)));
         this.subscriptions.push(ngRedux.select(currentState => currentState.wineryState.currentJsonTopology)
             .subscribe(topologyTemplate => this.unformattedTopologyTemplate = topologyTemplate));
-        this.hotkeysService.add(new Hotkey('ctrl+s', (event: KeyboardEvent): boolean => {
+        this.hotkeysService.add(new Hotkey('mod+s', (event: KeyboardEvent): boolean => {
             event.stopPropagation();
             this.saveTopologyTemplateToRepository();
             return false; // Prevent bubbling
-        }));
+        }, undefined, 'Save the Topology Template'));
+        this.hotkeysService.add(new Hotkey('mod+l', (event: KeyboardEvent): boolean => {
+            event.stopPropagation();
+            this.ngRedux.dispatch(this.actions.executeLayout());
+            return false; // Prevent bubbling
+        }, undefined, 'Apply the layout directive to the Node Templates'));
         this.exportCsarUrl = this.backendService.topologyTemplateURL + '/?csar';
     }
 
