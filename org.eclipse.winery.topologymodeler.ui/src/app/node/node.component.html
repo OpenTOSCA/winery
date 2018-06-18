@@ -79,7 +79,7 @@
         </div>
     </div>
     <div class="endpointContainer center-block row" style="border: 0; box-shadow: none"
-         *ngIf="connectorEndpointVisible || !readonly"
+         *ngIf="connectorEndpointVisible && !readonly"
          (mouseover)="makeSource($event)">
         <div class="btn-group-vertical btn-group-sm center-block" role="group" id={{dragSource}}
              (mousedown)="passCurrentType($event)">
@@ -96,6 +96,7 @@
     <accordion #accordion (click)="repaint($event)">
         <!-- PROPERTIES -->
         <accordion-group
+            class="card-header-node-accordions"
             #propertiesgroup
             panelClass="accordionGroupPanel"
             *ngIf="navbarButtonsState.buttonsState.propertiesButton">
