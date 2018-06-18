@@ -13,10 +13,10 @@
  ********************************************************************************/
 
 #palette_root {
-    border-radius: 0.25rem;
+    border-radius: 1px;
     box-shadow: initial;
     /*background-color: #424242;*/
-    background-color: #dfdfdf;
+    background-color: #B3E5FC;
     border: 1px solid #c0c0c0;
     color: black;
     min-width: 300px;
@@ -26,10 +26,12 @@
 }
 
 #palette_root:hover {
-    background-color: #EAF2F5;
+    background-color: #4FC3F7;
 }
 
 .palette-items-wrapper {
+    height: 100%;
+    background: #E1F5FE;
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
@@ -47,17 +49,20 @@ accordion-group {
     overflow: hidden !important;
     white-space: nowrap !important;
     text-align: start !important;
-
 }
 
-.card-header {
-    padding: .25rem .65rem !important;
+ul.nav.flex-column.nav-tabs.ng-tns-c2-6 {
+    background-color: #E1F5FE !important;
 }
 
 accordion-group:hover {
     max-width: 100%;
     overflow: visible;
     white-space: normal;
+}
+
+.panel-heading.card-header {
+    margin: 20px;
 }
 
 .nav-item {

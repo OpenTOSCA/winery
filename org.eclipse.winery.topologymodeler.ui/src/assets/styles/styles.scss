@@ -13,6 +13,7 @@
  *******************************************************************************/
 
 /* You can add global styles to this file, and also import other style files */
+@import "~ngx-toastr/toastr.css";
 
 body {
     overflow-x: hidden;
@@ -100,6 +101,10 @@ label {
     background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #FFFFFF), color-stop(1, rgb(216, 216, 216)));
     background-image: -webkit-linear-gradient(top, #FFFFFF 0%, rgb(216, 216, 216) 100%);
     background-image: linear-gradient(to bottom, #FFFFFF 0%, rgb(216, 216, 216) 100%);
+}
+
+.panel-heading.card-header {
+    cursor: pointer;
 }
 
 .card-header:first-child {
