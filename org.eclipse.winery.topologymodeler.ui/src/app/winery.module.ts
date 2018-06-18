@@ -61,7 +61,15 @@ import { ErrorHandlerService } from './services/error-handler.service';
         BrowserAnimationsModule,
         NgReduxModule,
         BsDropdownModule.forRoot(),
-        ToastrModule.forRoot(),
+        ToastrModule.forRoot({
+            timeOut: 3000,
+            preventDuplicates: true,
+            easing: 'ease-in-out',
+            enableHtml: true,
+            progressBar: true,
+            extendedTimeOut: 3000,
+            easeTime: 450
+        }),
         AccordionModule.forRoot(),
         TopologyRendererModule.forRoot(),
         HotkeyModule.forRoot(),
