@@ -12,7 +12,7 @@
         "doc": "typedoc --options typedoc.json --exclude '**/*.spec.ts' ./src/"
     },
     "private": false,
-    "peerDependencies": {
+    "dependencies": {
         "@angular-redux/store": "6.5.7",
         "@angular/animations": "6.0.4",
         "@angular/cdk": "6.2.1",

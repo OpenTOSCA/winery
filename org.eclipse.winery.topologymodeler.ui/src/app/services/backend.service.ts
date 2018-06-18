@@ -416,7 +416,6 @@ export class BackendService {
 
     /**
      * Imports the template.
-     * @returns {Observable<any>}
      */
     importTopology(importedTemplateQName: string): Observable<HttpResponse<string>> {
         const headers = new HttpHeaders().set('Content-Type', 'text/plain');
@@ -464,7 +463,6 @@ export class BackendService {
 
     /**
      * Requests all topology template ids
-     * @returns {Observable<string>}
      */
     requestAllTopologyTemplates(): Observable<EntityType[]> {
         const url = hostURL + urlElement.Winery + urlElement.ServiceTemplates;
