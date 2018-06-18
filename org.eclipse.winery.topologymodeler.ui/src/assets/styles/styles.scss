@@ -38,15 +38,10 @@ body {
     border: 1px solid #cccccc;
     border-radius: .4em;
     font-size: x-small;
-    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #FFFFFF), color-stop(1, rgb(216, 216, 216)));
-    background-image: -webkit-linear-gradient(top, #FFFFFF 0%, rgb(216, 216, 216) 100%);
-    background-image: linear-gradient(to bottom, #FFFFFF 0%, rgb(216, 216, 216) 100%);
 }
 
 .btn-modal:hover {
-    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #EEEEEE), color-stop(1, rgb(216, 216, 216)));
-    background-image: -webkit-linear-gradient(top, #EEEEEE 0%, rgb(216, 216, 216) 100%);
-    background-image: linear-gradient(to bottom, #EEEEEE 0%, rgb(216, 216, 216) 100%);
+    background: #E1F5FE !important;
 }
 
 .help-block {
@@ -77,7 +72,7 @@ label {
 }
 
 .btn-modal:focus, .btn-modal:hover {
-    background-color: #cccccc !important;
+    background-color: #E1F5FE !important;
     color: #424242 !important;
     -webkit-box-shadow: initial;
     -moz-box-shadow: initial;
@@ -98,9 +93,7 @@ label {
 }
 
 .card-header {
-    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #FFFFFF), color-stop(1, rgb(216, 216, 216)));
-    background-image: -webkit-linear-gradient(top, #FFFFFF 0%, rgb(216, 216, 216) 100%);
-    background-image: linear-gradient(to bottom, #FFFFFF 0%, rgb(216, 216, 216) 100%);
+    padding: 8px;
 }
 
 .panel-heading.card-header {
