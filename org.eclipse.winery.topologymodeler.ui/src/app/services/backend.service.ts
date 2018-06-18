@@ -92,7 +92,6 @@ export class BackendService {
     topologyTemplatesDiffAndVisuals$ = this.topologyTemplatesDiffAndVisuals.asObservable();
 
     constructor(private http: HttpClient,
-                private activatedRoute: ActivatedRoute,
                 private alert: ToastrService) {
 
         this.endpointConfiguration$.subscribe((params: TopologyModelerConfiguration) => {

@@ -22,7 +22,7 @@ import {
 } from './models/ttopology-template';
 import { ILoaded, LoadedService } from './services/loaded.service';
 import { AppReadyEventService } from './services/app-ready-event.service';
-import { BackendService } from './services/backend.service';
+import { BackendService, TopologyModelerConfiguration } from './services/backend.service';
 import { Subscription } from 'rxjs';
 import { NgRedux } from '@angular-redux/store';
 import { IWineryState } from './redux/store/winery.store';
@@ -31,6 +31,7 @@ import { DifferenceStates, ToscaDiff } from './models/ToscaDiff';
 import { isNullOrUndefined } from 'util';
 import { Utils } from './models/utils';
 import { TopologyModelerInputDataFormat } from './models/entityTypesModel';
+import { ActivatedRoute } from '@angular/router';
 
 /**
  * This is the root component of the topology modeler.
@@ -68,7 +69,8 @@ export class WineryComponent implements OnInit {
                 private appReadyEvent: AppReadyEventService,
                 private backendService: BackendService,
                 private nodeRelationshipGeneratorService: NodeRelationshipTemplatesGeneratorService,
-                private ngRedux: NgRedux<IWineryState>) {
+                private ngRedux: NgRedux<IWineryState>,
+                private activatedRoute: ActivatedRoute) {
         this.subscriptions.push(this.ngRedux.select(state => state.wineryState.hideNavBarAndPaletteState)
             .subscribe(hideNavBar => this.hideNavBarState = hideNavBar));
     }
@@ -80,14 +82,27 @@ export class WineryComponent implements OnInit {
      * inside the Redux store of this application.
      */
     ngOnInit() {
-        if (this.topologyModelerData.configuration.readonly) {
-            this.readonly = true;
-        }
-        // If data is passed to the topologymodeler directly, rendering is initiated immediately without backend calls
-        if (this.topologyModelerData.topologyTemplate) {
-            this.initiateLocalRendering(this.topologyModelerData);
+        if (this.topologyModelerData) {
+            if (this.topologyModelerData.configuration.readonly) {
+                this.readonly = true;
+            }
+            // If data is passed to the topologymodeler directly, rendering is initiated immediately without backend calls
+            if (this.topologyModelerData.topologyTemplate) {
+                this.initiateLocalRendering(this.topologyModelerData);
+            } else {
+                if (this.topologyModelerData.configuration.endpointConfig) {
+                    this.backendService.endpointConfiguration.next(this.topologyModelerData.configuration.endpointConfig);
+                } else {
+                    this.activatedRoute.queryParams.subscribe((params: TopologyModelerConfiguration) => {
+                        this.backendService.endpointConfiguration.next(params);
+                    });
+                    this.initiateBackendCalls();
+                }
+            }
         } else {
-            this.backendService.endpointConfiguration.next(this.topologyModelerData.configuration.endpointConfig);
+            this.activatedRoute.queryParams.subscribe((params: TopologyModelerConfiguration) => {
+                this.backendService.endpointConfiguration.next(params);
+            });
             this.initiateBackendCalls();
         }
     }
