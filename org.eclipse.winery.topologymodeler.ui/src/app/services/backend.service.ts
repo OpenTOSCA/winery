@@ -12,13 +12,11 @@
  * SPDX-License-Identifier: EPL-2.0 OR Apache-2.0
  ********************************************************************************/
 
-import { forkJoin as observableForkJoin, Subject } from 'rxjs';
-
 import { map } from 'rxjs/operators';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
-
-import { ActivatedRoute } from '@angular/router';
+import { Subject } from 'rxjs/Subject';
+import { forkJoin } from 'rxjs'; // change to new RxJS 6 import syntax
 import { backendBaseURL, hostURL } from '../models/configuration';
 import { isNullOrUndefined } from 'util';
 import { EntityType, TTopologyTemplate, Visuals } from '../models/ttopology-template';
@@ -218,22 +216,23 @@ export class BackendService {
 
     /**
      * Requests all entities together.
-     * We use Observable.forkJoin to await all responses from the backend.
+     * We use forkJoin() to await all responses from the backend.
      * This is required
      * @returns data  The JSON from the server
      */
     requestAllEntitiesAtOnce(): Observable<Object> {
         if (this.configuration) {
-            return Observable.forkJoin(this.requestGroupedNodeTypes(),
-                                        this.requestArtifactTemplates(),
-                                        this.requestTopologyTemplateAndVisuals(),
-                                        this.requestArtifactTypes(),
-                                        this.requestPolicyTypes(),
-                                        this.requestCapabilityTypes(),
-                                        this.requestRequirementTypes(),
-                                        this.requestPolicyTemplates(),
-                                        this.requestRelationshipTypes(),
-                                        this.requestNodeTypes());
+            // Observable.forkJoin (RxJS 5) changes to just forkJoin() in RxJS 6
+            return forkJoin(this.requestGroupedNodeTypes(),
+                this.requestArtifactTemplates(),
+                this.requestTopologyTemplateAndVisuals(),
+                this.requestArtifactTypes(),
+                this.requestPolicyTypes(),
+                this.requestCapabilityTypes(),
+                this.requestRequirementTypes(),
+                this.requestPolicyTemplates(),
+                this.requestRelationshipTypes(),
+                this.requestNodeTypes());
         }
     }
 
@@ -251,9 +250,8 @@ export class BackendService {
             const currentUrl = url + this.configuration.id + '/topologytemplate/';
             const visualsUrl = backendBaseURL + '/nodetypes/allvisualappearancedata';
             // This is required because the information has to be returned together
-
             if (isNullOrUndefined(this.configuration.compareTo)) {
-                return observableForkJoin(
+                return forkJoin(
                     this.http.get<TTopologyTemplate>(currentUrl),
                     this.http.get<Visuals>(visualsUrl)
                 );
@@ -264,7 +262,7 @@ export class BackendService {
                 const templateUrl = url
                     + this.configuration.compareTo + '/topologytemplate';
 
-                return observableForkJoin(
+                return forkJoin(
                     this.http.get<TTopologyTemplate>(currentUrl),
                     this.http.get<Visuals>(visualsUrl),
                     this.http.get<ToscaDiff>(compareUrl),

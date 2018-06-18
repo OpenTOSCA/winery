@@ -67,7 +67,6 @@ export class WineryComponent implements OnInit {
     constructor(private loadedService: LoadedService,
                 private appReadyEvent: AppReadyEventService,
                 private backendService: BackendService,
-                private nodeRelationshipGeneratorService: NodeRelationshipTemplatesGeneratorService,
                 private ngRedux: NgRedux<IWineryState>,
                 private activatedRoute: ActivatedRoute) {
         this.subscriptions.push(this.ngRedux.select(state => state.wineryState.hideNavBarAndPaletteState)
