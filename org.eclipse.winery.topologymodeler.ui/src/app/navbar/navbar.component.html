@@ -100,9 +100,11 @@
                 [style.background-color]="getStyle(navbarButtonsState.buttonsState.targetLocationsButton)">
                 Target Locations
             </button>
-            <button *ngIf="!readonly"
+            <!--<button *ngIf="!readonly"
                     class="btn btn-sm align-middle dark-button-style" type="button" style="margin-left: 4px">Print View
-            </button>
+            </button>-->
+        </div>
+        <div class="btn-group" data-toggle="buttons" style="margin-left: 4px">
             <button
                 *ngIf="!readonly"
                 class="btn btn-sm align-middle dark-button-style"
