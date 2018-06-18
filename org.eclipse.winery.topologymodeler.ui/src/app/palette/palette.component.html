@@ -22,11 +22,11 @@
 
     <div [@paletteItemState]="paletteRootState" class="palette-items-wrapper">
         <accordion [closeOthers]="oneAtATime">
-            <accordion-group *ngFor="let ns of entityTypes.groupedNodeTypes; let i = index;">
-                <div accordion-heading>{{ns.text}}</div>
-                <ul class="nav flex-column nav-tabs">
+            <accordion-group heading="{{ns.text}}" panelClass="panel-info" *ngFor="let ns of entityTypes.groupedNodeTypes; let i = index;">
+                <ul class="palette-ul">
                     <li *ngFor="let child of ns.children" class="nav-item">
                         <div class="btn btn-light btn-sm btn-block"
+                             [ngStyle]="{'border-color': getNewNodeDataFromNodeTypes(child.text).color }"
                              (mousedown)="generateNewNode($event)">{{ child.text }}
                         </div>
                     </li>
