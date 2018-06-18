@@ -20,6 +20,7 @@ import { NgRedux } from '@angular-redux/store';
 import { IWineryState } from '../../redux/store/winery.store';
 import { WineryActions } from '../../redux/actions/winery.actions';
 import { JsPlumbService } from '../../services/jsPlumb.service';
+import { PropertyDefinitionType } from '../../models/enums';
 
 @Component({
     selector: 'winery-properties-content',
@@ -45,21 +46,17 @@ export class PropertiesContentComponent implements OnInit, OnChanges, OnDestroy 
      * Angular lifecycle event.
      */
     ngOnChanges(changes: SimpleChanges) {
-        setTimeout(() => {
-            if (this.currentNodeData.currentNodePart === 'PROPERTIES') {
-                if (changes.currentNodeData.currentValue.nodeTemplate.properties) {
-                    try {
-                        const currentProperties = changes.currentNodeData.currentValue.nodeTemplate.properties;
-                        if (this.currentNodeData.propertyDefinitionType === 'KV') {
-                            this.nodeProperties = currentProperties.kvproperties;
-                        } else if (this.currentNodeData.propertyDefinitionType === 'XML') {
-                            this.nodeProperties = currentProperties.any;
-                        }
-                    } catch (e) {
-                    }
+        if (changes.currentNodeData.currentValue.nodeTemplate.properties) {
+            try {
+                const currentProperties = changes.currentNodeData.currentValue.nodeTemplate.properties;
+                if (this.currentNodeData.propertyDefinitionType === PropertyDefinitionType.KV) {
+                    this.nodeProperties = currentProperties.kvproperties;
+                } else if (this.currentNodeData.propertyDefinitionType === PropertyDefinitionType.XML) {
+                    this.nodeProperties = currentProperties.any;
                 }
+            } catch (e) {
             }
-        }, 1);
+        }
         // repaint jsPlumb to account for height change of the accordion
         setTimeout(() => this.jsPlumbService.getJsPlumbInstance().repaintEverything(), 1);
     }
@@ -68,14 +65,12 @@ export class PropertiesContentComponent implements OnInit, OnChanges, OnDestroy 
      * Angular lifecycle event.
      */
     ngOnInit() {
-
         if (this.currentNodeData.nodeTemplate.properties) {
-            console.log(this.currentNodeData);
             try {
                 const currentProperties = this.currentNodeData.nodeTemplate.properties;
-                if (this.currentNodeData.propertyDefinitionType === 'KV') {
+                if (this.currentNodeData.propertyDefinitionType === PropertyDefinitionType.KV) {
                     this.nodeProperties = currentProperties.kvproperties;
-                } else if (this.currentNodeData.propertyDefinitionType === 'XML') {
+                } else if (this.currentNodeData.propertyDefinitionType === PropertyDefinitionType.XML) {
                     this.nodeProperties = currentProperties.any;
                 }
             } catch (e) {
@@ -94,22 +89,18 @@ export class PropertiesContentComponent implements OnInit, OnChanges, OnDestroy 
             debounceTime(300),
             distinctUntilChanged(),)
             .subscribe(value => {
-                if (this.currentNodeData.propertyDefinitionType === 'KV') {
+                if (this.currentNodeData.propertyDefinitionType === PropertyDefinitionType.KV) {
                     this.nodeProperties[this.key] = value;
                 } else {
                     this.nodeProperties = value;
                 }
-                switch (this.currentNodeData.currentNodePart) {
-                    case 'PROPERTIES':
-                        this.$ngRedux.dispatch(this.actions.setProperty({
-                            nodeProperty: {
-                                newProperty: this.nodeProperties,
-                                propertyType: this.currentNodeData.propertyDefinitionType,
-                                nodeId: this.currentNodeData.nodeTemplate.id
-                            }
-                        }));
-                        break;
-                }
+                this.$ngRedux.dispatch(this.actions.setProperty({
+                    nodeProperty: {
+                        newProperty: this.nodeProperties,
+                        propertyType: this.currentNodeData.propertyDefinitionType,
+                        nodeId: this.currentNodeData.nodeTemplate.id
+                    }
+                }));
             }));
     }
 

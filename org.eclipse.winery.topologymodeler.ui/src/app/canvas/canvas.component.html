@@ -36,14 +36,14 @@
                      [readonly]="readonly"
                      [nodeTemplate]="nodeTemplate"
                      [entityTypes]="this.entityTypes"
-                     [allRelationshipTypesColors]="allRelationshipTypesColors"
+                     [relationshipTypes]="relationshipTypes"
                      (sendId)="activateNewNode($event)"
                      [navbarButtonsState]="navbarButtonsState"
                      (askForRepaint)="revalidateContainer()"
                      (askForRemoval)="removeElement($event)"
                      (setDragSource)="setDragSource($event)"
                      (closedEndpoint)="toggleClosedEndpoint($event)"
-                     (sendCurrentType)="setCurrentType($event)"
+                     (sendSelectedRelationshipType)="setSelectedRelationshipType($event)"
                      [dragSource]="nodeTemplate.id + '_Endpoint'"
                      (handleNodeClickedActions)="handleNodeClickedActions($event)"
                      (updateSelectedNodes)="updateSelectedNodes()"
@@ -309,6 +309,9 @@
                                 [value]="topologyTemplate.id">{{ topologyTemplate.id }}
                         </option>
                     </select>
+                    <div *ngIf="importTopologyData.topologySelected" style="display: flex; justify-content: center; align-items: center">
+                        <i class="fa fa-3x fa-refresh fa-spin" style="max-width: 50%;"></i>
+                    </div>
                 </div>
             </fieldset>
         </form>
@@ -319,7 +322,7 @@
         </button>
         <button (click)="importTopology(); importTopologyForm.reset()"
                 type="button" id="importTopologyBtn" class="btn btn-primary"
-                [disabled]="!importTopologyForm.form.valid">Add
+                [disabled]="!importTopologyForm.form.valid || importTopologyData.topologySelected">Add
         </button>
     </winery-modal-footer>
 </winery-modal>

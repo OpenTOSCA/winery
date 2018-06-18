@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013-2017 Contributors to the Eclipse Foundation
+ * Copyright (c) 2013-2018 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -14,114 +14,19 @@
 
 package org.eclipse.winery.model.tosca;
 
-import org.eclipse.jdt.annotation.NonNull;
-import org.eclipse.jdt.annotation.Nullable;
-
-import javax.xml.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAnyElement;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlType;
 
-/**
- * <p>Java class for tBoundaryDefinitions complex type.
- * <p>
- * <p>The following schema fragment specifies the expected content contained within this class.
- * <p>
- * <pre>
- * &lt;complexType name="tBoundaryDefinitions">
- *   &lt;complexContent>
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;sequence>
- *         &lt;element name="Properties" minOccurs="0">
- *           &lt;complexType>
- *             &lt;complexContent>
- *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *                 &lt;sequence>
- *                   &lt;any namespace='##other'/>
- *                   &lt;element name="PropertyMappings" minOccurs="0">
- *                     &lt;complexType>
- *                       &lt;complexContent>
- *                         &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *                           &lt;sequence>
- *                             &lt;element name="PropertyMapping" type="{http://docs.oasis-open.org/tosca/ns/2011/12}tPropertyMapping"
- * maxOccurs="unbounded"/>
- *                           &lt;/sequence>
- *                         &lt;/restriction>
- *                       &lt;/complexContent>
- *                     &lt;/complexType>
- *                   &lt;/element>
- *                 &lt;/sequence>
- *               &lt;/restriction>
- *             &lt;/complexContent>
- *           &lt;/complexType>
- *         &lt;/element>
- *         &lt;element name="PropertyConstraints" minOccurs="0">
- *           &lt;complexType>
- *             &lt;complexContent>
- *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *                 &lt;sequence>
- *                   &lt;element name="PropertyConstraint" type="{http://docs.oasis-open.org/tosca/ns/2011/12}tPropertyConstraint"
- * maxOccurs="unbounded"/>
- *                 &lt;/sequence>
- *               &lt;/restriction>
- *             &lt;/complexContent>
- *           &lt;/complexType>
- *         &lt;/element>
- *         &lt;element name="Requirements" minOccurs="0">
- *           &lt;complexType>
- *             &lt;complexContent>
- *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *                 &lt;sequence>
- *                   &lt;element name="Requirement" type="{http://docs.oasis-open.org/tosca/ns/2011/12}tRequirementRef"
- * maxOccurs="unbounded"/>
- *                 &lt;/sequence>
- *               &lt;/restriction>
- *             &lt;/complexContent>
- *           &lt;/complexType>
- *         &lt;/element>
- *         &lt;element name="Capabilities" minOccurs="0">
- *           &lt;complexType>
- *             &lt;complexContent>
- *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *                 &lt;sequence>
- *                   &lt;element name="Capability" type="{http://docs.oasis-open.org/tosca/ns/2011/12}tCapabilityRef"
- * maxOccurs="unbounded"/>
- *                 &lt;/sequence>
- *               &lt;/restriction>
- *             &lt;/complexContent>
- *           &lt;/complexType>
- *         &lt;/element>
- *         &lt;element name="Policies" minOccurs="0">
- *           &lt;complexType>
- *             &lt;complexContent>
- *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *                 &lt;sequence>
- *                   &lt;element name="Policy" type="{http://docs.oasis-open.org/tosca/ns/2011/12}tPolicy"
- * maxOccurs="unbounded"/>
- *                 &lt;/sequence>
- *               &lt;/restriction>
- *             &lt;/complexContent>
- *           &lt;/complexType>
- *         &lt;/element>
- *         &lt;element name="Interfaces" minOccurs="0">
- *           &lt;complexType>
- *             &lt;complexContent>
- *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *                 &lt;sequence>
- *                   &lt;element name="Interface" type="{http://docs.oasis-open.org/tosca/ns/2011/12}tExportedInterface"
- * maxOccurs="unbounded"/>
- *                 &lt;/sequence>
- *               &lt;/restriction>
- *             &lt;/complexContent>
- *           &lt;/complexType>
- *         &lt;/element>
- *       &lt;/sequence>
- *     &lt;/restriction>
- *   &lt;/complexContent>
- * &lt;/complexType>
- * </pre>
- */
+import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
+
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "tBoundaryDefinitions", propOrder = {
     "properties",
@@ -181,8 +86,7 @@ public class TBoundaryDefinitions {
      *
      * @return possible object is {@link TBoundaryDefinitions.Properties }
      */
-    /*@Nullable*/
-    public TBoundaryDefinitions.Properties getProperties() {
+    public TBoundaryDefinitions.@Nullable Properties getProperties() {
         return properties;
     }
 
@@ -200,8 +104,7 @@ public class TBoundaryDefinitions {
      *
      * @return possible object is {@link TBoundaryDefinitions.PropertyConstraints }
      */
-    /*@Nullable*/
-    public TBoundaryDefinitions.PropertyConstraints getPropertyConstraints() {
+    public TBoundaryDefinitions.@Nullable PropertyConstraints getPropertyConstraints() {
         return propertyConstraints;
     }
 
@@ -219,8 +122,7 @@ public class TBoundaryDefinitions {
      *
      * @return possible object is {@link TBoundaryDefinitions.Requirements }
      */
-    /*@Nullable*/
-    public TBoundaryDefinitions.Requirements getRequirements() {
+    public TBoundaryDefinitions.@Nullable Requirements getRequirements() {
         return requirements;
     }
 
@@ -238,8 +140,7 @@ public class TBoundaryDefinitions {
      *
      * @return possible object is {@link TBoundaryDefinitions.Capabilities }
      */
-    /*@Nullable*/
-    public TBoundaryDefinitions.Capabilities getCapabilities() {
+    public TBoundaryDefinitions.@Nullable Capabilities getCapabilities() {
         return capabilities;
     }
 
@@ -257,8 +158,7 @@ public class TBoundaryDefinitions {
      *
      * @return possible object is {@link TBoundaryDefinitions.Policies }
      */
-    /*@Nullable*/
-    public TBoundaryDefinitions.Policies getPolicies() {
+    public TBoundaryDefinitions.@Nullable Policies getPolicies() {
         return policies;
     }
 
@@ -276,8 +176,7 @@ public class TBoundaryDefinitions {
      *
      * @return possible object is {@link TBoundaryDefinitions.Interfaces }
      */
-    /*@Nullable*/
-    public TBoundaryDefinitions.Interfaces getInterfaces() {
+    public TBoundaryDefinitions.@Nullable Interfaces getInterfaces() {
         return interfaces;
     }
 
@@ -289,7 +188,6 @@ public class TBoundaryDefinitions {
     public void setInterfaces(TBoundaryDefinitions.Interfaces value) {
         this.interfaces = value;
     }
-
 
     /**
      * <p>Java class for anonymous complex type.
@@ -347,7 +245,6 @@ public class TBoundaryDefinitions {
         }
     }
 
-
     /**
      * <p>Java class for anonymous complex type.
      * <p>
@@ -404,7 +301,6 @@ public class TBoundaryDefinitions {
         }
     }
 
-
     /**
      * <p>Java class for anonymous complex type.
      * <p>
@@ -460,7 +356,6 @@ public class TBoundaryDefinitions {
             return this.policy;
         }
     }
-
 
     /**
      * <p>Java class for anonymous complex type.
@@ -527,8 +422,7 @@ public class TBoundaryDefinitions {
          *
          * @return possible object is {@link TBoundaryDefinitions.Properties.PropertyMappings }
          */
-        /*@Nullable*/
-        public TBoundaryDefinitions.Properties.PropertyMappings getPropertyMappings() {
+        public TBoundaryDefinitions.Properties.@Nullable PropertyMappings getPropertyMappings() {
             return propertyMappings;
         }
 
@@ -540,7 +434,6 @@ public class TBoundaryDefinitions {
         public void setPropertyMappings(TBoundaryDefinitions.Properties.PropertyMappings value) {
             this.propertyMappings = value;
         }
-
 
         /**
          * <p>Java class for anonymous complex type.
@@ -589,7 +482,7 @@ public class TBoundaryDefinitions {
              * Objects of the following type(s) are allowed in the list
              * {@link TPropertyMapping }
              */
-            /*@Nullable*/
+            @Nullable
             public List<TPropertyMapping> getPropertyMapping() {
                 if (propertyMapping == null) {
                     propertyMapping = new ArrayList<TPropertyMapping>();
@@ -598,7 +491,6 @@ public class TBoundaryDefinitions {
             }
         }
     }
-
 
     /**
      * <p>Java class for anonymous complex type.
@@ -655,7 +547,6 @@ public class TBoundaryDefinitions {
             return this.propertyConstraint;
         }
     }
-
 
     /**
      * <p>Java class for anonymous complex type.
