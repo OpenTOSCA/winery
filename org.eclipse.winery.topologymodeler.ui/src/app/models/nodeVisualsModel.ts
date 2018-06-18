@@ -1,4 +1,4 @@
-/********************************************************************************
+/*******************************************************************************
  * Copyright (c) 2018 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -10,9 +10,9 @@
  * which is available at https://www.apache.org/licenses/LICENSE-2.0.
  *
  * SPDX-License-Identifier: EPL-2.0 OR Apache-2.0
- ********************************************************************************/
-export class RequirementOrCapability {
-    name: string = null;
-    ref: any;
-    id: string = null;
+ *******************************************************************************/
+
+export interface NodeVisualsModel {
+    color: string;
+    imageUrl: string;
 }

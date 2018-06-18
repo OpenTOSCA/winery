@@ -904,8 +904,8 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit, DoChec
      * @param event  The html event.
      */
     moveNewNode(event): void {
-        const x = (event.clientX - this.newNodePositionOffsetX).toString();
-        const y = (event.clientY - this.newNodePositionOffsetY).toString();
+        const x = event.clientX - this.newNodePositionOffsetX;
+        const y = event.clientY - this.newNodePositionOffsetY + this.scrollOffset;
         this.allNodeTemplates[this.indexOfNewNode].x = x;
         this.allNodeTemplates[this.indexOfNewNode].y = y;
     }
@@ -1104,8 +1104,8 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit, DoChec
         });
         const nodeCoordinates = {
             id: nodeTemplate.firstChild.id,
-            x: nodeTemplate.firstChild.offsetLeft.toString(),
-            y: nodeTemplate.firstChild.offsetTop.toString()
+            x: nodeTemplate.firstChild.offsetLeft,
+            y: nodeTemplate.firstChild.offsetTop
         };
         this.allNodeTemplates[nodeIndex].x = nodeCoordinates.x;
         this.allNodeTemplates[nodeIndex].y = nodeCoordinates.y;

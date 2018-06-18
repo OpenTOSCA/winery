@@ -91,6 +91,9 @@ export class BackendService {
     private topologyTemplatesDiffAndVisuals = new Subject<[TTopologyTemplate, Visuals, ToscaDiff, TTopologyTemplate]>();
     topologyTemplatesDiffAndVisuals$ = this.topologyTemplatesDiffAndVisuals.asObservable();
 
+    private allEntities = new Subject<any>();
+    allEntities$ = this.allEntities.asObservable();
+
     constructor(private http: HttpClient,
                 private alert: ToastrService) {
 
@@ -104,6 +107,13 @@ export class BackendService {
                     + encodeURIComponent(encodeURIComponent(this.configuration.ns)) + '/'
                     + this.configuration.id;
                 console.log(this.topologyTemplateURL);
+
+                // All Entity types
+                this.requestAllEntitiesAtOnce().subscribe(data => {
+                    // add JSON to Promise, WineryComponent will subscribe to its Observable
+                    this.allEntities.next(data);
+                });
+
                 // ServiceTemplate / TopologyTemplate
                 this.requestServiceTemplate().subscribe(data => {
                     // add JSON to Promise, WineryComponent will subscribe to its Observable
@@ -204,6 +214,27 @@ export class BackendService {
                 resolve(false);
             }
         });
+    }
+
+    /**
+     * Requests all entities together.
+     * We use Observable.forkJoin to await all responses from the backend.
+     * This is required
+     * @returns data  The JSON from the server
+     */
+    requestAllEntitiesAtOnce(): Observable<Object> {
+        if (this.configuration) {
+            return Observable.forkJoin(this.requestGroupedNodeTypes(),
+                                        this.requestArtifactTemplates(),
+                                        this.requestTopologyTemplateAndVisuals(),
+                                        this.requestArtifactTypes(),
+                                        this.requestPolicyTypes(),
+                                        this.requestCapabilityTypes(),
+                                        this.requestRequirementTypes(),
+                                        this.requestPolicyTemplates(),
+                                        this.requestRelationshipTypes(),
+                                        this.requestNodeTypes());
+        }
     }
 
     /**

@@ -26,7 +26,6 @@ import { BackendService, TopologyModelerConfiguration } from './services/backend
 import { Subscription } from 'rxjs';
 import { NgRedux } from '@angular-redux/store';
 import { IWineryState } from './redux/store/winery.store';
-import { NodeRelationshipTemplatesGeneratorService } from './services/node-relationship-templates-generator.service';
 import { DifferenceStates, ToscaDiff } from './models/ToscaDiff';
 import { isNullOrUndefined } from 'util';
 import { Utils } from './models/utils';

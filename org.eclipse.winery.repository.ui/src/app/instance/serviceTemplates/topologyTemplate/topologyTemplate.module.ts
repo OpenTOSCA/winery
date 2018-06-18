@@ -1,4 +1,3 @@
-<!--
 /********************************************************************************
  * Copyright (c) 2018 Contributors to the Eclipse Foundation
  *
@@ -12,15 +11,26 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR Apache-2.0
  ********************************************************************************/
- -->
-<winery-uploader #uploader [title]="'Upload Image'" [uploadUrl]="url" [isEditable]="sharedData?.currentVersion?.editable"></winery-uploader>
+import { NgModule } from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
+import { TopologyTemplateComponent } from './topologyTemplate.component';
+import { WineryModalModule } from '../../../wineryModalModule/winery.modal.module';
 
-<div id="{{id}} + FormGroup" class="form-group">
-    <label for="{{id}} + DisplayDiv">{{label}}</label>
-    <div id="{{id}} + DisplayDiv" style="width:100%">
-        <div class="col-md-2">
-            <a href="{{url}}" target="_blank"><img id="{{id}} + Img" [style.width]="imageWidth" src="{{url}}" alt="n/a" /></a>
-        </div>
-        <button class="btn btn-default btn-xs" type="button" (click)="uploader.show();">Upload...</button> or drop the image in this area.
-    </div>
-</div>
+@NgModule({
+    imports: [
+        BrowserModule,
+        CommonModule,
+        RouterModule,
+        WineryModalModule,
+    ],
+    exports: [
+        TopologyTemplateComponent
+    ],
+    declarations: [
+        TopologyTemplateComponent
+    ]
+})
+export class TopologyTemplateModule {
+}
