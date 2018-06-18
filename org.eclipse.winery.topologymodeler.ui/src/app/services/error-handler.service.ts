@@ -14,12 +14,13 @@
 
 import { Injectable } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
-import { WineryAlertService } from '../winery-alert/winery-alert.service';
+import {ToastrService} from "ngx-toastr";
+
 
 @Injectable()
 export class ErrorHandlerService {
 
-  constructor(private alert: WineryAlertService) { }
+  constructor(private alert: ToastrService) { }
 
     /**
      * Error handler.
