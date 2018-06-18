@@ -1,6 +1,6 @@
-import {Component} from '@angular/core';
-import {topologytemplate, visuals} from "../mockdata/mockdata";
-import {TopologyModelerInputDataFormat} from "../topologyModelerInputDataFormat";
+import { Component } from '@angular/core';
+import { TopologyModelerInputDataFormat } from '../topologyModelerInputDataFormat';
+import { topologytemplate, visuals } from '../mockdata/mockdata';
 
 @Component({
   selector: 'app-root',
@@ -12,17 +12,19 @@ export class AppComponent {
 
   mockData: TopologyModelerInputDataFormat = {
     configuration: {
-      /*endpointConfig: {
-        id: 'FieldProvider',
-        ns: 'http:%2F%2Fwww.opentosca.org%2Fproviders%2FFieldProvider',
-        repositoryURL: 'http:%2F%2Flocalhost:8080%2Fwinery',
-        uiURL: 'http:%2F%2Flocalhost:8080%2F%23%2F',
+      endpointConfig: {
+        id: 'FoodProvider',
+        ns: 'http://www.opentosca.org/providers/FoodProvider',
+        repositoryURL: 'http://localhost:8080/winery',
+        uiURL: 'http://localhost:8080/',
         compareTo: null
-      },*/
-      endpointConfig: undefined,
-      readonly: true
+      },
+      // endpointConfig: undefined,
+      readonly: false
     },
-    topologyTemplate: topologytemplate,
-    visuals: visuals
+    // topologyTemplate: topologytemplate,
+    topologyTemplate: undefined,
+    // visuals: visuals,
+    visuals: undefined
   };
 }

@@ -12,10 +12,9 @@
  * SPDX-License-Identifier: EPL-2.0 OR Apache-2.0
  ********************************************************************************/
 
+import { forkJoin as observableForkJoin, Subject } from 'rxjs';
 
-import {forkJoin as observableForkJoin,  Subject } from 'rxjs';
-
-import {map} from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 
@@ -53,6 +52,8 @@ export class BackendService {
 
     configuration: TopologyModelerConfiguration;
     topologyTemplateURL;
+    endpointConfiguration = new Subject<any>();
+    endpointConfiguration$ = this.endpointConfiguration.asObservable();
 
     private serviceTemplate = new Subject<any>();
     serviceTemplate$ = this.serviceTemplate.asObservable();
@@ -94,7 +95,7 @@ export class BackendService {
                 private activatedRoute: ActivatedRoute,
                 private alert: ToastrService) {
 
-        this.activatedRoute.queryParams.subscribe((params: TopologyModelerConfiguration) => {
+        this.endpointConfiguration$.subscribe((params: TopologyModelerConfiguration) => {
             if (!(isNullOrUndefined(params.id) &&
                 isNullOrUndefined(params.ns) &&
                 isNullOrUndefined(params.repositoryURL) &&
@@ -251,7 +252,7 @@ export class BackendService {
             const url = this.configuration.repositoryURL + '/servicetemplates/'
                 + encodeURIComponent(encodeURIComponent(this.configuration.ns)) + '/'
                 + this.configuration.id + '/topologytemplate/';
-            return this.http.get(url, { headers: this.headers });
+            return this.http.get(url, {headers: this.headers});
         }
     }
 
@@ -263,7 +264,7 @@ export class BackendService {
             const url = this.configuration.repositoryURL + '/relationshiptypes/'
                 + encodeURIComponent(encodeURIComponent(namespace)) + '/'
                 + id + '/visualappearance/';
-            return this.http.get<EntityType>(url, { headers: this.headers }).pipe(
+            return this.http.get<EntityType>(url, {headers: this.headers}).pipe(
                 map(relationship => {
                     if (!isNullOrUndefined(this.configuration.compareTo)) {
                         relationship.color = 'grey';
@@ -278,7 +279,7 @@ export class BackendService {
      */
     requestAllNodeTemplateVisuals(): Observable<any> {
         if (this.configuration) {
-            return this.http.get(backendBaseURL + '/nodetypes/allvisualappearancedata', { headers: this.headers });
+            return this.http.get(backendBaseURL + '/nodetypes/allvisualappearancedata', {headers: this.headers});
         }
     }
 
@@ -287,7 +288,7 @@ export class BackendService {
      */
     requestPolicyTypes(): Observable<any> {
         if (this.configuration) {
-            return this.http.get(backendBaseURL + '/policytypes?full', { headers: this.headers });
+            return this.http.get(backendBaseURL + '/policytypes?full', {headers: this.headers});
         }
     }
 
@@ -296,7 +297,7 @@ export class BackendService {
      */
     requestRequirementTypes(): Observable<any> {
         if (this.configuration) {
-            return this.http.get(backendBaseURL + '/requirementtypes?full', { headers: this.headers });
+            return this.http.get(backendBaseURL + '/requirementtypes?full', {headers: this.headers});
         }
     }
 
@@ -305,7 +306,7 @@ export class BackendService {
      */
     requestCapabilityTypes(): Observable<any> {
         if (this.configuration) {
-            return this.http.get(backendBaseURL + '/capabilitytypes?full', { headers: this.headers });
+            return this.http.get(backendBaseURL + '/capabilitytypes?full', {headers: this.headers});
         }
     }
 
@@ -314,7 +315,7 @@ export class BackendService {
      */
     requestGroupedNodeTypes(): Observable<any> {
         if (this.configuration) {
-            return this.http.get(backendBaseURL + '/nodetypes?grouped&full', { headers: this.headers });
+            return this.http.get(backendBaseURL + '/nodetypes?grouped&full', {headers: this.headers});
         }
     }
 
@@ -323,7 +324,7 @@ export class BackendService {
      */
     requestNodeTypes(): Observable<any> {
         if (this.configuration) {
-            return this.http.get(backendBaseURL + '/nodetypes?full', { headers: this.headers });
+            return this.http.get(backendBaseURL + '/nodetypes?full', {headers: this.headers});
         }
     }
 
@@ -332,7 +333,7 @@ export class BackendService {
      */
     requestPolicyTemplates(): Observable<any> {
         if (this.configuration) {
-            return this.http.get(backendBaseURL + '/policytemplates', { headers: this.headers });
+            return this.http.get(backendBaseURL + '/policytemplates', {headers: this.headers});
         }
     }
 
@@ -341,7 +342,7 @@ export class BackendService {
      */
     requestArtifactTypes(): Observable<any> {
         if (this.configuration) {
-            return this.http.get(backendBaseURL + '/artifacttypes', { headers: this.headers });
+            return this.http.get(backendBaseURL + '/artifacttypes', {headers: this.headers});
         }
     }
 
@@ -350,7 +351,7 @@ export class BackendService {
      */
     requestArtifactTemplates(): Observable<any> {
         if (this.configuration) {
-            return this.http.get(backendBaseURL + '/artifacttemplates', { headers: this.headers });
+            return this.http.get(backendBaseURL + '/artifacttemplates', {headers: this.headers});
         }
     }
 
@@ -359,7 +360,7 @@ export class BackendService {
      */
     requestRelationshipTypes(): Observable<any> {
         if (this.configuration) {
-            return this.http.get(backendBaseURL + '/relationshiptypes', { headers: this.headers });
+            return this.http.get(backendBaseURL + '/relationshiptypes', {headers: this.headers});
         }
     }
 
@@ -374,7 +375,7 @@ export class BackendService {
             } else {
                 URL = backendBaseURL + '/admin/namespaces/';
             }
-            return this.http.get(URL, { headers: this.headers });
+            return this.http.get(URL, {headers: this.headers});
         }
     }
 
@@ -385,7 +386,7 @@ export class BackendService {
     requestArtifactTemplate(artifact: QNameWithTypeApiData): Observable<any> {
         const url = this.configuration.repositoryURL + '/artifacttemplates/'
             + encodeURIComponent(encodeURIComponent(artifact.namespace)) + '/' + artifact.localname;
-        return this.http.get(url + '/', { headers: this.headers });
+        return this.http.get(url + '/', {headers: this.headers});
     }
 
     /**
@@ -395,7 +396,7 @@ export class BackendService {
     requestPolicyTemplate(artifact: QNameWithTypeApiData): Observable<any> {
         const url = this.configuration.repositoryURL + '/policytemplates/'
             + encodeURIComponent(encodeURIComponent(artifact.namespace)) + '/' + artifact.localname;
-        return this.http.get(url + '/', { headers: this.headers });
+        return this.http.get(url + '/', {headers: this.headers});
     }
 
     /**
@@ -420,7 +421,11 @@ export class BackendService {
     importTopology(importedTemplateQName: string): Observable<HttpResponse<string>> {
         const headers = new HttpHeaders().set('Content-Type', 'text/plain');
         const url = this.topologyTemplateURL + urlElement.TopologyTemplate + 'merge';
-        return this.http.post(url + '/', importedTemplateQName, { headers: headers,  observe: 'response', responseType: 'text' });
+        return this.http.post(url + '/', importedTemplateQName, {
+            headers: headers,
+            observe: 'response',
+            responseType: 'text'
+        });
     }
 
     /**
@@ -429,7 +434,7 @@ export class BackendService {
     splitTopology(): Observable<HttpResponse<string>> {
         const headers = new HttpHeaders().set('Content-Type', 'application/json');
         const url = this.topologyTemplateURL + urlElement.TopologyTemplate + 'split';
-        return this.http.post(url + '/', {}, { headers: headers,  observe: 'response', responseType: 'text' });
+        return this.http.post(url + '/', {}, {headers: headers, observe: 'response', responseType: 'text'});
     }
 
     /**
@@ -438,7 +443,7 @@ export class BackendService {
     matchTopology(): Observable<HttpResponse<string>> {
         const headers = new HttpHeaders().set('Content-Type', 'application/json');
         const url = this.topologyTemplateURL + urlElement.TopologyTemplate + 'match';
-        return this.http.post(url + '/', {}, { headers: headers,  observe: 'response', responseType: 'text' });
+        return this.http.post(url + '/', {}, {headers: headers, observe: 'response', responseType: 'text'});
     }
 
     /**
@@ -448,7 +453,7 @@ export class BackendService {
     createNewArtifact(artifact: QNameWithTypeApiData): Observable<HttpResponse<string>> {
         const headers = new HttpHeaders().set('Content-Type', 'application/json');
         const url = this.configuration.repositoryURL + '/artifacttemplates/';
-        return this.http.post(url + '/', artifact, { headers: headers, responseType: 'text', observe: 'response' });
+        return this.http.post(url + '/', artifact, {headers: headers, responseType: 'text', observe: 'response'});
     }
 
     /**
@@ -458,7 +463,7 @@ export class BackendService {
     getNewlyCreatedArtifact(artifact: QNameWithTypeApiData): Observable<any> {
         const url = this.configuration.repositoryURL + '/artifacttemplates/'
             + encodeURIComponent(encodeURIComponent(artifact.namespace)) + '/' + artifact.localname;
-        return this.http.get(url + '/', { headers: this.headers });
+        return this.http.get(url + '/', {headers: this.headers});
     }
 
     /**
@@ -466,7 +471,7 @@ export class BackendService {
      */
     requestAllTopologyTemplates(): Observable<EntityType[]> {
         const url = hostURL + urlElement.Winery + urlElement.ServiceTemplates;
-        return this.http.get<EntityType[]>(url + '/', { headers: this.headers });
+        return this.http.get<EntityType[]>(url + '/', {headers: this.headers});
     }
 
     /*  saveVisuals(data: any): Observable<Response> {

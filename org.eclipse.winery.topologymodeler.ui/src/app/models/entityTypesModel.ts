@@ -13,6 +13,7 @@
  ********************************************************************************/
 
 import { TTopologyTemplate, Visuals } from './ttopology-template';
+import { TopologyModelerConfiguration } from '../services/backend.service';
 
 /**
  * Internal representation of entity Types
@@ -35,9 +36,10 @@ export interface EntityTypesModel {
  * How data passed to the TopologyModeler has to look
  */
 export interface TopologyModelerInputDataFormat {
-        configuration: {
-            readonly: boolean,
-        };
-        topologyTemplate: TTopologyTemplate;
-        visuals: Visuals;
+    configuration: {
+        readonly: boolean,
+        endpointConfig?: TopologyModelerConfiguration;
+    };
+    topologyTemplate: TTopologyTemplate;
+    visuals: Visuals;
 }

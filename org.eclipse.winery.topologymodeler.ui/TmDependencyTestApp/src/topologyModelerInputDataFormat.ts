@@ -18,7 +18,7 @@ export interface TopologyModelerInputDataFormat {
   configuration: {
     readonly: boolean,
     endpointConfig?: any;
-  }
+  };
   topologyTemplate: any;
   visuals: any;
 }

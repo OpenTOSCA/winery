@@ -12,7 +12,6 @@
  * SPDX-License-Identifier: EPL-2.0 OR Apache-2.0
  ********************************************************************************/
 
-
 import { Component, Input, OnInit } from '@angular/core';
 import {
     EntityType,
@@ -81,13 +80,14 @@ export class WineryComponent implements OnInit {
      * inside the Redux store of this application.
      */
     ngOnInit() {
+        if (this.topologyModelerData.configuration.readonly) {
+            this.readonly = true;
+        }
         // If data is passed to the topologymodeler directly, rendering is initiated immediately without backend calls
-        if (this.topologyModelerData) {
+        if (this.topologyModelerData.topologyTemplate) {
             this.initiateLocalRendering(this.topologyModelerData);
-            if (this.topologyModelerData.configuration.readonly) {
-                this.readonly = true;
-            }
         } else {
+            this.backendService.endpointConfiguration.next(this.topologyModelerData.configuration.endpointConfig);
             this.initiateBackendCalls();
         }
     }
