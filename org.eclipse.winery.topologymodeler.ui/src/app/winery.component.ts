@@ -81,13 +81,15 @@ export class WineryComponent implements OnInit {
      * inside the Redux store of this application.
      */
     ngOnInit() {
-        if (this.topologyModelerData.configuration.readonly) {
-            this.readonly = true;
-        }
-
         // If data is passed to the topologymodeler directly, rendering is initiated immediately without backend calls
-        console.log(this.topologyModelerData);
-        this.topologyModelerData ? this.initiateLocalRendering(this.topologyModelerData) : this.initiateBackendCalls();
+        if (this.topologyModelerData) {
+            this.initiateLocalRendering(this.topologyModelerData);
+            if (this.topologyModelerData.configuration.readonly) {
+                this.readonly = true;
+            }
+        } else {
+            this.initiateBackendCalls();
+        }
     }
 
     /**
