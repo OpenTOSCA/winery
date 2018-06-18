@@ -40,7 +40,7 @@
     "typescript": "2.7.2",
     "zone.js": "0.8.26",
     "rxjs-compat": "^6.0.0-rc.0",
-    "@winery/topologymodeler": "0.5.0"
+    "@winery/topologymodeler": "0.5.1"
   },
   "devDependencies": {
     "@angular/cli": "6.0.8",
