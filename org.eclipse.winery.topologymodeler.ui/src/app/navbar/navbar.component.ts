@@ -74,7 +74,7 @@ export class NavbarComponent implements OnDestroy {
             this.saveTopologyTemplateToRepository();
             return false; // Prevent bubbling
         }));
-        this.exportCsarUrl = this.backendService.topologyTemplateURL + '/?csar';
+        this.exportCsarUrl = this.backendService.serviceTemplateURL + '/?csar';
     }
 
     /**
