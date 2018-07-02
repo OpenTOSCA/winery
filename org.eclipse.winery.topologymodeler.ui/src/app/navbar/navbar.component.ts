@@ -14,13 +14,13 @@
 
 import { Component, ElementRef, Input, OnDestroy, ViewChild } from '@angular/core';
 import { animate, style, transition, trigger } from '@angular/animations';
-import { WineryAlertService } from '../winery-alert/winery-alert.service';
+import { ToastrService } from 'ngx-toastr';
 import { NgRedux } from '@angular-redux/store';
 import { TopologyRendererActions } from '../redux/actions/topologyRenderer.actions';
 import { ButtonsStateModel } from '../models/buttonsState.model';
 import { IWineryState } from '../redux/store/winery.store';
 import { BackendService } from '../services/backend.service';
-import { Subscription } from 'rxjs/Subscription';
+import { Subscription } from 'rxjs';
 import { Hotkey, HotkeysService } from 'angular2-hotkeys';
 
 /**
@@ -45,10 +45,10 @@ import { Hotkey, HotkeysService } from 'angular2-hotkeys';
 export class NavbarComponent implements OnDestroy {
 
     /**
-     * Boolean variables that hold the state {pressed vs. !pressed} of the navbar buttons.
-     * @type {boolean}
+     * Boolean variables that hold the state (pressed vs. !pressed) of the navbar buttons.
      */
     @Input() hideNavBarState;
+    @Input() readonly: boolean;
 
     @ViewChild('exportCsarButton')
     private exportCsarButtonRef: ElementRef;
@@ -60,7 +60,7 @@ export class NavbarComponent implements OnDestroy {
     splittingOngoing: boolean;
     matchingOngoing: boolean;
 
-    constructor(private alert: WineryAlertService,
+    constructor(private alert: ToastrService,
                 private ngRedux: NgRedux<IWineryState>,
                 private actions: TopologyRendererActions,
                 private backendService: BackendService,
@@ -69,11 +69,16 @@ export class NavbarComponent implements OnDestroy {
             .subscribe(newButtonsState => this.setButtonsState(newButtonsState)));
         this.subscriptions.push(ngRedux.select(currentState => currentState.wineryState.currentJsonTopology)
             .subscribe(topologyTemplate => this.unformattedTopologyTemplate = topologyTemplate));
-        this.hotkeysService.add(new Hotkey('ctrl+s', (event: KeyboardEvent): boolean => {
+        this.hotkeysService.add(new Hotkey('mod+s', (event: KeyboardEvent): boolean => {
             event.stopPropagation();
             this.saveTopologyTemplateToRepository();
             return false; // Prevent bubbling
-        }));
+        }, undefined, 'Save the Topology Template'));
+        this.hotkeysService.add(new Hotkey('mod+l', (event: KeyboardEvent): boolean => {
+            event.stopPropagation();
+            this.ngRedux.dispatch(this.actions.executeLayout());
+            return false; // Prevent bubbling
+        }, undefined, 'Apply the layout directive to the Node Templates'));
         this.exportCsarUrl = this.backendService.topologyTemplateURL + '/?csar';
     }
 
@@ -118,7 +123,7 @@ export class NavbarComponent implements OnDestroy {
      * This function is called whenever a navbar button is clicked.
      * It contains a separate case for each button.
      * It toggles the `pressed` state of a button and publishes the respective
-     * button {id and boolean} to the subscribers of the Observable inside
+     * button id and boolean to the subscribers of the Observable inside
      * SharedNodeNavbarService.
      * @param event -- The click event of a button.
      */

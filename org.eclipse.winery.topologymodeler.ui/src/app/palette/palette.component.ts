@@ -12,7 +12,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR Apache-2.0
  ********************************************************************************/
 
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { AfterViewInit, Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { animate, keyframes, state, style, transition, trigger } from '@angular/animations';
 import { WineryActions } from '../redux/actions/winery.actions';
 import { NgRedux } from '@angular-redux/store';
@@ -20,7 +20,7 @@ import { IWineryState } from '../redux/store/winery.store';
 import { TNodeTemplate } from '../models/ttopology-template';
 import { NewNodeIdTypeColorPropertiesModel } from '../models/newNodeIdTypeColorModel';
 import { isNullOrUndefined } from 'util';
-import { Subscription } from 'rxjs/Subscription';
+import { Subscription } from 'rxjs';
 import { Utils } from '../models/utils';
 import { EntityTypesModel } from '../models/entityTypesModel';
 import { NodeVisualsModel } from '../models/nodeVisualsModel';
@@ -31,7 +31,7 @@ import { NodeVisualsModel } from '../models/nodeVisualsModel';
 @Component({
     selector: 'winery-palette-component',
     templateUrl: './palette.component.html',
-    styleUrls: ['./palette.component.css'],
+    styleUrls: ['./palette.component.scss'],
     providers: [],
     animations: [
         trigger('paletteItemState', [
@@ -61,8 +61,8 @@ import { NodeVisualsModel } from '../models/nodeVisualsModel';
                 height: '*',
                 transform: 'rotate(0deg) translateY(0px) translateX(0px)'
             })),
-            transition('left => top', animate('200ms ease-in')),
-            transition('top => left', animate('200ms ease-in', keyframes([
+            transition('left => top', animate('50ms ease-in')),
+            transition('top => left', animate('50ms ease-in', keyframes([
                 style({ opacity: '1', transform: 'rotate(0deg) translateY(0px) translateX(0px)' }),
                 style({ opacity: '0', transform: 'rotate(-45deg) translateY(-75px) translateX(-75px)' }),
                 style({ opacity: '1', transform: 'rotate(-90deg) translateY(-135px) translateX(-135px)' })
@@ -70,7 +70,7 @@ import { NodeVisualsModel } from '../models/nodeVisualsModel';
         ])
     ]
 })
-export class PaletteComponent implements OnInit, OnDestroy {
+export class PaletteComponent implements OnInit, OnDestroy, AfterViewInit {
     @Input() entityTypes: EntityTypesModel;
     paletteRootState = 'extended';
     paletteButtonRootState = 'left';
@@ -107,7 +107,13 @@ export class PaletteComponent implements OnInit, OnDestroy {
      * Angular lifecycle event.
      */
     ngOnInit() {
-        // console.log(this.entityTypes);
+    }
+
+    /**
+     * Angular lifecycle event.
+     */
+    ngAfterViewInit() {
+        console.log(this.entityTypes);
     }
 
     /**
@@ -236,19 +242,23 @@ export class PaletteComponent implements OnInit, OnDestroy {
      * @param name
      * @return result
      */
-    private getNewNodeDataFromNodeTypes(name: string): any {
+    public getNewNodeDataFromNodeTypes(name: string): any {
         // case that the node name is not in the array which contains a local copy of all node templates visible in the
         // DOM, then search in ungroupedNodeTypes where all possible node information is available
-        for (const node of this.entityTypes.unGroupedNodeTypes) {
-            if (node.id === name) {
-                const result = {
-                    id: node.id,
-                    type: node.qName,
-                    properties: this.getDefaultPropertiesFromNodeTypes(name),
-                    color: node.color,
-                };
-                return result;
+        try {
+            for (const node of this.entityTypes.unGroupedNodeTypes) {
+                if (node.id === name) {
+                    const result = {
+                        id: node.id,
+                        type: node.qName,
+                        properties: this.getDefaultPropertiesFromNodeTypes(name),
+                        color: node.color,
+                    };
+                    return result;
+                }
             }
+        } catch (e) {
+            console.error('Error: ', e);
         }
     }
 

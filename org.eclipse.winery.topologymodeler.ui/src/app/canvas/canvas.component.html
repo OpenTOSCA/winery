@@ -33,19 +33,20 @@
     </div>
     <div #nodes>
         <winery-node *ngFor="let nodeTemplate of allNodeTemplates"
+                     [readonly]="readonly"
                      [nodeTemplate]="nodeTemplate"
                      [entityTypes]="this.entityTypes"
                      [relationshipTypes]="relationshipTypes"
                      (sendId)="activateNewNode($event)"
                      [navbarButtonsState]="navbarButtonsState"
-                     (askForRepaint)="revalidateContainer($event)"
+                     (askForRepaint)="revalidateContainer()"
                      (askForRemoval)="removeElement($event)"
                      (setDragSource)="setDragSource($event)"
                      (closedEndpoint)="toggleClosedEndpoint($event)"
                      (sendSelectedRelationshipType)="setSelectedRelationshipType($event)"
                      [dragSource]="nodeTemplate.id + '_Endpoint'"
                      (handleNodeClickedActions)="handleNodeClickedActions($event)"
-                     (updateSelectedNodes)="updateSelectedNodes($event)"
+                     (updateSelectedNodes)="updateSelectedNodes()"
                      (unmarkConnections)="unmarkConnections()"
                      (sendNodeData)="toggleModalHandler($event)">
         </winery-node>
@@ -57,7 +58,7 @@
 </div>
 
 <!-- CAPABILITIES MODAL -->
-<winery-modal bsModal #capabilitiesModal="bs-modal" [modalRef]="capabilitiesModal">
+<winery-modal *ngIf="!readonly" bsModal #capabilitiesModal="bs-modal" [modalRef]="capabilitiesModal">
     <winery-modal-header [title]="!showCurrentCapability?'Add Capability':'Modify/Delete Capability'">
     </winery-modal-header>
     <winery-modal-body>
@@ -124,7 +125,7 @@
 
                 <div class="form-group" *ngIf="showCurrentCapability || showDefaultProperties">
                     <div *ngIf="capabilities.propertyType === 'KV'">
-                        <div *ngFor="let key of capabilities.properties | keysPipe; let i = index">
+                        <div *ngFor="let key of capabilities.properties | keysPipe">
                             <label for="CapKVPropertyDisplay" class="control-label">{{key.key}}</label>
                             <textarea
                                 id="CapKVPropertyDisplay"
@@ -173,7 +174,7 @@
 </winery-modal>
 
 <!-- REQUIREMENTS MODAL -->
-<winery-modal bsModal #requirementsModal="bs-modal" [modalRef]="requirementsModal">
+<winery-modal *ngIf="!readonly" bsModal #requirementsModal="bs-modal" [modalRef]="requirementsModal">
     <winery-modal-header [title]="!showCurrentRequirement?'Add Requirement':'Modify/Delete Requirement'">
     </winery-modal-header>
     <winery-modal-body>
@@ -240,7 +241,7 @@
                 </div>
                 <div class="form-group" *ngIf="showCurrentRequirement || showDefaultProperties">
                     <div *ngIf="requirements.propertyType === 'KV'">
-                        <div *ngFor="let key of requirements.properties | keysPipe; let i = index">
+                        <div *ngFor="let key of requirements.properties | keysPipe">
                             <label for="reqKVPropertyDisplay" class="control-label">{{key.key}}</label>
                             <textarea
                                 id="reqKVPropertyDisplay"
@@ -289,7 +290,7 @@
 </winery-modal>
 
 <!-- IMPORT TOPOLOGY MODAL -->
-<winery-modal bsModal #importTopologyModal="bs-modal" [modalRef]="importTopologyModal">
+<winery-modal *ngIf="!readonly" bsModal #importTopologyModal="bs-modal" [modalRef]="importTopologyModal">
     <winery-modal-header [title]="'Select Topology to Import'">
     </winery-modal-header>
     <winery-modal-body>
@@ -326,7 +327,8 @@
     </winery-modal-footer>
 </winery-modal>
 
-<winery-entities-modal [(modalVariantAndState)]="modalData"
+<winery-entities-modal *ngIf="!readonly"
+                       [(modalVariantAndState)]="modalData"
                        [entityTypes]="entityTypes"
                        [currentNodeData]="currentModalData">
 </winery-entities-modal>

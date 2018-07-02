@@ -22,7 +22,7 @@
         <th>
             Values
         </th>
-    <tr *ngFor="let key of nodeProperties | keysPipe; let i = index">
+    <tr *ngFor="let key of nodeProperties | keysPipe">
         <td class="">{{key.key}}</td>
         <td class="">
                 <textarea
@@ -30,6 +30,7 @@
                     rows="1"
                     placeholder="Edit your value here."
                     required
+                    [disabled]="readonly"
                     value="{{key.value}}"
                     (keyup)="properties.next($event.target.value)"
                     (keyup)="keyOfEditedKVProperty.next(key.key)">
@@ -44,9 +45,10 @@
         rows="6"
         placeholder="Edit your XML here."
         required
+        [disabled]="readonly"
         value="{{nodeProperties}}"
         (keyup)="properties.next($event.target.value)">
-            </textarea>
+    </textarea>
 </div>
 
 <div *ngIf="currentNodeData.propertyDefinitionType == 'NONE'" style="color: dimgray; text-align: center">

@@ -20,8 +20,9 @@
         placeholder="Edit your location here."
         required
         value="{{targetLocation}}"
+        [disabled]="readonly"
         (mousedown)="$event.stopPropagation()"
         (keyup)="properties.next($event.target.value)">
-            </textarea>
+    </textarea>
     </span>
 </div>

@@ -24,7 +24,7 @@
 <div *ngIf="!requirementsExist" style="color: dimgray; text-align: center">
     <span>No requirements defined <br> at the NodeType.</span></div>
 
-<div (click)="toggleModal($event);" class="btn btn-sm btn-modal" style="display: block;">
+<div *ngIf="!readonly" (click)="toggleModal($event);" class="btn btn-sm btn-modal" style="display: block;">
     Add new Requirement
 </div>
 

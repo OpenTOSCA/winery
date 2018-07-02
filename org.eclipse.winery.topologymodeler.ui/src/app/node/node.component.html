@@ -79,7 +79,7 @@
         </div>
     </div>
     <div class="endpointContainer center-block row" style="border: 0; box-shadow: none"
-         *ngIf="connectorEndpointVisible"
+         *ngIf="connectorEndpointVisible && !readonly"
          (mouseover)="makeSource($event)">
         <div class="btn-group-vertical btn-group-sm center-block" role="group" id={{dragSource}}
              (mousedown)="passCurrentType($event)">
@@ -96,6 +96,7 @@
     <accordion #accordion (click)="repaint($event)">
         <!-- PROPERTIES -->
         <accordion-group
+            class="card-header-node-accordions"
             #propertiesgroup
             panelClass="accordionGroupPanel"
             *ngIf="navbarButtonsState.buttonsState.propertiesButton">
@@ -106,6 +107,7 @@
                 ></i>
             </div>
             <winery-properties
+                [readonly]="readonly"
                 (toggleModalHandler)="sendToggleAction($event)"
                 [currentNodeData]="{entityTypes: entityTypes,
                                     nodeTemplate: nodeTemplate,
@@ -122,10 +124,11 @@
                 Deployment Artifacts
                 <i class="pull-sm-0 float-sm-right fa icon-styling padding-top--2px"
                    [ngClass]="{'fa-chevron-down': deploymentartifactsgroup?.isOpen,
-           'fa-chevron-right': !deploymentartifactsgroup?.isOpen}"
+                   'fa-chevron-right': !deploymentartifactsgroup?.isOpen}"
                 ></i>
             </div>
             <winery-deployment-artifacts
+                [readonly]="readonly"
                 (toggleModalHandler)="sendToggleAction($event)"
                 [currentNodeData]="{currentNodeId: nodeTemplate.id,
                                     currentNodePart: 'DEPLOYMENT_ARTIFACTS',
@@ -147,6 +150,7 @@
                 ></i>
             </div>
             <winery-requirements
+                [readonly]="readonly"
                 (toggleModalHandler)="sendToggleAction($event)"
                 [currentNodeData]="{entityTypes: entityTypes,
                                     nodeTemplate: nodeTemplate,
@@ -167,6 +171,7 @@
                 ></i>
             </div>
             <winery-capabilities
+                [readonly]="readonly"
                 (toggleModalHandler)="sendToggleAction($event)"
                 [currentNodeData]="{entityTypes: entityTypes,
                                     nodeTemplate: nodeTemplate,
@@ -186,6 +191,7 @@
                 </i>
             </div>
             <winery-policies
+                [readonly]="readonly"
                 (toggleModalHandler)="sendToggleAction($event)"
                 [currentNodeData]="{currentNodeId: nodeTemplate.id,
                                     currentNodePart: 'POLICIES',
@@ -207,6 +213,7 @@
                 </i>
             </div>
             <winery-target-locations
+                [readonly]="readonly"
                 [currentNodeData]="{currentNodeId: nodeTemplate.id,
                                     currentNodePart: 'TARGET_LOCATIONS',
                                     currentTargetLocation: nodeTemplate.otherAttributes}">

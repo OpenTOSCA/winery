@@ -24,11 +24,9 @@ import { NavbarComponent } from '../navbar/navbar.component';
 import { NodeComponent } from '../node/node.component';
 import { CanvasComponent } from '../canvas/canvas.component';
 import { LayoutDirective } from '../layout/layout.directive';
-import { WineryAlertModule } from '../winery-alert/winery-alert.module';
-import { ToastModule, ToastOptions } from 'ng2-toastr/ng2-toastr';
+import { ToastrModule } from 'ngx-toastr';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { JsPlumbService } from '../services/jsPlumbService';
-import { WineryCustomOption } from '../winery-alert/winery-alert-options';
+import { JsPlumbService } from '../services/jsPlumb.service';
 import { TopologyRendererComponent } from './topology-renderer.component';
 import { NgReduxModule } from '@angular-redux/store';
 import { PropertiesComponent } from '../node/properties/properties.component';
@@ -54,8 +52,7 @@ import { TooltipModule } from 'ngx-bootstrap/tooltip';
         HttpClientModule,
         BrowserAnimationsModule,
         BsDropdownModule.forRoot(),
-        WineryAlertModule.forRoot(),
-        ToastModule.forRoot(),
+        ToastrModule.forRoot(),
         AccordionModule.forRoot(),
         NgReduxModule,
         RouterModule,
@@ -92,7 +89,7 @@ export class TopologyRendererModule {
         return {
             ngModule: TopologyRendererModule,
             providers: [
-                { provide: ToastOptions, useClass: WineryCustomOption },
+                // { provide: ToastOptions, useClass: WineryCustomOption },
                 JsPlumbService
             ]
         };

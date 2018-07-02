@@ -12,20 +12,25 @@
  * SPDX-License-Identifier: EPL-2.0 OR Apache-2.0
  ********************************************************************************/
 
-import 'rxjs/add/operator/do';
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import {
-    EntityType, TNodeTemplate, TRelationshipTemplate, TTopologyTemplate, Visuals
+    EntityType,
+    TNodeTemplate,
+    TRelationshipTemplate,
+    TTopologyTemplate,
+    Visuals
 } from './models/ttopology-template';
 import { ILoaded, LoadedService } from './services/loaded.service';
 import { AppReadyEventService } from './services/app-ready-event.service';
-import { BackendService } from './services/backend.service';
-import { Subscription } from 'rxjs/Subscription';
+import { BackendService, TopologyModelerConfiguration } from './services/backend.service';
+import { Subscription } from 'rxjs';
 import { NgRedux } from '@angular-redux/store';
 import { IWineryState } from './redux/store/winery.store';
 import { DifferenceStates, ToscaDiff } from './models/ToscaDiff';
 import { isNullOrUndefined } from 'util';
 import { Utils } from './models/utils';
+import { TopologyModelerInputDataFormat } from './models/entityTypesModel';
+import { ActivatedRoute } from '@angular/router';
 
 /**
  * This is the root component of the topology modeler.
@@ -36,6 +41,9 @@ import { Utils } from './models/utils';
     styleUrls: ['./winery.component.css']
 })
 export class WineryComponent implements OnInit {
+
+    // if this input variable is not null, it means that data is passed to the topologymodeler to be rendered
+    @Input() topologyModelerData: TopologyModelerInputDataFormat;
 
     nodeTemplates: Array<TNodeTemplate> = [];
     relationshipTemplates: Array<TRelationshipTemplate> = [];
@@ -49,6 +57,8 @@ export class WineryComponent implements OnInit {
     entityTypes: any = {};
     hideNavBarState: boolean;
     subscriptions: Array<Subscription> = [];
+    // This variable is set via the topologyModelerData input and decides if the editing functionalities are enabled
+    readonly: boolean;
 
     topologyDifferences: [ToscaDiff, TTopologyTemplate];
 
@@ -57,7 +67,8 @@ export class WineryComponent implements OnInit {
     constructor(private loadedService: LoadedService,
                 private appReadyEvent: AppReadyEventService,
                 private backendService: BackendService,
-                private ngRedux: NgRedux<IWineryState>) {
+                private ngRedux: NgRedux<IWineryState>,
+                private activatedRoute: ActivatedRoute) {
         this.subscriptions.push(this.ngRedux.select(state => state.wineryState.hideNavBarAndPaletteState)
             .subscribe(hideNavBar => this.hideNavBarState = hideNavBar));
     }
@@ -69,59 +80,36 @@ export class WineryComponent implements OnInit {
      * inside the Redux store of this application.
      */
     ngOnInit() {
-        this.backendService.allEntities$.subscribe(JSON => {
-            // Grouped NodeTypes
-            this.initEntityType(JSON[0], 'groupedNodeTypes');
-
-            // Artifact Templates
-            this.initEntityType(JSON[1], 'artifactTemplates');
-
-            /**
-             * This subscriptionProperties receives an Observable of [string, string], the former value being
-             * the JSON representation of the topologyTemplate and the latter value being the JSON
-             * representation of the node types' visual appearances
-             * the backendService makes sure that both get requests finish before pushing data onto this Observable
-             * by using Observable.forkJoin(1$, 2$);
-             * */
-            const topologyTemplate = JSON[2][0];
-            this.entityTypes.nodeVisuals = JSON[2][1];
-            if (JSON.length === 4 && !isNullOrUndefined(JSON[2][2]) && !isNullOrUndefined(JSON[3])) {
-                this.topologyDifferences = [JSON[2], JSON[2][3]];
+        if (this.topologyModelerData) {
+            if (this.topologyModelerData.configuration.readonly) {
+                this.readonly = true;
             }
-            // init the NodeTemplates and RelationshipTemplates to start their rendering
-            this.initTopologyTemplate(topologyTemplate.nodeTemplates, topologyTemplate.relationshipTemplates);
-
-            // Artifact types
-            this.initEntityType(JSON[3], 'artifactTypes');
-
-            // Policy types
-            this.initEntityType(JSON[4], 'policyTypes');
-
-            // Capability Types
-            this.initEntityType(JSON[5], 'capabilityTypes');
-
-            // Requirement Types
-            this.initEntityType(JSON[6], 'requirementTypes');
-
-            // PolicyTemplates
-            this.initEntityType(JSON[7], 'policyTemplates');
-
-            // Relationship Types
-            this.initEntityType(JSON[8], 'relationshipTypes');
-
-            // NodeTypes
-            this.initEntityType(JSON[9], 'unGroupedNodeTypes');
-
-            this.loaded = { loadedData: true, generatedReduxState: false };
-            this.appReadyEvent.trigger();
-        });
+            // If data is passed to the topologymodeler directly, rendering is initiated immediately without backend calls
+            if (this.topologyModelerData.topologyTemplate) {
+                this.initiateLocalRendering(this.topologyModelerData);
+            } else {
+                if (this.topologyModelerData.configuration.endpointConfig) {
+                    this.backendService.endpointConfiguration.next(this.topologyModelerData.configuration.endpointConfig);
+                } else {
+                    this.activatedRoute.queryParams.subscribe((params: TopologyModelerConfiguration) => {
+                        this.backendService.endpointConfiguration.next(params);
+                    });
+                    this.initiateBackendCalls();
+                }
+            }
+        } else {
+            this.activatedRoute.queryParams.subscribe((params: TopologyModelerConfiguration) => {
+                this.backendService.endpointConfiguration.next(params);
+            });
+            this.initiateBackendCalls();
+        }
     }
 
     /**
      * Save the received Array of Entity Types inside the respective variables in the entityTypes array of arrays
      * which is getting passed to the palette and the topology renderer
-     * @param {Array<any>} entityTypeJSON
-     * @param {string} entityType
+     * @param entityTypeJSON
+     * @param entityType
      */
     initEntityType(entityTypeJSON: Array<any>, entityType: string): void {
         switch (entityType) {
@@ -234,6 +222,18 @@ export class WineryComponent implements OnInit {
         }
     }
 
+    initiateLocalRendering(tmData: TopologyModelerInputDataFormat): void {
+        const nodeTemplateArray: Array<TNodeTemplate>
+            = tmData.topologyTemplate.nodeTemplates;
+        const relationshipTemplateArray: Array<TRelationshipTemplate>
+            = tmData.topologyTemplate.relationshipTemplates;
+        // init rendering
+        this.entityTypes.nodeVisuals = tmData.visuals;
+        this.initTopologyTemplate(nodeTemplateArray, relationshipTemplateArray);
+        this.loaded = {loadedData: true, generatedReduxState: false};
+        this.appReadyEvent.trigger();
+    }
+
     initTopologyTemplate(nodeTemplateArray: Array<TNodeTemplate>, relationshipTemplateArray: Array<TRelationshipTemplate>) {
         // init node templates
         if (nodeTemplateArray.length > 0) {
@@ -256,6 +256,73 @@ export class WineryComponent implements OnInit {
         }
     }
 
+    initiateBackendCalls(): void {
+        // Grouped NodeTypes
+        this.backendService.groupedNodeTypes$.subscribe(JSON => {
+            this.initEntityType(JSON, 'groupedNodeTypes');
+        });
+        // Artifact Templates
+        this.backendService.artifactTemplates$.subscribe(JSON => {
+            this.initEntityType(JSON, 'artifactTemplates');
+        });
+
+        /**
+         * This subscriptionProperties receives an Observable of [string, string], the former value being
+         * the JSON representation of the topologyTemplate and the latter value being the JSON
+         * representation of the node types' visual appearances
+         * the backendService makes sure that both get requests finish before pushing data onto this Observable
+         * by using Observable.forkJoin(1$, 2$);
+         */
+        this.backendService.topologyTemplatesDiffAndVisuals$.subscribe((JSON: [TTopologyTemplate, Visuals, ToscaDiff, TTopologyTemplate]) => {
+            const topologyTemplate = JSON[0];
+            this.entityTypes.nodeVisuals = JSON[1];
+
+            if (JSON.length === 4 && !isNullOrUndefined(JSON[2]) && !isNullOrUndefined(JSON[3])) {
+                this.topologyDifferences = [JSON[2], JSON[3]];
+            }
+
+            // init the NodeTemplates and RelationshipTemplates to start their rendering
+            this.initTopologyTemplate(topologyTemplate.nodeTemplates, topologyTemplate.relationshipTemplates);
+
+            this.loaded = {loadedData: true, generatedReduxState: false};
+            this.appReadyEvent.trigger();
+        });
+
+        // Get other entity types
+        // Artifact Types
+        this.backendService.artifactTypes$.subscribe(JSON => {
+            this.initEntityType(JSON, 'artifactTypes');
+        });
+        // Policy Types
+        this.backendService.policyTypes$.subscribe(JSON => {
+            this.initEntityType(JSON, 'policyTypes');
+        });
+        // Capability Types
+        this.backendService.capabilityTypes$.subscribe(JSON => {
+            this.initEntityType(JSON, 'capabilityTypes');
+        });
+        // Requirement Types
+        this.backendService.requirementTypes$.subscribe(JSON => {
+            this.initEntityType(JSON, 'requirementTypes');
+        });
+        // PolicyTemplates
+        this.backendService.policyTemplates$.subscribe(JSON => {
+            this.initEntityType(JSON, 'policyTemplates');
+        });
+        // Relationship Types
+        this.backendService.relationshipTypes$.subscribe(JSON => {
+            this.initEntityType(JSON, 'relationshipTypes');
+        });
+        // NodeTypes
+        this.backendService.nodeTypes$.subscribe(JSON => {
+            this.initEntityType(JSON, 'unGroupedNodeTypes');
+        });
+    }
+
+    onReduxReady() {
+        this.loaded.generatedReduxState = true;
+    }
+
     private setNodeVisuals(nodeVisuals: Array<Visuals>): void {
         nodeVisuals.forEach(nodeVisual => {
             const nodeId = nodeVisual.nodeTypeId.substring(nodeVisual.nodeTypeId.indexOf('}') + 1);
@@ -265,10 +332,6 @@ export class WineryComponent implements OnInit {
                 }
             });
         });
-    }
-
-    onReduxReady() {
-        this.loaded.generatedReduxState = true;
     }
 }
 

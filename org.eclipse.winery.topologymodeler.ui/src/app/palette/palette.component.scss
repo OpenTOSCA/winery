@@ -13,12 +13,12 @@
  ********************************************************************************/
 
 #palette_root {
-    border-radius: 0.25rem;
+    border-radius: 1px;
     box-shadow: initial;
     /*background-color: #424242;*/
-    background-color: #dfdfdf;
+    background-color: #424242;
     border: 1px solid #c0c0c0;
-    color: black;
+    color: #fff;
     min-width: 300px;
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
@@ -26,10 +26,12 @@
 }
 
 #palette_root:hover {
-    background-color: #EAF2F5;
+    background-color: #616161;
 }
 
 .palette-items-wrapper {
+    height: 100%;
+    background: #eee;
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
@@ -40,17 +42,16 @@
 }
 
 accordion-group {
-    font-size: medium;
+    font-size: x-small !important;
     max-width: 300px;
     text-overflow: ellipsis !important;
     overflow: hidden !important;
     white-space: nowrap !important;
     text-align: start !important;
-
 }
 
-.card-header {
-    padding: .25rem .65rem !important;
+ul {
+    background-color: #757575 !important;
 }
 
 accordion-group:hover {
@@ -60,13 +61,28 @@ accordion-group:hover {
 }
 
 .nav-item {
+    list-style-type: none;
     /*background-color: #424242;*/
     /*color: #fff;*/
     color: #000;
-    max-width: 260px;
+    width: 250px;
     font-size: x-small !important;
     padding-top: 0.4em;
     padding-bottom: 0.6em;
+}
+
+.nav-item:hover {
+    overflow: visible;
+    white-space: normal;
+}
+
+.palette-ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 ul {
@@ -78,12 +94,6 @@ li div {
     overflow: hidden !important;
     white-space: nowrap !important;
     text-align: start !important;
-}
-
-.nav-item:hover {
-    max-width: 100%;
-    overflow: visible;
-    white-space: normal;
 }
 
 .bootstrap-vertical-nav {

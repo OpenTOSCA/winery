@@ -25,7 +25,7 @@ import { isNullOrUndefined } from 'util';
 import { backendBaseURL, hostURL } from '../../models/configuration';
 import { WineryActions } from '../../redux/actions/winery.actions';
 import { ExistsService } from '../../services/exists.service';
-import { WineryAlertService } from '../../winery-alert/winery-alert.service';
+import { ToastrService } from 'ngx-toastr';
 import { DeploymentArtifactOrPolicyModalData, ModalVariant, ModalVariantAndState } from './modal-model';
 import { EntitiesModalService, OpenModalEvent } from './entities-modal.service';
 import { QName } from '../../models/qname';
@@ -68,7 +68,7 @@ export class EntitiesModalComponent implements OnInit, AfterViewInit, OnChanges 
                 private actions: WineryActions,
                 private existsService: ExistsService,
                 private entitiesModalService: EntitiesModalService,
-                private alert: WineryAlertService) {
+                private alert: ToastrService) {
     }
 
     ngOnInit() {

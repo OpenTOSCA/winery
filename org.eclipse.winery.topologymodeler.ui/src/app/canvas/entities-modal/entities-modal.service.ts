@@ -12,12 +12,14 @@
  * SPDX-License-Identifier: EPL-2.0 OR Apache-2.0
  ********************************************************************************/
 
+
+import {map} from 'rxjs/operators';
 import { Injectable } from '@angular/core';
 import { backendBaseURL } from '../../models/configuration';
 import { Observable } from 'rxjs/Rx';
 import { Headers, Http, RequestOptions } from '@angular/http';
 import { TopologyModelerConfiguration } from '../../services/backend.service';
-import { Subject } from 'rxjs/Subject';
+import { Subject } from 'rxjs';
 import { ModalVariant } from './modal-model';
 
 @Injectable()
@@ -35,7 +37,7 @@ export class EntitiesModalService {
 
     /**
      * Requests all namespaces from the backend
-     * @returns {Observable<any>} json of namespaces
+     * @returns json of namespaces
      */
     requestNamespaces(all: boolean = false): Observable<any> {
         let URL: string;
@@ -44,8 +46,8 @@ export class EntitiesModalService {
         } else {
             URL = backendBaseURL + '/admin/namespaces/';
         }
-        return this.http.get(URL, this.options)
-            .map(res => res.json());
+        return this.http.get(URL, this.options).pipe(
+            map(res => res.json()));
     }
 
 }

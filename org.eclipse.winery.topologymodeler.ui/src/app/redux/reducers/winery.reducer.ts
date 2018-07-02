@@ -21,7 +21,7 @@ import {
     SidebarMaxInstanceChanges, SidebarMinInstanceChanges, SidebarNodeNamechange, SidebarStateAction,
     UpdateNodeCoordinatesAction, UpdateRelationshipNameAction, WineryActions
 } from '../actions/winery.actions';
-import { TNodeTemplate, TRelationshipTemplate, TTopologyTemplate } from 'app/models/ttopology-template';
+import { TNodeTemplate, TRelationshipTemplate, TTopologyTemplate } from '../../models/ttopology-template';
 import { TDeploymentArtifact } from '../../models/artifactsModalData';
 
 export interface WineryState {

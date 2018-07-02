@@ -15,7 +15,7 @@ import {
     AfterViewInit, Component, DoCheck, ElementRef, HostListener, Input, KeyValueDiffers, NgZone, OnDestroy, OnInit,
     QueryList, Renderer2, ViewChild, ViewChildren
 } from '@angular/core';
-import { JsPlumbService } from '../services/jsPlumbService';
+import { JsPlumbService } from '../services/jsPlumb.service';
 import { EntityType, TNodeTemplate, TRelationshipTemplate } from '../models/ttopology-template';
 import { LayoutDirective } from '../layout/layout.directive';
 import { WineryActions } from '../redux/actions/winery.actions';
@@ -26,13 +26,13 @@ import { TopologyRendererActions } from '../redux/actions/topologyRenderer.actio
 import { NodeComponent } from '../node/node.component';
 import { Hotkey, HotkeysService } from 'angular2-hotkeys';
 import { ModalDirective } from 'ngx-bootstrap';
-import { GridTemplate } from 'app/models/gridTemplate';
-import { Subscription } from 'rxjs/Subscription';
+import { GridTemplate } from '../models/gridTemplate';
+import { Subscription } from 'rxjs';
 import { CapabilitiesModalData } from '../models/capabilitiesModalData';
 import { RequirementsModalData } from '../models/requirementsModalData';
 import { NodeIdAndFocusModel } from '../models/nodeIdAndFocusModel';
 import { ToggleModalDataModel } from '../models/toggleModalDataModel';
-import { WineryAlertService } from '../winery-alert/winery-alert.service';
+import { ToastrService } from 'ngx-toastr';
 import { BackendService } from '../services/backend.service';
 import { hostURL } from '../models/configuration';
 import { CapabilityModel } from '../models/capabilityModel';
@@ -67,6 +67,7 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit, DoChec
     @ViewChild('capabilitiesModal') capabilitiesModal: ModalDirective;
     @ViewChild('requirementsModal') requirementsModal: ModalDirective;
     @ViewChild('importTopologyModal') importTopologyModal: ModalDirective;
+    @Input() readonly: boolean;
     @Input() entityTypes: EntityTypesModel;
     @Input() relationshipTypes: Array<EntityType> = [];
     @Input() diffMode = false;
@@ -82,6 +83,8 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit, DoChec
     // current data emitted from a node
     currentModalData: any;
     dragSourceActive = false;
+    event;
+    currentType: string;
     selectedRelationshipType: EntityType;
     nodeChildrenIdArray: Array<string>;
     nodeChildrenArray: Array<NodeComponent>;
@@ -144,7 +147,7 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit, DoChec
                 private zone: NgZone,
                 private hotkeysService: HotkeysService,
                 private renderer: Renderer2,
-                private alert: WineryAlertService,
+                private alert: ToastrService,
                 private differs: KeyValueDiffers,
                 private backendService: BackendService,
                 private importTopologyService: ImportTopologyService,
@@ -166,11 +169,11 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit, DoChec
         this.gridTemplate = new GridTemplate(100, false, false, 30);
         this.subscriptions.push(this.ngRedux.select(state => state.wineryState.currentPaletteOpenedState)
             .subscribe(currentPaletteOpened => this.setPaletteState(currentPaletteOpened)));
-        this.hotkeysService.add(new Hotkey('ctrl+a', (event: KeyboardEvent): boolean => {
+        this.hotkeysService.add(new Hotkey('mod+a', (event: KeyboardEvent): boolean => {
             event.stopPropagation();
             this.allNodeTemplates.forEach(node => this.enhanceDragSelection(node.id));
             return false; // Prevent bubbling
-        }));
+        }, undefined, 'Select all Node Templates'));
         this.capabilities = new CapabilitiesModalData();
         this.requirements = new RequirementsModalData();
         this.importTopologyData = new ImportTopologyModalData();
@@ -1012,6 +1015,7 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit, DoChec
                         for (const serviceTemplate of allServiceTemplates) {
                             this.importTopologyData.allTopologyTemplates.push(serviceTemplate);
                         }
+                        console.log(this.importTopologyData.allTopologyTemplates);
                     });
                 }
                 this.ngRedux.dispatch(this.topologyRendererActions.importTopology());
@@ -1093,15 +1097,15 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit, DoChec
     setNewCoordinates(nodeTemplate: any): void {
         let nodeIndex;
         this.allNodeTemplates.some((node, index) => {
-            if (node.id === nodeTemplate.firstChild.nextElementSibling.id) {
+            if (node.id === nodeTemplate.firstChild.id) {
                 nodeIndex = index;
                 return true;
             }
         });
         const nodeCoordinates = {
-            id: nodeTemplate.firstChild.nextElementSibling.id,
-            x: nodeTemplate.firstChild.nextElementSibling.offsetLeft,
-            y: nodeTemplate.firstChild.nextElementSibling.offsetTop
+            id: nodeTemplate.firstChild.id,
+            x: nodeTemplate.firstChild.offsetLeft,
+            y: nodeTemplate.firstChild.offsetTop
         };
         this.allNodeTemplates[nodeIndex].x = nodeCoordinates.x;
         this.allNodeTemplates[nodeIndex].y = nodeCoordinates.y;
@@ -1114,7 +1118,7 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit, DoChec
     updateSelectedNodes(): void {
         if (this.selectedNodes.length > 0 && this.child) {
             for (const nodeTemplate of this.child.nativeElement.children) {
-                if (this.selectedNodes.some(node => node.id === nodeTemplate.firstChild.nextElementSibling.id)) {
+                if (this.selectedNodes.some(node => node.id === nodeTemplate.firstChild.id)) {
                     this.setNewCoordinates(nodeTemplate);
                 }
             }
@@ -1372,7 +1376,7 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit, DoChec
             const bElem = node.firstChild;
             const result = this.isObjectInSelection(aElem, bElem);
             if (result) {
-                this.enhanceDragSelection(node.firstChild.nextElementSibling.id);
+                this.enhanceDragSelection(node.firstChild.id);
             }
         }
         this.unbindAll();
@@ -1430,7 +1434,7 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit, DoChec
 
     /**
      * Checks if array 'Nodes' contains 'id'.
-     * @param Nodes
+     * @param nodes
      * @param id
      * @returns Boolean True if 'Nodes' contains 'id'.
      */
@@ -1516,7 +1520,7 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit, DoChec
                 }
             }
         });
-        this.differ = this.differs.find([]).create(null);
+        this.differ = this.differs.find([]).create();
     }
 
     /*
@@ -1777,12 +1781,12 @@ export class CanvasComponent implements OnInit, OnDestroy, AfterViewInit, DoChec
     private isObjectInSelection(selectionArea, object): boolean {
         const selectionRect = selectionArea.getBoundingClientRect();
         return (
-            ((selectionRect.top + selectionRect.height) > (object.nextElementSibling.offsetTop +
-                object.nextElementSibling.offsetHeight - this.scrollOffset)) &&
-            (selectionRect.top < (object.nextElementSibling.offsetTop - this.scrollOffset)) &&
-            ((selectionRect.left + selectionArea.getBoundingClientRect().width) > (object.nextElementSibling.offsetLeft +
-                object.nextElementSibling.offsetWidth)) &&
-            (selectionRect.left < (object.nextElementSibling.offsetLeft))
+            ((selectionRect.top + selectionRect.height) > (object.offsetTop +
+                object.offsetHeight - this.scrollOffset)) &&
+            (selectionRect.top < (object.offsetTop - this.scrollOffset)) &&
+            ((selectionRect.left + selectionArea.getBoundingClientRect().width) > (object.offsetLeft +
+                object.offsetWidth)) &&
+            (selectionRect.left < (object.offsetLeft))
         );
     }
 
