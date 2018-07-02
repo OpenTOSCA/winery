@@ -14,6 +14,7 @@
 **/dist/
 **/dependency-reduced-pom.xml
 **/winery-debug.log
+**/package-lock.json
 org.eclipse.winery.bpmn4tosca.converter.tobpel/src/test/resources/bpmn4tosca/managementplan*
 org.eclipse.winery.repository.ui/orion
 org.eclipse.winery.topologymodeler/src/main/webapp/components
