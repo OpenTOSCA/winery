@@ -11,17 +11,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR Apache-2.0
  *******************************************************************************/
-import {ModelerPage} from './app.po';
-
-describe('workflow-model App', () => {
-    let page: ModelerPage;
-
-    beforeEach(() => {
-        page = new ModelerPage();
-    });
-
-    it('should display message saying app works', () => {
-        page.navigateTo();
-        expect(true).toEqual(true);
-    });
-});
+export const environment = {
+    production: false
+};

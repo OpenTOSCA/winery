@@ -30,88 +30,88 @@ import org.eclipse.jdt.annotation.NonNull;
 
 public class TOSCAComplianceRuleMatcher implements ITOSCAMatcher {
 
-	@Override
-	public boolean isCompatible(TOSCANode left, TOSCANode right) {
-		//match by NodeType
-		if (!isTEntityTypesCompatible(left, right)) {
-			return false;
-		}
+    @Override
+    public boolean isCompatible(TOSCANode left, TOSCANode right) {
+        //match by NodeType
+        if (!isTEntityTypesCompatible(left, right)) {
+            return false;
+        }
 
-		//match by Properties -> left.properties must be subset of right.properties
-		if (!isPropertiesCompatible(left, right)) return false;
-		// TODO match by Policies -> left.policies must be subset of right.policies
+        //match by Properties -> left.properties must be subset of right.properties
+        if (!isPropertiesCompatible(left, right)) return false;
 
-		if (!isPoliciesCompatible(left, right)) return false;
+        // match by Policies -> left.policies must be subset of right.policies
+        if (!isPoliciesCompatible(left, right)) return false;
 
-		return true;
-	}
+        return true;
+    }
 
-	public boolean isPoliciesCompatible(TOSCANode left, TOSCANode right) {
-		if (left.getNodeTemplate().getPolicies() != null) {
-			if (right.getNodeTemplate().getPolicies() != null) {
-				return mapToStringList(right.getNodeTemplate().getPolicies().getPolicy()).containsAll(mapToStringList(left.getNodeTemplate().getPolicies().getPolicy()));
-			} else {
-				return false;
-			}
-		}
-		return true;
-	}
+    public boolean isPoliciesCompatible(TOSCANode left, TOSCANode right) {
+        if (left.getNodeTemplate().getPolicies() != null) {
+            if (right.getNodeTemplate().getPolicies() != null) {
+                return mapToStringList(right.getNodeTemplate().getPolicies().getPolicy()).containsAll(mapToStringList(left.getNodeTemplate().getPolicies().getPolicy()));
+            } else {
+                return false;
+            }
+        }
+        return true;
+    }
 
-	private List<String> mapToStringList(@NonNull List<TPolicy> policy) {
-		return policy.stream().map(p -> p.getPolicyType().toString() + p.getPolicyRef().toString()).collect(Collectors.toList());
-	}
+    private List<String> mapToStringList(@NonNull List<TPolicy> policy) {
+        return policy.stream().map(p -> p.getPolicyType().toString() + p.getPolicyRef().toString()).collect(Collectors.toList());
+    }
 
-	public boolean isPropertiesCompatible(TOSCANode left, TOSCANode right) {
-		if (left.getNodeTemplate().getProperties() != null) {
-			if (right.getNodeTemplate().getProperties() != null) {
-				for (Entry<String, String> leftEntry : left.getNodeTemplate().getProperties().getKVProperties().entrySet()) {
-					if (!isPropertyCompatible(leftEntry, right.getNodeTemplate().getProperties().getKVProperties())) {
-						return false;
-					}
-				}
-			} else {
-				return false;
-			}
-		}
-		return true;
-	}
+    public boolean isPropertiesCompatible(TOSCANode left, TOSCANode right) {
+        if (left.getNodeTemplate().getProperties() != null) {
+            if (right.getNodeTemplate().getProperties() != null) {
+                for (Entry<String, String> leftEntry : left.getNodeTemplate().getProperties().getKVProperties().entrySet()) {
+                    if (!isPropertyCompatible(leftEntry, right.getNodeTemplate().getProperties().getKVProperties())) {
+                        return false;
+                    }
+                }
+            } else {
+                return false;
+            }
+        }
+        return true;
+    }
 
-	public boolean isPropertyCompatible(Entry<String, String> leftEntry, @ADR(12) LinkedHashMap<String, String> rightProperties) {
-		return rightProperties.containsKey(leftEntry.getKey()) &&
-			rightProperties.get(leftEntry.getKey()) != null &&
-			isPropertyValueCompatible(leftEntry.getValue(), rightProperties.get(leftEntry.getKey()));
-	}
+    public boolean isPropertyCompatible(Entry<String, String> leftEntry, @ADR(12) LinkedHashMap<String, String> rightProperties) {
+        return rightProperties.containsKey(leftEntry.getKey()) &&
+            rightProperties.get(leftEntry.getKey()) != null &&
+            isPropertyValueCompatible(leftEntry.getValue(), rightProperties.get(leftEntry.getKey()));
+    }
 
-	private boolean isPropertyValueCompatible(Object leftValue, Object rightValue) {
-		if (leftValue != null) {
-			if (rightValue != null) {
-				//compareRegex
-				return rightValue.toString().matches(leftValue.toString());
-			} else {
-				return false;
-			}
-		}
-		return false;
-	}
+    private boolean isPropertyValueCompatible(Object leftValue, Object rightValue) {
+        if (leftValue != null) {
+            if (rightValue != null) {
+                //compareRegex
+                return rightValue.toString().matches(leftValue.toString());
+            } else {
+                return false;
+            }
+        }
+        return false;
+    }
 
-	public boolean isLeftSubtypeOfRight(TOSCAEntity left, TOSCAEntity right) {
-		return left.getTypes().stream().filter(lType -> equals(lType, right.getActualType())).findAny().isPresent();
-	}
+    public boolean isLeftSubtypeOfRight(TOSCAEntity left, TOSCAEntity right) {
+        return left.getTypes().stream().filter(lType -> equals(lType, right.getActualType())).findAny().isPresent();
+    }
 
-	public boolean isTEntityTypesCompatible(TOSCAEntity left, TOSCAEntity right) {
-		return isLeftSubtypeOfRight(left, right) || isLeftSubtypeOfRight(right, left);
-	}
+    public boolean isTEntityTypesCompatible(TOSCAEntity left, TOSCAEntity right) {
+        return isLeftSubtypeOfRight(left, right) || isLeftSubtypeOfRight(right, left);
+    }
 
-	public boolean equals(TEntityType lType, TEntityType rType) {
-		return StringUtils.equals(lType.getIdFromIdOrNameField(), rType.getIdFromIdOrNameField()) && StringUtils.equals(lType.getTargetNamespace(), rType.getTargetNamespace());
-	}
+    public boolean equals(TEntityType lType, TEntityType rType) {
+        return StringUtils.equals(lType.getIdFromIdOrNameField(), rType.getIdFromIdOrNameField()) && StringUtils.equals(lType.getTargetNamespace(), rType.getTargetNamespace());
+    }
 
-	@Override
-	public boolean isCompatible(TOSCAEdge left, TOSCAEdge right) {
-		//match by RelationshipType
-		if (!isTEntityTypesCompatible(left, right)) {
-			return false;
-		}
-		return true;
-	}
+    @Override
+    public boolean isCompatible(TOSCAEdge left, TOSCAEdge right) {
+        //match by RelationshipType
+        if (!isTEntityTypesCompatible(left, right)) {
+            return false;
+        }
+        return true;
+    }
 }
