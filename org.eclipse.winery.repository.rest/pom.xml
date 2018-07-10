@@ -35,6 +35,11 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
+            <groupId>com.github.alexvictoor</groupId>
+            <artifactId>web-logback</artifactId>
+            <version>0.2</version>
+        </dependency>
+        <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>jcl-over-slf4j</artifactId>
             <version>${org.slf4j}</version>

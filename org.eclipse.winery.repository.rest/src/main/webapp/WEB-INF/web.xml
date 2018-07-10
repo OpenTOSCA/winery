@@ -30,6 +30,10 @@
         </init-param>
         <load-on-startup>2</load-on-startup>
     </servlet>
+    <servlet>
+        <servlet-name>ViewStatusMessages</servlet-name>
+        <servlet-class>ch.qos.logback.classic.ViewStatusMessagesServlet</servlet-class>
+    </servlet>
 
     <filter>
         <filter-name>CorsFilter</filter-name>
@@ -101,6 +105,15 @@
         <filter-name>CorsFilter</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
+
+    <servlet-mapping>
+        <servlet-name>ViewStatusMessages</servlet-name>
+        <!-- 
+            The documentation proposes lbClassicStatus (see https://logback.qos.ch/manual/configuration.html).
+            We do security by obscurity by using another URL pattern
+          -->
+        <url-pattern>/logback-classic-status</url-pattern>
+    </servlet-mapping>
 
     <servlet-mapping>
         <servlet-name>WineryResources</servlet-name>

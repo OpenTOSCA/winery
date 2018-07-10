@@ -15,15 +15,27 @@
 
 <configuration>
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>INFO</level>
+        </filter>
         <encoder>
             <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36}:%line %method - %msg%n</pattern>
         </encoder>
+    </appender>
+    <appender name="WEBOUT" class="com.github.alexvictoor.weblogback.BrowserConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36}:%line %method - %msg%n</pattern>
+        </encoder>
+        <port>8765</port> <!-- Optional, this is the port on which the HTTP SSE server will listen. Default port is 8765 -->
+        <active>true</active> <!-- Optional, if false the appender is disabled. Default value is true -->
+        <buffer>1</buffer> <!-- Optional, the size of a replay buffer for late joiners that will receive already emmited messages -->
     </appender>
 
     <logger name="org.eclipse.winery" level="DEBUG"/>
     <logger name="org.apache.catalina.core.ApplicationDispatcher" level="SEVERE"/>
 
-    <root level="info">
+    <root level="TRACE">
         <appender-ref ref="STDOUT"/>
+        <appender-ref ref="WEBOUT"/>
     </root>
 </configuration>
