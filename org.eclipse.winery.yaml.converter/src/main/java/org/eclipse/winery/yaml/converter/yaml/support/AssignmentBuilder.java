@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2017 Contributors to the Eclipse Foundation
+ * Copyright (c) 2017-2018 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -13,17 +13,23 @@
  *******************************************************************************/
 package org.eclipse.winery.yaml.converter.yaml.support;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
+import javax.xml.bind.JAXBElement;
+import javax.xml.namespace.QName;
+
 import org.eclipse.winery.model.tosca.yaml.TPropertyAssignment;
 import org.eclipse.winery.yaml.common.Namespaces;
 import org.eclipse.winery.yaml.common.writer.xml.support.AnonymousPropertiesList;
 import org.eclipse.winery.yaml.common.writer.xml.support.PropertiesList;
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.namespace.QName;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
 
 public class AssignmentBuilder {
     private TypeConverter typeConverter;
@@ -49,7 +55,11 @@ public class AssignmentBuilder {
         return new PropertiesList().setEntries(elements).setNamespace(type.getNamespaceURI());
     }
 
-    private List<JAXBElement> convertAssignment(Map<String, Object> yamlAssignment, Map<String, QName> buildPlan) {
+    private @NonNull List<JAXBElement> convertAssignment(@NonNull Map<String, Object> yamlAssignment, @Nullable Map<String, QName> buildPlan) {
+        if (Objects.isNull(buildPlan)) {
+            return Collections.emptyList();
+        }
+
         List<JAXBElement> result = new ArrayList<>();
         for (Map.Entry<String, Object> entry : yamlAssignment.entrySet()) {
             if (entry.getValue() == null) {
