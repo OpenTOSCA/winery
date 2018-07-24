@@ -20,6 +20,7 @@ FROM tomcat:8.5.31
 LABEL maintainer "Oliver Kopp <kopp.dev@gmail.com>, Michael Wurster <miwurster@gmail.com>"
 
 ENV WINERY_REPOSITORY_URL=
+ENV WINERY_HEAP_MAX=2048m
 
 RUN rm /dev/random && ln -s /dev/urandom /dev/random \
     && curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | bash \
@@ -30,8 +31,6 @@ RUN rm /dev/random && ln -s /dev/urandom /dev/random \
     && rm -rf /var/lib/apt/lists/* \
     && rm -rf ${CATALINA_HOME}/webapps/* \
     && sed -ie "s/securerandom.source=file:\/dev\/random/securerandom.source=file:\/dev\/.\/urandom/g" /usr/lib/jvm/java-8-openjdk-amd64/jre/lib/security/java.security \
-    && echo "CATALINA_OPTS=-Djava.security.egd=file:/dev/./urandom" > ${CATALINA_HOME}/bin/setenv.sh \
-    && chmod a+x ${CATALINA_HOME}/bin/setenv.sh \
     && mkdir -p /var/opentosca/repository \
     && cd /var/opentosca/repository \
     && git init \
@@ -47,4 +46,6 @@ COPY --from=builder /tmp/winery/org.eclipse.winery.workflowmodeler/target/winery
 EXPOSE 8080
 
 CMD if [ ! "x${WINERY_REPOSITORY_URL}" = "x" ]; then rm -rf /var/opentosca/repository && git clone ${WINERY_REPOSITORY_URL} /var/opentosca/repository; fi \
+    && echo "CATALINA_OPTS=-Djava.security.egd=file:/dev/./urandom -Xms512m -Xmx${WINERY_HEAP_MAX} -XX:MaxPermSize=256m" > ${CATALINA_HOME}/bin/setenv.sh \
+    && chmod a+x ${CATALINA_HOME}/bin/setenv.sh \
     && ${CATALINA_HOME}/bin/catalina.sh run
