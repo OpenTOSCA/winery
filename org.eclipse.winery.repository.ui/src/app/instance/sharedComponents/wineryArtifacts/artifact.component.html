@@ -76,7 +76,7 @@
 
                 <label class="control-label" for="operations">Operations</label>
                 <select [(ngModel)]="selectedOperation" id="operations" name="operations" class="form-control">
-                    <option *ngFor="let operation of selectedInterface?.operations" [ngValue]="operation">
+                    <option *ngFor="let operation of selectedInterface?.operation" [ngValue]="operation">
                         {{operation}}
                     </option>
                 </select>
