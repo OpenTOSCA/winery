@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2018 Contributors to the Eclipse Foundation
+ * Copyright(c) 2018 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -10,15 +10,17 @@
  * which is available at https://www.apache.org/licenses/LICENSE-2.0.
  *
  * SPDX-License-Identifier: EPL-2.0 OR Apache-2.0
- *******************************************************************************/
+ ********************************************************************************/
 
 export class TopologyModelerConfiguration {
-    constructor(readonly id: string,
-                readonly ns: string,
-                readonly repositoryURL: string,
-                readonly uiURL: string,
-                readonly compareTo: string,
-                readonly parentPath = 'servicetemplates',
-                readonly elementPath = 'topologytemplate') {
+    constructor(public readonly id: string,
+                public readonly ns: string,
+                public readonly repositoryURL: string,
+                public readonly uiURL: string,
+                public readonly compareTo?: string,
+                public readonly isReadonly?: boolean,
+                public readonly parentPath = 'servicetemplates',
+                public readonly elementPath = 'topologytemplate') {
+
     }
 }

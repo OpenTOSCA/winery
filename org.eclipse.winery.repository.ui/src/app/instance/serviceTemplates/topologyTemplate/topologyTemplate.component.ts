@@ -17,8 +17,8 @@ import { backendBaseURL, oldTopologyModelerURL, topologyModelerURL } from '../..
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { WineryVersion } from '../../../model/wineryVersion';
 import { ModalDirective } from 'ngx-bootstrap';
-import { ActivatedRoute } from '@angular/router';
 import { ToscaTypes } from '../../../model/enums';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
     templateUrl: 'topologyTemplate.component.html'
