@@ -46,6 +46,6 @@ COPY --from=builder /tmp/winery/org.eclipse.winery.workflowmodeler/target/winery
 EXPOSE 8080
 
 CMD if [ ! "x${WINERY_REPOSITORY_URL}" = "x" ]; then rm -rf /var/opentosca/repository && git clone ${WINERY_REPOSITORY_URL} /var/opentosca/repository; fi \
-    && echo "CATALINA_OPTS=-Djava.security.egd=file:/dev/./urandom -Xms512m -Xmx${WINERY_HEAP_MAX} -XX:MaxPermSize=256m" > ${CATALINA_HOME}/bin/setenv.sh \
+    && echo 'export CATALINA_OPTS="-Djava.security.egd=file:/dev/./urandom -Xms512m -Xmx${WINERY_HEAP_MAX} -XX:MaxPermSize=256m"' > ${CATALINA_HOME}/bin/setenv.sh \
     && chmod a+x ${CATALINA_HOME}/bin/setenv.sh \
     && ${CATALINA_HOME}/bin/catalina.sh run
