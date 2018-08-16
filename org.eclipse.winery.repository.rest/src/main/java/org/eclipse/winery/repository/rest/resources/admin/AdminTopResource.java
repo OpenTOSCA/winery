@@ -37,7 +37,7 @@ import org.eclipse.winery.repository.configuration.GitHubConfiguration;
 import org.eclipse.winery.repository.rest.resources.admin.types.ConstraintTypesManager;
 import org.eclipse.winery.repository.rest.resources.admin.types.PlanLanguagesManager;
 import org.eclipse.winery.repository.rest.resources.admin.types.PlanTypesManager;
-import org.eclipse.winery.repository.rest.resources.apiData.OAuthStateAndCodeApiData;
+import org.eclipse.winery.repository.rest.resources.apidata.OAuthStateAndCodeApiData;
 
 import io.swagger.annotations.Api;
 import org.apache.http.HttpResponse;

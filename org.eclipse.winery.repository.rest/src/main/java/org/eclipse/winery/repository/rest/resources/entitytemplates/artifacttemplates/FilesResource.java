@@ -47,8 +47,8 @@ import org.eclipse.winery.repository.backend.RepositoryFactory;
 import org.eclipse.winery.repository.datatypes.ids.elements.DirectoryId;
 import org.eclipse.winery.repository.rest.RestUtils;
 import org.eclipse.winery.repository.rest.datatypes.FileMeta;
-import org.eclipse.winery.repository.rest.resources.apiData.ArtifactResourceApiData;
-import org.eclipse.winery.repository.rest.resources.apiData.ArtifactResourcesApiData;
+import org.eclipse.winery.repository.rest.resources.apidata.ArtifactResourceApiData;
+import org.eclipse.winery.repository.rest.resources.apidata.ArtifactResourcesApiData;
 
 import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataBodyPart;

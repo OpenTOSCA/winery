@@ -87,9 +87,9 @@ import org.eclipse.winery.repository.rest.resources._support.AbstractComponentsR
 import org.eclipse.winery.repository.rest.resources._support.IHasName;
 import org.eclipse.winery.repository.rest.resources._support.IPersistable;
 import org.eclipse.winery.repository.rest.resources._support.ResourceResult;
-import org.eclipse.winery.repository.rest.resources.apiData.QNameApiData;
-import org.eclipse.winery.repository.rest.resources.apiData.QNameWithTypeApiData;
-import org.eclipse.winery.repository.rest.resources.apiData.converter.QNameConverter;
+import org.eclipse.winery.repository.rest.resources.apidata.QNameApiData;
+import org.eclipse.winery.repository.rest.resources.apidata.QNameWithTypeApiData;
+import org.eclipse.winery.repository.rest.resources.apidata.converter.QNameConverter;
 import org.eclipse.winery.repository.rest.resources.entitytemplates.artifacttemplates.ArtifactTemplateResource;
 import org.eclipse.winery.repository.rest.resources.entitytemplates.artifacttemplates.ArtifactTemplatesResource;
 import org.eclipse.winery.repository.rest.resources.entitytypes.TopologyGraphElementEntityTypeResource;
@@ -222,10 +222,10 @@ public class RestUtils {
             try {
                 // check which options are chosen
                 if (options.isAddToProvenance()) {
-                    // We wait for the provenance layer to confirm the transaction
+                    // We wait for the accountability layer to confirm the transaction
                     String result = exporter.writeCsarAndSaveManifestInProvenanceLayer(RepositoryFactory.getRepository(), resource.getId(), output)
                         .get();
-                    LOGGER.debug("Stored state in provenance layer in transaction " + result);
+                    LOGGER.debug("Stored state in accountability layer in transaction " + result);
                 } else {
                     exporter.writeCsar(RepositoryFactory.getRepository(), resource.getId(), output, exportConfiguration);
                 }

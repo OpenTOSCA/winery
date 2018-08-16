@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013-2014 Contributors to the Eclipse Foundation
+ * Copyright (c) 2013-2018 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -13,25 +13,33 @@
  *******************************************************************************/
 package org.eclipse.winery.repository.rest.resources.servicetemplates.boundarydefinitions;
 
-import io.swagger.annotations.ApiOperation;
-import org.apache.commons.lang3.StringUtils;
+import java.util.Iterator;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.UriInfo;
+
 import org.eclipse.winery.common.Util;
 import org.eclipse.winery.model.tosca.TBoundaryDefinitions.Properties.PropertyMappings;
 import org.eclipse.winery.model.tosca.TEntityTemplate;
 import org.eclipse.winery.model.tosca.TPropertyMapping;
 import org.eclipse.winery.model.tosca.utils.ModelUtilities;
 import org.eclipse.winery.repository.rest.RestUtils;
-import org.eclipse.winery.repository.rest.resources.apiData.boundarydefinitions.PropertyMapping;
-import org.eclipse.winery.repository.rest.resources.apiData.boundarydefinitions.PropertyMappingsApi;
+import org.eclipse.winery.repository.rest.resources.apidata.boundarydefinitions.PropertyMapping;
+import org.eclipse.winery.repository.rest.resources.apidata.boundarydefinitions.PropertyMappingsApi;
 import org.eclipse.winery.repository.rest.resources.servicetemplates.ServiceTemplateResource;
 
-import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.core.UriInfo;
-import java.util.Iterator;
+import io.swagger.annotations.ApiOperation;
+import org.apache.commons.lang3.StringUtils;
 
 public class PropertyMappingsResource {
 

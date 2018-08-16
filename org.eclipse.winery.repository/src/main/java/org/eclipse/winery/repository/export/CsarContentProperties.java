@@ -19,13 +19,23 @@ public class CsarContentProperties {
     private String pathInsideCsar;
     private String fileHash;
 
+    /**
+     * Address of the file in the immutable file storage
+     */
+    private String immutableAddress;
+
     public CsarContentProperties(String pathInsideCsar) {
         this.pathInsideCsar = pathInsideCsar;
     }
 
     public CsarContentProperties(String pathInsideCsar, String fileHash) {
-        this.pathInsideCsar = pathInsideCsar;
+        this(pathInsideCsar);
         this.fileHash = fileHash;
+    }
+
+    public CsarContentProperties(String pathInsideCsar, String fileHash, String immutableAddress) {
+        this(pathInsideCsar, fileHash);
+        this.immutableAddress = immutableAddress;
     }
 
     public String getPathInsideCsar() {
@@ -38,5 +48,13 @@ public class CsarContentProperties {
 
     public void setFileHash(String fileHash) {
         this.fileHash = fileHash;
+    }
+
+    public String getImmutableAddress() {
+        return immutableAddress;
+    }
+
+    public void setImmutableAddress(String immutableAddress) {
+        this.immutableAddress = immutableAddress;
     }
 }

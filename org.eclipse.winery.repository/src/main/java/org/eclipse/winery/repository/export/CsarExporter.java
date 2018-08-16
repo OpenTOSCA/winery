@@ -30,8 +30,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Properties;
 import java.util.SortedSet;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -43,6 +45,9 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.eclipse.winery.accountability.AccountabilityManager;
+import org.eclipse.winery.accountability.AccountabilityManagerFactory;
+import org.eclipse.winery.accountability.exceptions.AccountabilityException;
 import org.eclipse.winery.common.HashingUtil;
 import org.eclipse.winery.common.RepositoryFileReference;
 import org.eclipse.winery.common.Util;
@@ -59,9 +64,6 @@ import org.eclipse.winery.model.selfservice.Application.Options;
 import org.eclipse.winery.model.selfservice.ApplicationOption;
 import org.eclipse.winery.model.tosca.TArtifactReference;
 import org.eclipse.winery.model.tosca.TArtifactTemplate;
-import org.eclipse.winery.provenance.Provenance;
-import org.eclipse.winery.provenance.ProvenanceFactory;
-import org.eclipse.winery.provenance.exceptions.ProvenanceException;
 import org.eclipse.winery.repository.Constants;
 import org.eclipse.winery.repository.GitInfo;
 import org.eclipse.winery.repository.backend.BackendUtils;
@@ -87,6 +89,7 @@ import static org.eclipse.winery.model.csar.toscametafile.TOSCAMetaFileAttribute
 import static org.eclipse.winery.model.csar.toscametafile.TOSCAMetaFileAttributes.CSAR_VERSION;
 import static org.eclipse.winery.model.csar.toscametafile.TOSCAMetaFileAttributes.ENTRY_DEFINITIONS;
 import static org.eclipse.winery.model.csar.toscametafile.TOSCAMetaFileAttributes.HASH;
+import static org.eclipse.winery.model.csar.toscametafile.TOSCAMetaFileAttributes.IMMUTABLE_ADDRESS;
 import static org.eclipse.winery.model.csar.toscametafile.TOSCAMetaFileAttributes.NAME;
 import static org.eclipse.winery.model.csar.toscametafile.TOSCAMetaFileAttributes.TOSCA_META_VERSION;
 
@@ -123,16 +126,20 @@ public class CsarExporter {
     }
 
     public CompletableFuture<String> writeCsarAndSaveManifestInProvenanceLayer(IRepository repository, DefinitionsChildId entryId, OutputStream out)
-        throws IOException, JAXBException, RepositoryCorruptException, ProvenanceException {
+        throws IOException, JAXBException, RepositoryCorruptException, AccountabilityException, InterruptedException, ExecutionException {
+        Properties props = repository.getAccountabilityConfigurationManager().properties;
+        AccountabilityManager accountabilityManager = AccountabilityManagerFactory.getAccountabilityManager(props);
+        
         Map<String, Object> exportConfiguration = new HashMap<>();
-        exportConfiguration.put(CsarExportConfiguration.INCLUDE_HASHES.name(), true);
-        exportConfiguration.put(CsarExportConfiguration.INCLUDE_PROVENANCE.name(), true);
-        Provenance provenance = ProvenanceFactory.getProvenance();
+        exportConfiguration.put(CsarExportConfiguration.INCLUDE_HASHES.name(), null);
+        // collects a map of file properties and their contents to allow batch storage in the immutable store
+        Map<CsarContentProperties, byte[]> fileCollector = new HashMap<>();
+        exportConfiguration.put(CsarExportConfiguration.STORE_IMMUTABLY.name(), fileCollector);
 
         String manifestString = this.writeCsar(repository, entryId, out, exportConfiguration);
         String qNameWithComponentVersionOnly = VersionUtils.getQNameWithComponentVersionOnly(entryId);
 
-        return provenance.storeState(qNameWithComponentVersionOnly, manifestString);
+        return accountabilityManager.storeFingerprint(qNameWithComponentVersionOnly, manifestString);
     }
 
     /**
@@ -142,7 +149,7 @@ public class CsarExporter {
      * @param out     the output stream to write to
      */
     public String writeCsar(IRepository repository, DefinitionsChildId entryId, OutputStream out, Map<String, Object> exportConfiguration)
-        throws IOException, JAXBException, RepositoryCorruptException {
+        throws IOException, JAXBException, RepositoryCorruptException, InterruptedException, AccountabilityException, ExecutionException {
         CsarExporter.LOGGER.trace("Starting CSAR export with {}", entryId.toString());
 
         Map<RepositoryFileReference, CsarContentProperties> refMap = new HashMap<>();
@@ -211,8 +218,45 @@ public class CsarExporter {
                 }
             }
 
+            // store referenced files in immutable file storage
+            if (exportConfiguration.containsKey(CsarExportConfiguration.STORE_IMMUTABLY.name())) {
+                LOGGER.trace("Storing {} files in the immutable file storage", refMap.size());
+                // the map should (by now) have collected all files to be stored in the CSAR (cross-fingers!)
+                Map<CsarContentProperties, byte[]> filesMap = (Map<CsarContentProperties, byte[]>) exportConfiguration.get(CsarExportConfiguration.STORE_IMMUTABLY.name());
+                
+                immutablyStoreRefFiles(filesMap, repository);
+            }
+
             return this.addManifest(repository, entryId, definitionNames, refMap, zos, exportConfiguration);
+        } catch (InterruptedException | ExecutionException | AccountabilityException e) {
+            LOGGER.error("Failed to store files in immutable storage. Reason: {}", e.getMessage());
+
+            throw e;
         }
+    }
+
+    /**
+     * Stores all files listed in the map in the immutable file storage, and updates the CsarContentProperties of each
+     * file to contain its address in the aforementioned storage.
+     *
+     * @param filesToStore a map of the CsarContentProperties of all files to be stored in the CSAR and their contents.
+     */
+    private void immutablyStoreRefFiles(Map<CsarContentProperties, byte[]> filesToStore, IRepository repository)
+        throws AccountabilityException, ExecutionException, InterruptedException {
+        Properties props = repository.getAccountabilityConfigurationManager().properties;
+        AccountabilityManager manager = AccountabilityManagerFactory.getAccountabilityManager(props);
+        Map<String, byte[]> filesMap = new HashMap<>();
+
+        filesToStore.forEach((properties, content) -> filesMap.put(properties.getPathInsideCsar(), content));
+
+        // store all files in immutable storage (already stored files will get their same old address)
+        Map<String, String> addressMap = manager
+            .storeState(filesMap)
+            .get();
+
+        filesToStore.keySet().forEach((CsarContentProperties properties) -> {
+            properties.setImmutableAddress(addressMap.get(properties.getPathInsideCsar()));
+        });
     }
 
     /**
@@ -265,12 +309,22 @@ public class CsarExporter {
      */
     private void addFileToZipArchive(ZipOutputStream zos, IGenericRepository repository, RepositoryFileReference ref,
                                      CsarContentProperties csarContentProperties, Map<String, Object> exportConfiguration) {
-        if (exportConfiguration.containsKey(CsarExportConfiguration.INCLUDE_HASHES.toString())) {
+        if (exportConfiguration.containsKey(CsarExportConfiguration.INCLUDE_HASHES.name())) {
             try (InputStream is = repository.newInputStream(ref)) {
                 String checksum = HashingUtil.getChecksum(IOUtils.toByteArray(is), HASH);
                 csarContentProperties.setFileHash(checksum);
             } catch (Exception e) {
                 LOGGER.error("Could not create hash for file " + ref.getFileName(), e);
+            }
+        }
+
+        // store the file properties and contents in the immutable storage map to allow batch processing later
+        if (exportConfiguration.containsKey(CsarExportConfiguration.STORE_IMMUTABLY.name())) {
+            try (InputStream is = repository.newInputStream(ref)) {
+                ((Map<CsarContentProperties, byte[]>) exportConfiguration.get(CsarExportConfiguration.STORE_IMMUTABLY.name()))
+                    .put(csarContentProperties, IOUtils.toByteArray(is));
+            } catch (Exception e) {
+                LOGGER.error("Could not read the file " + ref.getFileName(), e);
             }
         }
         try (InputStream is = repository.newInputStream(ref)) {
@@ -287,7 +341,7 @@ public class CsarExporter {
      *
      * @param zos            Output stream of the archive
      * @param transformer    Given transformer to transform the {@link DummyRepositoryFileReferenceForGeneratedXSD} to a
-     *                       {@link ArchiveOutputStream}
+     *                       {@link ZipOutputStream}
      * @param ref            The dummy document that should be exported as an archive
      * @param fileProperties The output path of the archive
      */
@@ -308,9 +362,15 @@ public class CsarExporter {
             transformer.transform(source, result);
             byte[] bytes = byteArrayOutputStream.toByteArray();
 
-            if (exportConfiguration.containsKey(CsarExportConfiguration.INCLUDE_HASHES.toString())) {
+            if (exportConfiguration.containsKey(CsarExportConfiguration.INCLUDE_HASHES.name())) {
                 String checksum = HashingUtil.getChecksum(bytes, HASH);
                 fileProperties.setFileHash(checksum);
+            }
+
+            // store the file properties and contents in the immutable storage map to allow batch processing later
+            if (exportConfiguration.containsKey(CsarExportConfiguration.STORE_IMMUTABLY.name())) {
+                ((Map<CsarContentProperties, byte[]>) exportConfiguration.get(CsarExportConfiguration.STORE_IMMUTABLY.name()))
+                    .put(fileProperties, bytes);
             }
 
             zos.write(bytes);
@@ -579,9 +639,14 @@ public class CsarExporter {
             stringBuilder.append(NAME).append(": ").append(fileProperties.getPathInsideCsar()).append("\n");
             stringBuilder.append(CONTENT_TYPE).append(": ").append(MimeTypes.MIMETYPE_TOSCA_DEFINITIONS).append("\n");
 
-            if (exportConfiguration.containsKey(CsarExportConfiguration.INCLUDE_HASHES.toString())
+            if (exportConfiguration.containsKey(CsarExportConfiguration.INCLUDE_HASHES.name())
                 && Objects.nonNull(fileProperties.getFileHash())) {
                 stringBuilder.append(HASH).append(": ").append(fileProperties.getFileHash()).append("\n");
+            }
+
+            if (exportConfiguration.containsKey(CsarExportConfiguration.STORE_IMMUTABLY.name())
+                && Objects.nonNull(fileProperties.getImmutableAddress())) {
+                stringBuilder.append(IMMUTABLE_ADDRESS).append(": ").append(fileProperties.getImmutableAddress()).append("\n");
             }
 
             stringBuilder.append("\n");
@@ -600,9 +665,14 @@ public class CsarExporter {
             }
             stringBuilder.append(CONTENT_TYPE).append(": ").append(mimeType).append("\n");
 
-            if (exportConfiguration.containsKey(CsarExportConfiguration.INCLUDE_HASHES.toString())
+            if (exportConfiguration.containsKey(CsarExportConfiguration.INCLUDE_HASHES.name())
                 && Objects.nonNull(fileProperties.getFileHash())) {
                 stringBuilder.append(HASH).append(": ").append(fileProperties.getFileHash()).append("\n");
+            }
+
+            if (exportConfiguration.containsKey(CsarExportConfiguration.STORE_IMMUTABLY.name())
+                && Objects.nonNull(fileProperties.getImmutableAddress())) {
+                stringBuilder.append(IMMUTABLE_ADDRESS).append(": ").append(fileProperties.getImmutableAddress()).append("\n");
             }
 
             stringBuilder.append("\n");

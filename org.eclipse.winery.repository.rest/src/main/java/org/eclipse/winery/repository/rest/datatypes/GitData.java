@@ -15,7 +15,7 @@ package org.eclipse.winery.repository.rest.datatypes;
 
 import java.util.List;
 
-import org.eclipse.winery.repository.rest.resources.apiData.QNameWithTypeApiData;
+import org.eclipse.winery.repository.rest.resources.apidata.QNameWithTypeApiData;
 
 public class GitData {
     

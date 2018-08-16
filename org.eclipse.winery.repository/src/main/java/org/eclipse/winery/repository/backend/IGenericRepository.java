@@ -963,6 +963,8 @@ public interface IGenericRepository extends IWineryRepositoryCommon {
 
     NamespaceManager getNamespaceManager();
 
+    AccountabilityConfigurationManager getAccountabilityConfigurationManager();
+
     XsdImportManager getXsdImportManager();
 
     /**

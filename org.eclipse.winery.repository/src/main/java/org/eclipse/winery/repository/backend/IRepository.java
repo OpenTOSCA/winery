@@ -13,11 +13,12 @@
  *******************************************************************************/
 package org.eclipse.winery.repository.backend;
 
-import org.apache.commons.configuration.Configuration;
+import java.util.Date;
+
 import org.eclipse.winery.common.RepositoryFileReference;
 import org.eclipse.winery.common.ids.GenericId;
 
-import java.util.Date;
+import org.apache.commons.configuration.Configuration;
 
 /**
  * Provides interface to the backend.
@@ -64,5 +65,5 @@ public interface IRepository extends IGenericRepository {
      * id. NULL if the associated TOSCA element does not exist.
      */
     Date getConfigurationLastUpdate(GenericId id);
-
+    
 }

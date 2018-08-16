@@ -11,7 +11,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR Apache-2.0
  *******************************************************************************/
-package org.eclipse.winery.repository.rest.resources.API;
+package org.eclipse.winery.repository.rest.resources.api;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -27,12 +27,13 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.xml.namespace.QName;
 
+import org.eclipse.winery.accountability.exceptions.AccountabilityException;
 import org.eclipse.winery.common.ids.definitions.ServiceTemplateId;
 import org.eclipse.winery.model.tosca.TNodeTemplate;
-import org.eclipse.winery.provenance.exceptions.ProvenanceException;
 import org.eclipse.winery.repository.backend.BackendUtils;
 import org.eclipse.winery.repository.backend.RepositoryFactory;
 import org.eclipse.winery.repository.rest.datatypes.select2.Select2DataWithOptGroups;
+import org.eclipse.winery.repository.rest.resources.admin.AccountabilityConfigurationResource;
 import org.eclipse.winery.repository.rest.resources.servicetemplates.ServiceTemplateResource;
 
 import io.swagger.annotations.Api;
@@ -112,8 +113,13 @@ public class APIResource {
         return Response.ok().entity(res.asSortedSet()).build();
     }
 
-    @Path("provenance/{provenanceId}")
-    public ProvenanceResource getProvenance(@PathParam("provenanceId") String provenanceId) throws ProvenanceException {
-        return new ProvenanceResource(provenanceId);
+    @Path("accountability/{accountabilityId}")
+    public AccountabilityResource getProvenance(@PathParam("accountabilityId") String accountabilityId) throws AccountabilityException {
+        return new AccountabilityResource(accountabilityId);
+    }
+    
+    @Path("accountability/configuration")
+    public AccountabilityConfigurationResource getConfiguration() {
+        return new AccountabilityConfigurationResource();
     }
 }

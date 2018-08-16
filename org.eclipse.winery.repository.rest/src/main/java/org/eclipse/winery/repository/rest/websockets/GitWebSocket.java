@@ -37,7 +37,7 @@ import org.eclipse.winery.common.Util;
 import org.eclipse.winery.repository.backend.RepositoryFactory;
 import org.eclipse.winery.repository.backend.filebased.GitBasedRepository;
 import org.eclipse.winery.repository.rest.datatypes.GitData;
-import org.eclipse.winery.repository.rest.resources.apiData.QNameWithTypeApiData;
+import org.eclipse.winery.repository.rest.resources.apidata.QNameWithTypeApiData;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;

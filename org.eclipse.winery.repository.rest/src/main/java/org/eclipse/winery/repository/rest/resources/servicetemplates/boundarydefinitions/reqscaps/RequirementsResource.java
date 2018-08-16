@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014-2017 Contributors to the Eclipse Foundation
+ * Copyright (c) 2014-2018 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -20,7 +20,7 @@ import org.eclipse.winery.model.tosca.utils.ModelUtilities;
 import org.eclipse.winery.repository.rest.resources._support.IPersistable;
 import org.eclipse.winery.repository.rest.resources._support.collections.CollectionsHelper;
 import org.eclipse.winery.repository.rest.resources._support.collections.withoutid.EntityWithoutIdCollectionResource;
-import org.eclipse.winery.repository.rest.resources.apiData.RequirementsOrCapabilityApiData;
+import org.eclipse.winery.repository.rest.resources.apidata.RequirementsOrCapabilityApiData;
 import org.eclipse.winery.repository.rest.resources.servicetemplates.ServiceTemplateResource;
 
 import javax.ws.rs.*;

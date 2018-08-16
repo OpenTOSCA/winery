@@ -227,13 +227,19 @@ public class ToscaExportUtil {
 
         this.writeDefinitionsElement(entryDefinitions, byteArrayOutputStream);
 
-        if (exportConfiguration.containsKey(CsarExportConfiguration.INCLUDE_HASHES.toString())) {
+        if (exportConfiguration.containsKey(CsarExportConfiguration.INCLUDE_HASHES.name())) {
             try {
                 String checksum = HashingUtil.getChecksum(byteArrayOutputStream.toByteArray(), TOSCAMetaFileAttributes.HASH);
                 definitionsFileProperties.setFileHash(checksum);
             } catch (NoSuchAlgorithmException e) {
                 LOGGER.error("Could not create hash for {}", tcId.getQName());
             }
+        }
+
+        // store the file name and contents in the immutable storage map to allow batch processing later
+        if (exportConfiguration.containsKey(CsarExportConfiguration.STORE_IMMUTABLY.name())) {
+            ((Map<CsarContentProperties, byte[]>) exportConfiguration.get(CsarExportConfiguration.STORE_IMMUTABLY.name()))
+                .put(definitionsFileProperties, byteArrayOutputStream.toByteArray());
         }
 
         out.write(byteArrayOutputStream.toByteArray());

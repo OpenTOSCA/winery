@@ -36,7 +36,7 @@ import org.eclipse.winery.repository.importing.CsarImportOptions;
 import org.eclipse.winery.repository.importing.CsarImporter;
 import org.eclipse.winery.repository.importing.ImportMetaInformation;
 import org.eclipse.winery.repository.rest.RestUtils;
-import org.eclipse.winery.repository.rest.resources.API.APIResource;
+import org.eclipse.winery.repository.rest.resources.api.APIResource;
 import org.eclipse.winery.repository.rest.resources.admin.AdminTopResource;
 import org.eclipse.winery.repository.rest.resources.compliancerules.ComplianceRulesResource;
 import org.eclipse.winery.repository.rest.resources.entitytemplates.artifacttemplates.ArtifactTemplatesResource;
@@ -187,7 +187,7 @@ public class MainResource {
     public Response importCSAR(
         @FormDataParam("file") InputStream uploadedInputStream, @FormDataParam("file") FormDataContentDisposition fileDetail,
         @FormDataParam("overwrite") @ApiParam(value = "true: content of CSAR overwrites existing content. false (default): existing content is kept") Boolean overwrite,
-        @FormDataParam("validate") @ApiParam(value = "true: validates the hash of the manifest file with the one stored in the provenance layer") Boolean validate,
+        @FormDataParam("validate") @ApiParam(value = "true: validates the hash of the manifest file with the one stored in the accountability layer") Boolean validate,
         @Context UriInfo uriInfo) {
         // @formatter:on
         CsarImporter importer = new CsarImporter();

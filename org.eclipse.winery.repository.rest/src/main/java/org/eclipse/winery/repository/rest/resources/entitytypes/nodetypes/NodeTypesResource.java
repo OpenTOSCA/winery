@@ -13,21 +13,23 @@
  *******************************************************************************/
 package org.eclipse.winery.repository.rest.resources.entitytypes.nodetypes;
 
-import io.swagger.annotations.Api;
-import org.eclipse.winery.common.ids.definitions.NodeTypeId;
-import org.eclipse.winery.repository.backend.RepositoryFactory;
-import org.eclipse.winery.repository.rest.resources._support.AbstractComponentsResource;
-import org.eclipse.winery.repository.rest.resources._support.AbstractComponentsWithoutTypeReferenceResource;
-import org.eclipse.winery.repository.rest.resources.apiData.NodeTypesVisualsApiData;
+import java.util.List;
+import java.util.SortedSet;
+import java.util.stream.Collectors;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import java.util.List;
-import java.util.SortedSet;
-import java.util.stream.Collectors;
+
+import org.eclipse.winery.common.ids.definitions.NodeTypeId;
+import org.eclipse.winery.repository.backend.RepositoryFactory;
+import org.eclipse.winery.repository.rest.resources._support.AbstractComponentsResource;
+import org.eclipse.winery.repository.rest.resources._support.AbstractComponentsWithoutTypeReferenceResource;
+import org.eclipse.winery.repository.rest.resources.apidata.NodeTypesVisualsApiData;
+
+import io.swagger.annotations.Api;
 
 /**
  * Manages all nodetypes in all available namespaces.
