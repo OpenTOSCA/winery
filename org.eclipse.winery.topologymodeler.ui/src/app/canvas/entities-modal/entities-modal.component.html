@@ -33,15 +33,28 @@
                            id="modalName" type="text" autocomplete="on"/>
                 </div>
                 <div class="radio"
-                     *ngIf="modalVariantAndState.modalVariant === 'deployment_artifacts' && modalVariantForEditDeleteTasks === '(none)'">
+                     *ngIf="modalVariantForEditDeleteTasks === '(none)'">
                     <label>
-                        <input type="radio" name="templateCreation" value="createArtifactTemplate"
+                        <input type="radio" name="templateCreation" value="{{modalVariantAndState.modalVariant === 'deployment_artifacts' ? 'createArtifactTemplate' : 'createPolicyTemplate'}}"
                                checked="checked" id="createArtifactTemplateInput"
-                               [(ngModel)]="modalSelectedRadioButton"/>Create Artifact Template
+                               [(ngModel)]="modalSelectedRadioButton"/>
+
+                        <div *ngIf="modalVariantAndState.modalVariant === 'deployment_artifacts'"
+                             style="display: inline-block;">
+                            Create Artifact Template
+                        </div>
+                        <div *ngIf="modalVariantAndState.modalVariant === 'policies'" style="display: inline-block;">
+                            Create Policy Template
+                        </div>
                     </label>
-                    <p class="help-block">If you want to add files to this deployment artifact you can do so via <a
+                    <p *ngIf="modalVariantAndState.modalVariant === 'deployment_artifacts'"
+                        class="help-block">If you want to add files to this deployment artifact you can do so via <a
                         target="_blank" href="{{getHostUrl()+'#/artifacttemplates'}}">Winery's management UI</a>,
-                        after creating this deployment artifact.</p>
+                        after creating it.</p>
+                    <p *ngIf="modalVariantAndState.modalVariant === 'policies'"
+                       class="help-block">You can manage this policy template via <a
+                        target="_blank" href="{{getHostUrl()+'#/policytemplates'}}">Winery's management UI</a>,
+                        after creating it.</p>
                 </div>
                 <div class="radio" *ngIf="modalVariantForEditDeleteTasks === '(none)'">
                     <label>
@@ -106,6 +119,49 @@
                         <div class="alert alert-success"
                              *ngIf="!artifactTemplateAlreadyExists && (artifactTemplateName.dirty || artifactTemplateName.touched) &&
                             artifactTemplateName.valid">
+                            Will be created.
+                        </div>
+                    </div>
+
+                </div>
+                <!-- for policies -->
+                <div class="form-group-grouping"
+                     *ngIf="modalSelectedRadioButton === 'createPolicyTemplate' && modalVariantAndState.modalVariant === 'policies'">
+
+                    <!-- for policies -->
+                    <div class="form-group createArtifactTemplate">
+                        <label for="policyTemplateNS" class="control-label">Namespace</label>
+                        <input [(ngModel)]="deploymentArtifactOrPolicyModalData.modalTemplateNameSpace" type="text"
+                               class="form-control"
+                               name="policyTemplateNS"
+                               id="policyTemplateNS"
+                               (keyup)="checkIfPolicyTemplateAlreadyExists($event, 'namespace')"
+                               [typeahead]="allNamespaces"
+                               typeaheadOptionField="namespace"/>
+                    </div>
+
+                    <!-- for policies -->
+                    <div class="form-group createArtifactTemplate">
+                        <label>Policy Template Name</label>
+                        <!-- name is an NCName -->
+                        <input [(ngModel)]="deploymentArtifactOrPolicyModalData.modalTemplateName"
+                               class="artifactData form-control"
+                               id="policyTemplateName" name="policyTemplateName" type="text" required
+                               autocomplete="on"
+                               (keyup)="checkIfPolicyTemplateAlreadyExists($event, 'templateName')"
+                               placeholder="Enter a name for the Policy Template"
+                               #policyTemplateName="ngModel"/>
+                        <div id="policyTemplateNameIsValid" class="invalid">
+                            <span id="policyTemplateNameIsInvalidReason"></span>
+                        </div>
+                        <div class="alert alert-info"
+                             *ngIf="policyTemplateAlreadyExists && (policyTemplateName.dirty || policyTemplateName.touched) &&
+                            policyTemplateName.valid">
+                            Policy Template with this name already exists.
+                        </div>
+                        <div class="alert alert-success"
+                             *ngIf="!policyTemplateAlreadyExists && (policyTemplateName.dirty || policyTemplateName.touched) &&
+                            policyTemplateName.valid">
                             Will be created.
                         </div>
                     </div>
@@ -184,7 +240,8 @@
                             *ngIf="modalVariantForEditDeleteTasks === '(none)' &&
                             (modalSelectedRadioButton === 'skippolicies' ||
                             modalSelectedRadioButton === 'skipdeployment_artifacts' ||
-                            modalSelectedRadioButton === 'createArtifactTemplate')"
+                            modalSelectedRadioButton === 'createArtifactTemplate' ||
+                            modalSelectedRadioButton === 'createPolicyTemplate')"
                             name="artifactTypeOrPolicyTypeChooser"
                             class="form-control"
                             id="artifactTypeOrPolicyTypeChooser"

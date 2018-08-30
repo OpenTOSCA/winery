@@ -209,16 +209,6 @@ export class BackendService {
     }
 
     /**
-     * Requests all policy templates from the backend
-     * @returns {Observable<string>}
-     */
-    private requestPolicyTemplates(): Observable<any> {
-        if (this.configuration) {
-            return this.http.get(backendBaseURL + '/policytemplates', { headers: this.headers });
-        }
-    }
-
-    /**
      * Requests all artifact types from the backend
      * @returns {Observable<string>}
      */
@@ -235,6 +225,16 @@ export class BackendService {
     requestArtifactTemplates(): Observable<any> {
         if (this.configuration) {
             return this.http.get(backendBaseURL + '/artifacttemplates', { headers: this.headers });
+        }
+    }
+
+    /**
+     * Requests all policy templates from the backend
+     * @returns {Observable<string>}
+     */
+    requestPolicyTemplates(): Observable<any> {
+        if (this.configuration) {
+            return this.http.get(backendBaseURL + '/policytemplates', { headers: this.headers });
         }
     }
 
@@ -342,6 +342,17 @@ export class BackendService {
         const headers = new HttpHeaders().set('Content-Type', 'application/json');
         const url = this.configuration.repositoryURL + '/artifacttemplates/';
         return this.http.post(url + '/', artifact, { headers: headers, responseType: 'text', observe: 'response' });
+    }
+
+    /**
+     * Used for creating new policy templates on the backend.
+     * @param {QNameWithTypeApiData} artifact
+     * @returns {Observable<any>}
+     */
+    createNewPolicy(policy: QNameWithTypeApiData): Observable<HttpResponse<string>> {
+        const headers = new HttpHeaders().set('Content-Type', 'application/json');
+        const url = this.configuration.repositoryURL + '/policytemplates/';
+        return this.http.post(url + '/', policy, { headers: headers, responseType: 'text', observe: 'response' });
     }
 
     /**

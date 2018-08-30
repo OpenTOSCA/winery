@@ -198,7 +198,7 @@ export class WineryComponent implements OnInit {
             }
             case 'unGroupedNodeTypes': {
                 this.entityTypes.unGroupedNodeTypes = entityTypeJSON;
-                this.setNodeVisuals(this.entityTypes.nodeVisuals);
+                // this.setNodeVisuals(this.entityTypes.nodeVisuals);
                 break;
             }
             case 'relationshipTypes': {

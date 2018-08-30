@@ -169,7 +169,9 @@ export class NodeComponent implements OnInit, AfterViewInit, OnDestroy, DoCheck 
      */
     ngOnInit() {
         this.differ = this.differs.find([]).create();
-        this.nodeClass = this.nodeTemplate.visuals.pattern ? 'pattern' : 'nodeTemplate';
+        if (!isNullOrUndefined(this.nodeTemplate.visuals)) {
+            this.nodeClass = this.nodeTemplate.visuals.pattern ? 'pattern' : 'nodeTemplate';
+        }
     }
 
     /**
