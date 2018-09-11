@@ -65,12 +65,9 @@ export class EntitiesModalComponent implements OnInit, AfterViewInit, OnChanges 
     modalSelectedRadioButton = '';
     artifactTemplateAlreadyExists: boolean;
     policyTemplateAlreadyExists: boolean;
-    // artifact creation
-    artifact: QNameWithTypeApiData = new QNameWithTypeApiData();
-    artifactUrl: string;
-    // policy creation
-    policy: QNameWithTypeApiData = new QNameWithTypeApiData();
-    policyUrl: string;
+    // artifactOrPolicy creation
+    artifactOrPolicy: QNameWithTypeApiData = new QNameWithTypeApiData();
+    artifactOrPolicyUrl: string;
     // needed for edit and delete tasks
     modalVariantForEditDeleteTasks = '(none)';
 
@@ -156,10 +153,10 @@ export class EntitiesModalComponent implements OnInit, AfterViewInit, OnChanges 
      * This method gets called when the add button is pressed inside the "Add Deployment Artifact" modal
      */
     addDeploymentArtifactOrPolicy() {
+        this.artifactOrPolicy.localname = this.deploymentArtifactOrPolicyModalData.modalTemplateName;
+        this.artifactOrPolicy.namespace = this.deploymentArtifactOrPolicyModalData.modalTemplateNameSpace;
+        this.artifactOrPolicy.type = this.deploymentArtifactOrPolicyModalData.modalType;
         if (this.modalSelectedRadioButton === 'createArtifactTemplate') {
-            this.artifact.localname = this.deploymentArtifactOrPolicyModalData.modalTemplateName;
-            this.artifact.namespace = this.deploymentArtifactOrPolicyModalData.modalTemplateNameSpace;
-            this.artifact.type = this.deploymentArtifactOrPolicyModalData.modalType;
             const deploymentArtifactToBeSavedToRedux: TDeploymentArtifact = new TDeploymentArtifact(
                 [],
                 [],
@@ -169,7 +166,7 @@ export class EntitiesModalComponent implements OnInit, AfterViewInit, OnChanges 
                 this.deploymentArtifactOrPolicyModalData.modalTemplateRef
             );
             // POST to the backend
-            this.backendService.createNewArtifact(this.artifact)
+            this.backendService.createNewArtifactOrPolicy(this.artifactOrPolicy, 'artifact')
                 .subscribe(res => {
                     if (res.ok === true) {
                         this.alert.success('<p>Saved the Deployment Artifact!<br>' + 'Response Status: '
@@ -186,9 +183,6 @@ export class EntitiesModalComponent implements OnInit, AfterViewInit, OnChanges 
                     });
                 });
         } else if (this.modalSelectedRadioButton === 'createPolicyTemplate') {
-            this.policy.localname = this.deploymentArtifactOrPolicyModalData.modalTemplateName;
-            this.policy.namespace = this.deploymentArtifactOrPolicyModalData.modalTemplateNameSpace;
-            this.policy.type = this.deploymentArtifactOrPolicyModalData.modalType;
             const policyToBeSavedToRedux: TPolicy = new TPolicy(
                 this.deploymentArtifactOrPolicyModalData.modalName,
                 this.deploymentArtifactOrPolicyModalData.modalTemplateRef,
@@ -198,8 +192,7 @@ export class EntitiesModalComponent implements OnInit, AfterViewInit, OnChanges 
                 {}
             );
             // POST to the backend
-            console.log(this.policy);
-            this.backendService.createNewPolicy(this.policy)
+            this.backendService.createNewArtifactOrPolicy(this.artifactOrPolicy, 'policy')
                 .subscribe(res => {
                     if (res.ok === true) {
                         this.alert.success('<p>Saved the Policy Template!<br>' + 'Response Status: '
@@ -263,7 +256,7 @@ export class EntitiesModalComponent implements OnInit, AfterViewInit, OnChanges 
     }
 
     /**
-     * Auto-completes other relevant values when a deployment-artifact or policy type has been selected in
+     * Auto-completes other relevant values when a deployment-artifactOrPolicy or policy type has been selected in
      * the modal
      */
     onChangeArtifactTypeOrPolicyTypeInModal(artifactTypeOrPolicyType: any, variant: string): void {
@@ -440,10 +433,10 @@ export class EntitiesModalComponent implements OnInit, AfterViewInit, OnChanges 
     }
 
     private makeArtifactUrl() {
-        this.artifactUrl = backendBaseURL + '/artifacttemplates/' + encodeURIComponent(encodeURIComponent(
+        this.artifactOrPolicyUrl = backendBaseURL + '/artifacttemplates/' + encodeURIComponent(encodeURIComponent(
             this.deploymentArtifactOrPolicyModalData.modalTemplateNameSpace))
             + '/' + this.deploymentArtifactOrPolicyModalData.modalTemplateName + '/';
-        // TODO: add upload ability "this.uploadUrl = this.artifactUrl + 'files/';"
+        // TODO: add upload ability "this.uploadUrl = this.artifactOrPolicyUrl + 'files/';"
     }
 
 }
