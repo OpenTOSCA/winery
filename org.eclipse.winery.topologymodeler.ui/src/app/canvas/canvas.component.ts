@@ -957,9 +957,12 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
             const matchTopologyButton = this.navbarButtonsState.buttonsState.matchTopologyButton;
             let selectedNodes;
             if (alignmentButtonLayout) {
-                this.layoutDirective.layoutNodes(this.nodeChildrenArray, this.allRelationshipTemplates);
-                this.ngRedux.dispatch(this.topologyRendererActions.executeLayout());
-                selectedNodes = false;
+                this.layoutDirective.layoutNodes(this.nodeChildrenArray, this.allRelationshipTemplates).then((data) => {
+                    console.log("LAYOUT DONE")
+                    selectedNodes = false;
+
+                });
+
             } else if (alignmentButtonAlignH) {
                 if (this.selectedNodes.length >= 1) {
                     this.layoutDirective.align(this.nodeChildrenArray, this.selectedNodes, align.Horizontal);
@@ -1988,6 +1991,5 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
 
     private layoutTopology() {
         this.layoutDirective.layoutNodes(this.nodeChildrenArray, this.allRelationshipTemplates);
-        this.ngRedux.dispatch(this.topologyRendererActions.executeLayout());
     }
 }

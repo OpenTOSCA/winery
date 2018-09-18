@@ -12,13 +12,13 @@
  * SPDX-License-Identifier: EPL-2.0 OR Apache-2.0
  ********************************************************************************/
 
-import { Directive, ElementRef, } from '@angular/core';
+import {Directive, ElementRef,} from '@angular/core';
 import ELK from 'elkjs/lib/elk.bundled.js';
-import { TNodeTemplate, TRelationshipTemplate } from '../models/ttopology-template';
-import { ToastrService } from 'ngx-toastr';
-import { LayoutChildNodeModel } from '../models/layoutChildNodeModel';
-import { NodeComponent } from '../node/node.component';
-import { align } from '../models/enums';
+import {TNodeTemplate, TRelationshipTemplate} from '../models/ttopology-template';
+import {ToastrService} from 'ngx-toastr';
+import {LayoutChildNodeModel} from '../models/layoutChildNodeModel';
+import {NodeComponent} from '../node/node.component';
+import {align} from '../models/enums';
 
 @Directive({
     selector: '[wineryLayout]'
@@ -50,7 +50,7 @@ export class LayoutDirective {
      * @param relationshipTemplates
      */
     public layoutNodes(nodeChildrenArray: Array<NodeComponent>,
-                       relationshipTemplates: Array<TRelationshipTemplate>): void {
+                       relationshipTemplates: Array<TRelationshipTemplate>): Promise<boolean> {
         // These are the input arrays for eclipse layout kernel (ELK).
         const children: LayoutChildNodeModel[] = [];
         const edges: any[] = [];
@@ -87,11 +87,15 @@ export class LayoutDirective {
             children: children,
             edges: edges,
         };
+        return new Promise(resolve => {
 
-        const promise = elk.layout(graph);
-        promise.then((data) => {
-            this.applyPositions(data, nodeChildrenArray);
-        });
+            const promise = elk.layout(graph);
+            promise.then((data) => {
+                this.applyPositions(data, nodeChildrenArray).then(() => {
+                    resolve(true);
+                });
+            });
+        })
     }
 
     /**
@@ -102,14 +106,19 @@ export class LayoutDirective {
      * @param jsPlumbInstance
      */
     private applyPositions(data: any,
-                           nodeChildrenArray: Array<NodeComponent>): void {
-        nodeChildrenArray.forEach((node, index) => {
-            // apply the new positions to the nodes
-            node.nodeTemplate.x = data.children[index].x + this.nodeXOffset;
-            node.nodeTemplate.y = data.children[index].y + this.nodeYOffset;
+                           nodeChildrenArray: Array<NodeComponent>): Promise<boolean> {
+        return new Promise(resolve => {
+
+            nodeChildrenArray.forEach((node, index) => {
+                // apply the new positions to the nodes
+                node.nodeTemplate.x = data.children[index].x + this.nodeXOffset;
+                node.nodeTemplate.y = data.children[index].y + this.nodeYOffset;
+            });
+
+            this.repaintEverything();
+            resolve(true);
         });
 
-        this.repaintEverything();
     }
 
     /**
