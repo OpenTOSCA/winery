@@ -23,22 +23,22 @@ import {
     SimpleChanges,
     ViewChild
 } from '@angular/core';
-import { ModalDirective } from 'ngx-bootstrap';
-import { TPolicy } from '../../models/policiesModalData';
-import { TDeploymentArtifact } from '../../models/artifactsModalData';
-import { QNameWithTypeApiData } from '../../models/generateArtifactApiData';
-import { EntityTypesModel } from '../../models/entityTypesModel';
-import { BackendService } from '../../services/backend.service';
-import { IWineryState } from '../../redux/store/winery.store';
-import { NgRedux } from '@angular-redux/store';
-import { isNullOrUndefined } from 'util';
-import { backendBaseURL, hostURL } from '../../models/configuration';
-import { WineryActions } from '../../redux/actions/winery.actions';
-import { ExistsService } from '../../services/exists.service';
-import { ToastrService } from 'ngx-toastr';
-import { DeploymentArtifactOrPolicyModalData, ModalVariant, ModalVariantAndState } from './modal-model';
-import { EntitiesModalService, OpenModalEvent } from './entities-modal.service';
-import { QName } from '../../models/qname';
+import {ModalDirective} from 'ngx-bootstrap';
+import {TPolicy} from '../../models/policiesModalData';
+import {TDeploymentArtifact} from '../../models/artifactsModalData';
+import {QNameWithTypeApiData} from '../../models/generateArtifactApiData';
+import {EntityTypesModel} from '../../models/entityTypesModel';
+import {BackendService} from '../../services/backend.service';
+import {IWineryState} from '../../redux/store/winery.store';
+import {NgRedux} from '@angular-redux/store';
+import {isNullOrUndefined} from 'util';
+import {backendBaseURL, hostURL} from '../../models/configuration';
+import {WineryActions} from '../../redux/actions/winery.actions';
+import {ExistsService} from '../../services/exists.service';
+import {ToastrService} from 'ngx-toastr';
+import {DeploymentArtifactOrPolicyModalData, ModalVariant, ModalVariantAndState} from './modal-model';
+import {EntitiesModalService, OpenModalEvent} from './entities-modal.service';
+import {QName} from '../../models/qname';
 
 @Component({
     selector: 'winery-entities-modal',
@@ -63,8 +63,7 @@ export class EntitiesModalComponent implements OnInit, AfterViewInit, OnChanges 
 
     deploymentArtifactOrPolicyModalData: DeploymentArtifactOrPolicyModalData;
     modalSelectedRadioButton = '';
-    artifactTemplateAlreadyExists: boolean;
-    policyTemplateAlreadyExists: boolean;
+    artifactOrPolicyAlreadyExists: boolean;
     // artifactOrPolicy creation
     artifactOrPolicy: QNameWithTypeApiData = new QNameWithTypeApiData();
     artifactOrPolicyUrl: string;
@@ -300,7 +299,8 @@ export class EntitiesModalComponent implements OnInit, AfterViewInit, OnChanges 
         console.log(this.deploymentArtifactOrPolicyModalData);
     }
 
-    checkIfArtifactTemplateAlreadyExists(event: any, changedField: string) {
+    checkIfArtifactOrPolicyAlreadyExists(event: any, changedField: string) {
+        let url = '';
         if (changedField === 'templateName') {
             this.deploymentArtifactOrPolicyModalData.modalTemplateName = event.target.value;
         } else if (changedField === 'namespace') {
@@ -310,34 +310,22 @@ export class EntitiesModalComponent implements OnInit, AfterViewInit, OnChanges 
             this.deploymentArtifactOrPolicyModalData.modalTemplateName)) {
             this.deploymentArtifactOrPolicyModalData.modalTemplateRef = '{' +
                 this.deploymentArtifactOrPolicyModalData.modalTemplateNameSpace + '}' + this.deploymentArtifactOrPolicyModalData.modalTemplateName;
-            const url = backendBaseURL + '/artifacttemplates/'
-                + encodeURIComponent(encodeURIComponent(this.deploymentArtifactOrPolicyModalData.modalTemplateNameSpace)) + '/'
-                + this.deploymentArtifactOrPolicyModalData.modalTemplateName + '/';
-            this.existsService.check(url)
-                .subscribe(
-                    data => this.artifactTemplateAlreadyExists = true,
-                    error => this.artifactTemplateAlreadyExists = false
-                );
-        }
-    }
 
-    checkIfPolicyTemplateAlreadyExists(event: any, changedField: string) {
-        if (changedField === 'templateName') {
-            this.deploymentArtifactOrPolicyModalData.modalTemplateName = event.target.value;
-        } else if (changedField === 'namespace') {
-            this.deploymentArtifactOrPolicyModalData.modalTemplateNameSpace = event.target.value;
-        }
-        if (!isNullOrUndefined(this.deploymentArtifactOrPolicyModalData.modalTemplateNameSpace &&
-            this.deploymentArtifactOrPolicyModalData.modalTemplateName)) {
-            this.deploymentArtifactOrPolicyModalData.modalTemplateRef = '{' +
-                this.deploymentArtifactOrPolicyModalData.modalTemplateNameSpace + '}' + this.deploymentArtifactOrPolicyModalData.modalTemplateName;
-            const url = backendBaseURL + '/policytemplates/'
-                + encodeURIComponent(encodeURIComponent(this.deploymentArtifactOrPolicyModalData.modalTemplateNameSpace)) + '/'
-                + this.deploymentArtifactOrPolicyModalData.modalTemplateName + '/';
+            if (this.modalVariantAndState.modalVariant === 'policies') {
+                url = backendBaseURL + '/policytemplates/'
+                    + encodeURIComponent(encodeURIComponent(this.deploymentArtifactOrPolicyModalData.modalTemplateNameSpace)) + '/'
+                    + this.deploymentArtifactOrPolicyModalData.modalTemplateName + '/';
+
+            } else {
+                url = backendBaseURL + '/artifacttemplates/'
+                    + encodeURIComponent(encodeURIComponent(this.deploymentArtifactOrPolicyModalData.modalTemplateNameSpace)) + '/'
+                    + this.deploymentArtifactOrPolicyModalData.modalTemplateName + '/';
+            }
+
             this.existsService.check(url)
                 .subscribe(
-                    data => this.policyTemplateAlreadyExists = true,
-                    error => this.policyTemplateAlreadyExists = false
+                    data => this.artifactOrPolicyAlreadyExists = true,
+                    error => this.artifactOrPolicyAlreadyExists = false
                 );
         }
     }

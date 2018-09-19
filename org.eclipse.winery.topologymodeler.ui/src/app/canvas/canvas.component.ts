@@ -943,7 +943,8 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
 
     /**
      * Handler for the layout buttons.
-     * @param currentButtonsState  Representation of all possible buttons.
+     *
+     * @param currentButtonsState This object holds flags for every button in the navigation bar. We listen for changes that occur when the user presses a button. These change events trigger
      */
     setButtonsState(currentButtonsState: ButtonsStateModel): void {
         if (currentButtonsState) {
@@ -971,7 +972,6 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
                     this.layoutDirective.align(this.nodeChildrenArray, this.allNodeTemplates, align.Horizontal);
                     selectedNodes = false;
                 }
-                this.ngRedux.dispatch(this.topologyRendererActions.executeAlignH());
             } else if (alignmentButtonAlignV) {
                 if (this.selectedNodes.length >= 1) {
                     this.layoutDirective.align(this.nodeChildrenArray, this.selectedNodes, align.Vertical);
@@ -979,7 +979,6 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
                 } else {
                     this.layoutDirective.align(this.nodeChildrenArray, this.allNodeTemplates, align.Vertical);
                 }
-                this.ngRedux.dispatch(this.topologyRendererActions.executeAlignV());
             } else if (importTopologyButton) {
                 if (!this.importTopologyData.allTopologyTemplates) {
                     this.importTopologyData.allTopologyTemplates = [];
@@ -990,7 +989,6 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
                         console.log(this.importTopologyData.allTopologyTemplates);
                     });
                 }
-                this.ngRedux.dispatch(this.topologyRendererActions.importTopology());
                 this.importTopologyModal.show();
             } else if (splitTopologyButton) {
                 this.splitMatchService.splitTopology(this.backendService, this.ngRedux, this.topologyRendererActions, this.errorHandler);
