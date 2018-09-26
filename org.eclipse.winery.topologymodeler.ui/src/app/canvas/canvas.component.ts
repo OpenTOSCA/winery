@@ -12,15 +12,16 @@
  * SPDX-License-Identifier: EPL-2.0 OR Apache-2.0
  ********************************************************************************/
 import {
-    AfterViewInit, Component, ElementRef, HostListener, Input, KeyValueDiffers, NgZone, OnChanges, OnDestroy, OnInit,
-    QueryList, Renderer2, SimpleChanges, ViewChild, ViewChildren
+    AfterViewInit, Component, DoCheck, ElementRef, HostListener, Input, KeyValueDiffers, NgZone, OnChanges, OnDestroy, OnInit, QueryList,
+    Renderer2, SimpleChanges, ViewChild, ViewChildren
 } from '@angular/core';
 import { JsPlumbService } from '../services/jsPlumb.service';
-import { EntityType, TNodeTemplate, TRelationshipTemplate, VisualEntityType } from '../models/ttopology-template';
+import {EntityType, TNodeTemplate, TRelationshipTemplate, VisualEntityType} from '../models/ttopology-template';
 import { LayoutDirective } from '../layout/layout.directive';
 import { WineryActions } from '../redux/actions/winery.actions';
 import { NgRedux } from '@angular-redux/store';
 import { IWineryState } from '../redux/store/winery.store';
+import { TopologyRendererStateModel } from '../models/topologyRendererState.model';
 import { TopologyRendererActions } from '../redux/actions/topologyRenderer.actions';
 import { NodeComponent } from '../node/node.component';
 import { Hotkey, HotkeysService } from 'angular2-hotkeys';
@@ -49,7 +50,6 @@ import { SplitMatchTopologyService } from '../services/split-match-topology.serv
 import { DifferenceStates, VersionUtils } from '../models/ToscaDiff';
 import { ErrorHandlerService } from '../services/error-handler.service';
 import { DragSource } from '../models/DragSource';
-import { TopologyRendererState } from '../redux/reducers/topologyRenderer.reducer';
 
 @Component({
     selector: 'winery-canvas',
@@ -69,6 +69,7 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
     @ViewChild('importTopologyModal') importTopologyModal: ModalDirective;
     @Input() readonly: boolean;
     @Input() entityTypes: EntityTypesModel;
+    @Input() relationshipTypes: Array<EntityType> = [];
     @Input() diffMode = false;
     @Input() sidebarDeleteButtonClickEvent: any;
 
@@ -78,7 +79,7 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
 
     allNodeTemplates: Array<TNodeTemplate> = [];
     allRelationshipTemplates: Array<TRelationshipTemplate> = [];
-    topologyRendererState: TopologyRendererState;
+    topologyRendererState: TopologyRendererStateModel;
     selectedNodes: Array<TNodeTemplate> = [];
     // current data emitted from a node
     currentModalData: any;
@@ -108,6 +109,9 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
 
     indexOfNewNode: number;
     targetNodes: Array<string> = [];
+
+    // used for Angular DoCheck Lifecycle hook
+    differ: any;
 
     // scroll offset
     scrollOffset = 0;
@@ -159,7 +163,7 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
         this.subscriptions.push(this.ngRedux.select(state => state.wineryState.currentJsonTopology.relationshipTemplates)
             .subscribe(currentRelationships => this.updateRelationships(currentRelationships)));
         this.subscriptions.push(this.ngRedux.select(state => state.topologyRendererState)
-            .subscribe(currentButtonsState => this.setRendererState(currentButtonsState)));
+            .subscribe(currentTopologyRendererState => this.setButtonsState(currentTopologyRendererState)));
         this.subscriptions.push(this.ngRedux.select(state => state.wineryState.currentNodeData)
             .subscribe(currentNodeData => this.toggleMarkNode(currentNodeData)));
         this.gridTemplate = new GridTemplate(100, false, false, 30);
@@ -875,7 +879,7 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
      * @param $event  The html event.
      */
     positionNewNode(): void {
-        this.updateSelectedNodes();
+        setTimeout(() => this.updateSelectedNodes(), 1);
         this.unbindAll();
         this.revalidateContainer();
     }
@@ -935,13 +939,19 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
     /**
      * Handler for the layout buttons.
      *
-     * @param currentButtonsState This object holds flags for every button in the navigation bar. We listen for changes that occur when the user presses a button. These change events trigger
+     * @param topologyRendererState This object holds flags for every button in the navigation bar. We listen for changes that occur when the user presses a button. These change events trigger
      */
-    setRendererState(rendererState: TopologyRendererState): void {
-        if (rendererState) {
-            this.topologyRendererState = rendererState;
+    setButtonsState(topologyRendererState: TopologyRendererStateModel): void {
+        if (topologyRendererState) {
+            this.topologyRendererState = topologyRendererState;
             this.revalidateContainer();
-
+            const alignmentButtonLayout = this.topologyRendererState.buttonsState.layoutButton;
+            const alignmentButtonAlignH =  this.topologyRendererState.buttonsState.alignHButton;
+            const alignmentButtonAlignV = this.topologyRendererState.buttonsState.alignVButton;
+            const importTopologyButton = this.topologyRendererState.buttonsState.importTopologyButton;
+            const splitTopologyButton = this.topologyRendererState.buttonsState.splitTopologyButton;
+            const matchTopologyButton = this.topologyRendererState.buttonsState.matchTopologyButton;
+            const substituteTopologyButton = this.topologyRendererState.buttonsState.substituteTopologyButton;
             let leaveNodesAsSelectedAfterLayouting;
             if (alignmentButtonLayout) {
                 this.layoutDirective.layoutNodes(this.nodeChildrenArray, this.allRelationshipTemplates).then((data) => {
@@ -950,6 +960,7 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
                     // but this just toggles the button state back to false, so layout can be called again.
                     this.ngRedux.dispatch(this.topologyRendererActions.executeLayout());
                 });
+
             // Horizontal alignment function call
             } else if (alignmentButtonAlignH) {
                     const selectionActive:boolean = (this.selectedNodes.length >= 1);
@@ -957,12 +968,27 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
                     leaveNodesAsSelectedAfterLayouting = selectionActive;
                     this.layoutDirective.align(this.nodeChildrenArray, nodesToBeAligned, align.Horizontal);
             // Vertical alignment function call
-            } else if (this.topologyRendererState.buttonsState.alignVButton) {
+            } else if (alignmentButtonAlignV) {
                 const selectionActive:boolean = (this.selectedNodes.length >= 1);
                 const nodesToBeAligned = selectionActive ? this.selectedNodes : this.allNodeTemplates;
                 leaveNodesAsSelectedAfterLayouting = selectionActive;
                 this.layoutDirective.align(this.nodeChildrenArray, nodesToBeAligned, align.Vertical);
-            } else if (this.topologyRendererState.buttonsState.importTopologyButton) {
+            } else if (importTopologyButton) {
+                if (this.selectedNodes.length >= 1) {
+                    this.layoutDirective.align(this.nodeChildrenArray, this.selectedNodes, align.Horizontal);
+                    leaveNodesAsSelectedAfterLayouting = true;
+                } else {
+                    this.layoutDirective.align(this.nodeChildrenArray, this.allNodeTemplates, align.Horizontal);
+                    leaveNodesAsSelectedAfterLayouting = false;
+                }
+            } else if (alignmentButtonAlignV) {
+                if (this.selectedNodes.length >= 1) {
+                    this.layoutDirective.align(this.nodeChildrenArray, this.selectedNodes, align.Vertical);
+                    leaveNodesAsSelectedAfterLayouting = true;
+                } else {
+                    this.layoutDirective.align(this.nodeChildrenArray, this.allNodeTemplates, align.Vertical);
+                }
+            } else if (importTopologyButton) {
                 if (!this.importTopologyData.allTopologyTemplates) {
                     this.importTopologyData.allTopologyTemplates = [];
                     this.backendService.requestAllTopologyTemplates().subscribe(allServiceTemplates => {
@@ -972,11 +998,11 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
                     });
                 }
                 this.importTopologyModal.show();
-            } else if (this.topologyRendererState.buttonsState.splitTopologyButton) {
+            } else if (splitTopologyButton) {
                 this.splitMatchService.splitTopology(this.backendService, this.ngRedux, this.topologyRendererActions, this.errorHandler);
-            } else if (this.topologyRendererState.buttonsState.matchTopologyButton) {
+            } else if (matchTopologyButton) {
                 this.splitMatchService.matchTopology(this.backendService, this.ngRedux, this.topologyRendererActions, this.errorHandler);
-            } else if (this.topologyRendererState.buttonsState.substituteTopologyButton) {
+            } else if (substituteTopologyButton) {
                 this.ngRedux.dispatch(this.topologyRendererActions.substituteTopology());
                 this.backendService.substituteTopology();
             } else if (this.topologyRendererState.nodesToSelect) {
