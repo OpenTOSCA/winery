@@ -183,11 +183,11 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
         this.importTopologyData = new ImportTopologyModalData();
     }
 
+    /**
+     * Angular onChanges Lifecycle handler
+     * @param {SimpleChanges} changes
+     */
     ngOnChanges(changes: SimpleChanges) {
-        if (changes) {
-            const buttonClickEvent = changes.sidebarDeleteButtonClickEvent;
-            this.handleDeleteKeyEvent();
-        }
     }
 
     /**
@@ -340,12 +340,12 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
                                             return true;
                                         } else {
                                             this.requirements.properties = defaultXML;
-                                            this.setDefaultReqKVProperties();
+                                            this.setDefaultReqXMLProperties();
                                             return true;
                                         }
                                     } else {
                                         this.requirements.properties = defaultXML;
-                                        this.setDefaultReqKVProperties();
+                                        this.setDefaultReqXMLProperties();
                                         return true;
                                     }
                                 }
@@ -467,8 +467,7 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
         this.capabilities.capabilities.capability.some(cap => {
             if (cap.id === this.currentModalData.currentCapability.id) {
                 cap.properties = {
-                    kvproperties:
-                    this.capabilities.properties
+                    kvproperties: this.capabilities.properties
                 };
             }
         });
@@ -598,10 +597,6 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
         this.ngRedux.dispatch(this.actions.setRequirement(newRequirementData));
         this.resetRequirements();
         this.requirementsModal.hide();
-    }
-
-    getHostUrl(): string {
-        return hostURL;
     }
 
     /**
@@ -951,34 +946,31 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
             this.navbarButtonsState = currentButtonsState;
             this.revalidateContainer();
             const alignmentButtonLayout = this.navbarButtonsState.buttonsState.layoutButton;
-            const alignmentButtonAlignH = this.navbarButtonsState.buttonsState.alignHButton;
+            const alignmentButtonAlignH =  this.navbarButtonsState.buttonsState.alignHButton;
             const alignmentButtonAlignV = this.navbarButtonsState.buttonsState.alignVButton;
             const importTopologyButton = this.navbarButtonsState.buttonsState.importTopologyButton;
             const splitTopologyButton = this.navbarButtonsState.buttonsState.splitTopologyButton;
             const matchTopologyButton = this.navbarButtonsState.buttonsState.matchTopologyButton;
-            let selectedNodes;
+            let leaveNodesAsSelectedAfterLayouting;
             if (alignmentButtonLayout) {
                 this.layoutDirective.layoutNodes(this.nodeChildrenArray, this.allRelationshipTemplates).then((data) => {
-                    console.log("LAYOUT DONE")
-                    selectedNodes = false;
-
+                    leaveNodesAsSelectedAfterLayouting = false;
+                    // This call might seem confusing as we are calling it again right after executing,
+                    // but this just toggles the button state back to false, so layout can be called again.
+                    this.ngRedux.dispatch(this.topologyRendererActions.executeLayout());
                 });
-
+            // Horizontal alignment function call
             } else if (alignmentButtonAlignH) {
-                if (this.selectedNodes.length >= 1) {
-                    this.layoutDirective.align(this.nodeChildrenArray, this.selectedNodes, align.Horizontal);
-                    selectedNodes = true;
-                } else {
-                    this.layoutDirective.align(this.nodeChildrenArray, this.allNodeTemplates, align.Horizontal);
-                    selectedNodes = false;
-                }
+                    const selectionActive:boolean = (this.selectedNodes.length >= 1);
+                    const nodesToBeAligned = selectionActive ? this.selectedNodes : this.allNodeTemplates;
+                    leaveNodesAsSelectedAfterLayouting = selectionActive;
+                    this.layoutDirective.align(this.nodeChildrenArray, nodesToBeAligned, align.Horizontal);
+            // Vertical alignment function call
             } else if (alignmentButtonAlignV) {
-                if (this.selectedNodes.length >= 1) {
-                    this.layoutDirective.align(this.nodeChildrenArray, this.selectedNodes, align.Vertical);
-                    selectedNodes = true;
-                } else {
-                    this.layoutDirective.align(this.nodeChildrenArray, this.allNodeTemplates, align.Vertical);
-                }
+                const selectionActive:boolean = (this.selectedNodes.length >= 1);
+                const nodesToBeAligned = selectionActive ? this.selectedNodes : this.allNodeTemplates;
+                leaveNodesAsSelectedAfterLayouting = selectionActive;
+                this.layoutDirective.align(this.nodeChildrenArray, nodesToBeAligned, align.Vertical);
             } else if (importTopologyButton) {
                 if (!this.importTopologyData.allTopologyTemplates) {
                     this.importTopologyData.allTopologyTemplates = [];
@@ -997,7 +989,7 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
             }
             setTimeout(() => {
                 this.newJsPlumbInstance.repaintEverything();
-                if (selectedNodes === true) {
+                if (leaveNodesAsSelectedAfterLayouting === true) {
                     this.updateSelectedNodes();
                 } else {
                     this.updateAllNodes();
@@ -1051,7 +1043,7 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
     }
 
     /**
-     * Updates the internal representation of all nodes with the actual dom information.
+     * Updates the internal representation of all nodes with the actual DOM information.
      */
     public updateAllNodes(): void {
         if (this.allNodeTemplates.length > 0 && this.child) {
