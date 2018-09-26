@@ -949,7 +949,6 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
 
             if (this.topologyRendererState.buttonsState.layoutButton) {
                 this.layoutDirective.layoutNodes(this.nodeChildrenArray, this.allRelationshipTemplates);
-                this.ngRedux.dispatch(this.topologyRendererActions.executeLayout());
                 selectedNodes = false;
             } else if (this.topologyRendererState.buttonsState.alignHButton) {
                 if (this.selectedNodes.length >= 1) {
