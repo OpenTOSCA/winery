@@ -12,16 +12,15 @@
  * SPDX-License-Identifier: EPL-2.0 OR Apache-2.0
  ********************************************************************************/
 import {
-    AfterViewInit, Component, DoCheck, ElementRef, HostListener, Input, KeyValueDiffers, NgZone, OnChanges, OnDestroy, OnInit, QueryList,
-    Renderer2, SimpleChanges, ViewChild, ViewChildren
+    AfterViewInit, Component, ElementRef, HostListener, Input, KeyValueDiffers, NgZone, OnChanges, OnDestroy, OnInit,
+    QueryList, Renderer2, SimpleChanges, ViewChild, ViewChildren
 } from '@angular/core';
 import { JsPlumbService } from '../services/jsPlumb.service';
-import { EntityType, TNodeTemplate, TRelationshipTemplate } from '../models/ttopology-template';
+import { EntityType, TNodeTemplate, TRelationshipTemplate, VisualEntityType } from '../models/ttopology-template';
 import { LayoutDirective } from '../layout/layout.directive';
 import { WineryActions } from '../redux/actions/winery.actions';
 import { NgRedux } from '@angular-redux/store';
 import { IWineryState } from '../redux/store/winery.store';
-import { ButtonsStateModel } from '../models/buttonsState.model';
 import { TopologyRendererActions } from '../redux/actions/topologyRenderer.actions';
 import { NodeComponent } from '../node/node.component';
 import { Hotkey, HotkeysService } from 'angular2-hotkeys';
@@ -50,6 +49,7 @@ import { SplitMatchTopologyService } from '../services/split-match-topology.serv
 import { DifferenceStates, VersionUtils } from '../models/ToscaDiff';
 import { ErrorHandlerService } from '../services/error-handler.service';
 import { DragSource } from '../models/DragSource';
+import { TopologyRendererState } from '../redux/reducers/topologyRenderer.reducer';
 
 @Component({
     selector: 'winery-canvas',
@@ -57,7 +57,7 @@ import { DragSource } from '../models/DragSource';
     templateUrl: './canvas.component.html',
     styleUrls: ['./canvas.component.css']
 })
-export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewInit, DoCheck {
+export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewInit {
 
     @ViewChildren(NodeComponent) nodeComponentChildren: QueryList<NodeComponent>;
     @ViewChildren('KVTextareas') KVTextareas: QueryList<any>;
@@ -69,7 +69,6 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
     @ViewChild('importTopologyModal') importTopologyModal: ModalDirective;
     @Input() readonly: boolean;
     @Input() entityTypes: EntityTypesModel;
-    @Input() relationshipTypes: Array<EntityType> = [];
     @Input() diffMode = false;
     @Input() sidebarDeleteButtonClickEvent: any;
 
@@ -79,7 +78,7 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
 
     allNodeTemplates: Array<TNodeTemplate> = [];
     allRelationshipTemplates: Array<TRelationshipTemplate> = [];
-    navbarButtonsState: ButtonsStateModel;
+    topologyRendererState: TopologyRendererState;
     selectedNodes: Array<TNodeTemplate> = [];
     // current data emitted from a node
     currentModalData: any;
@@ -109,9 +108,6 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
 
     indexOfNewNode: number;
     targetNodes: Array<string> = [];
-
-    // used for Angular DoCheck Lifecycle hook
-    differ: any;
 
     // scroll offset
     scrollOffset = 0;
@@ -157,13 +153,13 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
                 private errorHandler: ErrorHandlerService) {
         this.newJsPlumbInstance = this.jsPlumbService.getJsPlumbInstance();
         this.newJsPlumbInstance.setContainer('container');
-        console.log(this.newJsPlumbInstance);
+
         this.subscriptions.push(this.ngRedux.select(state => state.wineryState.currentJsonTopology.nodeTemplates)
             .subscribe(currentNodes => this.updateNodes(currentNodes)));
         this.subscriptions.push(this.ngRedux.select(state => state.wineryState.currentJsonTopology.relationshipTemplates)
             .subscribe(currentRelationships => this.updateRelationships(currentRelationships)));
         this.subscriptions.push(this.ngRedux.select(state => state.topologyRendererState)
-            .subscribe(currentButtonsState => this.setButtonsState(currentButtonsState)));
+            .subscribe(currentButtonsState => this.setRendererState(currentButtonsState)));
         this.subscriptions.push(this.ngRedux.select(state => state.wineryState.currentNodeData)
             .subscribe(currentNodeData => this.toggleMarkNode(currentNodeData)));
         this.gridTemplate = new GridTemplate(100, false, false, 30);
@@ -266,8 +262,8 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
      * @param currentPaletteOpened
      */
     setPaletteState(currentPaletteOpened: boolean): void {
-        if (currentPaletteOpened) {
-            this.paletteOpened = currentPaletteOpened;
+        this.paletteOpened = currentPaletteOpened;
+        if (this.paletteOpened) {
             this.gridTemplate.marginLeft = 300;
         } else {
             this.gridTemplate.marginLeft = 30;
@@ -879,7 +875,7 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
      * @param $event  The html event.
      */
     positionNewNode(): void {
-        setTimeout(() => this.updateSelectedNodes(), 1);
+        this.updateSelectedNodes();
         this.unbindAll();
         this.revalidateContainer();
     }
@@ -941,16 +937,11 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
      *
      * @param currentButtonsState This object holds flags for every button in the navigation bar. We listen for changes that occur when the user presses a button. These change events trigger
      */
-    setButtonsState(currentButtonsState: ButtonsStateModel): void {
-        if (currentButtonsState) {
-            this.navbarButtonsState = currentButtonsState;
+    setRendererState(rendererState: TopologyRendererState): void {
+        if (rendererState) {
+            this.topologyRendererState = rendererState;
             this.revalidateContainer();
-            const alignmentButtonLayout = this.navbarButtonsState.buttonsState.layoutButton;
-            const alignmentButtonAlignH =  this.navbarButtonsState.buttonsState.alignHButton;
-            const alignmentButtonAlignV = this.navbarButtonsState.buttonsState.alignVButton;
-            const importTopologyButton = this.navbarButtonsState.buttonsState.importTopologyButton;
-            const splitTopologyButton = this.navbarButtonsState.buttonsState.splitTopologyButton;
-            const matchTopologyButton = this.navbarButtonsState.buttonsState.matchTopologyButton;
+
             let leaveNodesAsSelectedAfterLayouting;
             if (alignmentButtonLayout) {
                 this.layoutDirective.layoutNodes(this.nodeChildrenArray, this.allRelationshipTemplates).then((data) => {
@@ -966,27 +957,34 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
                     leaveNodesAsSelectedAfterLayouting = selectionActive;
                     this.layoutDirective.align(this.nodeChildrenArray, nodesToBeAligned, align.Horizontal);
             // Vertical alignment function call
-            } else if (alignmentButtonAlignV) {
+            } else if (this.topologyRendererState.buttonsState.alignVButton) {
                 const selectionActive:boolean = (this.selectedNodes.length >= 1);
                 const nodesToBeAligned = selectionActive ? this.selectedNodes : this.allNodeTemplates;
                 leaveNodesAsSelectedAfterLayouting = selectionActive;
                 this.layoutDirective.align(this.nodeChildrenArray, nodesToBeAligned, align.Vertical);
-            } else if (importTopologyButton) {
+            } else if (this.topologyRendererState.buttonsState.importTopologyButton) {
                 if (!this.importTopologyData.allTopologyTemplates) {
                     this.importTopologyData.allTopologyTemplates = [];
                     this.backendService.requestAllTopologyTemplates().subscribe(allServiceTemplates => {
                         for (const serviceTemplate of allServiceTemplates) {
                             this.importTopologyData.allTopologyTemplates.push(serviceTemplate);
                         }
-                        console.log(this.importTopologyData.allTopologyTemplates);
                     });
                 }
                 this.importTopologyModal.show();
-            } else if (splitTopologyButton) {
+            } else if (this.topologyRendererState.buttonsState.splitTopologyButton) {
                 this.splitMatchService.splitTopology(this.backendService, this.ngRedux, this.topologyRendererActions, this.errorHandler);
-            } else if (matchTopologyButton) {
+            } else if (this.topologyRendererState.buttonsState.matchTopologyButton) {
                 this.splitMatchService.matchTopology(this.backendService, this.ngRedux, this.topologyRendererActions, this.errorHandler);
+            } else if (this.topologyRendererState.buttonsState.substituteTopologyButton) {
+                this.ngRedux.dispatch(this.topologyRendererActions.substituteTopology());
+                this.backendService.substituteTopology();
+            } else if (this.topologyRendererState.nodesToSelect) {
+                this.clearSelectedNodes();
+                this.topologyRendererState.nodesToSelect
+                    .forEach(value => this.enhanceDragSelection(value));
             }
+
             setTimeout(() => {
                 this.newJsPlumbInstance.repaintEverything();
                 if (leaveNodesAsSelectedAfterLayouting === true) {
@@ -1099,7 +1097,7 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
                 // why not use name -> save the type's id into the name (without management version)
                 + newRelationship.name;
 
-            if (labelString.startsWith('con')) {
+            if (labelString.startsWith(this.backendService.configuration.relationshipPrefix)) {
                 // Workaround to support old topology templates with the real name
                 labelString = newRelationship.type.substring(newRelationship.type.indexOf('}') + 1);
             }
@@ -1130,9 +1128,9 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
                     }]
                 ],
             });
-            setTimeout(() => this.handleRelSideBar(conn, newRelationship), 1);
+            this.handleRelSideBar(conn, newRelationship);
 
-            if (!isNullOrUndefined(newRelationship.state)) {
+            if (newRelationship.state) {
                 setTimeout(() => {
                     conn.addType(newRelationship.state.toString().toLowerCase());
                     this.revalidateContainer();
@@ -1272,11 +1270,11 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
     clearSelectedNodes(): void {
         if (this.selectedNodes.length > 0) {
             this.nodeChildrenArray.forEach(node => {
-                if (this.selectedNodes.find(selectedNode => selectedNode.id === node.nodeTemplate.id)) {
+                if (this.selectedNodes.find(selectedNode => selectedNode && selectedNode.id === node.nodeTemplate.id)) {
                     node.makeSelectionVisible = false;
                 }
             });
-            this.newJsPlumbInstance.removeFromAllPosses(this.selectedNodes.map(node => node.id));
+            this.newJsPlumbInstance.removeFromAllPosses(this.selectedNodes.map(node => node && node.id));
             this.selectedNodes = [];
         }
     }
@@ -1407,7 +1405,7 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
      */
     arrayContainsNode(nodes: any[], id: string): boolean {
         if (nodes !== null && nodes.length > 0) {
-            return nodes.some(node => node.id === id);
+            return nodes.some(node => node && node.id === id);
         }
         return false;
     }
@@ -1449,7 +1447,7 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
      * Registers relationship (connection) types in JSPlumb (Color, strokewidth etc.)
      * @param relType
      */
-    assignRelTypes(relType: EntityType): void {
+    assignRelTypes(relType: VisualEntityType): void {
         this.newJsPlumbInstance.registerConnectionType(
             relType.qName, {
                 paintStyle: {
@@ -1487,19 +1485,7 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
                 }
             }
         });
-        this.differ = this.differs.find([]).create();
-    }
-
-    /**
-     * Angular lifecycle event.
-     */
-    ngDoCheck() {
-        const relationshipTypesChanges = this.differ.diff(this.relationshipTypes);
-        // TODO: instead of fetching all relationship visuals one by one, do it similar to nodeTypes -> this check will
-        // be obsolete
-        if (relationshipTypesChanges && !this.diffMode) {
-            relationshipTypesChanges.forEachAddedItem(r => this.assignRelTypes(r.currentValue));
-        }
+        this.entityTypes.relationshipTypes.forEach(value => this.assignRelTypes(value));
     }
 
     /**
@@ -1509,19 +1495,6 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
     setSelectedRelationshipType(currentType: EntityType) {
         this.selectedRelationshipType = currentType;
     }
-
-    /*
-    isFieldValid(field: string) {
-        return !this.form.get(field).valid && this.form.get(field).touched;
-    }
-
-    displayFieldCss(field: string) {
-        return {
-            'has-error': this.isFieldValid(field),
-            'has-feedback': this.isFieldValid(field)
-        };
-    }
-*/
 
     /**
      * Removes an element from JSPlumb.
@@ -1754,11 +1727,13 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
      * @param newRelationship The new relationship internally
      */
     private handleRelSideBar(conn: any, newRelationship: TRelationshipTemplate): void {
-        conn.id = newRelationship.id;
-        conn.setType(newRelationship.type);
-        conn.bind('click', rel => {
-            this.onClickJsPlumbConnection(conn, rel);
-        });
+        if (conn) {
+            conn.id = newRelationship.id;
+            conn.setType(newRelationship.type);
+            conn.bind('click', rel => {
+                this.onClickJsPlumbConnection(conn, rel);
+            });
+        }
 
         this.revalidateContainer();
     }
@@ -1891,7 +1866,7 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
             this.selectedNodes.push(this.getNodeByID(this.allNodeTemplates, nodeId));
             this.newJsPlumbInstance.addToPosse(nodeId, 'dragSelection');
             this.nodeChildrenArray.forEach(node => {
-                if (this.selectedNodes.find(selectedNode => selectedNode.id === node.nodeTemplate.id)) {
+                if (this.selectedNodes.find(selectedNode => selectedNode && selectedNode.id === node.nodeTemplate.id)) {
                     if (node.makeSelectionVisible === false) {
                         node.makeSelectionVisible = true;
                     }
@@ -1924,23 +1899,23 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
             this.jsPlumbBindConnection = true;
             this.newJsPlumbInstance.bind('connection', info => {
                 const sourceElement = info.sourceId.substring(0, info.sourceId.indexOf('_E'));
-                info.sourceId = sourceElement;
                 const currentTypeValid = this.entityTypes.relationshipTypes.some(relType => relType.qName === this.selectedRelationshipType.qName);
                 const currentSourceIdValid = this.allNodeTemplates.some(node => node.id === sourceElement);
                 if (sourceElement && currentTypeValid && currentSourceIdValid) {
-                    const targetElement = info.targetId;
-                    let lastRelId = 'con_0';
-                    if (this.allRelationshipTemplates.length > 0) {
-                        lastRelId = this.allRelationshipTemplates[this.allRelationshipTemplates.length - 1].id;
-                    }
-                    const newRelCount = parseInt(lastRelId.substring(lastRelId.indexOf('_') + 1), 10) + 1;
-                    const relationshipId = 'con_' + newRelCount.toString();
-                    const relTypeExists = this.allRelationshipTemplates.some(rel => rel.id === relationshipId);
-                    if (relTypeExists === false && sourceElement !== targetElement) {
+                    const prefix = this.backendService.configuration.relationshipPrefix;
+                    const relName = this.selectedRelationshipType.name;
+                    let relNumber = 0;
+                    let relationshipId: string;
+
+                    do {
+                        relationshipId = prefix + '_' + relName + '_' + relNumber++;
+                    } while (this.allRelationshipTemplates.find(value => value.id === relationshipId));
+
+                    if (sourceElement !== info.targetId) {
                         const newRelationship = new TRelationshipTemplate(
                             { ref: sourceElement },
-                            { ref: targetElement },
-                            relationshipId,
+                            { ref: info.targetId },
+                            this.selectedRelationshipType.name,
                             relationshipId,
                             this.selectedRelationshipType.qName
                         );
@@ -1958,13 +1933,11 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
      */
     private bindNewNode(): void {
         if (this.newNode) {
-            setTimeout(() => this.handleNodePressActions(this.newNode.id), 1);
-            this.zone.run(() => {
-                this.unbindMouseActions.push(this.renderer.listen(this.eref.nativeElement, 'mousemove',
-                    (event) => this.moveNewNode(event)));
-                this.unbindMouseActions.push(this.renderer.listen(this.eref.nativeElement, 'mouseup',
-                    ($event) => this.positionNewNode()));
-            });
+            this.handleNodePressActions(this.newNode.id);
+            this.unbindMouseActions.push(this.renderer.listen(this.eref.nativeElement, 'mousemove',
+                (event) => this.moveNewNode(event)));
+            this.unbindMouseActions.push(this.renderer.listen(this.eref.nativeElement, 'mouseup',
+                ($event) => this.positionNewNode()));
         }
     }
 

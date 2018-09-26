@@ -13,7 +13,7 @@
  ********************************************************************************/
 
 import { Action } from 'redux';
-import { TopologyRendererActions } from '../actions/topologyRenderer.actions';
+import { HighlightNodesAction, TopologyRendererActions } from '../actions/topologyRenderer.actions';
 
 export interface TopologyRendererState {
     buttonsState: {
@@ -30,7 +30,10 @@ export interface TopologyRendererState {
         importTopologyButton?: boolean;
         splitTopologyButton?: boolean;
         matchTopologyButton?: boolean;
+        substituteTopologyButton?: boolean;
+        refineTopologyButton?: boolean;
     };
+    nodesToSelect?: string[];
 }
 
 export const INITIAL_TOPOLOGY_RENDERER_STATE: TopologyRendererState = {
@@ -47,7 +50,9 @@ export const INITIAL_TOPOLOGY_RENDERER_STATE: TopologyRendererState = {
         alignVButton: false,
         importTopologyButton: false,
         splitTopologyButton: false,
-        matchTopologyButton: false
+        matchTopologyButton: false,
+        substituteTopologyButton: false,
+        refineTopologyButton: false
     }
 };
 /**
@@ -162,6 +167,33 @@ export const TopologyRendererReducer =
                         matchTopologyButton: !lastState.buttonsState.matchTopologyButton
                     }
                 };
+            case TopologyRendererActions.SUBSTITUTE_TOPOLOGY:
+                return {
+                    ...lastState,
+                    buttonsState: {
+                        ...lastState.buttonsState,
+                        substituteTopologyButton: !lastState.buttonsState.substituteTopologyButton
+                    }
+                };
+            case TopologyRendererActions.REFINE_TOPOLOGY:
+                return {
+                    ...lastState,
+                    buttonsState: {
+                        ...lastState.buttonsState,
+                        refineTopologyButton: !lastState.buttonsState.refineTopologyButton
+                    }
+                };
+            case TopologyRendererActions.HIGHLIGHT_NODES:
+                const data = <HighlightNodesAction> action;
+                if (data.nodesToHighlight) {
+                    return {
+                        ...lastState,
+                        nodesToSelect: data.nodesToHighlight
+                    };
+                } else {
+                    delete lastState.nodesToSelect;
+                }
+                break;
         }
         return lastState;
     };

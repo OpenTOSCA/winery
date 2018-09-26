@@ -38,6 +38,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.eclipse.winery.common.ids.definitions.ServiceTemplateId;
 import org.eclipse.winery.compliance.checking.ServiceTemplateCheckingResult;
 import org.eclipse.winery.compliance.checking.ServiceTemplateComplianceRuleRuleChecker;
+import org.eclipse.winery.model.substitution.Substitution;
 import org.eclipse.winery.model.tosca.TBoundaryDefinitions;
 import org.eclipse.winery.model.tosca.TExtensibleElements;
 import org.eclipse.winery.model.tosca.TPlans;
@@ -49,7 +50,7 @@ import org.eclipse.winery.repository.backend.BackendUtils;
 import org.eclipse.winery.repository.driverspecificationandinjection.DASpecification;
 import org.eclipse.winery.repository.driverspecificationandinjection.DriverInjection;
 import org.eclipse.winery.repository.rest.RestUtils;
-import org.eclipse.winery.repository.rest.resources._support.AbstractComponentInstanceWithReferencesResource;
+import org.eclipse.winery.repository.rest.resources._support.AbstractComponentInstanceResourceContainingATopology;
 import org.eclipse.winery.repository.rest.resources._support.IHasName;
 import org.eclipse.winery.repository.rest.resources._support.dataadapter.injectionadapter.InjectorReplaceData;
 import org.eclipse.winery.repository.rest.resources._support.dataadapter.injectionadapter.InjectorReplaceOptions;
@@ -57,6 +58,7 @@ import org.eclipse.winery.repository.rest.resources.servicetemplates.boundarydef
 import org.eclipse.winery.repository.rest.resources.servicetemplates.plans.PlansResource;
 import org.eclipse.winery.repository.rest.resources.servicetemplates.selfserviceportal.SelfServicePortalResource;
 import org.eclipse.winery.repository.rest.resources.servicetemplates.topologytemplates.TopologyTemplateResource;
+import org.eclipse.winery.repository.splitting.InjectRemoval;
 import org.eclipse.winery.repository.splitting.Splitting;
 import org.eclipse.winery.repository.splitting.SplittingException;
 
@@ -67,7 +69,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
-public class ServiceTemplateResource extends AbstractComponentInstanceWithReferencesResource implements IHasName {
+public class ServiceTemplateResource extends AbstractComponentInstanceResourceContainingATopology implements IHasName {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ServiceTemplateResource.class);
 
@@ -77,6 +79,11 @@ public class ServiceTemplateResource extends AbstractComponentInstanceWithRefere
 
     public TServiceTemplate getServiceTemplate() {
         return (TServiceTemplate) this.getElement();
+    }
+
+    @Override
+    public void setTopology(TTopologyTemplate topologyTemplate, String type) {
+        this.getServiceTemplate().setTopologyTemplate(topologyTemplate);
     }
 
     /**
@@ -91,7 +98,7 @@ public class ServiceTemplateResource extends AbstractComponentInstanceWithRefere
             // This eases the JSPs etc. and is valid as a non-existant topology template is equal to an empty one
             this.getServiceTemplate().setTopologyTemplate(new TTopologyTemplate());
         }
-        return new TopologyTemplateResource(this);
+        return new TopologyTemplateResource(this, this.getServiceTemplate().getTopologyTemplate(), null);
     }
 
     @Path("plans/")
@@ -254,7 +261,7 @@ public class ServiceTemplateResource extends AbstractComponentInstanceWithRefere
         // End Output check
 
         if (requirementsAndMatchingBasisCapabilityTypes.containsValue("Container")) {
-            matchedHostsTopologyTemplate = splitting.injectNodeTemplates(this.getServiceTemplate().getTopologyTemplate(), injectorReplaceData.hostInjections);
+            matchedHostsTopologyTemplate = splitting.injectNodeTemplates(this.getServiceTemplate().getTopologyTemplate(), injectorReplaceData.hostInjections, InjectRemoval.REMOVE_REPLACED_AND_SUCCESSORS);
 
             if (requirementsAndMatchingBasisCapabilityTypes.containsValue("Endpoint")) {
                 matchedConnectedTopologyTemplate = splitting.injectConnectionNodeTemplates(matchedHostsTopologyTemplate, injectorReplaceData.connectionInjections);
@@ -296,6 +303,14 @@ public class ServiceTemplateResource extends AbstractComponentInstanceWithRefere
         ServiceTemplateComplianceRuleRuleChecker checker = new ServiceTemplateComplianceRuleRuleChecker(this.getServiceTemplate());
         ServiceTemplateCheckingResult serviceTemplateCheckingResult = checker.checkComplianceRules();
         return Response.ok().entity(serviceTemplateCheckingResult.toXMLString()).build();
+    }
+
+    @Path("substitute")
+    @Produces(MediaType.APPLICATION_JSON)
+    @GET
+    public ServiceTemplateId substitute() {
+        Substitution substitution = new Substitution();
+        return substitution.substituteTopologyOfServiceTemplate((ServiceTemplateId) this.id);
     }
 
     @Override

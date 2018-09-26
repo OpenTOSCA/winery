@@ -52,8 +52,8 @@ export class InstanceService {
                     'Boundary Definitions', 'Tags', 'Constraint Checking', 'Documentation', 'XML'];
                 break;
             case ToscaTypes.RelationshipType:
-                subMenu = ['README', 'LICENSE', 'Visual Appearance', 'Instance States', 'Source Interfaces', 'Target Interfaces',
-                    'Valid Sources and Targets', 'Implementations', 'Properties Definition',
+                subMenu = ['README', 'LICENSE', 'Visual Appearance', 'Instance States', 'Source Interfaces', 'Interfaces',
+                    'Target Interfaces', 'Valid Sources and Targets', 'Implementations', 'Properties Definition',
                     'Inheritance', 'Documentation', 'XML'];
                 break;
             case ToscaTypes.ArtifactType:
@@ -85,6 +85,9 @@ export class InstanceService {
                 break;
             case ToscaTypes.ComplianceRule:
                 subMenu = ['README', 'LICENSE', 'Identifier', 'Required Structure', 'Tags', 'Documentation', 'XML'];
+                break;
+            case ToscaTypes.PatternRefinementModel:
+                subMenu = ['README', 'LICENSE', 'Detector', 'Refinement Structure', 'Relation Mappings', 'XML'];
                 break;
             default: // assume Admin
                 subMenu = ['Namespaces', 'Repository', 'Plan Languages', 'Plan Types', 'Constraint Types', 'Consistency Check', 'Provenance', 'Log'];

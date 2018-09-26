@@ -13,6 +13,8 @@
    See https://github.com/eclipse/winery/issues/71 for a discussion.
  - `processContents="lax"` was added to Properties at Boundary definitions.
  - Make "Types" in "<Definitions>" valid as the only nested element in "<Definitions>"
+ - Add "PatternRefinementModels"
+ - Add "ComplianceRule"
 -->
 <xs:schema targetNamespace="http://docs.oasis-open.org/tosca/ns/2011/12" elementFormDefault="qualified"
            attributeFormDefault="unqualified" xmlns="http://docs.oasis-open.org/tosca/ns/2011/12"
@@ -80,6 +82,8 @@
       <xs:element name="ArtifactTemplate" type="tArtifactTemplate"/>
       <xs:element name="PolicyType" type="tPolicyType"/>
       <xs:element name="PolicyTemplate" type="tPolicyTemplate"/>
+      <xs:element name="PatternRefinementModel" type="tPatternRefinementModel"/>
+      <xs:element name="ComplianceRule" type="tComplianceRule"/>
      </xs:choice>
     </xs:sequence>
     <xs:attribute name="id" type="xs:ID" use="required"/>
@@ -791,6 +795,39 @@
  <xs:complexType name="tRequiredContainerFeature">
   <xs:attribute name="feature" type="xs:anyURI" use="required"/>
  </xs:complexType>
+ <xs:complexType name="tPatternRefinementModel">
+  <xs:complexContent>
+   <xs:extension base="tExtensibleElements">
+    <xs:sequence>
+     <xs:element name="Detector" type="tTopologyTemplate"/>
+     <xs:element name="RefinementStructure" type="tTopologyTemplate"/>
+     <xs:element name="RelationMappings">
+      <xs:complexType>
+       <xs:sequence>
+        <xs:element name="RelationMapping" type="tRelationMapping" maxOccurs="unbounded"/>
+       </xs:sequence>
+      </xs:complexType>
+     </xs:element>
+    </xs:sequence>
+    <xs:attribute name="name" type="xs:string" use="optional"/>
+    <xs:attribute name="targetNamespace" type="xs:anyURI"/>
+   </xs:extension>
+  </xs:complexContent>
+ </xs:complexType>
+ <xs:complexType name="tRelationMapping">
+  <xs:attribute name="id" type="xs:ID" use="required"/>
+  <xs:attribute name="detectorNode" type="xs:string" use="required"/>
+  <xs:attribute name="refinementNode" type="xs:string" use="required"/>
+  <xs:attribute name="relationType" type="xs:QName" use="required"/>
+  <xs:attribute name="direction" type="tDirection" use="required"/>
+  <xs:attribute name="validSourceOrTarget" type="xs:QName"/>
+ </xs:complexType>
+ <xs:simpleType name="tDirection">
+  <xs:restriction base="xs:string">
+   <xs:enumeration value="ingoing"/>
+   <xs:enumeration value="outgoing"/>
+  </xs:restriction>
+ </xs:simpleType>
  <xs:simpleType name="tBoolean">
   <xs:restriction base="xs:string">
    <xs:enumeration value="yes"/>
@@ -800,4 +837,17 @@
  <xs:simpleType name="importedURI">
   <xs:restriction base="xs:anyURI"/>
  </xs:simpleType>
+ <xs:complexType name="tComplianceRule">
+  <xs:complexContent>
+   <xs:extension base="tExtensibleElements">
+    <xs:sequence>
+     <xs:element name="Identifier" type="tTopologyTemplate"/>
+     <xs:element name="RequiredStructure" type="tTopologyTemplate"/>
+     <xs:element name="Tags" type="tTags" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute name="name" type="xs:string"/>
+    <xs:attribute name="targetNamespace" type="xs:anyURI"/>
+   </xs:extension>
+  </xs:complexContent>
+ </xs:complexType>
 </xs:schema>

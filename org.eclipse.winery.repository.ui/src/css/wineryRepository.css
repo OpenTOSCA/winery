@@ -295,6 +295,9 @@ div.serviceTemplate div.bottom {
 div.mainContentContainer.relationshipType div.top {
     background: url('../assets/img/containers/rt/rt-FrameTopLarge.jpg');
 }
+div.mainContentContainer.relationshipType div.top.twolines {
+    height: 208px;
+}
 
 div.mainContentContainer.relationshipType div.middle {
     background: url('../assets/img/containers/rt/rt-FrameMiddle.jpg');
@@ -337,6 +340,18 @@ div.mainContentContainer.xSDImport div.middle {
 }
 
 div.mainContentContainer.xSDImport div.bottom {
+    background: url('../assets/img/containers/admin/FrameBottom.jpg');
+}
+
+div.mainContentContainer.patternRefinementModel div.top {
+    background: url('../assets/img/containers/admin/FrameTop.jpg');
+}
+
+div.mainContentContainer.patternRefinementModel div.middle {
+    background: url('../assets/img/containers/admin/FrameMiddle.jpg');
+}
+
+div.mainContentContainer.patternRefinementModel div.bottom {
     background: url('../assets/img/containers/admin/FrameBottom.jpg');
 }
 
@@ -535,7 +550,6 @@ div.entityContainer > div.center > div.informationContainer {
     text-decoration: none;
     text-shadow: 1px 1px 0 white;
     float: left;
-    /*max-width: 313px;*/
 }
 
 div.entityContainer > div.center > div.informationContainer > div.name {
@@ -728,6 +742,30 @@ div.entityContainer.policyTypeContainer > div.right {
     background: url('../assets/img/entityBox/adminContainer/a-container-right.png');
 }
 
+div.entityContainer.complianceRuleContainer > div.left {
+    background: url('../assets/img/entityBox/adminContainer/a-container-left.png');
+}
+
+div.entityContainer.complianceRuleContainer > div.center {
+    background: url('../assets/img/entityBox/adminContainer/a-container-center.jpg');
+}
+
+div.entityContainer.complianceRuleContainer > div.right {
+    background: url('../assets/img/entityBox/adminContainer/a-container-right.png');
+}
+
+div.entityContainer.patternRefinementModelContainer > div.left {
+    background: url('../assets/img/entityBox/adminContainer/a-container-left.png');
+}
+
+div.entityContainer.patternRefinementModelContainer > div.center {
+    background: url('../assets/img/entityBox/adminContainer/a-container-center.jpg');
+}
+
+div.entityContainer.patternRefinementModelContainer > div.right {
+    background: url('../assets/img/entityBox/adminContainer/a-container-right.png');
+}
+
 div.entityContainer.serviceTemplate > div.left {
     background: url('../assets/img/entityBox/serviceTemplate/st-left.png');
 }
@@ -908,11 +946,22 @@ div.entityContainer.xSDImport > div.right {
     background: url('../assets/img/entityBox/admin/right.png');
 }
 
+div.entityContainer.patternRefinementModel > div.left {
+    background: url('../assets/img/entityBox/admin/left.png');
+}
+
+div.entityContainer.patternRefinementModel > div.center {
+    background: url('../assets/img/entityBox/admin/center.jpg');
+}
+
+div.entityContainer.patternRefinementModel > div.right {
+    background: url('../assets/img/entityBox/admin/right.png');
+}
+
 /* buttons */
 div.entityContainer > div.center > div.buttonContainer {
     float: right;
     height: 42px;
-
     margin-top: 23px;
     margin-left: 40px;
 }
@@ -921,6 +970,15 @@ div.entityContainer > div.center > div.buttonContainer > a {
     float: left;
     height: 42px;
     margin-right: 5px;
+}
+
+div.entityContainer > div.center > div.buttonContainer > a.targetAllocationButton {
+    background: url('../assets/img/entityBox/targetAllocationButton.png');
+    width: 39px;
+}
+
+div.entityContainer > div.center > div.buttonContainer > a.targetAllocationButton:hover {
+    background: url('../assets/img/entityBox/targetAllocationButton.png');
 }
 
 div.entityContainer > div.center > div.buttonContainer > a.editButton {
