@@ -21,7 +21,6 @@ import { LayoutDirective } from '../layout/layout.directive';
 import { WineryActions } from '../redux/actions/winery.actions';
 import { NgRedux } from '@angular-redux/store';
 import { IWineryState } from '../redux/store/winery.store';
-import { TopologyRendererStateModel } from '../models/topologyRendererState.model';
 import { TopologyRendererActions } from '../redux/actions/topologyRenderer.actions';
 import { NodeComponent } from '../node/node.component';
 import { Hotkey, HotkeysService } from 'angular2-hotkeys';
@@ -50,6 +49,7 @@ import { SplitMatchTopologyService } from '../services/split-match-topology.serv
 import { DifferenceStates, VersionUtils } from '../models/ToscaDiff';
 import { ErrorHandlerService } from '../services/error-handler.service';
 import { DragSource } from '../models/DragSource';
+import {TopologyRendererState} from "../redux/reducers/topologyRenderer.reducer";
 
 @Component({
     selector: 'winery-canvas',
@@ -79,7 +79,7 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
 
     allNodeTemplates: Array<TNodeTemplate> = [];
     allRelationshipTemplates: Array<TRelationshipTemplate> = [];
-    topologyRendererState: TopologyRendererStateModel;
+    topologyRendererState: TopologyRendererState;
     selectedNodes: Array<TNodeTemplate> = [];
     // current data emitted from a node
     currentModalData: any;
@@ -941,7 +941,7 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
      *
      * @param topologyRendererState This object holds flags for every button in the navigation bar. We listen for changes that occur when the user presses a button. These change events trigger
      */
-    setButtonsState(topologyRendererState: TopologyRendererStateModel): void {
+    setButtonsState(topologyRendererState: TopologyRendererState): void {
         if (topologyRendererState) {
             this.topologyRendererState = topologyRendererState;
             this.revalidateContainer();
