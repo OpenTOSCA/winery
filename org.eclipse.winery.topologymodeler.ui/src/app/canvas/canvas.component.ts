@@ -46,7 +46,6 @@ import { NodeIdAndFocusModel } from '../models/nodeIdAndFocusModel';
 import { ToggleModalDataModel } from '../models/toggleModalDataModel';
 import { ToastrService } from 'ngx-toastr';
 import { BackendService } from '../services/backend.service';
-import { hostURL } from '../models/configuration';
 import { CapabilityModel } from '../models/capabilityModel';
 import { isNullOrUndefined } from 'util';
 import { RequirementModel } from '../models/requirementModel';
@@ -545,7 +544,7 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
             const keyValuePair = {
                 [key]: value
             };
-            newKVProperies = { ...newKVProperies, ...keyValuePair };
+            newKVProperies = {...newKVProperies, ...keyValuePair};
         }
         return newKVProperies;
     }
@@ -952,55 +951,49 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
     /**
      * Handler for the layout buttons.
      *
-     * @param topologyRendererState This object holds flags for every button in the navigation bar. We listen for changes that occur when the user presses a button. These change events trigger
+     * @param topologyRendererState This object holds flags for every button in the navigation bar.
+     * We listen for changes that occur when the user presses a button. These change events trigger
      */
     setButtonsState(topologyRendererState: TopologyRendererState): void {
         if (topologyRendererState) {
             this.topologyRendererState = topologyRendererState;
             this.revalidateContainer();
             const alignmentButtonLayout = this.topologyRendererState.buttonsState.layoutButton;
-            const alignmentButtonAlignH =  this.topologyRendererState.buttonsState.alignHButton;
+            const alignmentButtonAlignH = this.topologyRendererState.buttonsState.alignHButton;
             const alignmentButtonAlignV = this.topologyRendererState.buttonsState.alignVButton;
             const importTopologyButton = this.topologyRendererState.buttonsState.importTopologyButton;
             const splitTopologyButton = this.topologyRendererState.buttonsState.splitTopologyButton;
             const matchTopologyButton = this.topologyRendererState.buttonsState.matchTopologyButton;
             const substituteTopologyButton = this.topologyRendererState.buttonsState.substituteTopologyButton;
             let leaveNodesAsSelectedAfterLayouting;
+            // Layouting function call (see LayoutDirective for more details)
             if (alignmentButtonLayout) {
-                this.layoutDirective.layoutNodes(this.nodeChildrenArray, this.allRelationshipTemplates).then((data) => {
-                    leaveNodesAsSelectedAfterLayouting = false;
-                    // This call might seem confusing as we are calling it again right after executing,
-                    // but this just toggles the button state back to false, so layout can be called again.
-                    this.ngRedux.dispatch(this.topologyRendererActions.executeLayout());
-                });
-
-            // Horizontal alignment function call
-            } else if (alignmentButtonAlignH) {
-                    const selectionActive:boolean = (this.selectedNodes.length >= 1);
-                    const nodesToBeAligned = selectionActive ? this.selectedNodes : this.allNodeTemplates;
-                    leaveNodesAsSelectedAfterLayouting = selectionActive;
-                    this.layoutDirective.align(this.nodeChildrenArray, nodesToBeAligned, align.Horizontal);
-            // Vertical alignment function call
-            } else if (alignmentButtonAlignV) {
-                const selectionActive:boolean = (this.selectedNodes.length >= 1);
+                this.layoutDirective
+                    .layoutNodes(this.nodeChildrenArray, this.allRelationshipTemplates)
+                    .then(() => {
+                        leaveNodesAsSelectedAfterLayouting = false;
+                        // This call might seem confusing as we are calling it again right after executing,
+                        // but this just toggles the button state back to false, so layout can be called again.
+                        this.ngRedux.dispatch(this.topologyRendererActions.executeLayout());
+                    });
+            // Alignment functions calls
+            } else if (alignmentButtonAlignH || alignmentButtonAlignV) {
+                const selectionActive: boolean = (this.selectedNodes.length >= 1);
                 const nodesToBeAligned = selectionActive ? this.selectedNodes : this.allNodeTemplates;
                 leaveNodesAsSelectedAfterLayouting = selectionActive;
-                this.layoutDirective.align(this.nodeChildrenArray, nodesToBeAligned, align.Vertical);
-            } else if (importTopologyButton) {
-                if (this.selectedNodes.length >= 1) {
-                    this.layoutDirective.align(this.nodeChildrenArray, this.selectedNodes, align.Horizontal);
-                    leaveNodesAsSelectedAfterLayouting = true;
-                } else {
-                    this.layoutDirective.align(this.nodeChildrenArray, this.allNodeTemplates, align.Horizontal);
-                    leaveNodesAsSelectedAfterLayouting = false;
-                }
-            } else if (alignmentButtonAlignV) {
-                if (this.selectedNodes.length >= 1) {
-                    this.layoutDirective.align(this.nodeChildrenArray, this.selectedNodes, align.Vertical);
-                    leaveNodesAsSelectedAfterLayouting = true;
-                } else {
-                    this.layoutDirective.align(this.nodeChildrenArray, this.allNodeTemplates, align.Vertical);
-                }
+                const alignmentMode = alignmentButtonAlignH ? align.Horizontal : align.Vertical;
+                this.layoutDirective.align(this.nodeChildrenArray, nodesToBeAligned, alignmentMode)
+                    .then(() => {
+                        leaveNodesAsSelectedAfterLayouting = false;
+                        // This call might seem confusing as we are calling it again right after executing,
+                        // but this just toggles the button state back to false, so layout can be called again.
+                        if (alignmentMode === align.Horizontal) {
+                            this.ngRedux.dispatch(this.topologyRendererActions.executeAlignH());
+                        } else {
+                            this.ngRedux.dispatch(this.topologyRendererActions.executeAlignV());
+                        }
+                    });
+            // import topology button
             } else if (importTopologyButton) {
                 if (!this.importTopologyData.allTopologyTemplates) {
                     this.importTopologyData.allTopologyTemplates = [];

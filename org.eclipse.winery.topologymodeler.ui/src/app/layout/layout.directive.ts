@@ -95,7 +95,7 @@ export class LayoutDirective {
                     resolve(true);
                 });
             });
-        })
+        });
     }
 
     /**
@@ -128,7 +128,7 @@ export class LayoutDirective {
      * @param selectedNodes
      * @param alignMode
      */
-    public align(nodeChildrenArray: Array<NodeComponent>, selectedNodes: Array<TNodeTemplate>, alignMode): void {
+    public align(nodeChildrenArray: Array<NodeComponent>, selectedNodes: Array<TNodeTemplate>, alignMode): Promise<boolean> {
         let result;
         let selectedNodeComponents;
         if (nodeChildrenArray.length !== selectedNodes.length) {
@@ -137,25 +137,28 @@ export class LayoutDirective {
         } else {
             selectedNodeComponents = nodeChildrenArray;
         }
-        // if there is only 1 node selected, do nothing
-        if (!(selectedNodeComponents.length === 1)) {
-            const topPositions = selectedNodeComponents.map((node) => {
-                return node.elRef.nativeElement.firstChild.offsetTop;
-            });
-            // add biggest value to smallest and divide by 2, to get the exact middle of both
-            result = ((Math.max.apply(null, topPositions) + Math.min.apply(null, topPositions)) / 2);
-            // iterate over the nodes again, and apply positions
-            selectedNodeComponents.forEach((node) => {
-                if (alignMode === align.Horizontal) {
-                    node.nodeTemplate.y = result;
-                } else {
-                    node.nodeTemplate.x = result;
-                }
-            });
-            this.repaintEverything();
-        } else {
-            this.alert.info('You have only one node selected.');
-        }
+        return new Promise((resolve, reject) => {
+            // if there is only 1 node selected, do nothing
+            if (!(selectedNodeComponents.length === 1)) {
+                const topPositions = selectedNodeComponents.map((node) => {
+                    return node.elRef.nativeElement.firstChild.offsetTop;
+                });
+                // add biggest value to smallest and divide by 2, to get the exact middle of both
+                result = ((Math.max.apply(null, topPositions) + Math.min.apply(null, topPositions)) / 2);
+                // iterate over the nodes again, and apply positions
+                selectedNodeComponents.forEach((node) => {
+                    if (alignMode === align.Horizontal) {
+                        node.nodeTemplate.y = result;
+                    } else {
+                        node.nodeTemplate.x = result;
+                    }
+                });
+                this.repaintEverything();
+                resolve(true);
+            } else {
+                reject(this.alert.info('You have only one node selected.'));
+            }
+        });
     }
 
     /**
