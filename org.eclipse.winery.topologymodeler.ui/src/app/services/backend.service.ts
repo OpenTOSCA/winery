@@ -22,7 +22,6 @@ import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
 import { urlElement } from '../models/enums';
 import { ServiceTemplateId } from '../models/serviceTemplateId';
 import { ToscaDiff } from '../models/ToscaDiff';
-import { ToastrService } from 'ngx-toastr';
 import { Observable } from 'rxjs/Observable';
 import { forkJoin } from 'rxjs';
 import { TopologyModelerConfiguration } from '../models/topologyModelerConfiguration';
@@ -143,52 +142,12 @@ export class BackendService {
     }
 
     /**
-     * Requests all policy types from the backend
+     * Requests all artifactOrPolicy templates from the backend
      * @returns {Observable<string>}
      */
-    private requestPolicyTypes(): Observable<any> {
+    requestArtifactTemplates(): Observable<any> {
         if (this.configuration) {
-            return this.http.get(backendBaseURL + '/policytypes?full', { headers: this.headers });
-        }
-    }
-
-    /**
-     * Requests all requirement types from the backend
-     * @returns {Observable<string>}
-     */
-    private requestRequirementTypes(): Observable<any> {
-        if (this.configuration) {
-            return this.http.get(backendBaseURL + '/requirementtypes?full', { headers: this.headers });
-        }
-    }
-
-    /**
-     * Requests all capability types from the backend
-     * @returns {Observable<string>}
-     */
-    private requestCapabilityTypes(): Observable<any> {
-        if (this.configuration) {
-            return this.http.get(backendBaseURL + '/capabilitytypes?full', { headers: this.headers });
-        }
-    }
-
-    /**
-     * Requests all grouped node types from the backend
-     * @returns {Observable<string>}
-     */
-    private requestGroupedNodeTypes(): Observable<any> {
-        if (this.configuration) {
-            return this.http.get(backendBaseURL + '/nodetypes?grouped&full', { headers: this.headers });
-        }
-    }
-
-    /**
-     * Requests all ungrouped node types from the backend
-     * @returns {Observable<string>}
-     */
-    private requestNodeTypes(): Observable<any> {
-        if (this.configuration) {
-            return this.http.get(backendBaseURL + '/nodetypes?full', { headers: this.headers });
+            return this.http.get(backendBaseURL + '/artifacttemplates', {headers: this.headers});
         }
     }
 
@@ -196,39 +155,9 @@ export class BackendService {
      * Requests all policy templates from the backend
      * @returns {Observable<string>}
      */
-    private requestPolicyTemplates(): Observable<any> {
+    requestPolicyTemplates(): Observable<any> {
         if (this.configuration) {
-            return this.http.get(backendBaseURL + '/policytemplates', { headers: this.headers });
-        }
-    }
-
-    /**
-     * Requests all artifact types from the backend
-     * @returns {Observable<string>}
-     */
-    private requestArtifactTypes(): Observable<any> {
-        if (this.configuration) {
-            return this.http.get(backendBaseURL + '/artifacttypes', { headers: this.headers });
-        }
-    }
-
-    /**
-     * Requests all artifact templates from the backend
-     * @returns {Observable<string>}
-     */
-    requestArtifactTemplates(): Observable<any> {
-        if (this.configuration) {
-            return this.http.get(backendBaseURL + '/artifacttemplates', { headers: this.headers });
-        }
-    }
-
-    /**
-     * Requests all relationship types from the backend
-     * @returns {Observable<string>}
-     */
-    private requestRelationshipTypes(): Observable<any> {
-        if (this.configuration) {
-            return this.http.get(backendBaseURL + '/relationshiptypes', { headers: this.headers });
+            return this.http.get(backendBaseURL + '/policytemplates', {headers: this.headers});
         }
     }
 
@@ -244,7 +173,7 @@ export class BackendService {
             } else {
                 URL = backendBaseURL + '/admin/namespaces/';
             }
-            return this.http.get(URL, { headers: this.headers });
+            return this.http.get(URL, {headers: this.headers});
         }
     }
 
@@ -256,7 +185,7 @@ export class BackendService {
     requestArtifactTemplate(artifact: QNameWithTypeApiData): Observable<any> {
         const url = this.configuration.repositoryURL + '/artifacttemplates/'
             + encodeURIComponent(encodeURIComponent(artifact.namespace)) + '/' + artifact.localname;
-        return this.http.get(url + '/', { headers: this.headers });
+        return this.http.get(url + '/', {headers: this.headers});
     }
 
     /**
@@ -267,7 +196,7 @@ export class BackendService {
     requestPolicyTemplate(artifact: QNameWithTypeApiData): Observable<any> {
         const url = this.configuration.repositoryURL + '/policytemplates/'
             + encodeURIComponent(encodeURIComponent(artifact.namespace)) + '/' + artifact.localname;
-        return this.http.get(url + '/', { headers: this.headers });
+        return this.http.get(url + '/', {headers: this.headers});
     }
 
     /**
@@ -321,7 +250,7 @@ export class BackendService {
     splitTopology(): Observable<HttpResponse<string>> {
         const headers = new HttpHeaders().set('Content-Type', 'application/json');
         const url = this.serviceTemplateURL + urlElement.TopologyTemplate + 'split';
-        return this.http.post(url + '/', {}, { headers: headers, observe: 'response', responseType: 'text' });
+        return this.http.post(url + '/', {}, {headers: headers, observe: 'response', responseType: 'text'});
     }
 
     /**
@@ -331,18 +260,23 @@ export class BackendService {
     matchTopology(): Observable<HttpResponse<string>> {
         const headers = new HttpHeaders().set('Content-Type', 'application/json');
         const url = this.serviceTemplateURL + urlElement.TopologyTemplate + 'match';
-        return this.http.post(url + '/', {}, { headers: headers, observe: 'response', responseType: 'text' });
+        return this.http.post(url + '/', {}, {headers: headers, observe: 'response', responseType: 'text'});
     }
 
     /**
-     * Used for creating new artifact templates on the backend.
-     * @param {QNameWithTypeApiData} artifact
+     * Used for creating new artifactOrPolicy templates on the backend.
+     * @param {QNameWithTypeApiData} artifact or policy
      * @returns {Observable<any>}
      */
-    createNewArtifact(artifact: QNameWithTypeApiData): Observable<HttpResponse<string>> {
+    createNewArtifactOrPolicy(artifactOrPolicy: QNameWithTypeApiData, type: string): Observable<HttpResponse<string>> {
         const headers = new HttpHeaders().set('Content-Type', 'application/json');
-        const url = this.configuration.repositoryURL + '/artifacttemplates/';
-        return this.http.post(url + '/', artifact, { headers: headers, responseType: 'text', observe: 'response' });
+        let url;
+        if (type === 'policy') {
+            url = this.configuration.repositoryURL + '/policytemplates/';
+        } else {
+            url = this.configuration.repositoryURL + '/artifacttemplates/';
+        }
+        return this.http.post(url + '/', artifactOrPolicy, {headers: headers, responseType: 'text', observe: 'response'});
     }
 
     /**
@@ -351,6 +285,136 @@ export class BackendService {
      */
     requestAllTopologyTemplates(): Observable<EntityType[]> {
         const url = hostURL + urlElement.Winery + urlElement.ServiceTemplates;
-        return this.http.get<EntityType[]>(url + '/', { headers: this.headers });
+        return this.http.get<EntityType[]>(url + '/', {headers: this.headers});
+    }
+
+    /**
+     * Requests all entities together.
+     * We use forkJoin() to await all responses from the backend.
+     * This is required
+     * @returns data  The JSON from the server
+     */
+    private requestAllEntitiesAtOnce(): Observable<any> {
+        if (this.configuration) {
+            return forkJoin(
+                this.requestGroupedNodeTypes(),
+                this.requestArtifactTemplates(),
+                this.requestTopologyTemplateAndVisuals(),
+                this.requestArtifactTypes(),
+                this.requestPolicyTypes(),
+                this.requestCapabilityTypes(),
+                this.requestRequirementTypes(),
+                this.requestPolicyTemplates(),
+                this.requestRelationshipTypes(),
+                this.requestNodeTypes()
+            );
+        }
+    }
+
+    /**
+     * Requests topologyTemplate and visualappearances together. If the topology should be compared, it also gets
+     * the old topology as well as the diff representation.
+     * We use Observable.forkJoin to await all responses from the backend.
+     * This is required
+     * @returns data  The JSON from the server
+     */
+    private requestTopologyTemplateAndVisuals(): Observable<any> {
+        if (this.configuration) {
+            const url = this.configuration.repositoryURL + '/' + this.configuration.parentPath + '/'
+                + encodeURIComponent(encodeURIComponent(this.configuration.ns)) + '/';
+            const currentUrl = url + this.configuration.id + '/' + this.configuration.elementPath + '/';
+            const visualsUrl = backendBaseURL + '/nodetypes/allvisualappearancedata';
+            // This is required because the information has to be returned together
+
+            if (isNullOrUndefined(this.configuration.compareTo)) {
+                return forkJoin(
+                    this.http.get<TTopologyTemplate>(currentUrl),
+                    this.http.get<Visuals>(visualsUrl)
+                );
+            } else {
+                const compareUrl = url
+                    + this.configuration.id + '/?compareTo='
+                    + this.configuration.compareTo;
+                const templateUrl = url
+                    + this.configuration.compareTo + '/topologytemplate';
+
+                return forkJoin(
+                    this.http.get<TTopologyTemplate>(currentUrl),
+                    this.http.get<Visuals>(visualsUrl),
+                    this.http.get<ToscaDiff>(compareUrl),
+                    this.http.get<TTopologyTemplate>(templateUrl)
+                );
+            }
+        }
+    }
+
+    /**
+     * Requests all policy types from the backend
+     * @returns {Observable<string>}
+     */
+    private requestPolicyTypes(): Observable<any> {
+        if (this.configuration) {
+            return this.http.get(backendBaseURL + '/policytypes?full', {headers: this.headers});
+        }
+    }
+
+    /**
+     * Requests all requirement types from the backend
+     * @returns {Observable<string>}
+     */
+    private requestRequirementTypes(): Observable<any> {
+        if (this.configuration) {
+            return this.http.get(backendBaseURL + '/requirementtypes?full', {headers: this.headers});
+        }
+    }
+
+    /**
+     * Requests all capability types from the backend
+     * @returns {Observable<string>}
+     */
+    private requestCapabilityTypes(): Observable<any> {
+        if (this.configuration) {
+            return this.http.get(backendBaseURL + '/capabilitytypes?full', {headers: this.headers});
+        }
+    }
+
+    /**
+     * Requests all grouped node types from the backend
+     * @returns {Observable<string>}
+     */
+    private requestGroupedNodeTypes(): Observable<any> {
+        if (this.configuration) {
+            return this.http.get(backendBaseURL + '/nodetypes?grouped&full', {headers: this.headers});
+        }
+    }
+
+    /**
+     * Requests all ungrouped node types from the backend
+     * @returns {Observable<string>}
+     */
+    private requestNodeTypes(): Observable<any> {
+        if (this.configuration) {
+            return this.http.get(backendBaseURL + '/nodetypes?full', {headers: this.headers});
+        }
+    }
+
+    /**
+     * Requests all artifactOrPolicy types from the backend
+     * @returns {Observable<string>}
+     */
+    private requestArtifactTypes(): Observable<any> {
+        if (this.configuration) {
+            return this.http.get(backendBaseURL + '/artifacttypes', {headers: this.headers});
+        }
+    }
+
+    /**
+     * Requests all relationship types from the backend
+     * @returns {Observable<string>}
+     */
+    private requestRelationshipTypes(): Observable<any> {
+        if (this.configuration) {
+            return this.http.get(backendBaseURL + '/relationshiptypes', {headers: this.headers});
+        }
     }
 }

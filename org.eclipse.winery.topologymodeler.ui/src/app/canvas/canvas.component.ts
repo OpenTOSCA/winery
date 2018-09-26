@@ -12,8 +12,21 @@
  * SPDX-License-Identifier: EPL-2.0 OR Apache-2.0
  ********************************************************************************/
 import {
-    AfterViewInit, Component, ElementRef, HostListener, Input, KeyValueDiffers, NgZone, OnChanges, OnDestroy, OnInit,
-    QueryList, Renderer2, SimpleChanges, ViewChild, ViewChildren
+    AfterViewInit,
+    Component,
+    ElementRef,
+    HostListener,
+    Input,
+    KeyValueDiffers,
+    NgZone,
+    OnChanges,
+    OnDestroy,
+    OnInit,
+    QueryList,
+    Renderer2,
+    SimpleChanges,
+    ViewChild,
+    ViewChildren
 } from '@angular/core';
 import { JsPlumbService } from '../services/jsPlumb.service';
 import { EntityType, TNodeTemplate, TRelationshipTemplate, VisualEntityType } from '../models/ttopology-template';
@@ -33,7 +46,6 @@ import { NodeIdAndFocusModel } from '../models/nodeIdAndFocusModel';
 import { ToggleModalDataModel } from '../models/toggleModalDataModel';
 import { ToastrService } from 'ngx-toastr';
 import { BackendService } from '../services/backend.service';
-import { hostURL } from '../models/configuration';
 import { CapabilityModel } from '../models/capabilityModel';
 import { isNullOrUndefined } from 'util';
 import { RequirementModel } from '../models/requirementModel';
@@ -69,6 +81,7 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
     @ViewChild('importTopologyModal') importTopologyModal: ModalDirective;
     @Input() readonly: boolean;
     @Input() entityTypes: EntityTypesModel;
+    @Input() relationshipTypes: Array<EntityType> = [];
     @Input() diffMode = false;
     @Input() sidebarDeleteButtonClickEvent: any;
 
@@ -108,6 +121,9 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
 
     indexOfNewNode: number;
     targetNodes: Array<string> = [];
+
+    // used for Angular DoCheck Lifecycle hook
+    differ: any;
 
     // scroll offset
     scrollOffset = 0;
@@ -159,7 +175,7 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
         this.subscriptions.push(this.ngRedux.select(state => state.wineryState.currentJsonTopology.relationshipTemplates)
             .subscribe(currentRelationships => this.updateRelationships(currentRelationships)));
         this.subscriptions.push(this.ngRedux.select(state => state.topologyRendererState)
-            .subscribe(currentButtonsState => this.setRendererState(currentButtonsState)));
+            .subscribe(currentTopologyRendererState => this.setButtonsState(currentTopologyRendererState)));
         this.subscriptions.push(this.ngRedux.select(state => state.wineryState.currentNodeData)
             .subscribe(currentNodeData => this.toggleMarkNode(currentNodeData)));
         this.gridTemplate = new GridTemplate(100, false, false, 30);
@@ -179,11 +195,11 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
         this.importTopologyData = new ImportTopologyModalData();
     }
 
+    /**
+     * Angular onChanges Lifecycle handler
+     * @param {SimpleChanges} changes
+     */
     ngOnChanges(changes: SimpleChanges) {
-        if (changes) {
-            const buttonClickEvent = changes.sidebarDeleteButtonClickEvent;
-            this.handleDeleteKeyEvent();
-        }
     }
 
     /**
@@ -336,12 +352,12 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
                                             return true;
                                         } else {
                                             this.requirements.properties = defaultXML;
-                                            this.setDefaultReqKVProperties();
+                                            this.setDefaultReqXMLProperties();
                                             return true;
                                         }
                                     } else {
                                         this.requirements.properties = defaultXML;
-                                        this.setDefaultReqKVProperties();
+                                        this.setDefaultReqXMLProperties();
                                         return true;
                                     }
                                 }
@@ -463,8 +479,7 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
         this.capabilities.capabilities.capability.some(cap => {
             if (cap.id === this.currentModalData.currentCapability.id) {
                 cap.properties = {
-                    kvproperties:
-                    this.capabilities.properties
+                    kvproperties: this.capabilities.properties
                 };
             }
         });
@@ -529,7 +544,7 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
             const keyValuePair = {
                 [key]: value
             };
-            newKVProperies = { ...newKVProperies, ...keyValuePair };
+            newKVProperies = {...newKVProperies, ...keyValuePair};
         }
         return newKVProperies;
     }
@@ -594,10 +609,6 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
         this.ngRedux.dispatch(this.actions.setRequirement(newRequirementData));
         this.resetRequirements();
         this.requirementsModal.hide();
-    }
-
-    getHostUrl(): string {
-        return hostURL;
     }
 
     /**
@@ -880,7 +891,7 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
      * @param $event  The html event.
      */
     positionNewNode(): void {
-        this.updateSelectedNodes();
+        setTimeout(() => this.updateSelectedNodes(), 1);
         this.unbindAll();
         this.revalidateContainer();
     }
@@ -939,36 +950,51 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
 
     /**
      * Handler for the layout buttons.
-     * @param rendererState  Representation of all possible buttons.
+     *
+     * @param topologyRendererState This object holds flags for every button in the navigation bar.
+     * We listen for changes that occur when the user presses a button. These change events trigger
      */
-    setRendererState(rendererState: TopologyRendererState): void {
-        if (rendererState) {
-            this.topologyRendererState = rendererState;
+    setButtonsState(topologyRendererState: TopologyRendererState): void {
+        if (topologyRendererState) {
+            this.topologyRendererState = topologyRendererState;
             this.revalidateContainer();
-            let selectedNodes;
-
-            if (this.topologyRendererState.buttonsState.layoutButton) {
-                this.layoutDirective.layoutNodes(this.nodeChildrenArray, this.allRelationshipTemplates);
-                this.ngRedux.dispatch(this.topologyRendererActions.executeLayout());
-                selectedNodes = false;
-            } else if (this.topologyRendererState.buttonsState.alignHButton) {
-                if (this.selectedNodes.length >= 1) {
-                    this.layoutDirective.align(this.nodeChildrenArray, this.selectedNodes, align.Horizontal);
-                    selectedNodes = true;
-                } else {
-                    this.layoutDirective.align(this.nodeChildrenArray, this.allNodeTemplates, align.Horizontal);
-                    selectedNodes = false;
-                }
-                this.ngRedux.dispatch(this.topologyRendererActions.executeAlignH());
-            } else if (this.topologyRendererState.buttonsState.alignVButton) {
-                if (this.selectedNodes.length >= 1) {
-                    this.layoutDirective.align(this.nodeChildrenArray, this.selectedNodes, align.Vertical);
-                    selectedNodes = true;
-                } else {
-                    this.layoutDirective.align(this.nodeChildrenArray, this.allNodeTemplates, align.Vertical);
-                }
-                this.ngRedux.dispatch(this.topologyRendererActions.executeAlignV());
-            } else if (this.topologyRendererState.buttonsState.importTopologyButton) {
+            const alignmentButtonLayout = this.topologyRendererState.buttonsState.layoutButton;
+            const alignmentButtonAlignH = this.topologyRendererState.buttonsState.alignHButton;
+            const alignmentButtonAlignV = this.topologyRendererState.buttonsState.alignVButton;
+            const importTopologyButton = this.topologyRendererState.buttonsState.importTopologyButton;
+            const splitTopologyButton = this.topologyRendererState.buttonsState.splitTopologyButton;
+            const matchTopologyButton = this.topologyRendererState.buttonsState.matchTopologyButton;
+            const substituteTopologyButton = this.topologyRendererState.buttonsState.substituteTopologyButton;
+            let leaveNodesAsSelectedAfterLayouting;
+            // Layouting function call (see LayoutDirective for more details)
+            if (alignmentButtonLayout) {
+                this.layoutDirective
+                    .layoutNodes(this.nodeChildrenArray, this.allRelationshipTemplates)
+                    .then(() => {
+                        leaveNodesAsSelectedAfterLayouting = false;
+                        // This call might seem confusing as we are calling it again right after executing,
+                        // but this just toggles the button state back to false, so layout can be called again.
+                        this.ngRedux.dispatch(this.topologyRendererActions.executeLayout());
+                    });
+            // Alignment functions calls
+            } else if (alignmentButtonAlignH || alignmentButtonAlignV) {
+                const selectionActive: boolean = (this.selectedNodes.length >= 1);
+                const nodesToBeAligned = selectionActive ? this.selectedNodes : this.allNodeTemplates;
+                leaveNodesAsSelectedAfterLayouting = selectionActive;
+                const alignmentMode = alignmentButtonAlignH ? align.Horizontal : align.Vertical;
+                this.layoutDirective.align(this.nodeChildrenArray, nodesToBeAligned, alignmentMode)
+                    .then(() => {
+                        leaveNodesAsSelectedAfterLayouting = false;
+                        // This call might seem confusing as we are calling it again right after executing,
+                        // but this just toggles the button state back to false, so layout can be called again.
+                        if (alignmentMode === align.Horizontal) {
+                            this.ngRedux.dispatch(this.topologyRendererActions.executeAlignH());
+                        } else {
+                            this.ngRedux.dispatch(this.topologyRendererActions.executeAlignV());
+                        }
+                    });
+            // import topology button
+            } else if (importTopologyButton) {
                 if (!this.importTopologyData.allTopologyTemplates) {
                     this.importTopologyData.allTopologyTemplates = [];
                     this.backendService.requestAllTopologyTemplates().subscribe(allServiceTemplates => {
@@ -977,13 +1003,12 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
                         }
                     });
                 }
-                this.ngRedux.dispatch(this.topologyRendererActions.importTopology());
                 this.importTopologyModal.show();
-            } else if (this.topologyRendererState.buttonsState.splitTopologyButton) {
+            } else if (splitTopologyButton) {
                 this.splitMatchService.splitTopology(this.backendService, this.ngRedux, this.topologyRendererActions, this.errorHandler);
-            } else if (this.topologyRendererState.buttonsState.matchTopologyButton) {
+            } else if (matchTopologyButton) {
                 this.splitMatchService.matchTopology(this.backendService, this.ngRedux, this.topologyRendererActions, this.errorHandler);
-            } else if (this.topologyRendererState.buttonsState.substituteTopologyButton) {
+            } else if (substituteTopologyButton) {
                 this.ngRedux.dispatch(this.topologyRendererActions.substituteTopology());
                 this.backendService.substituteTopology();
             } else if (this.topologyRendererState.nodesToSelect) {
@@ -993,7 +1018,8 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
             }
 
             setTimeout(() => {
-                if (selectedNodes === true) {
+                this.newJsPlumbInstance.repaintEverything();
+                if (leaveNodesAsSelectedAfterLayouting === true) {
                     this.updateSelectedNodes();
                 } else {
                     this.updateAllNodes();
@@ -1047,9 +1073,9 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
     }
 
     /**
-     * Updates the internal representation of all nodes with the actual dom information.
+     * Updates the internal representation of all nodes with the actual DOM information.
      */
-    updateAllNodes(): void {
+    public updateAllNodes(): void {
         if (this.allNodeTemplates.length > 0 && this.child) {
             for (const nodeTemplate of this.child.nativeElement.children) {
                 this.setNewCoordinates(nodeTemplate);
@@ -1114,7 +1140,7 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
             const conn = this.newJsPlumbInstance.connect({
                 source: newRelationship.sourceElement.ref,
                 target: newRelationship.targetElement.ref,
-                overlays: [['Arrow', { width: 15, length: 15, location: 1, id: 'arrow', direction: 1 }],
+                overlays: [['Arrow', {width: 15, length: 15, location: 1, id: 'arrow', direction: 1}],
                     ['Label', {
                         label: labelString,
                         id: 'label',
@@ -1217,7 +1243,7 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
         if (!this.dragSourceActive && !currentNodeIsSource && nodeArrayLength > 1) {
             this.newJsPlumbInstance.makeSource(dragSourceInfo.dragSource, {
                 connectorOverlays: [
-                    ['Arrow', { location: 1 }],
+                    ['Arrow', {location: 1}],
                 ],
             });
             this.dragSourceInfos = dragSourceInfo;
@@ -1460,7 +1486,7 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
                     stroke: relType.color,
                     strokeWidth: 2
                 },
-                hoverPaintStyle: { stroke: relType.color, strokeWidth: 5 }
+                hoverPaintStyle: {stroke: relType.color, strokeWidth: 5}
             });
     }
 
@@ -1582,7 +1608,7 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
             // workaround for a jsPlumb connection bug, where upon loading node templates without relationships
             // no creation of relationships possible
         } else if (this.allRelationshipTemplates.length === 0) {
-            const con = this.newJsPlumbInstance.connect({ source: 'dummy1', target: 'dummy2' });
+            const con = this.newJsPlumbInstance.connect({source: 'dummy1', target: 'dummy2'});
             con.setVisible(false);
         }
         if (this.diffMode) {
@@ -1595,6 +1621,27 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
      */
     ngOnDestroy() {
         this.subscriptions.forEach(subscription => subscription.unsubscribe());
+    }
+
+    /**
+     * jsPlumb relationship/label click actions
+     */
+    onClickJsPlumbConnection(conn: any, rel: any) {
+        this.clearSelectedNodes();
+        this.newJsPlumbInstance.select().removeType('marked');
+        const currentRel = this.allRelationshipTemplates.find(con => con.id === rel.id);
+        if (currentRel) {
+            this.ngRedux.dispatch(this.actions.openSidebar({
+                sidebarContents: {
+                    sidebarVisible: true,
+                    nodeClicked: false,
+                    id: currentRel.id,
+                    nameTextFieldValue: currentRel.name,
+                    type: currentRel.type
+                }
+            }));
+            conn.addType('marked');
+        }
     }
 
     /**
@@ -1742,27 +1789,6 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
         }
 
         this.revalidateContainer();
-    }
-
-    /**
-     * jsPlumb relationship/label click actions
-     */
-    onClickJsPlumbConnection(conn: any, rel: any) {
-        this.clearSelectedNodes();
-        this.newJsPlumbInstance.select().removeType('marked');
-        const currentRel = this.allRelationshipTemplates.find(con => con.id === rel.id);
-        if (currentRel) {
-            this.ngRedux.dispatch(this.actions.openSidebar({
-                sidebarContents: {
-                    sidebarVisible: true,
-                    nodeClicked: false,
-                    id: currentRel.id,
-                    nameTextFieldValue: currentRel.name,
-                    type: currentRel.type
-                }
-            }));
-            conn.addType('marked');
-        }
     }
 
     /**
@@ -1919,8 +1945,8 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
 
                     if (sourceElement !== info.targetId) {
                         const newRelationship = new TRelationshipTemplate(
-                            { ref: sourceElement },
-                            { ref: info.targetId },
+                            {ref: sourceElement},
+                            {ref: info.targetId},
                             this.selectedRelationshipType.name,
                             relationshipId,
                             this.selectedRelationshipType.qName
@@ -1960,6 +1986,5 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
 
     private layoutTopology() {
         this.layoutDirective.layoutNodes(this.nodeChildrenArray, this.allRelationshipTemplates);
-        this.ngRedux.dispatch(this.topologyRendererActions.executeLayout());
     }
 }

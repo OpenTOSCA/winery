@@ -114,7 +114,24 @@ export class Utils {
                 );
             });
         }
-
+        if (nodeTemplateArray.length > 0) {
+            nodeTemplateArray.forEach(node => {
+                const state = topologyDifferences ? DifferenceStates.UNCHANGED : null;
+                nodeTemplates.push(
+                    Utils.createTNodeTemplateFromObject(node, nodeVisuals, state)
+                );
+                // This adds growing offsets to nodeTemplates that don't have the winery:x and winery:y properties
+                nodeTemplates.forEach((nodeT, index) => {
+                    const HORIZONTAL_STARTING_POSITION = 350;
+                    const VERTICAL_STARTING_POSITION = 200;
+                    const OFFSET = 10 * index;
+                    if (!nodeT.x || !nodeT.y) {
+                        nodeT.x = HORIZONTAL_STARTING_POSITION + OFFSET;
+                        nodeT.y = VERTICAL_STARTING_POSITION + OFFSET;
+                    }
+                });
+            });
+        }
         return nodeTemplates;
     }
 

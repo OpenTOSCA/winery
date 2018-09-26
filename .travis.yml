@@ -22,8 +22,37 @@ before_install:
   #- curl -sL https://cdn.rawgit.com/jpm4j/jpm4j.installers/6b3c5176/dist/biz.aQute.jpm.run.jar >jpm4j.jar
   #- java -jar jpm4j.jar -u init
   # - ~/jpm/bin/jpm install com.codacy:codacy-coverage-reporter:assembly
+  - cp .travis.settings.xml $HOME/.m2/settings.xml
   - mvn -q resources:resources -pl org.eclipse.winery.repository.configuration
 
 script:
   - mvn -q package
-#  - mvn jacoco:report-aggregate
+  - mvn -DskipTests deploy
+  # - mvn jacoco:report-aggregate
+
+deploy:
+  - provider: script
+    script: "mvn org.reficio:p2-maven-plugin:site -N"
+    skip_cleanup: true
+    on:
+      all_branches: true
+  - provider: pages
+    skip-cleanup: true
+    github-token: $GITHUB_TOKEN
+    keep-history: false
+    local-dir: target/repository
+    repo: OpenTOSCA/winery-update-site
+    # ADR-0018
+    target-branch: $TRAVIS_BRANCH
+    on:
+      all_branches: true
+  - provider: pages
+    skip-cleanup: true
+    github-token: $GITHUB_TOKEN
+    keep-history: false
+    local-dir: target/mvn-repo
+    repo: OpenTOSCA/mvn-repo
+    # ADR-0019    
+    target-branch: $TRAVIS_BRANCH
+    on:
+      all_branches: true

@@ -12,24 +12,21 @@
  * SPDX-License-Identifier: EPL-2.0 OR Apache-2.0
  ********************************************************************************/
 
-import { Component, Input, OnInit } from '@angular/core';
-import {
-    Entity, EntityType, TNodeTemplate, TRelationshipTemplate, TTopologyTemplate, VisualEntityType
-} from './models/ttopology-template';
+import { Component, Input, OnInit , AfterViewInit} from '@angular/core';
+import {Entity, EntityType, TNodeTemplate, TRelationshipTemplate, TTopologyTemplate, VisualEntityType } from './models/ttopology-template';
 import { ILoaded, LoadedService } from './services/loaded.service';
 import { AppReadyEventService } from './services/app-ready-event.service';
 import { BackendService } from './services/backend.service';
 import { Subscription } from 'rxjs';
-import { NgRedux } from '@angular-redux/store';
+import { NgRedux } from '@angular-redux/store';import { TopologyRendererActions } from './redux/actions/topologyRenderer.actions';
 import { IWineryState } from './redux/store/winery.store';
-import { ToscaDiff } from './models/ToscaDiff';
+import {  ToscaDiff } from './models/ToscaDiff';
 import { isNullOrUndefined } from 'util';
 import { Utils } from './models/utils';
 import { EntityTypesModel, TopologyModelerInputDataFormat } from './models/entityTypesModel';
 import { ActivatedRoute } from '@angular/router';
 import { TopologyModelerConfiguration } from './models/topologyModelerConfiguration';
-import { ToastrService } from 'ngx-toastr';
-import { TopologyRendererState } from './redux/reducers/topologyRenderer.reducer';
+import { ToastrService } from 'ngx-toastr';import { TopologyRendererState } from './redux/reducers/topologyRenderer.reducer';
 
 /**
  * This is the root component of the topology modeler.
@@ -39,7 +36,7 @@ import { TopologyRendererState } from './redux/reducers/topologyRenderer.reducer
     templateUrl: './winery.component.html',
     styleUrls: ['./winery.component.css']
 })
-export class WineryComponent implements OnInit {
+export class WineryComponent implements OnInit, AfterViewInit {
 
     // If this input variable is not null, it means that data is passed to the topologymodeler to be rendered.
     @Input() topologyModelerData: TopologyModelerInputDataFormat;
@@ -51,6 +48,8 @@ export class WineryComponent implements OnInit {
     entityTypes: EntityTypesModel;
     hideNavBarState: boolean;
     subscriptions: Array<Subscription> = [];
+    someNodeMissingCoordinates: boolean = false;
+
     // This variable is set via the topologyModelerData input and decides if the editing functionalities are enabled
     readonly: boolean;
     refiningTopology: boolean;
@@ -65,6 +64,7 @@ export class WineryComponent implements OnInit {
                 private appReadyEvent: AppReadyEventService,
                 public backendService: BackendService,
                 private ngRedux: NgRedux<IWineryState>,
+                private actions: TopologyRendererActions,
                 private alert: ToastrService,
                 private activatedRoute: ActivatedRoute) {
         this.subscriptions.push(this.ngRedux.select(state => state.wineryState.hideNavBarAndPaletteState)
@@ -105,6 +105,13 @@ export class WineryComponent implements OnInit {
                 this.backendService.endpointConfiguration.next(params);
             });
             this.initiateData();
+        }
+    }
+
+    ngAfterViewInit() {
+        // auto layout when some nodes are missing coordinates
+        if (this.someNodeMissingCoordinates) {
+            this.ngRedux.dispatch(this.actions.executeLayout());
         }
     }
 
@@ -235,15 +242,17 @@ export class WineryComponent implements OnInit {
         // init rendering
         this.entityTypes.nodeVisuals = tmData.visuals;
         this.initTopologyTemplate(nodeTemplateArray, relationshipTemplateArray);
-        this.loaded = { loadedData: true, generatedReduxState: false };
+        this.loaded = {loadedData: true, generatedReduxState: false};
         this.appReadyEvent.trigger();
     }
 
     initTopologyTemplate(nodeTemplateArray: Array<TNodeTemplate>, relationshipTemplateArray: Array<TRelationshipTemplate>) {
+
         // init node templates
         this.nodeTemplates = Utils.initNodeTemplates(nodeTemplateArray, this.entityTypes.nodeVisuals, this.topologyDifferences);
         // init relationship templates
-        this.relationshipTemplates = Utils.initRelationTemplates(relationshipTemplateArray, this.topologyDifferences);
+        this.relationshipTemplates = Utils.initRelationTemplates(
+            relationshipTemplateArray, this.topologyDifferences) ;
     }
 
     initiateData(): void {

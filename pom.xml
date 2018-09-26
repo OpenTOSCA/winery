@@ -216,6 +216,34 @@
                         </altDeploymentRepository>
                     </configuration>
                 </plugin>
+                <!-- 
+                    Plugin to generate gh-pages for GitHub. One can use to upload the local Maven repository, which is 
+                    created during 'mvn deploy'. The plugin can be run with:
+
+                        mvn com.github.github:site-maven-plugin:site -N
+
+                    This takes the content of 'target/mvn-repo' and publishes it to the repository 
+                    'OpenTOSCA/mvn-repo/master'.
+
+                    This is needed for manual intervention only. TravisCI generates the gh-pages by a TravisCI plugin
+                    independent of this configuration.
+                -->
+                <plugin>
+                    <groupId>com.github.github</groupId>
+                    <artifactId>site-maven-plugin</artifactId>
+                    <version>0.12</version>
+                    <configuration>
+                        <message>Update winery artifacts (${project.version})</message> <!-- git commit message -->
+                        <noJekyll>true</noJekyll> <!-- disable webpage processing -->
+                        <force>true</force>
+                        <merge>true</merge>
+                        <outputDirectory>${project.basedir}/target/mvn-repo</outputDirectory> <!-- matches distribution management repository url above -->
+                        <branch>refs/heads/master</branch> <!-- remote branch name -->
+                        <includes><include>**/*</include></includes>
+                        <repositoryOwner>OpenTOSCA</repositoryOwner>
+                        <repositoryName>mvn-repo</repositoryName>
+                    </configuration>
+                </plugin>
                 <!--
                     Plugin to auto-generate an Eclipse update-site. The plugin can be run with:
 
