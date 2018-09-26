@@ -20,11 +20,12 @@ import { EntityType, TTopologyTemplate, Visuals } from '../models/ttopology-temp
 import { QNameWithTypeApiData } from '../models/generateArtifactApiData';
 import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
 import { urlElement } from '../models/enums';
+import { ServiceTemplateId } from '../models/serviceTemplateId';
 import { ToscaDiff } from '../models/ToscaDiff';
 import { Observable } from 'rxjs/Observable';
 import { forkJoin } from 'rxjs';
-import { map } from 'rxjs/internal/operators';
 import { TopologyModelerConfiguration } from '../models/topologyModelerConfiguration';
+import { ErrorHandlerService } from './error-handler.service';
 
 /**
  * Responsible for interchanging data between the app and the server.
@@ -44,7 +45,9 @@ export class BackendService {
     private allEntities = new Subject<any>();
     allEntities$ = this.allEntities.asObservable();
 
-    constructor(private http: HttpClient) {
+    constructor(private http: HttpClient,
+                private alert: ToastrService,
+                private errorHandler: ErrorHandlerService) {
         this.endpointConfiguration$.subscribe((params: TopologyModelerConfiguration) => {
             if (!(isNullOrUndefined(params.id) && isNullOrUndefined(params.ns) &&
                 isNullOrUndefined(params.repositoryURL) && isNullOrUndefined(params.uiURL))) {
@@ -76,24 +79,65 @@ export class BackendService {
     }
 
     /**
-     * Returns data that is later used by jsPlumb to render a relationship connector
-     * @returns data The JSON from the server
+     * Requests all entities together.
+     * We use forkJoin() to await all responses from the backend.
+     * This is required
+     * @returns data  The JSON from the server
      */
-    requestRelationshipTypeVisualappearance(namespace: string, id: string): Observable<EntityType> {
+    private requestAllEntitiesAtOnce(): Observable<any> {
         if (this.configuration) {
-            const url = this.configuration.repositoryURL + '/relationshiptypes/'
-                + encodeURIComponent(encodeURIComponent(namespace)) + '/'
-                + id + '/visualappearance/';
-            return this.http
-                .get<EntityType>(url, {headers: this.headers})
-                .pipe(
-                    map(relationship => {
-                        if (!isNullOrUndefined(this.configuration.compareTo)) {
-                            relationship.color = 'grey';
-                        }
-                        return relationship;
-                    })
+            return forkJoin(
+                this.requestGroupedNodeTypes(),
+                this.requestArtifactTemplates(),
+                this.requestTopologyTemplateAndVisuals(),
+                this.requestArtifactTypes(),
+                this.requestPolicyTypes(),
+                this.requestCapabilityTypes(),
+                this.requestRequirementTypes(),
+                this.requestPolicyTemplates(),
+                this.requestRelationshipTypes(),
+                this.requestNodeTypes()
+            );
+        }
+    }
+
+    /**
+     * Requests topologyTemplate and visualappearances together. If the topology should be compared, it also gets
+     * the old topology as well as the diff representation.
+     * We use Observable.forkJoin to await all responses from the backend.
+     * This is required
+     * @returns data  The JSON from the server
+     */
+    private requestTopologyTemplateAndVisuals(): Observable<any> {
+        if (this.configuration) {
+            const url = this.configuration.repositoryURL + '/' + this.configuration.parentPath + '/'
+                + encodeURIComponent(encodeURIComponent(this.configuration.ns)) + '/';
+            const currentUrl = url + this.configuration.id + '/' + this.configuration.elementPath;
+            const nodeVisualsUrl = backendBaseURL + '/nodetypes/allvisualappearancedata';
+            const relationshipVisualsUrl = backendBaseURL + '/relationshiptypes/allvisualappearancedata';
+            // This is required because the information has to be returned together
+
+            if (isNullOrUndefined(this.configuration.compareTo)) {
+                return forkJoin(
+                    this.http.get<TTopologyTemplate>(currentUrl),
+                    this.http.get<Visuals>(nodeVisualsUrl),
+                    this.http.get<Visuals>(relationshipVisualsUrl),
                 );
+            } else {
+                const compareUrl = url
+                    + this.configuration.id + '/?compareTo='
+                    + this.configuration.compareTo;
+                const templateUrl = url
+                    + this.configuration.compareTo + '/topologytemplate';
+
+                return forkJoin(
+                    this.http.get<TTopologyTemplate>(currentUrl),
+                    this.http.get<Visuals>(nodeVisualsUrl),
+                    this.http.get<Visuals>(relationshipVisualsUrl),
+                    this.http.get<ToscaDiff>(compareUrl),
+                    this.http.get<TTopologyTemplate>(templateUrl)
+                );
+            }
         }
     }
 
@@ -162,7 +206,7 @@ export class BackendService {
     saveTopologyTemplate(topologyTemplate: any): Observable<HttpResponse<string>> {
         if (this.configuration) {
             const headers = new HttpHeaders().set('Content-Type', 'application/json');
-            const url = this.serviceTemplateURL + '/' + this.configuration.elementPath + '/';
+            const url = this.serviceTemplateURL + '/' + this.configuration.elementPath;
 
             return this.http.put(url, topologyTemplate, {
                 headers: headers, responseType: 'text', observe: 'response'
@@ -180,6 +224,23 @@ export class BackendService {
         return this.http.post(url + '/', importedTemplateQName, {
             headers: headers, observe: 'response', responseType: 'text'
         });
+    }
+
+    substituteTopology(): void {
+        this.alert.info('', 'Substitution in progress...');
+        this.http.get<ServiceTemplateId>(this.serviceTemplateURL + '/substitute')
+            .subscribe(res => {
+                    const url = window.location.origin + window.location.pathname + '?repositoryURL=' + this.configuration.repositoryURL
+                        + '&uiURL=' + this.configuration.uiURL
+                        + '&ns=' + res.namespace.encoded
+                        + '&id=' + res.xmlId.encoded
+                        + '&parentPath=' + this.configuration.parentPath
+                        + '&elementPath=' + this.configuration.elementPath;
+                    this.alert.success('automatically opening does not work currently...', 'Substitution successful!');
+                },
+                error => {
+                    this.errorHandler.handleError(error);
+                });
     }
 
     /**
