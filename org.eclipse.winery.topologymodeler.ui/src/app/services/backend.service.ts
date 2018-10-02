@@ -26,6 +26,7 @@ import { Observable } from 'rxjs/Observable';
 import { forkJoin } from 'rxjs';
 import { TopologyModelerConfiguration } from '../models/topologyModelerConfiguration';
 import { ErrorHandlerService } from './error-handler.service';
+import { ToastrService } from 'ngx-toastr';
 
 /**
  * Responsible for interchanging data between the app and the server.
@@ -84,7 +85,7 @@ export class BackendService {
      * This is required
      * @returns data  The JSON from the server
      */
-    private requestAllEntitiesAtOnce(): Observable<any> {
+    requestAllEntitiesAtOnce(): Observable<any> {
         if (this.configuration) {
             return forkJoin(
                 this.requestGroupedNodeTypes(),
@@ -108,7 +109,7 @@ export class BackendService {
      * This is required
      * @returns data  The JSON from the server
      */
-    private requestTopologyTemplateAndVisuals(): Observable<any> {
+    requestTopologyTemplateAndVisuals(): Observable<any> {
         if (this.configuration) {
             const url = this.configuration.repositoryURL + '/' + this.configuration.parentPath + '/'
                 + encodeURIComponent(encodeURIComponent(this.configuration.ns)) + '/';
@@ -286,66 +287,6 @@ export class BackendService {
     requestAllTopologyTemplates(): Observable<EntityType[]> {
         const url = hostURL + urlElement.Winery + urlElement.ServiceTemplates;
         return this.http.get<EntityType[]>(url + '/', {headers: this.headers});
-    }
-
-    /**
-     * Requests all entities together.
-     * We use forkJoin() to await all responses from the backend.
-     * This is required
-     * @returns data  The JSON from the server
-     */
-    private requestAllEntitiesAtOnce(): Observable<any> {
-        if (this.configuration) {
-            return forkJoin(
-                this.requestGroupedNodeTypes(),
-                this.requestArtifactTemplates(),
-                this.requestTopologyTemplateAndVisuals(),
-                this.requestArtifactTypes(),
-                this.requestPolicyTypes(),
-                this.requestCapabilityTypes(),
-                this.requestRequirementTypes(),
-                this.requestPolicyTemplates(),
-                this.requestRelationshipTypes(),
-                this.requestNodeTypes()
-            );
-        }
-    }
-
-    /**
-     * Requests topologyTemplate and visualappearances together. If the topology should be compared, it also gets
-     * the old topology as well as the diff representation.
-     * We use Observable.forkJoin to await all responses from the backend.
-     * This is required
-     * @returns data  The JSON from the server
-     */
-    private requestTopologyTemplateAndVisuals(): Observable<any> {
-        if (this.configuration) {
-            const url = this.configuration.repositoryURL + '/' + this.configuration.parentPath + '/'
-                + encodeURIComponent(encodeURIComponent(this.configuration.ns)) + '/';
-            const currentUrl = url + this.configuration.id + '/' + this.configuration.elementPath + '/';
-            const visualsUrl = backendBaseURL + '/nodetypes/allvisualappearancedata';
-            // This is required because the information has to be returned together
-
-            if (isNullOrUndefined(this.configuration.compareTo)) {
-                return forkJoin(
-                    this.http.get<TTopologyTemplate>(currentUrl),
-                    this.http.get<Visuals>(visualsUrl)
-                );
-            } else {
-                const compareUrl = url
-                    + this.configuration.id + '/?compareTo='
-                    + this.configuration.compareTo;
-                const templateUrl = url
-                    + this.configuration.compareTo + '/topologytemplate';
-
-                return forkJoin(
-                    this.http.get<TTopologyTemplate>(currentUrl),
-                    this.http.get<Visuals>(visualsUrl),
-                    this.http.get<ToscaDiff>(compareUrl),
-                    this.http.get<TTopologyTemplate>(templateUrl)
-                );
-            }
-        }
     }
 
     /**
