@@ -23,9 +23,10 @@ before_install:
   #- java -jar jpm4j.jar -u init
   # - ~/jpm/bin/jpm install com.codacy:codacy-coverage-reporter:assembly
   - cp .travis.settings.xml $HOME/.m2/settings.xml
+  - npm install -g ganache-cli
 
 script:
-  - mvn -q package
+  - mvn -q -e package
   - mvn -DskipTests deploy
   # - mvn jacoco:report-aggregate
 
