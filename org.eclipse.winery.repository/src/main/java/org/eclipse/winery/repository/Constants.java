@@ -28,10 +28,17 @@ public class Constants {
     // $HOME/DEFAULT_REPO_NAME is used
     public static final Path GLOBAL_REPO_PATH_WINDOWS = Paths.get("C:/" + Constants.DEFAULT_REPO_NAME);
 
+    public static final String MASTER_BRANCH = "master";
+
     /**
      * file-system in general
      **/
     public static final String newline = System.getProperty("line.separator");
+    public static final String URL_SEPARATOR = "/";
+
+    // Location of the local repository
+    public static final String DEFAULT_LOCAL_REPO_NAME = "workspace";
+    public static final String FILE_GIT_IGNORE = ".gitignore";
 
     // Path to images for extensions
     // Currently, we require the format <filenamextension>.png
@@ -70,7 +77,7 @@ public class Constants {
     public static final String TOSCA_PLANTYPE_BUILD_PLAN = "http://docs.oasis-open.org/tosca/ns/2011/12/PlanTypes/BuildPlan";
     public static final String TOSCA_PLANTYPE_TERMINATION_PLAN = "http://docs.oasis-open.org/tosca/ns/2011/12/PlanTypes/TerminationPlan";
     public static final String TOSCA_PLANTYPE_MANAGEMENT_PLAN = "http://opentosca.org/tosca/plantypes/management";
-    
+
     public static final String DIRNAME_SELF_SERVICE_METADATA = "SELFSERVICE-Metadata";
 
     public static final String LICENSE_FILE_NAME = "LICENSE";

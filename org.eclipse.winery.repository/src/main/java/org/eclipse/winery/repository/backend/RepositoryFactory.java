@@ -16,20 +16,26 @@ package org.eclipse.winery.repository.backend;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
 import org.eclipse.winery.common.configuration.Environments;
+import org.eclipse.winery.repository.backend.constants.Filename;
 import org.eclipse.winery.repository.backend.filebased.FilebasedRepository;
 import org.eclipse.winery.repository.backend.filebased.GitBasedRepository;
 import org.eclipse.winery.common.configuration.FileBasedRepositoryConfiguration;
 import org.eclipse.winery.common.configuration.GitBasedRepositoryConfiguration;
+import org.eclipse.winery.repository.backend.filebased.MultiRepository;
 
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class RepositoryFactory {
+
+    public static List<FilebasedRepository> repositoryList = new ArrayList<>();
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RepositoryFactory.class);
 
@@ -38,17 +44,34 @@ public class RepositoryFactory {
 
     private static IRepository repository = null;
 
+    private static boolean repositoryContainsRepoConfig(FileBasedRepositoryConfiguration config) {
+        return FilebasedRepository.getRepositoryRoot(config).resolve(Filename.FILENAME_JSON_REPOSITORIES).toFile().exists();
+    }
+
     public static void reconfigure(GitBasedRepositoryConfiguration gitBasedRepositoryConfiguration) throws IOException, GitAPIException {
         RepositoryFactory.gitBasedRepositoryConfiguration = gitBasedRepositoryConfiguration;
         RepositoryFactory.fileBasedRepositoryConfiguration = null;
-        repository = new GitBasedRepository(gitBasedRepositoryConfiguration);
+
+        if (repositoryContainsRepoConfig(gitBasedRepositoryConfiguration)) {
+            repository = new MultiRepository(gitBasedRepositoryConfiguration);
+        } else {
+            repository = new GitBasedRepository(gitBasedRepositoryConfiguration);
+        }
     }
 
     public static void reconfigure(FileBasedRepositoryConfiguration fileBasedRepositoryConfiguration) {
         RepositoryFactory.fileBasedRepositoryConfiguration = fileBasedRepositoryConfiguration;
         RepositoryFactory.gitBasedRepositoryConfiguration = null;
 
-        repository = new FilebasedRepository(fileBasedRepositoryConfiguration);
+        if (repositoryContainsRepoConfig(fileBasedRepositoryConfiguration)) {
+            try {
+                repository = new MultiRepository(new GitBasedRepositoryConfiguration(false, fileBasedRepositoryConfiguration));
+            } catch (IOException | GitAPIException exception) {
+                exception.printStackTrace();
+            }
+        } else {
+            repository = new FilebasedRepository(fileBasedRepositoryConfiguration);
+        }
     }
 
     /**
