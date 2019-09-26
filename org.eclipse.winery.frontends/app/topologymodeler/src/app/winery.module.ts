@@ -50,6 +50,7 @@ import { StatefulAnnotationsService } from './services/statefulAnnotations.servi
 import { WineryModalModule } from '../../../tosca-management/src/app/wineryModalModule/winery.modal.module';
 import { EnricherComponent } from './enricher/enricher.component';
 import { WineryFeatureToggleModule } from '../../../tosca-management/src/app/wineryFeatureToggleModule/winery-feature-toggle.module';
+import { ReqCapRelationshipService } from './services/req-cap-relationship.service';
 
 @NgModule({
     declarations: [
@@ -103,6 +104,7 @@ import { WineryFeatureToggleModule } from '../../../tosca-management/src/app/win
         SplitMatchTopologyService,
         ErrorHandlerService,
         StatefulAnnotationsService,
+        ReqCapRelationshipService
     ],
     bootstrap: [WineryComponent]
 })

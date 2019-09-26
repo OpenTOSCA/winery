@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2018 Contributors to the Eclipse Foundation
+ * Copyright (c) 2018-2019 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -18,6 +18,8 @@ import { EntitiesModalService, OpenModalEvent } from '../../canvas/entities-moda
 import { ModalVariant } from '../../canvas/entities-modal/modal-model';
 import { definitionType, toscaEntity, urlElement } from '../../models/enums';
 import { BackendService } from '../../services/backend.service';
+import { EntityTypesModel } from '../../models/entityTypesModel';
+import { ReqCapRelationshipService } from '../../services/req-cap-relationship.service';
 
 @Component({
     selector: 'winery-toscatype-table',
@@ -29,6 +31,7 @@ export class ToscatypeTableComponent implements OnInit, OnChanges {
     @Input() toscaType: string;
     @Input() currentNodeData: any;
     @Input() toscaTypeData: any;
+    @Input() entityTypes: EntityTypesModel;
 
     // Event emitter for showing the modal of a clicked capability or requirement id
     @Output() showClickedReqOrCapModal: EventEmitter<any>;
@@ -38,7 +41,8 @@ export class ToscatypeTableComponent implements OnInit, OnChanges {
     latestNodeTemplate?: any = {};
 
     constructor(private entitiesModalService: EntitiesModalService,
-                private backendService: BackendService) {
+                private backendService: BackendService,
+                private reqCapRelationshipService: ReqCapRelationshipService) {
         this.showClickedReqOrCapModal = new EventEmitter();
     }
 
@@ -187,4 +191,19 @@ export class ToscatypeTableComponent implements OnInit, OnChanges {
         window.open(url, '_blank');
     }
 
+    passCurrentType($event): void {
+        let currentType: string;
+
+        try {
+            currentType = $event.srcElement.innerText.replace(/\n/g, '').replace(/\s+/g, '');
+        } catch (e) {
+            currentType = $event.target.innerText.replace(/\n/g, '').replace(/\s+/g, '');
+        }
+        this.entityTypes.relationshipTypes.some(relType => {
+            if (relType.qName.includes(currentType)) {
+                this.reqCapRelationshipService.passCurrentType(relType);
+                return true;
+            }
+        });
+    }
 }

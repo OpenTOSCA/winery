@@ -12,8 +12,8 @@
  * SPDX-License-Identifier: EPL-2.0 OR Apache-2.0
  ********************************************************************************/
 import {
-    AfterViewInit, Component, ElementRef, HostListener, Input, KeyValueDiffers, NgZone, OnChanges, OnDestroy, OnInit, QueryList, Renderer2, SimpleChanges,
-    ViewChild, ViewChildren
+    AfterViewInit, Component, ElementRef, HostListener, Input, KeyValueDiffers, NgZone, OnChanges, OnDestroy, OnInit,
+    QueryList, Renderer2, SimpleChanges, ViewChild, ViewChildren
 } from '@angular/core';
 import { JsPlumbService } from '../services/jsPlumb.service';
 import { EntityType, TNodeTemplate, TRelationshipTemplate, VisualEntityType } from '../models/ttopology-template';
@@ -52,6 +52,7 @@ import { TopologyRendererState } from '../redux/reducers/topologyRenderer.reduce
 import { ThreatModelingModalData } from '../models/threatModelingModalData';
 import { ThreatCreation } from '../models/threatCreation';
 import { TopologyTemplateUtil } from '../models/topologyTemplateUtil';
+import { ReqCapRelationshipService } from '../services/req-cap-relationship.service';
 import { TPolicy } from '../models/policiesModalData';
 
 @Component({
@@ -142,6 +143,9 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
 
     private longPressing: boolean;
 
+    // source for relationship between Requirement and a Capability
+    source: DragSource;
+
     constructor(private jsPlumbService: JsPlumbService,
                 private eref: ElementRef,
                 private layoutDirective: LayoutDirective,
@@ -158,7 +162,9 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
                 private existsService: ExistsService,
                 private splitMatchService: SplitMatchTopologyService,
                 private reqCapService: ReqCapService,
-                private errorHandler: ErrorHandlerService) {
+                private errorHandler: ErrorHandlerService,
+                private reqCapRelationshipService: ReqCapRelationshipService,
+                private notify: ToastrService) {
         this.newJsPlumbInstance = this.jsPlumbService.getJsPlumbInstance();
         this.newJsPlumbInstance.setContainer('container');
 
@@ -1085,10 +1091,12 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
      * Revalidates the offsets and other data of the container in the DOM.
      */
     public revalidateContainer(): void {
-        setTimeout(() => {
-            this.newJsPlumbInstance.revalidate('container');
-            this.newJsPlumbInstance.repaintEverything();
-        }, 1);
+        if (this.newJsPlumbInstance) {
+            setTimeout(() => {
+                this.newJsPlumbInstance.revalidate('container');
+                this.newJsPlumbInstance.repaintEverything();
+            }, 1);
+        }
     }
 
     /**
@@ -1580,6 +1588,87 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
             }
         });
         this.entityTypes.relationshipTypes.forEach(value => this.assignRelTypes(value));
+        this.reqCapRelationshipService.sourceSelectedEvent.subscribe(source => this.setSource(source));
+        this.reqCapRelationshipService.relationshipTypeEventListener().subscribe(relationship => this.setSelectedRelationshipType(relationship));
+        this.reqCapRelationshipService.closeConnectionEventListener().subscribe(endpoint => this.finishRelationship(endpoint));
+        this.reqCapRelationshipService.repaintEventListener().subscribe(this.revalidateContainer);
+    }
+
+    /**
+     * set source for Relationship between Requirement and a Capability
+     * @param dragSourceInfo
+     */
+
+    setSource(dragSourceInfo: DragSource) {
+        if (dragSourceInfo) {
+            this.source = dragSourceInfo;
+            const nodeArrayLength = this.allNodeTemplates.length;
+            const currentNodeIsSource = this.newJsPlumbInstance.isSource(dragSourceInfo.nodeId);
+            if (!this.dragSourceActive && !currentNodeIsSource && nodeArrayLength > 1) {
+                this.newJsPlumbInstance.makeSource(dragSourceInfo.nodeId, {
+                    connectorOverlays: [
+                        ['Arrow', { location: 1 }],
+                    ],
+                });
+                this.targetNodes = this.allNodesIds.filter(nodeId => nodeId !== this.source.nodeId);
+                if (this.targetNodes.length > 0) {
+                    this.dragSourceActive = true;
+                    this.bindConnection();
+                }
+            }
+        }
+    }
+
+    /**
+     * create a Relationship between a Requirement and a Capability
+     * @param dragTargetInfo
+     */
+
+    finishRelationship(dragTargetInfo: DragSource) {
+        let relationshipId: string;
+        const prefix = this.backendService.configuration.relationshipPrefix;
+        const relName = this.selectedRelationshipType.name;
+        let relNumber = 0;
+        if (this.source && dragTargetInfo && this.checkForCompatibility(dragTargetInfo)) {
+            do {
+                relationshipId = prefix + '_' + relName + '_' + relNumber++;
+            } while (this.allRelationshipTemplates.find(value => value.id === relationshipId));
+            const newRelationship = new TRelationshipTemplate(
+                { ref: this.source.dragSource },
+                { ref: dragTargetInfo.dragSource },
+                this.selectedRelationshipType.name,
+                relationshipId,
+                this.selectedRelationshipType.qName,
+                TopologyTemplateUtil.getDefaultPropertiesFromEntityTypes(this.selectedRelationshipType.name, this.entityTypes.relationshipTypes),
+                [],
+                [],
+                {}
+            );
+            this.paintRelationship(newRelationship);
+            this.allRelationshipTemplates.push(newRelationship);
+            this.source = null;
+            this.dragSourceActive = false;
+        }
+    }
+
+    /**
+     * check for compatibility of Requirement and Capability
+     * @param dragTargetInfo
+     */
+    checkForCompatibility(dragTargetInfo: DragSource) {
+        let sourceType = '';
+        this.entityTypes.requirementTypes.some(req => {
+            if (req.name === this.source.dragSource) {
+                sourceType = req.properties.serviceTemplateOrNodeTypeOrNodeTypeImplementation[0].requiredCapabilityType;
+                return true;
+            }
+        });
+        if (sourceType.endsWith(dragTargetInfo.dragSource)) {
+            return true;
+        } else {
+            this.notify.error('The selected Requirement and Capability are not Compatible');
+            return false;
+        }
     }
 
     /**
@@ -1635,12 +1724,14 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
      * @param $event  The HTML event.
      */
     trackTimeOfMouseDown(): void {
-        this.newJsPlumbInstance.select().removeType('marked');
-        this.revalidateContainer();
-        this.removeDragSource();
-        this.clearSelectedNodes();
-        this.unbindConnection();
-        this.startTime = new Date().getTime();
+        if (this.newJsPlumbInstance) {
+            this.newJsPlumbInstance.select().removeType('marked');
+            this.revalidateContainer();
+            this.removeDragSource();
+            this.clearSelectedNodes();
+            this.unbindConnection();
+            this.startTime = new Date().getTime();
+        }
     }
 
     /**
