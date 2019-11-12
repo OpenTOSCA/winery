@@ -22,6 +22,8 @@ export enum PropertiesDefinitionEnum {
 export class PropertiesDefinitionKVElement {
     key: string = null;
     type: string = null;
+    required: boolean;
+    defaultValue: string;
 }
 
 export class PropertiesDefinition {

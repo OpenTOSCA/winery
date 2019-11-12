@@ -279,7 +279,8 @@ public class X2YConverter {
             .collect(Collectors.toMap(
                 PropertyDefinitionKV::getKey,
                 entry -> new TPropertyDefinition.Builder(convertType(entry.getType()))
-                    .setRequired(false)
+                    .setRequired(entry.isRequired())
+                    .setDefault(entry.getDefaultValue())
                     .build()
             ));
     }

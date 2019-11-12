@@ -23,7 +23,8 @@ public class PropertyDefinitionKV implements Serializable {
 
     private String key;
     private String type;
-
+    private Boolean required;
+    private String defaultValue;
 
     public PropertyDefinitionKV() {
         super();
@@ -33,6 +34,12 @@ public class PropertyDefinitionKV implements Serializable {
         super();
         this.setKey(key);
         this.setType(type);
+    }
+
+    public PropertyDefinitionKV(String key, String type, Boolean required, String defaultValue) {
+        this(key, type);
+        this.setRequired(required);
+        this.setDefaultValue(defaultValue);
     }
 
     public String getKey() {
@@ -67,7 +74,23 @@ public class PropertyDefinitionKV implements Serializable {
     }
 
     @Override
-	public int hashCode() {
-		return this.key.hashCode();
-	}
+    public int hashCode() {
+        return this.key.hashCode();
+    }
+
+    public Boolean isRequired() {
+        return required;
+    }
+
+    public void setRequired(Boolean required) {
+        this.required = required;
+    }
+
+    public String getDefaultValue() {
+        return defaultValue;
+    }
+
+    public void setDefaultValue(String defaultValue) {
+        this.defaultValue = defaultValue;
+    }
 }

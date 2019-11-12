@@ -38,7 +38,9 @@
             <label for="customkv" class="cursorpointer">Custom key/value pairs</label>
         </div>
         <div class="right">
-            <button class="btn btn-primary" name="save" [disabled]="!sharedData?.currentVersion?.editable" (click)="save()">Save</button>
+            <button class="btn btn-primary" name="save" [disabled]="!sharedData?.currentVersion?.editable"
+                    (click)="save()">Save
+            </button>
         </div>
     </div>
     <div>
@@ -120,12 +122,21 @@
                     <option value="xsd:QName">xsd:QName</option>
                 </select>
             </div>
+            <div class="form-group">
+                <label class="control-label" for="defaultValue">Default Value</label>
+                <input #propertyDefaultValue id="defaultValue" class="form-control" type="text"/>
+            </div>
+            <div class="form-group">
+                <input type="checkbox" id="isRequired" #propertyIsRequired style="margin-right: 7px"/>
+                <label class="control-label" for="isRequired">Is required</label>
+            </div>
         </form>
     </winery-modal-body>
-    <winery-modal-footer (onOk)="addProperty(selectProperty.value, propName.value); addPropertyFrom.reset();"
-                         [closeButtonLabel]="'Cancel'"
-                         [okButtonLabel]="'Add'"
-                         [disableOkButton]="!addPropertyFrom?.form.valid">
+    <winery-modal-footer
+        (onOk)="addProperty(selectProperty.value, propName.value, propertyIsRequired.checked, propertyDefaultValue.value); addPropertyFrom.reset();"
+        [closeButtonLabel]="'Cancel'"
+        [okButtonLabel]="'Add'"
+        [disableOkButton]="!addPropertyFrom?.form.valid">
     </winery-modal-footer>
 </winery-modal>
 

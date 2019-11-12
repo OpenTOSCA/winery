@@ -48,6 +48,8 @@ export class PropertiesDefinitionComponent implements OnInit {
     columns: Array<WineryTableColumn> = [
         { title: 'Name', name: 'key', sort: true },
         { title: 'Type', name: 'type', sort: true },
+        { title: 'Is Required', name: 'required' },
+        { title: 'Default Value', name: 'defaultValue' },
     ];
     newProperty: PropertiesDefinitionKVElement = new PropertiesDefinitionKVElement();
 
@@ -226,10 +228,12 @@ export class PropertiesDefinitionComponent implements OnInit {
      * @param propType
      * @param propName
      */
-    addProperty(propType: string, propName: string) {
+    addProperty(propType: string, propName: string, required: boolean, defaultValue: string) {
         this.resourceApiData.winerysPropertiesDefinition.propertyDefinitionKVList.push({
             key: propName,
-            type: propType
+            type: propType,
+            defaultValue: defaultValue,
+            required: required,
         });
         this.addModal.hide();
     }
