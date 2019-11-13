@@ -44,11 +44,14 @@ import org.eclipse.winery.common.ids.Namespace;
 import org.eclipse.winery.common.ids.XmlId;
 import org.eclipse.winery.common.ids.definitions.ArtifactTemplateId;
 import org.eclipse.winery.common.ids.definitions.ArtifactTypeId;
+import org.eclipse.winery.common.ids.definitions.CapabilityTypeId;
 import org.eclipse.winery.common.ids.definitions.DefinitionsChildId;
 import org.eclipse.winery.common.ids.definitions.NodeTypeId;
 import org.eclipse.winery.common.ids.definitions.NodeTypeImplementationId;
+import org.eclipse.winery.common.ids.definitions.PolicyTypeId;
 import org.eclipse.winery.common.ids.definitions.RelationshipTypeId;
 import org.eclipse.winery.common.ids.definitions.RelationshipTypeImplementationId;
+import org.eclipse.winery.common.ids.definitions.RequirementTypeId;
 import org.eclipse.winery.common.version.VersionUtils;
 import org.eclipse.winery.common.version.WineryVersion;
 import org.eclipse.winery.model.tosca.Definitions;
@@ -468,43 +471,47 @@ public class YamlBasedRepository extends FilebasedRepository {
      * @return requested definitions
      **/
     private Definitions getRequestedDefinition(DefinitionsChildId id, Definitions definitions) {
-        if (id instanceof NodeTypeId) {
-            Definitions.Builder requestedDefinitions = getEmptyDefinition(definitions);
-            requestedDefinitions.addNodeTypes(definitions.getNodeTypes());
-            return requestedDefinitions.build();
-        } else if (id instanceof RelationshipTypeId) {
-            Definitions.Builder requestedDefinitions = getEmptyDefinition(definitions);
-            requestedDefinitions.addRelationshipTypes(definitions.getRelationshipTypes());
-            Definitions output = requestedDefinitions.build();
-            return output;
-        } else if (id instanceof NodeTypeImplementationId) {
-            Definitions.Builder requestedDefinitions = getEmptyDefinition(definitions);
-            requestedDefinitions.addNodeTypeImplementations(definitions.getNodeTypeImplementations());
-            return requestedDefinitions.build();
-        } else if (id instanceof RelationshipTypeImplementationId) {
-            Definitions.Builder requestedDefinitions = getEmptyDefinition(definitions);
-            requestedDefinitions.addRelationshipTypeImplementations(definitions.getRelationshipTypeImplementations());
-            return requestedDefinitions.build();
-        } else if (id instanceof ArtifactTypeId) {
-            Definitions.Builder requestedDefinitions = getEmptyDefinition(definitions);
-            requestedDefinitions.addArtifactTypes(definitions.getArtifactTypes());
-            return requestedDefinitions.build();
-        } else if (id instanceof ArtifactTemplateId) {
+        if (id instanceof ArtifactTemplateId) {
             String artifactName = getNameOfArtifactFromArtifactName(id.getQName().getLocalPart());
             List<TArtifactTemplate> artifactTemplates = definitions.getArtifactTemplates();
             List<TArtifactTemplate> requestedArtifactTemplates = new ArrayList<>();
-            if (artifactTemplates != null) {
-                for (TArtifactTemplate artifactTemplate : artifactTemplates) {
-                    if (artifactTemplate.getId().equalsIgnoreCase(artifactName)) {
-                        requestedArtifactTemplates.add(artifactTemplate);
-                        Definitions.Builder requestedDefinitions = getEmptyDefinition(definitions);
-                        requestedDefinitions.addArtifactTemplates(requestedArtifactTemplates);
-                        return requestedDefinitions.build();
-                    }
+            for (TArtifactTemplate artifactTemplate : artifactTemplates) {
+                if (artifactTemplate.getId().equalsIgnoreCase(artifactName)) {
+                    requestedArtifactTemplates.add(artifactTemplate);
+                    Definitions.Builder requestedDefinitions = getEmptyDefinition(definitions);
+                    requestedDefinitions.addArtifactTemplates(requestedArtifactTemplates);
+                    return requestedDefinitions.build();
                 }
             }
+            // we did not find the artifact template id (this should not happen!)
+            LOGGER.error("requested artifact template id (" + id.toReadableString() +") cannot be extracted from definitions object!");
+            return definitions;
+        } else {
+            Definitions.Builder requestedDefinitions = getEmptyDefinition(definitions);
+            
+            if (id instanceof NodeTypeId) {
+                requestedDefinitions.addNodeTypes(definitions.getNodeTypes());
+            } else if (id instanceof RelationshipTypeId) {
+                requestedDefinitions.addRelationshipTypes(definitions.getRelationshipTypes());
+            } else if (id instanceof NodeTypeImplementationId) {
+                requestedDefinitions.addNodeTypeImplementations(definitions.getNodeTypeImplementations());
+            } else if (id instanceof RelationshipTypeImplementationId) {
+                requestedDefinitions.addRelationshipTypeImplementations(definitions.getRelationshipTypeImplementations());
+            } else if (id instanceof ArtifactTypeId) {
+                requestedDefinitions.addArtifactTypes(definitions.getArtifactTypes());
+            } else if (id instanceof CapabilityTypeId) {
+                requestedDefinitions.addCapabilityTypes(definitions.getCapabilityTypes());
+            } else if (id instanceof RequirementTypeId) {
+                requestedDefinitions.addRequirementTypes(definitions.getRequirementTypes());
+            } else if (id instanceof PolicyTypeId) {
+                requestedDefinitions.addPolicyTypes(definitions.getPolicyTypes());
+            } else {
+                // we do not need to filter anything
+                return definitions;
+            }
+            
+            return requestedDefinitions.build();
         }
-        return definitions;
     }
 
     /**
