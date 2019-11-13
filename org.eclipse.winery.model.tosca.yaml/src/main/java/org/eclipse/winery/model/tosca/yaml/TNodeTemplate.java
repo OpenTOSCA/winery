@@ -289,7 +289,9 @@ public class TNodeTemplate implements VisitorNode {
         }
 
         public Builder setMetadata(Metadata metadata) {
-            this.metadata = metadata;
+            if (Objects.nonNull(metadata) && !metadata.isEmpty()) {
+                this.metadata = metadata;
+            }
             return this;
         }
 

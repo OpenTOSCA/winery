@@ -78,6 +78,7 @@ import org.eclipse.winery.model.tosca.yaml.TRequirementAssignment;
 import org.eclipse.winery.model.tosca.yaml.TTopologyTemplateDefinition;
 import org.eclipse.winery.model.tosca.yaml.support.Metadata;
 import org.eclipse.winery.model.tosca.yaml.support.TMapRequirementAssignment;
+import org.eclipse.winery.repository.backend.filebased.converter.support.Defaults;
 import org.eclipse.winery.repository.backend.filebased.converter.support.Namespaces;
 import org.eclipse.winery.repository.backend.filebased.converter.support.yaml.AssignmentBuilder;
 import org.eclipse.winery.repository.backend.filebased.converter.support.yaml.TypeConverter;
@@ -554,17 +555,23 @@ public class Y2XConverter {
      * @return TOSCA XML NodeTemplate
      */
     private TNodeTemplate convert(org.eclipse.winery.model.tosca.yaml.TNodeTemplate node, String id) {
-        if (Objects.isNull(node)) return null;
+        if (Objects.isNull(node)) {
+            return null;
+        }
+        
         TNodeTemplate.Builder builder = new TNodeTemplate.Builder(id, node.getType())
             .addDocumentation(node.getDescription())
             .addDocumentation(node.getMetadata())
             .setName(id)
+            .setX(node.getMetadata().getOrDefault(Defaults.X_COORD, "0"))
+            .setY(node.getMetadata().getOrDefault(Defaults.Y_COORD, "0"))
             .setProperties(convertPropertyAssignments(node.getProperties(), getPropertyTypeName(node.getType())))
             .addRequirements(convert(id, node.getRequirements()))
             .addCapabilities(convert(node.getCapabilities()))
             .setDeploymentArtifacts(convertDeploymentArtifacts(node.getArtifacts()));
         TNodeTemplate nodeTemplate = builder.build();
         this.nodeTemplateMap.put(id, nodeTemplate);
+        
         return nodeTemplate;
     }
 

@@ -218,7 +218,15 @@ public class X2YConverter {
 
     @NonNull
     public Map<String, TNodeTemplate> convert(org.eclipse.winery.model.tosca.TNodeTemplate node, @NonNull List<org.eclipse.winery.model.tosca.TRelationshipTemplate> rTs) {
-        if (Objects.isNull(node)) return new LinkedHashMap<>();
+        if (Objects.isNull(node)) {
+            return new LinkedHashMap<>();
+        }
+        Metadata meta = new Metadata();
+        if (Objects.nonNull(node.getX()) && Objects.nonNull(node.getY())) {
+            meta.add(org.eclipse.winery.repository.backend.filebased.converter.support.Defaults.X_COORD, node.getX());
+            meta.add(org.eclipse.winery.repository.backend.filebased.converter.support.Defaults.Y_COORD, node.getY());
+        }           
+            
         return Collections.singletonMap(
             node.getIdFromIdOrNameField(),
             new TNodeTemplate.Builder(
@@ -227,6 +235,7 @@ public class X2YConverter {
                     new NodeTypeId(node.getType())
                 ))
                 .setProperties(convert(node, node.getProperties()))
+                .setMetadata(meta)
                 .setRequirements(convert(node.getRequirements()))
                 .addRequirements(rTs.stream()
                     .filter(entry -> Objects.nonNull(entry.getSourceElement()) && entry.getSourceElement().getRef().equals(node))

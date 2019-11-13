@@ -69,7 +69,7 @@ public abstract class TExtensibleElements implements Serializable {
 
     @XmlAnyAttribute
     @NonNull
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
+    private Map<QName, String> otherAttributes = new HashMap<>();
 
     public TExtensibleElements() {
     }
