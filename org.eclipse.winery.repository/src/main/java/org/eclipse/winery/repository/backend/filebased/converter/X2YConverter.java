@@ -225,8 +225,8 @@ public class X2YConverter {
         if (Objects.nonNull(node.getX()) && Objects.nonNull(node.getY())) {
             meta.add(org.eclipse.winery.repository.backend.filebased.converter.support.Defaults.X_COORD, node.getX());
             meta.add(org.eclipse.winery.repository.backend.filebased.converter.support.Defaults.Y_COORD, node.getY());
-        }           
-            
+        }
+
         return Collections.singletonMap(
             node.getIdFromIdOrNameField(),
             new TNodeTemplate.Builder(

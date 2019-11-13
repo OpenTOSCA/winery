@@ -100,5 +100,4 @@ public class Defaults {
 
     public static final String X_COORD = "x";
     public static final String Y_COORD = "y";
-
 }

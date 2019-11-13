@@ -64,8 +64,8 @@ public class TNodeTemplate extends RelationshipSourceOrTarget implements HasPoli
     @XmlAttribute(name = "minInstances")
     protected Integer minInstances;
     @XmlAttribute(name = "maxInstances")
-    protected String maxInstances;    
-    
+    protected String maxInstances;
+
     public TNodeTemplate() {
         super();
     }
@@ -325,7 +325,7 @@ public class TNodeTemplate extends RelationshipSourceOrTarget implements HasPoli
         private Integer minInstances;
         private String maxInstances;
         private String x;
-        private String y;        
+        private String y;
 
         public Builder(String id, QName type) {
             super(id, type);
@@ -336,7 +336,7 @@ public class TNodeTemplate extends RelationshipSourceOrTarget implements HasPoli
         }
 
         public Builder setRequirements(TNodeTemplate.Requirements requirements) {
-            this.requirements = requirements;            
+            this.requirements = requirements;
             return this;
         }
 

@@ -558,7 +558,7 @@ public class Y2XConverter {
         if (Objects.isNull(node)) {
             return null;
         }
-        
+
         TNodeTemplate.Builder builder = new TNodeTemplate.Builder(id, node.getType())
             .addDocumentation(node.getDescription())
             .addDocumentation(node.getMetadata())
@@ -571,7 +571,7 @@ public class Y2XConverter {
             .setDeploymentArtifacts(convertDeploymentArtifacts(node.getArtifacts()));
         TNodeTemplate nodeTemplate = builder.build();
         this.nodeTemplateMap.put(id, nodeTemplate);
-        
+
         return nodeTemplate;
     }
 
