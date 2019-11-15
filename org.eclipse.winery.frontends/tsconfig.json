@@ -1,25 +1,33 @@
 {
-    "compilerOptions": {
-        "target": "es5",
-        "moduleResolution": "node",
-        "sourceMap": true,
-        "emitDecoratorMetadata": true,
-        "experimentalDecorators": true,
-        "lib": [
-            "es2016",
-            "dom"
-        ],
-        "removeComments": false,
-        "noImplicitAny": true,
-        "suppressImplicitAnyIndexErrors": true,
-        "skipLibCheck": true,
-        "typeRoots": [
-            "node_modules/@types"
-        ],
-        "baseUrl": "."
-    },
-    "exclude": [
-        "node_modules",
-        "dist"
-    ]
+  "compilerOptions": {
+    "target": "es5",
+    "moduleResolution": "node",
+    "sourceMap": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "lib": [
+      "es2016",
+      "dom"
+    ],
+    "removeComments": false,
+    "noImplicitAny": false,
+    "suppressImplicitAnyIndexErrors": true,
+    "skipLibCheck": true,
+    "typeRoots": [
+      "node_modules/@types"
+    ],
+    "baseUrl": ".",
+    "paths": {
+      "topologyrenderer": [
+        "dist/topologyrenderer"
+      ],
+      "topologyrenderer/*": [
+        "dist/topologyrenderer/*"
+      ]
+    }
+  },
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
 }
