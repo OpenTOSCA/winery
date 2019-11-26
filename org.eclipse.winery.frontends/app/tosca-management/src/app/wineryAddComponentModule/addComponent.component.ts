@@ -65,6 +65,8 @@ export class WineryAddComponent {
     newComponentFinalName: string;
     newComponentSelectedType: SelectData = new SelectData();
     newComponentVersion: WineryVersion = new WineryVersion('', 1, 1);
+    
+    useComponentVersion: boolean = true;
 
     validation: AddComponentValidation;
 
@@ -224,7 +226,10 @@ export class WineryAddComponent {
         }
 
         if (!isNullOrUndefined(this.newComponentFinalName) && this.newComponentFinalName.length > 0) {
-            this.newComponentFinalName += WineryVersion.WINERY_NAME_FROM_VERSION_SEPARATOR + this.newComponentVersion.toString();
+            if(this.useComponentVersion) {
+                this.newComponentFinalName += WineryVersion.WINERY_NAME_FROM_VERSION_SEPARATOR + this.newComponentVersion.toString();
+            }
+            
             const duplicate = this.componentData.find((component) => component.name.toLowerCase() === this.newComponentFinalName.toLowerCase());
 
             if (!isNullOrUndefined(duplicate)) {
@@ -243,7 +248,7 @@ export class WineryAddComponent {
             }
         }
 
-        if (this.newComponentVersion.componentVersion) {
+        if (this.newComponentVersion.componentVersion && this.useComponentVersion) {
             this.validation.noUnderscoresAllowed = this.newComponentVersion.componentVersion.includes('_');
             if (this.validation.noUnderscoresAllowed) {
                 return { noUnderscoresAllowed: true };
@@ -251,7 +256,12 @@ export class WineryAddComponent {
         }
 
         this.validation.noVersionProvidedWarning = isNullOrUndefined(this.newComponentVersion.componentVersion)
-            || this.newComponentVersion.componentVersion.length === 0;
+            || this.newComponentVersion.componentVersion.length === 0 || !this.useComponentVersion;
+    }
+    
+    onToggleUseVersion() {
+        this.useComponentVersion = !this.useComponentVersion;
+        this.onInputChange();
     }
 
     private handleComponentData(data: SectionData[]) {

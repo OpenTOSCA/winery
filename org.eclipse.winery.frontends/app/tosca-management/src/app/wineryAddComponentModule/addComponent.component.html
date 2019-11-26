@@ -48,7 +48,13 @@
                             </div>
                         </div>
                         <br>
-                        <div>
+                        <div class="checkbox">
+                            <label>
+                                <input name="versioning_checkbox" [checked]="useComponentVersion" (change)="onToggleUseVersion()" type="checkbox">
+                                Enable Versioning
+                            </label>
+                        </div>
+                        <div *ngIf="useComponentVersion">
                             <div>
                                 <label for="newComponentVersion" class="control-label">Versioning:</label>
                                 <button type="button" class="btn btn-default btn-xs collapsebtn"
