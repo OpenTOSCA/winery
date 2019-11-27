@@ -51,11 +51,11 @@ public class RepositoryFactory {
     }
 
     public static FilebasedRepository createXmlOrYamlRepository(FileBasedRepositoryConfiguration configuration) {
-        if (RepositoryConfigurationObject.RepositoryProvider.FILE.equals(configuration.getRepositoryProvider())) {
+        if (RepositoryConfigurationObject.RepositoryProvider.YAML.equals(configuration.getRepositoryProvider())) {
+            return new YamlRepository(configuration);
+        } else {
             // XML-based repository
             return new FilebasedRepository(configuration);
-        } else {
-            return new YamlRepository(configuration);
         }
     }
 
