@@ -254,7 +254,8 @@ public class Y2XConverter {
                 new PropertyDefinitionKV(property.getKey(),
                     "xsd:" + tPropDef.getType().getLocalPart(),
                     tPropDef.getRequired(),
-                    tPropDef.getDefault() != null ? tPropDef.getDefault().toString() : null
+                    tPropDef.getDefault() != null ? tPropDef.getDefault().toString() : null,
+                    tPropDef.getDescription()
                 )
             );
         }

@@ -130,10 +130,14 @@
                 <input type="checkbox" id="isRequired" #propertyIsRequired style="margin-right: 7px"/>
                 <label class="control-label" for="isRequired">Is required</label>
             </div>
+            <div class="form-group">
+                <label class="control-label" for="defaultValue">Description</label>
+                <input #propertyDescription id="description" class="form-control" type="text"/>
+            </div>
         </form>
     </winery-modal-body>
     <winery-modal-footer
-        (onOk)="addProperty(selectProperty.value, propName.value, propertyIsRequired.checked, propertyDefaultValue.value); addPropertyFrom.reset();"
+        (onOk)="addProperty(selectProperty.value, propName.value, propertyIsRequired.checked, propertyDefaultValue.value, propertyDescription.value); addPropertyFrom.reset();"
         [closeButtonLabel]="'Cancel'"
         [okButtonLabel]="'Add'"
         [disableOkButton]="!addPropertyFrom?.form.valid">

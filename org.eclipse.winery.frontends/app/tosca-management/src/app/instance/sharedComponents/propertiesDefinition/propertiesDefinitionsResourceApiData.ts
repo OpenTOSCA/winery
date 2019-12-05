@@ -24,6 +24,7 @@ export class PropertiesDefinitionKVElement {
     type: string = null;
     required: boolean;
     defaultValue: string;
+    description: string;
 }
 
 export class PropertiesDefinition {

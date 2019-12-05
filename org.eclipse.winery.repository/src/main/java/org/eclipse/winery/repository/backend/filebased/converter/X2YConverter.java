@@ -290,6 +290,7 @@ public class X2YConverter {
                 entry -> new TPropertyDefinition.Builder(convertType(entry.getType()))
                     .setRequired(entry.isRequired())
                     .setDefault(entry.getDefaultValue())
+                    .setDescription(entry.getDescription())
                     .build()
             ));
     }

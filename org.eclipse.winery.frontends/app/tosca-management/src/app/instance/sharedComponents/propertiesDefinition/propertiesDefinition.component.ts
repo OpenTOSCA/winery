@@ -50,6 +50,7 @@ export class PropertiesDefinitionComponent implements OnInit {
         { title: 'Type', name: 'type', sort: true },
         { title: 'Is Required', name: 'required' },
         { title: 'Default Value', name: 'defaultValue' },
+        { title: 'Description', name: 'description'}
     ];
     newProperty: PropertiesDefinitionKVElement = new PropertiesDefinitionKVElement();
 
@@ -227,13 +228,17 @@ export class PropertiesDefinitionComponent implements OnInit {
      * Adds a property to the table and model
      * @param propType
      * @param propName
+     * @param required
+     * @param defaultValue
+     * @param description
      */
-    addProperty(propType: string, propName: string, required: boolean, defaultValue: string) {
+    addProperty(propType: string, propName: string, required: boolean, defaultValue: string, description: string) {
         this.resourceApiData.winerysPropertiesDefinition.propertyDefinitionKVList.push({
             key: propName,
             type: propType,
             defaultValue: defaultValue,
             required: required,
+            description: description,
         });
         this.addModal.hide();
     }
