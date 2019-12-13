@@ -67,6 +67,7 @@ import org.eclipse.winery.repository.rest.resources.servicetemplates.ServiceTemp
 import org.eclipse.winery.repository.rest.resources.testrefinementmodels.TestRefinementModelsResource;
 import org.eclipse.winery.repository.rest.resources.threats.ThreatsResource;
 import org.eclipse.winery.repository.rest.resources.yaml.YAMLParserResource;
+import org.eclipse.winery.repository.rest.resources.yaml.DataTypesResource;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -181,6 +182,11 @@ public class MainResource {
     @Path("yaml/")
     public YAMLParserResource yamlParser() {
         return new YAMLParserResource();
+    }
+    
+    @Path("datatypes/")
+    public DataTypesResource datatypes() {
+        return new DataTypesResource();
     }
 
     @Path("threats")
