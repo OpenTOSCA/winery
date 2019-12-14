@@ -21,7 +21,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.eclipse.winery.common.ids.definitions.PatternRefinementModelId;
+import org.eclipse.winery.model.ids.definitions.PatternRefinementModelId;
 import org.eclipse.winery.model.adaptation.substitution.SubstitutionUtils;
 import org.eclipse.winery.model.adaptation.substitution.refinement.AbstractRefinement;
 import org.eclipse.winery.model.adaptation.substitution.refinement.DefaultRefinementChooser;

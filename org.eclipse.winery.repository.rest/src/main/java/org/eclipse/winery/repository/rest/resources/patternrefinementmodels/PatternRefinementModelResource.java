@@ -20,7 +20,7 @@ import java.util.Objects;
 
 import javax.ws.rs.Path;
 
-import org.eclipse.winery.common.ids.definitions.DefinitionsChildId;
+import org.eclipse.winery.model.ids.definitions.DefinitionsChildId;
 import org.eclipse.winery.model.tosca.AttributeMapping;
 import org.eclipse.winery.model.tosca.TPatternRefinementModel;
 import org.eclipse.winery.model.tosca.TStayMapping;

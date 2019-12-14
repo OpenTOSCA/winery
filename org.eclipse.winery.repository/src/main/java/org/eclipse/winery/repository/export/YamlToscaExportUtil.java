@@ -23,11 +23,10 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import org.eclipse.winery.common.RepositoryFileReference;
-import org.eclipse.winery.common.ids.definitions.DefinitionsChildId;
-import org.eclipse.winery.common.ids.definitions.NodeTypeId;
-import org.eclipse.winery.common.ids.definitions.RelationshipTypeId;
-import org.eclipse.winery.common.ids.definitions.ServiceTemplateId;
+import org.eclipse.winery.model.ids.definitions.DefinitionsChildId;
+import org.eclipse.winery.model.ids.definitions.NodeTypeId;
+import org.eclipse.winery.model.ids.definitions.RelationshipTypeId;
+import org.eclipse.winery.model.ids.definitions.ServiceTemplateId;
 import org.eclipse.winery.model.tosca.Definitions;
 import org.eclipse.winery.model.tosca.TArtifacts;
 import org.eclipse.winery.model.tosca.TImport;
@@ -36,6 +35,7 @@ import org.eclipse.winery.model.tosca.TNodeType;
 import org.eclipse.winery.model.tosca.TServiceTemplate;
 import org.eclipse.winery.repository.backend.BackendUtils;
 import org.eclipse.winery.repository.backend.IRepository;
+import org.eclipse.winery.repository.common.RepositoryFileReference;
 import org.eclipse.winery.repository.exceptions.RepositoryCorruptException;
 import org.eclipse.winery.repository.export.entries.YAMLDefinitionsBasedCsarEntry;
 
