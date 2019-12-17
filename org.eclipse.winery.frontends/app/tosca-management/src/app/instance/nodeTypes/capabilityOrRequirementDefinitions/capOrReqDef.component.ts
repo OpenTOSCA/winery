@@ -22,12 +22,14 @@ import { WineryTableColumn } from '../../../wineryTableModule/wineryTable.compon
 import { TypeWithShortName } from '../../admin/typesWithShortName/typeWithShortName.service';
 import { SelectData } from '../../../model/selectData';
 import { WineryNotificationService } from '../../../wineryNotificationModule/wineryNotification.service';
-import { ModalDirective } from 'ngx-bootstrap';
+import { BsModalRef, BsModalService, ModalDirective } from 'ngx-bootstrap';
 import { SpinnerWithInfinityComponent } from '../../../winerySpinnerWithInfinityModule/winerySpinnerWithInfinity.component';
 import { InstanceService } from '../../instance.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ValidSourceTypesApiData } from '../../capabilityTypes/validSourceTypes/validSourceTypesApiData';
 import { ValidSourceTypesService } from '../../capabilityTypes/validSourceTypes/validSourceTypes.service';
+import { QNameApiData } from '../../../model/qNameApiData';
+import { QName } from '../../../model/qName';
 
 @Component({
     selector: 'winery-instance-cap-or-req-definitions',
@@ -80,22 +82,27 @@ export class CapOrReqDefComponent implements OnInit {
     activeCapOrRegDefinition: CapabilityOrRequirementDefinition;
     activeConstraint: Constraint;
     constraintTypes: Array<TypeWithShortName> = null;
+    addModalRef: BsModalRef;
 
     @Input() types = '';
     addCapOrRegModalTitle = '';
 
     @ViewChild('confirmDeleteModal') confirmDeleteModal: ModalDirective;
     @ViewChild('addModal') addModal: ModalDirective;
+    @ViewChild('addValidNodeTypeModal') addValidNodeTypeModal: ModalDirective;
     @ViewChild('editConModal') editConModal: ModalDirective;
     @ViewChild('editNewConModal') editNewConModal: ModalDirective;
     @ViewChild('lowerBoundSpinner') lowerBoundSpinner: SpinnerWithInfinityComponent;
     @ViewChild('upperBoundSpinner') upperBoundSpinner: SpinnerWithInfinityComponent;
     @ViewChild('editor') editor: any;
+    private currentNodeTypes: SelectData[];
+    private currentSelectedItem: QNameApiData;
 
     constructor(public sharedData: InstanceService,
                 private service: CapabilityOrRequirementDefinitionsService,
                 private validSourceTypesService: ValidSourceTypesService,
                 private notify: WineryNotificationService,
+                private modalService: BsModalService,
                 private router: Router) {
         this.capOrReqDefToBeAdded = new CapOrReqDefinition();
 
@@ -132,7 +139,6 @@ export class CapOrReqDefComponent implements OnInit {
 
     getConstraintsOfType(value: string) {
         this.validSourceTypesService.getValidSourceTypesForCapabilityDefinition(value.replace('{', '/').replace('}', '/'))
-        //this.validSourceTypesService.getValidSourceTypesForCapabilityDefinition(value.replace('[\}|\{]', '/'))
             .subscribe(
                 (current) => {
                     this.validSourceTypes = current;
@@ -534,4 +540,40 @@ export class CapOrReqDefComponent implements OnInit {
 
     // endregion
 
+    onAddSourceTypeClick() {
+        this.addModalRef = this.modalService.show(this.addValidNodeTypeModal);
+        this.validSourceTypesService.getAvailableValidSourceTypes().subscribe(available => this.handleNodeTypesData(available));
+
+    }
+
+    handleNodeTypesData(nodeTypes: SelectData[]) {
+        this.currentNodeTypes = nodeTypes;
+    }
+
+    onRemoveClicked(selected: QNameApiData) {
+        if (selected) {
+            this.validSourceTypes.nodes = this.validSourceTypes.nodes.filter(item => item !== selected);
+            this.validSourceTypesService.saveValidSourceTypesForCapabilityDefinition(this.capOrReqDefToBeAdded.type.replace('{', '/')
+                .replace('}', '/'), this.validSourceTypes).subscribe(() => {
+                    this.notify.success('Saved changes.');
+                },
+                error => this.handleError(error));
+        }
+    }
+
+    onAddValidSourceType() {
+        this.validSourceTypes.nodes.push(this.currentSelectedItem);
+        this.validSourceTypesService.saveValidSourceTypesForCapabilityDefinition(this.capOrReqDefToBeAdded.type.replace('{', '/')
+            .replace('}', '/'), this.validSourceTypes).subscribe(() => {
+            this.notify.success('Saved changes.');
+        });
+    }
+
+    onSelectedNodeTypeChanged(value: SelectData) {
+        if (value.id !== null && value.id !== undefined) {
+            this.currentSelectedItem = QNameApiData.fromQName(QName.stringToQName(value.id));
+        } else {
+            this.currentSelectedItem = null;
+        }
+    }
 }
