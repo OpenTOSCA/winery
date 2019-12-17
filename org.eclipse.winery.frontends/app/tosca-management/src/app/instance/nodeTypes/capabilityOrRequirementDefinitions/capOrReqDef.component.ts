@@ -11,50 +11,52 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR Apache-2.0
  *******************************************************************************/
-import {Component, Input, OnInit, ViewChild} from '@angular/core';
-import {isNullOrUndefined} from 'util';
-import {CapabilityOrRequirementDefinitionsService} from './capOrReqDef.service';
-import {
-    CapabilityOrRequirementDefinition,
-    CapOrRegDefinitionsResourceApiData,
-    CapOrReqDefinition,
-    Constraint
-} from './capOrReqDefResourceApiData';
-import {CapOrRegDefinitionsTableData} from './CapOrReqDefTableData';
-import {NameAndQNameApiData, NameAndQNameApiDataList} from '../../../wineryQNameSelector/wineryNameAndQNameApiData';
-import {Router} from '@angular/router';
-import {WineryTableColumn} from '../../../wineryTableModule/wineryTable.component';
-import {TypeWithShortName} from '../../admin/typesWithShortName/typeWithShortName.service';
-import {SelectData} from '../../../model/selectData';
-import {WineryNotificationService} from '../../../wineryNotificationModule/wineryNotification.service';
-import {ModalDirective} from 'ngx-bootstrap';
-import {SpinnerWithInfinityComponent} from '../../../winerySpinnerWithInfinityModule/winerySpinnerWithInfinity.component';
-import {InstanceService} from '../../instance.service';
+import { Component, Input, OnInit, ViewChild } from '@angular/core';
+import { isNullOrUndefined } from 'util';
+import { CapabilityOrRequirementDefinitionsService } from './capOrReqDef.service';
+import { CapabilityOrRequirementDefinition, CapOrRegDefinitionsResourceApiData, CapOrReqDefinition, Constraint } from './capOrReqDefResourceApiData';
+import { CapOrRegDefinitionsTableData } from './CapOrReqDefTableData';
+import { NameAndQNameApiData, NameAndQNameApiDataList } from '../../../wineryQNameSelector/wineryNameAndQNameApiData';
+import { Router } from '@angular/router';
+import { WineryTableColumn } from '../../../wineryTableModule/wineryTable.component';
+import { TypeWithShortName } from '../../admin/typesWithShortName/typeWithShortName.service';
+import { SelectData } from '../../../model/selectData';
+import { WineryNotificationService } from '../../../wineryNotificationModule/wineryNotification.service';
+import { ModalDirective } from 'ngx-bootstrap';
+import { SpinnerWithInfinityComponent } from '../../../winerySpinnerWithInfinityModule/winerySpinnerWithInfinity.component';
+import { InstanceService } from '../../instance.service';
 import { HttpErrorResponse } from '@angular/common/http';
+import { ValidSourceTypesApiData } from '../../capabilityTypes/validSourceTypes/validSourceTypesApiData';
+import { ValidSourceTypesService } from '../../capabilityTypes/validSourceTypes/validSourceTypes.service';
 
 @Component({
     selector: 'winery-instance-cap-or-req-definitions',
     templateUrl: 'capOrReqDef.html',
     styleUrls: ['capOrReqDef.style.css'],
     providers: [
-        CapabilityOrRequirementDefinitionsService
+        CapabilityOrRequirementDefinitionsService, ValidSourceTypesService
     ]
 })
 export class CapOrReqDefComponent implements OnInit {
-
+    validSourceTypes: ValidSourceTypesApiData = new ValidSourceTypesApiData();
     columns: Array<WineryTableColumn> = [
-        {title: 'Name', name: 'name'},
-        {title: 'Type', name: 'type'},
-        {title: 'Lower Bound', name: 'lowerBound'},
-        {title: 'Upper Bound', name: 'upperBound'},
-        {title: 'Constraints', name: 'constraints', sort: false},
+        { title: 'Name', name: 'name' },
+        { title: 'Type', name: 'type' },
+        { title: 'Lower Bound', name: 'lowerBound' },
+        { title: 'Upper Bound', name: 'upperBound' },
+        { title: 'Constraints', name: 'constraints', sort: false },
+    ];
+
+    addCapabilityColumns: Array<WineryTableColumn> = [
+        { title: 'Name', name: 'localname', sort: true },
+        { title: 'Namespace', name: 'namespace', sort: true }
     ];
 
     elementToRemove: CapOrRegDefinitionsTableData = null;
     loading = true;
     resourceApiData: CapOrRegDefinitionsResourceApiData = null;
     tableData: Array<CapOrRegDefinitionsTableData> = [];
-    capabilityTypesList: NameAndQNameApiDataList = {classes: null};
+    capabilityTypesList: NameAndQNameApiDataList = { classes: null };
     capOrReqDefToBeAdded: CapOrReqDefinition = null;
     noneSelected = true;
 
@@ -92,6 +94,7 @@ export class CapOrReqDefComponent implements OnInit {
 
     constructor(public sharedData: InstanceService,
                 private service: CapabilityOrRequirementDefinitionsService,
+                private validSourceTypesService: ValidSourceTypesService,
                 private notify: WineryNotificationService,
                 private router: Router) {
         this.capOrReqDefToBeAdded = new CapOrReqDefinition();
@@ -123,7 +126,19 @@ export class CapOrReqDefComponent implements OnInit {
 
     onSelectedValueChanged(value: string) {
         this.capOrReqDefToBeAdded.type = value;
+        this.getConstraintsOfType(value);
         this.noneSelected = this.capOrReqDefToBeAdded.type === '(none)';
+    }
+
+    getConstraintsOfType(value: string) {
+        this.validSourceTypesService.getValidSourceTypesForCapabilityDefinition(value.replace('{', '/').replace('}', '/'))
+        //this.validSourceTypesService.getValidSourceTypesForCapabilityDefinition(value.replace('[\}|\{]', '/'))
+            .subscribe(
+                (current) => {
+                    this.validSourceTypes = current;
+                },
+                error => this.handleError(error)
+            );
     }
 
     /**
@@ -231,6 +246,7 @@ export class CapOrReqDefComponent implements OnInit {
      * handler for clicks on the add button
      */
     onAddClick() {
+        this.capOrReqDefToBeAdded = new CapOrReqDefinition();
         this.addModal.show();
     }
 

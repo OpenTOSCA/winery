@@ -73,7 +73,37 @@
                 <winery-spinner-with-infinity #upperBoundSpinner [label]="'Upper Bound'"
                                               [withInfinity]="true"></winery-spinner-with-infinity>
             </div>
+            <br>
+            <div *ngIf="this.capOrReqDefToBeAdded.type && this.capOrReqDefToBeAdded.type != 'none'">
+                <winery-table title="Valid Source Types"
+                              [columns]="addCapabilityColumns"
+                              [data]="validSourceTypes?.nodes"
+                              disableFiltering="true">
+                </winery-table>
+            </div>
         </form>
+
+        <!--<table *ngIf="this.capOrReqDefToBeAdded.type && this.capOrReqDefToBeAdded.type != 'none'"
+               class="toscatype-table" border="1" style="">
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>Namespace</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let element of validSourceTypes?.nodes">
+                <td class="toscatype-table-td">
+                    <div #typename>{{ element.name }}</div>
+                    <span class="cell-comment">{{ element.name }}</span>
+                </td>
+                <td class="toscatype-table-td">
+                    <div #typenamespace>{{ element.namespace}}</div>
+                    <span class="cell-comment">{{ element.namespace }}</span>
+                </td>
+            </tr>
+            </tbody>
+        </table>-->
     </winery-modal-body>
     <winery-modal-footer [showDefaultButtons]="false">
         <button type="button" class="btn btn-default" data-dismiss="modal" (click)="addModal.hide()">Cancel</button>
