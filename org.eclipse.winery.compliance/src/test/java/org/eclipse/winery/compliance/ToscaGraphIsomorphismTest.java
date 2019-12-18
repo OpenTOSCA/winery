@@ -86,7 +86,7 @@ public class ToscaGraphIsomorphismTest {
     private final IRepository repository = initializeRepository();
 
     private IRepository initializeRepository() {
-        Path path = Paths.get(System.getProperty("java.io.tmpdir")).resolve("test-isomorphism-repository");
+        Path path = Paths.get(System.getProperty("java.io.tmpdir")).resolve("test-repository");
         return RepositoryFactory.getRepository(new FileBasedRepositoryConfiguration(path));
     }
 
