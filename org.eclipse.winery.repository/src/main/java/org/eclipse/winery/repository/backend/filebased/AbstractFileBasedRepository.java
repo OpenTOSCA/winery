@@ -257,13 +257,7 @@ public abstract class AbstractFileBasedRepository implements IRepository {
     @Override
     public void doClear() {
         try {
-            DirectoryStream.Filter<Path> noGitDirFilter = entry -> !(entry.getFileName().toString().equals(".git"));
-
-            try (DirectoryStream<Path> ds = Files.newDirectoryStream(this.getRepositoryRoot(), noGitDirFilter)) {
-                for (Path p : ds) {
-                    FileUtils.forceDelete(p);
-                }
-            }
+            org.apache.commons.io.FileUtils.deleteDirectory(this.getRepositoryRoot().toFile());
         } catch (IOException e) {
             LOGGER.error(e.getMessage());
         }

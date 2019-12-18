@@ -54,7 +54,7 @@ public class MultiRepositoryManagerTest {
     @BeforeAll
     static void getRepositoryRootBeforeTestAndSetUpTestRoot() {
         workspaceRepositoryRoot = Environments.getRepositoryConfig().getRepositoryRoot();
-        Path testRepositoryRoot = Paths.get(System.getProperty("java.io.tmpdir")).resolve("test-repository");
+        Path testRepositoryRoot = Paths.get(System.getProperty("java.io.tmpdir")).resolve("test-multi-repository");
         if (!Files.exists(testRepositoryRoot)) {
             try {
                 Files.createDirectory(testRepositoryRoot);
@@ -73,15 +73,6 @@ public class MultiRepositoryManagerTest {
 
     @BeforeEach
     void cleanDirectory() {
-        /*
-        if (RepositoryFactory.getRepository() instanceof MultiRepository) {
-            for (IRepository repo : ((MultiRepository) RepositoryFactory.getRepository()).getRepositories()) {
-                if (repo instanceof GitBasedRepository) {
-                    ((GitBasedRepository) repo).closeGit();
-                }
-            }
-        }
-         */
         try {
             FileUtils.cleanDirectory(new File(Environments.getRepositoryConfig().getRepositoryRoot()));
         } catch (IOException e) {

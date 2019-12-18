@@ -27,6 +27,7 @@ import org.eclipse.winery.repository.backend.BackendUtils;
 import org.eclipse.winery.repository.backend.IRepository;
 import org.eclipse.winery.repository.backend.RepositoryFactory;
 
+import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.ResetCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -64,6 +65,7 @@ public abstract class TestWithGitBackedRepository {
 
             FileRepositoryBuilder builder = new FileRepositoryBuilder();
             if (!Files.exists(repositoryPath.resolve(".git"))) {
+                FileUtils.cleanDirectory(repositoryPath.toFile());
                 this.git = Git.cloneRepository()
                     .setURI("https://github.com/winery/test-repository.git")
                     .setBare(false)
