@@ -26,7 +26,8 @@
     <a class="btn btn-default" [routerLink]="['/artifacttemplates']">Artifact Templates</a>
     <h4> {{!configurationService.isYaml() ? 'Requirements and ' : ''}} Capabilities</h4>
     <!-- todo use the directive instead of the service-->
-    <a class="btn btn-default right-margin-10" [routerLink]="['/requirementtypes']" *ngIf="!configurationService.isYaml()">
+    <a class="btn btn-default right-margin-10" [routerLink]="['/requirementtypes']"
+       *ngIf="!configurationService.isYaml()">
         Requirement Types
     </a>
     <a class="btn btn-default" [routerLink]="['/capabilitytypes']">Capability Types</a>

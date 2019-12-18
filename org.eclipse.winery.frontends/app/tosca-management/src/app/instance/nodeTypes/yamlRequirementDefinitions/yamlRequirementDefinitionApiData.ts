@@ -31,6 +31,7 @@ export class YamlRequirementDefinitionPostApiData {
     relationship: string = null;
     lowerBound: string = null;
     upperBound: string = null;
+
     static fromData(data: YamlRequirementDefinitionApiData): YamlRequirementDefinitionPostApiData {
         const result = new YamlRequirementDefinitionPostApiData();
         result.capability = data.capability;

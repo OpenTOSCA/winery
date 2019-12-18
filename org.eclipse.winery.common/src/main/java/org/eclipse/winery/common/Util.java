@@ -15,12 +15,16 @@
 package org.eclipse.winery.common;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Objects;
 import java.util.SortedMap;
@@ -69,7 +73,9 @@ import org.eclipse.winery.model.tosca.TEntityType;
 import org.eclipse.winery.model.tosca.TExtensibleElements;
 import org.eclipse.winery.model.tosca.constants.Namespaces;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.SystemUtils;
 import org.apache.taglibs.standard.functions.Functions;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
@@ -274,7 +280,7 @@ public class Util {
         int dotIndex = res.lastIndexOf('.');
         assert (dotIndex >= 0);
         return res.substring(dotIndex + 1, res.length() - "Id".length());
-}
+    }
 
     public static String getTypeForElementId(Class<? extends ToscaElementId> idClass) {
         return Util.getEverythingBetweenTheLastDotAndBeforeId(idClass);
@@ -319,7 +325,7 @@ public class Util {
         res = res + "/";
         return res;
     }
-    
+
     public static String getFolderName(Class<? extends DefinitionsChildId> idClass) {
         String res = Util.getTypeForComponentId(idClass);
         res = res.toLowerCase();
@@ -330,8 +336,8 @@ public class Util {
     /**
      * Just calls @link{qname2href}
      * <p>
-     * Introduced because of JSP error "The method qname2href(String, Class&lt;? extends TExtensibleElements&gt;, QName) in
-     * the type Util is not applicable for the arguments (String, Class&lt;TNodeType&gt;, QName, String)"
+     * Introduced because of JSP error "The method qname2href(String, Class&lt;? extends TExtensibleElements&gt;, QName)
+     * in the type Util is not applicable for the arguments (String, Class&lt;TNodeType&gt;, QName, String)"
      */
     public static String qname2hrefWithName(String repositoryUiUrl, Class<? extends TExtensibleElements> element, QName qname, String name) {
         return Util.qname2href(repositoryUiUrl, element, qname, name);
@@ -457,7 +463,8 @@ public class Util {
     }
 
     /**
-     * Method similar to @see org.eclipse.winery.repository.Utils#getXMLAsString(java.lang.Class, java.lang.Object, boolean)}.
+     * Method similar to @see org.eclipse.winery.repository.Utils#getXMLAsString(java.lang.Class, java.lang.Object,
+     * boolean)}.
      * <p>
      * Differences: <ul> <li>XML processing instruction is not included in the header</li> <li>JAXBcontext is created at
      * each call</li> </ul>
@@ -517,7 +524,8 @@ public class Util {
      * Determines whether the instance belonging to the given id supports the "name" attribute. This cannot be done
      * using the super class as the TOSCA specification treats that differently in the case of EntityTemplates
      * <p>
-     * NOTE: The respective subclasses of AbstractComponentInstanceResource have to implement @see org.eclipse.winery.repository.resources.IHasName
+     * NOTE: The respective subclasses of AbstractComponentInstanceResource have to implement @see
+     * org.eclipse.winery.repository.resources.IHasName
      *
      * @param idClass the class of the to test
      * @return true if the TOSCA model class belonging to the given id supports the method "getName()" in addition to
@@ -628,8 +636,8 @@ public class Util {
      * <p>
      * This function should be consistent with org.eclipse.winery.common.Util.cleanName(String)
      * <p>
-     * TODO: This method seems to be equal to org.eclipse.winery.repository.Utils.createXMLidAsString(String).
-     * These methods should be merged.
+     * TODO: This method seems to be equal to org.eclipse.winery.repository.Utils.createXMLidAsString(String). These
+     * methods should be merged.
      */
     public static String makeNCName(String text) {
         if (StringUtils.isEmpty(text)) {
@@ -682,18 +690,47 @@ public class Util {
         }
     }
 
-    /**
-     * Bridge to client.getType(). Just calls client getType(), used by functions.tld.
-     * <p>
-     * We suppress compiler warnings as JSP 2.0 do not offer support for generics, but we're using JSP 2.0...
-     *
-     * @param client the repository client to use
-     * @param qname  the QName to resolve
-     * @param clazz  the class the QName is describing
-     * @return {@inheritDoc}
-     */
-    @SuppressWarnings( {"rawtypes", "unchecked"})
-    public static org.eclipse.winery.model.tosca.TEntityType getType(org.eclipse.winery.common.interfaces.IWineryRepository client, javax.xml.namespace.QName qname, java.lang.Class clazz) {
-        return client.getType(qname, clazz);
+    public static Path determineAndCreateRepositoryPath() {
+        Path repositoryPath;
+        if (SystemUtils.IS_OS_WINDOWS) {
+            if (Files.exists(Constants.GLOBAL_REPO_PATH_WINDOWS)) {
+                repositoryPath = Constants.GLOBAL_REPO_PATH_WINDOWS;
+            } else {
+                repositoryPath = createDefaultRepositoryPath();
+            }
+        } else {
+            repositoryPath = createDefaultRepositoryPath();
+        }
+        return repositoryPath;
+    }
+
+    private static Path createDefaultRepositoryPath() {
+        File repo = null;
+        boolean operationalFileSystemAccess;
+        try {
+            repo = new File(FileUtils.getUserDirectory(), Constants.DEFAULT_REPO_NAME);
+            operationalFileSystemAccess = true;
+        } catch (NullPointerException e) {
+            // it seems, we run at a system, where we do not have any filesystem
+            // access
+            operationalFileSystemAccess = false;
+        }
+
+        // operationalFileSystemAccess = false;
+
+        Path repositoryPath;
+        if (operationalFileSystemAccess) {
+            try {
+                org.apache.commons.io.FileUtils.forceMkdir(repo);
+            } catch (IOException e) {
+                LOGGER.debug("Error while creating directory.", e);
+            }
+            repositoryPath = repo.toPath();
+        } else {
+            // we do not have access to the file system
+            throw new IllegalStateException("No write access to file system");
+        }
+
+        return repositoryPath;
     }
 }

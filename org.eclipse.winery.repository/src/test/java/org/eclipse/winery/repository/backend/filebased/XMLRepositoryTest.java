@@ -13,23 +13,30 @@
  *******************************************************************************/
 package org.eclipse.winery.repository.backend.filebased;
 
-import org.eclipse.winery.common.RepositoryFileReference;
-import org.eclipse.winery.common.ids.definitions.*;
-import org.eclipse.winery.common.ids.definitions.imports.XSDImportId;
-import org.eclipse.winery.model.tosca.TArtifactTemplate;
-import org.eclipse.winery.model.tosca.TEntityType;
-import org.eclipse.winery.repository.TestWithGitBackedRepository;
-import org.eclipse.winery.repository.backend.BackendUtils;
-import org.eclipse.winery.repository.datatypes.ids.elements.ArtifactTemplateFilesDirectoryId;
-import org.eclipse.winery.repository.datatypes.ids.elements.ArtifactTemplateSourceDirectoryId;
-import org.eclipse.winery.repository.datatypes.ids.elements.DirectoryId;
-
-import javax.xml.namespace.QName;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.SortedSet;
+
+import javax.xml.namespace.QName;
+
+import org.eclipse.winery.common.RepositoryFileReference;
+import org.eclipse.winery.common.ids.definitions.ArtifactTemplateId;
+import org.eclipse.winery.common.ids.definitions.ArtifactTypeId;
+import org.eclipse.winery.common.ids.definitions.CapabilityTypeId;
+import org.eclipse.winery.common.ids.definitions.DefinitionsChildId;
+import org.eclipse.winery.common.ids.definitions.NodeTypeId;
+import org.eclipse.winery.common.ids.definitions.RequirementTypeId;
+import org.eclipse.winery.common.ids.definitions.imports.XSDImportId;
+import org.eclipse.winery.model.tosca.TArtifactTemplate;
+import org.eclipse.winery.model.tosca.TEntityType;
+import org.eclipse.winery.repository.TestWithGitBackedRepository;
+import org.eclipse.winery.repository.backend.BackendUtils;
+import org.eclipse.winery.repository.backend.IRepository;
+import org.eclipse.winery.repository.datatypes.ids.elements.ArtifactTemplateFilesDirectoryId;
+import org.eclipse.winery.repository.datatypes.ids.elements.ArtifactTemplateSourceDirectoryId;
+import org.eclipse.winery.repository.datatypes.ids.elements.DirectoryId;
 
 import org.junit.jupiter.api.Test;
 
@@ -38,7 +45,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class FilebasedRepositoryTest extends TestWithGitBackedRepository {
+public class XMLRepositoryTest extends TestWithGitBackedRepository {
 
     @Test
     public void getAllDefinitionsChildIds() throws Exception {
@@ -70,7 +77,7 @@ public class FilebasedRepositoryTest extends TestWithGitBackedRepository {
         ArtifactTemplateSourceDirectoryId artifactTemplateSourceDirectoryId = new ArtifactTemplateSourceDirectoryId(artifactTemplateId);
         final Path subDirectories = Paths.get("dir1", "dir2", "dir3");
         RepositoryFileReference ref = new RepositoryFileReference(artifactTemplateSourceDirectoryId, subDirectories, "test.txt");
-        final FilebasedRepository repository = (FilebasedRepository) this.repository;
+        final IRepository repository = this.repository;
 
         final Path expected = Paths.get("artifacttemplates", "http%3A%2F%2Fwww.example.org", "at", "source", "dir1", "dir2", "dir3", "test.txt");
         assertEquals(expected, repository.getRepositoryRoot().relativize(repository.ref2AbsolutePath(ref)));

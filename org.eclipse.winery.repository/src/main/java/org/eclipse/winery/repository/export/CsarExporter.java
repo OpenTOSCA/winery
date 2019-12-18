@@ -60,7 +60,6 @@ import org.eclipse.winery.model.tosca.TArtifactReference;
 import org.eclipse.winery.model.tosca.TArtifactTemplate;
 import org.eclipse.winery.repository.GitInfo;
 import org.eclipse.winery.repository.backend.BackendUtils;
-import org.eclipse.winery.repository.backend.IGenericRepository;
 import org.eclipse.winery.repository.backend.IRepository;
 import org.eclipse.winery.repository.backend.SelfServiceMetaDataUtils;
 import org.eclipse.winery.repository.backend.constants.MediaTypes;
@@ -106,17 +105,17 @@ public class CsarExporter {
     /**
      * Returns a unique name for the given definitions to be used as filename
      */
-    private static String getDefinitionsName(IGenericRepository repository, DefinitionsChildId id) {
+    private static String getDefinitionsName(IRepository repository, DefinitionsChildId id) {
         // the prefix is globally unique and the id locally in a namespace
         // therefore a concatenation of both is also unique
         return repository.getNamespaceManager().getPrefix(id.getNamespace()) + "__" + id.getXmlId().getEncoded();
     }
 
-    public static String getDefinitionsFileName(IGenericRepository repository, DefinitionsChildId id) {
+    public static String getDefinitionsFileName(IRepository repository, DefinitionsChildId id) {
         return CsarExporter.getDefinitionsName(repository, id) + Constants.SUFFIX_TOSCA_DEFINITIONS;
     }
 
-    private static String getDefinitionsPathInsideCSAR(IGenericRepository repository, DefinitionsChildId id) {
+    private static String getDefinitionsPathInsideCSAR(IRepository repository, DefinitionsChildId id) {
         return CsarExporter.DEFINITONS_PATH_PREFIX + CsarExporter.getDefinitionsFileName(repository, id);
     }
 

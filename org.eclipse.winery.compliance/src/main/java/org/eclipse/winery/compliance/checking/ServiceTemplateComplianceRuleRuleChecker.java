@@ -25,7 +25,7 @@ import org.eclipse.winery.model.tosca.TComplianceRule;
 import org.eclipse.winery.model.tosca.TServiceTemplate;
 import org.eclipse.winery.repository.backend.IRepository;
 import org.eclipse.winery.repository.backend.RepositoryFactory;
-import org.eclipse.winery.repository.backend.filebased.FilebasedRepository;
+import org.eclipse.winery.repository.backend.filebased.AbstractFileBasedRepository;
 import org.eclipse.winery.topologygraph.model.ToscaNode;
 
 import org.eclipse.jdt.annotation.NonNull;
@@ -94,7 +94,7 @@ public class ServiceTemplateComplianceRuleRuleChecker {
             ).collect(Collectors.toList());
 
         for (Namespace space : relevantNamespaces) {
-            complianceRules.addAll((Collection<? extends ComplianceRuleId>) ((FilebasedRepository) RepositoryFactory.getRepository()).getAllIdsInNamespace(ComplianceRuleId.class, space));
+            complianceRules.addAll((Collection<? extends ComplianceRuleId>) ((AbstractFileBasedRepository) RepositoryFactory.getRepository()).getAllIdsInNamespace(ComplianceRuleId.class, space));
         }
         return complianceRules;
     }

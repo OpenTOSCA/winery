@@ -19,7 +19,7 @@ import javax.servlet.DispatcherType;
 
 import org.eclipse.winery.repository.backend.IRepository;
 import org.eclipse.winery.repository.backend.RepositoryFactory;
-import org.eclipse.winery.repository.backend.filebased.FilebasedRepository;
+import org.eclipse.winery.repository.backend.filebased.AbstractFileBasedRepository;
 import org.eclipse.winery.repository.rest.Prefs;
 
 import org.eclipse.jetty.server.Server;
@@ -83,8 +83,8 @@ public class WineryUsingHttpServer {
         server.start();
 
         IRepository repository = RepositoryFactory.getRepository();
-        if (repository instanceof FilebasedRepository) {
-            LOGGER.debug("Using path " + ((FilebasedRepository) repository).getRepositoryRoot());
+        if (repository instanceof AbstractFileBasedRepository) {
+            LOGGER.debug("Using path " + repository.getRepositoryRoot());
         } else {
             LOGGER.debug("Repository is not filebased");
         }

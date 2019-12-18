@@ -50,7 +50,7 @@ import org.eclipse.winery.model.tosca.TServiceTemplate;
 import org.eclipse.winery.model.tosca.TTopologyTemplate;
 import org.eclipse.winery.repository.backend.BackendUtils;
 import org.eclipse.winery.repository.backend.RepositoryFactory;
-import org.eclipse.winery.repository.backend.filebased.FilebasedRepository;
+import org.eclipse.winery.repository.backend.filebased.AbstractFileBasedRepository;
 import org.eclipse.winery.topologygraph.matching.ToscaIsomorphismMatcher;
 import org.eclipse.winery.topologygraph.model.ToscaEdge;
 import org.eclipse.winery.topologygraph.model.ToscaGraph;
@@ -83,11 +83,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ToscaGraphIsomorphismTest {
 
-    private final FilebasedRepository repository = initializeRepository();
+    private final AbstractFileBasedRepository repository = initializeRepository();
 
-    private FilebasedRepository initializeRepository() {
+    private AbstractFileBasedRepository initializeRepository() {
         Path path = Paths.get(System.getProperty("java.io.tmpdir")).resolve("test-repository");
-        return (FilebasedRepository) RepositoryFactory.getRepository(new FileBasedRepositoryConfiguration(path));
+        return (AbstractFileBasedRepository) RepositoryFactory.getRepository(new FileBasedRepositoryConfiguration(path));
     }
 
     private void persist(HashMap<DefinitionsChildId, TExtensibleElements> allEntities) throws IOException {

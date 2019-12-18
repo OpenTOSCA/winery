@@ -27,6 +27,7 @@ import org.eclipse.winery.common.RepositoryFileReference;
 import org.eclipse.winery.common.ids.admin.NamespacesId;
 import org.eclipse.winery.repository.backend.AbstractNamespaceManager;
 import org.eclipse.winery.repository.backend.BackendUtils;
+import org.eclipse.winery.repository.backend.IRepository;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -47,7 +48,7 @@ public class JsonBasedMultiNamespaceManager extends AbstractNamespaceManager {
     private final MultiRepository repository;
     private final ObjectMapper objectMapper;
 
-    private Map<FilebasedRepository, Map<String, NamespaceProperties>> namespaceProperties;
+    private Map<IRepository, Map<String, NamespaceProperties>> namespaceProperties;
 
     private JsonBasedMultiNamespaceManager(MultiRepository repository) {
         this.objectMapper = new ObjectMapper();
@@ -64,11 +65,11 @@ public class JsonBasedMultiNamespaceManager extends AbstractNamespaceManager {
         return INSTANCE;
     }
 
-    private Map<FilebasedRepository, Map<String, NamespaceProperties>> loadNamespacePropertiesFromFile() {
-        Map<FilebasedRepository, Map<String, NamespaceProperties>> result = new HashMap<>();
+    private Map<IRepository, Map<String, NamespaceProperties>> loadNamespacePropertiesFromFile() {
+        Map<IRepository, Map<String, NamespaceProperties>> result = new HashMap<>();
         Map<String, NamespaceProperties> nsProps = new HashMap<>();
 
-        for (FilebasedRepository repo : this.repository.getRepositories()) {
+        for (IRepository repo : this.repository.getRepositories()) {
             RepositoryFileReference ref = BackendUtils.getRefOfJsonConfiguration(new NamespacesId());
             File file = repo.ref2AbsolutePath(ref).toFile();
             try {
@@ -91,7 +92,7 @@ public class JsonBasedMultiNamespaceManager extends AbstractNamespaceManager {
     @Override
     public void addAllPermanent(Collection<NamespaceProperties> properties) {
         properties.forEach(prop -> {
-            FilebasedRepository repository = RepositoryUtils.getRepositoryByNamespace(prop.getNamespace(), this.repository);
+            IRepository repository = RepositoryUtils.getRepositoryByNamespace(prop.getNamespace(), this.repository);
 
             if (prop.getUpstreamRepository().isEmpty() && repository instanceof GitBasedRepository) {
                 prop.setUpstreamRepository(((GitBasedRepository) repository).getRepositoryUrl());
@@ -105,7 +106,7 @@ public class JsonBasedMultiNamespaceManager extends AbstractNamespaceManager {
     @Override
     public void replaceAll(Map<String, NamespaceProperties> map) {
         map.forEach((namespace, properties) -> {
-            FilebasedRepository repository = RepositoryUtils.getRepositoryByNamespace(namespace, this.repository);
+            IRepository repository = RepositoryUtils.getRepositoryByNamespace(namespace, this.repository);
             repository.getNamespaceManager().replaceAll(map);
         });
         this.repository.updateNamespaces();
@@ -113,7 +114,7 @@ public class JsonBasedMultiNamespaceManager extends AbstractNamespaceManager {
 
     @Override
     public void clear() {
-        for (FilebasedRepository repo : this.repository.getRepositories()) {
+        for (IRepository repo : this.repository.getRepositories()) {
             repo.getNamespaceManager().clear();
         }
     }
@@ -121,7 +122,7 @@ public class JsonBasedMultiNamespaceManager extends AbstractNamespaceManager {
     @Override
     public Map<String, NamespaceProperties> getAllNamespaces() {
         Map<String, NamespaceProperties> result = new HashMap<>();
-        for (FilebasedRepository repo : this.repository.getRepositories()) {
+        for (IRepository repo : this.repository.getRepositories()) {
             result.putAll(repo.getNamespaceManager().getAllNamespaces());
         }
         return result;
@@ -129,7 +130,7 @@ public class JsonBasedMultiNamespaceManager extends AbstractNamespaceManager {
 
     @Override
     protected Set<String> getAllPrefixes(String namespace) {
-        FilebasedRepository nsRepository = RepositoryUtils.getRepositoryByNamespace(namespace, this.repository);
+        IRepository nsRepository = RepositoryUtils.getRepositoryByNamespace(namespace, this.repository);
         return this.namespaceProperties.get(nsRepository).values().stream()
             .map(NamespaceProperties::getPrefix)
             .collect(Collectors.toSet());

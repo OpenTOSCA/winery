@@ -1,5 +1,5 @@
-/********************************************************************************
- * Copyright (c) 2013-2019 Contributors to the Eclipse Foundation
+/*******************************************************************************
+ * Copyright (c) 2019 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -10,9 +10,9 @@
  * which is available at https://www.apache.org/licenses/LICENSE-2.0.
  *
  * SPDX-License-Identifier: EPL-2.0 OR Apache-2.0
- ********************************************************************************/
+ *******************************************************************************/
 
-package org.eclipse.winery.common.interfaces;
+package org.eclipse.winery.repository.backend;
 
 import java.io.IOException;
 import java.lang.reflect.Constructor;

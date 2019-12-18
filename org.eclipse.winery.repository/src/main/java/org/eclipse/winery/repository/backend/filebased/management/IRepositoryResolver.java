@@ -17,7 +17,7 @@ package org.eclipse.winery.repository.backend.filebased.management;
 import java.io.File;
 import java.io.IOException;
 
-import org.eclipse.winery.repository.backend.filebased.FilebasedRepository;
+import org.eclipse.winery.repository.backend.filebased.GitBasedRepository;
 
 import org.eclipse.jgit.api.errors.GitAPIException;
 
@@ -33,5 +33,5 @@ public interface IRepositoryResolver {
 
     String getRepositoryName();
 
-    FilebasedRepository createRepository(File repositoryLocation) throws IOException, GitAPIException;
+    GitBasedRepository createRepository(File repositoryLocation) throws IOException, GitAPIException;
 }

@@ -25,21 +25,17 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
 import javax.xml.namespace.QName;
 
+import org.eclipse.winery.common.Constants;
 import org.eclipse.winery.common.RepositoryFileReference;
 import org.eclipse.winery.common.Util;
-import org.eclipse.winery.common.configuration.FileBasedRepositoryConfiguration;
 import org.eclipse.winery.common.ids.GenericId;
 import org.eclipse.winery.common.ids.Namespace;
 import org.eclipse.winery.common.ids.XmlId;
@@ -81,14 +77,20 @@ import org.apache.tika.mime.MediaType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class YamlRepository extends FilebasedRepository {
+public class YamlRepository extends AbstractFileBasedRepository {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(YamlRepository.class);
 
     private final Pattern namePattern;
 
-    public YamlRepository(FileBasedRepositoryConfiguration fileBasedRepositoryConfiguration) {
-        super(Objects.requireNonNull(fileBasedRepositoryConfiguration));
+    public YamlRepository(Path repositoryRoot) {
+        super(repositoryRoot);
+
+        this.fileSystem = this.getRepositoryRoot().getFileSystem();
+        this.provider = this.fileSystem.provider();
+
+        this.isLocal = this.getRepositoryRoot().getFileName().toString().equals(Constants.DEFAULT_LOCAL_REPO_NAME);
+        LOGGER.debug("Repository root: {}", this.getRepositoryRoot());
 
         String nameRegex = "(.*)@(.*)@(.*)";
         this.namePattern = Pattern.compile(nameRegex);
@@ -102,11 +104,7 @@ public class YamlRepository extends FilebasedRepository {
      **/
     @Override
     public Path ref2AbsolutePath(RepositoryFileReference ref) {
-        Path resultPath = id2AbsolutePath(ref.getParent());
-        Optional<Path> subDirectory = ref.getSubDirectory();
-        if (subDirectory.isPresent()) {
-            resultPath = resultPath.resolve(subDirectory.get());
-        }
+        Path resultPath = super.ref2AbsolutePath(ref);
         GenericId convertedId = convertGenericId(ref.getParent());
         if (convertedId != null) {
             if (convertedId instanceof DefinitionsChildId) {
@@ -114,7 +112,7 @@ public class YamlRepository extends FilebasedRepository {
                 return resultPath.resolve(convertedFilename);
             }
         }
-        return resultPath.resolve(ref.getFileName());
+        return resultPath;
     }
 
     /**
@@ -188,7 +186,7 @@ public class YamlRepository extends FilebasedRepository {
     }
 
     /**
-     * Checks if XML Definition in exists Artifact Templates are searched in Type
+     * Checks if YAML Definition exists Artifact Templates are searched in Type
      *
      * @param id generic id of target
      * @return boolean if target exists
@@ -201,7 +199,7 @@ public class YamlRepository extends FilebasedRepository {
             if (convertedId != null) {
                 String convertedFilename = BackendUtils.getFileNameOfDefinitions((DefinitionsChildId) convertedId);
                 targetPath = targetPath.resolve(convertedFilename);
-                return chechIfArtifactTemplateExists(targetPath, ((ArtifactTemplateId) id).getQName());
+                return artifactTemplateExistsInType(targetPath, ((ArtifactTemplateId) id).getQName());
             }
         }
         return Files.exists(targetPath);
@@ -218,7 +216,7 @@ public class YamlRepository extends FilebasedRepository {
         Path targetPath = this.ref2AbsolutePath(ref);
         if (ref.getParent() instanceof ArtifactTemplateId) {
             if (Files.exists(targetPath)) {
-                return chechIfArtifactTemplateExists(targetPath, ((ArtifactTemplateId) ref.getParent()).getQName());
+                return artifactTemplateExistsInType(targetPath, ((ArtifactTemplateId) ref.getParent()).getQName());
             }
         }
         return Files.exists(targetPath);
@@ -534,7 +532,7 @@ public class YamlRepository extends FilebasedRepository {
      * @param qName      target QName
      * @return boolean if it was found
      **/
-    private boolean chechIfArtifactTemplateExists(Path targetPath, QName qName) {
+    private boolean artifactTemplateExistsInType(Path targetPath, QName qName) {
         try {
             Definitions xmlDefinitions = convertToDefinitions(targetPath, getNameOfTypeFromArtifactName(qName.getLocalPart()), qName.getNamespaceURI());
             List<TArtifactTemplate> artifacts = xmlDefinitions.getArtifactTemplates();
@@ -595,9 +593,7 @@ public class YamlRepository extends FilebasedRepository {
      * @return xml definitions
      **/
     private Definitions readInputStream(InputStream inputStream) throws JAXBException {
-        JAXBContext jaxbContext = JAXBContext.newInstance(Definitions.class);
-        Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-        return (Definitions) unmarshaller.unmarshal(inputStream);
+        return (Definitions) JAXBSupport.createUnmarshaller().unmarshal(inputStream);
     }
 
     /**

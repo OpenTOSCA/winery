@@ -29,7 +29,6 @@ export class RequirementModel {
     public node?: string;
     public relationship?: string;
 
-
     static fromRequirementDefinition(def: RequirementDefinitionModel): RequirementModel {
         const result = new RequirementModel();
         result.any = def.any;

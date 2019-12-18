@@ -141,7 +141,8 @@
                 </td>
                 <td class="toscatype-table-td" *ngIf="req.relationship"
                     [class.cell-with-comment]="isEllipsisActive(reqRelationship)">
-                    <div #reqRelationship (click)="clickYamlRelationshipTemplateId(req.relationship, req)">{{req.relationship}}</div>
+                    <div #reqRelationship
+                         (click)="clickYamlRelationshipTemplateId(req.relationship, req)">{{req.relationship}}</div>
                     <span class="cell-comment">{{ req.relationship }}</span>
                 </td>
                 <td class="toscatype-table-td" *ngIf="!req.relationship"> N/A</td>

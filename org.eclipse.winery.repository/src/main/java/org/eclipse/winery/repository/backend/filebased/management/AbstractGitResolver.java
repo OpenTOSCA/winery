@@ -61,6 +61,6 @@ public abstract class AbstractGitResolver implements IRepositoryResolver {
     public GitBasedRepository createRepository(File repositoryLocation) throws IOException, GitAPIException {
         FileBasedRepositoryConfiguration compositeConfiguration = new FileBasedRepositoryConfiguration(Paths.get(repositoryLocation.toString()));
         GitBasedRepositoryConfiguration configuration = new GitBasedRepositoryConfiguration(false, repositoryUrl, repositoryBranch, compositeConfiguration);
-        return new GitBasedRepository(configuration, RepositoryFactory.createXmlOrYamlRepository(compositeConfiguration));
+        return new GitBasedRepository(configuration, RepositoryFactory.createXmlOrYamlRepository(compositeConfiguration, repositoryLocation.toPath()));
     }
 }
