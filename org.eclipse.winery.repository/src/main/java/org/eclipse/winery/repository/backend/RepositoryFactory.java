@@ -135,10 +135,14 @@ public class RepositoryFactory {
         return getRepository(fileBasedRepositoryConfiguration);
     }
 
-    public static AbstractFileBasedRepository getRepository(FileBasedRepositoryConfiguration fileBasedRepositoryConfiguration) {
+    public static IRepository getRepository(FileBasedRepositoryConfiguration fileBasedRepositoryConfiguration) {
         // FIXME: currently, the CSAR export does not reuse the repository instance returned here. Thus, we have to reconfigure the repository.
         // This should be fixed by always passing IRepository when working with the repository
         reconfigure(fileBasedRepositoryConfiguration);
-        return createXmlOrYamlRepository(fileBasedRepositoryConfiguration, Paths.get(Environments.getRepositoryConfig().getRepositoryRoot()));
+        if (fileBasedRepositoryConfiguration.getRepositoryPath().isPresent()) {
+            return createXmlOrYamlRepository(fileBasedRepositoryConfiguration, fileBasedRepositoryConfiguration.getRepositoryPath().get());
+        } else {
+            return createXmlOrYamlRepository(fileBasedRepositoryConfiguration, Paths.get(Environments.getRepositoryConfig().getRepositoryRoot()));
+        }
     }
 }

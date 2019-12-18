@@ -49,8 +49,8 @@ import org.eclipse.winery.model.tosca.TRelationshipType;
 import org.eclipse.winery.model.tosca.TServiceTemplate;
 import org.eclipse.winery.model.tosca.TTopologyTemplate;
 import org.eclipse.winery.repository.backend.BackendUtils;
+import org.eclipse.winery.repository.backend.IRepository;
 import org.eclipse.winery.repository.backend.RepositoryFactory;
-import org.eclipse.winery.repository.backend.filebased.AbstractFileBasedRepository;
 import org.eclipse.winery.topologygraph.matching.ToscaIsomorphismMatcher;
 import org.eclipse.winery.topologygraph.model.ToscaEdge;
 import org.eclipse.winery.topologygraph.model.ToscaGraph;
@@ -83,11 +83,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ToscaGraphIsomorphismTest {
 
-    private final AbstractFileBasedRepository repository = initializeRepository();
+    private final IRepository repository = initializeRepository();
 
-    private AbstractFileBasedRepository initializeRepository() {
-        Path path = Paths.get(System.getProperty("java.io.tmpdir")).resolve("test-repository");
-        return (AbstractFileBasedRepository) RepositoryFactory.getRepository(new FileBasedRepositoryConfiguration(path));
+    private IRepository initializeRepository() {
+        Path path = Paths.get(System.getProperty("java.io.tmpdir")).resolve("test-isomorphism-repository");
+        return RepositoryFactory.getRepository(new FileBasedRepositoryConfiguration(path));
     }
 
     private void persist(HashMap<DefinitionsChildId, TExtensibleElements> allEntities) throws IOException {
@@ -276,7 +276,6 @@ public class ToscaGraphIsomorphismTest {
         persist(allEntities);
 
         ServiceTemplateComplianceRuleRuleChecker checker = new ServiceTemplateComplianceRuleRuleChecker(tServiceTemplate);
-
         assertEquals(3, checker.getRuleIds(tServiceTemplate).stream().count());
         assertEquals(3, checker.getRuleIds(tServiceTemplate).stream().filter(id -> id.getQName().getLocalPart().matches("test1|test2|test3")).count());
 
