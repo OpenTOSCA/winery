@@ -50,6 +50,6 @@ export class ValidSourceTypesService {
 
     saveValidSourceTypesForCapabilityDefinition(type: string, v: ValidSourceTypesApiData): Observable<any> {
         const path = '/' + ToscaTypes.CapabilityType + type;
-        return this.http.put<any>(backendBaseURL + path + '/constraints',v)
+        return this.http.put<any>(backendBaseURL + path + '/constraints', v);
     }
 }

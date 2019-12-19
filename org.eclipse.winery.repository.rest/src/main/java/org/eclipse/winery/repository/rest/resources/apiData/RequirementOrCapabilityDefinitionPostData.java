@@ -14,6 +14,10 @@
 
 package org.eclipse.winery.repository.rest.resources.apiData;
 
+import java.util.List;
+
+import javax.xml.namespace.QName;
+
 public class RequirementOrCapabilityDefinitionPostData {
     public String name;
     public String type;
@@ -23,6 +27,7 @@ public class RequirementOrCapabilityDefinitionPostData {
     public String capability;
     public String node;
     public String relationship;
+    public List<QName> validSourceTypes;
 
     RequirementOrCapabilityDefinitionPostData() {
     }
