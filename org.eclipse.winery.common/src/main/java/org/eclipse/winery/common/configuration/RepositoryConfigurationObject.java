@@ -58,7 +58,9 @@ public class RepositoryConfigurationObject extends AbstractConfigurationObject {
     public String getRepositoryRoot() {
         String repositoryRoot = this.repositoryRoot;
         if (repositoryRoot == null || repositoryRoot.isEmpty()) {
-            return Util.determineAndCreateRepositoryPath().toString();
+            repositoryRoot = Util.determineAndCreateRepositoryPath().toString();
+            Environments.getRepositoryConfig().setRepositoryRoot(repositoryRoot);
+            return repositoryRoot;
         } else {
             return repositoryRoot;
         }

@@ -15,11 +15,6 @@
 package org.eclipse.winery.repository.backend;
 
 import java.io.IOException;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.util.Objects;
-
-import javax.xml.namespace.QName;
 
 import org.eclipse.winery.common.ids.GenericId;
 import org.eclipse.winery.common.ids.Namespace;
@@ -42,24 +37,26 @@ import org.eclipse.winery.common.ids.definitions.TestRefinementModelId;
 import org.eclipse.winery.model.tosca.Definitions;
 import org.eclipse.winery.model.tosca.TArtifactTemplate;
 import org.eclipse.winery.model.tosca.TArtifactType;
+import org.eclipse.winery.model.tosca.TCapability;
 import org.eclipse.winery.model.tosca.TCapabilityType;
 import org.eclipse.winery.model.tosca.TComplianceRule;
 import org.eclipse.winery.model.tosca.TEntityTemplate;
 import org.eclipse.winery.model.tosca.TEntityType;
 import org.eclipse.winery.model.tosca.TExtensibleElements;
+import org.eclipse.winery.model.tosca.TNodeTemplate;
 import org.eclipse.winery.model.tosca.TNodeType;
 import org.eclipse.winery.model.tosca.TNodeTypeImplementation;
 import org.eclipse.winery.model.tosca.TPatternRefinementModel;
 import org.eclipse.winery.model.tosca.TPolicyTemplate;
 import org.eclipse.winery.model.tosca.TPolicyType;
 import org.eclipse.winery.model.tosca.TRefinementModel;
+import org.eclipse.winery.model.tosca.TRelationshipTemplate;
 import org.eclipse.winery.model.tosca.TRelationshipType;
 import org.eclipse.winery.model.tosca.TRelationshipTypeImplementation;
+import org.eclipse.winery.model.tosca.TRequirement;
 import org.eclipse.winery.model.tosca.TRequirementType;
 import org.eclipse.winery.model.tosca.TServiceTemplate;
 import org.eclipse.winery.model.tosca.TTestRefinementModel;
-
-import org.slf4j.LoggerFactory;
 
 /**
  * Enables access to the winery repository via Ids defined in package {@link org.eclipse.winery.common.ids}
@@ -187,57 +184,51 @@ public interface IWineryRepositoryCommon {
      * Returns the stored type for the given template
      *
      * @param template the template to determine the type for
-     * @throws NullPointerException  if template.getType() returns null
-     * @throws IllegalStateException if repository cannot provide the content (e.g., due to file reading errors)
-     */
-    // we suppress "unchecked" as we use Class.forName
-    @SuppressWarnings("unchecked")
+     **/
     default TEntityType getTypeForTemplate(TEntityTemplate template) {
-        QName type = template.getType();
-        Objects.requireNonNull(type);
-
-        // Possibilities:
-        // a) try all possibly types whether an appropriate QName exists
-        // b) derive type class from template class. Determine appropriate template element afterwards.
-        // We go for b)
-
-        String instanceResourceClassName = template.getClass().toString();
-        int idx = instanceResourceClassName.lastIndexOf('.');
-        // get everything from ".T", where "." is the last dot
-        instanceResourceClassName = instanceResourceClassName.substring(idx + 2);
-        // strip off "Template"
-        instanceResourceClassName = instanceResourceClassName.substring(0, instanceResourceClassName.length() - "Template".length());
-        // add "Type"
-        instanceResourceClassName += "Type";
-
-        // an id is required to instantiate the resource
-        String idClassName = "org.eclipse.winery.common.ids.definitions." + instanceResourceClassName + "Id";
-
-        org.slf4j.Logger LOGGER = LoggerFactory.getLogger(this.getClass());
-        LOGGER.debug("idClassName: {}", idClassName);
-
-        // Get instance of id class having "type" as id
-        Class<? extends DefinitionsChildId> idClass;
-        try {
-            idClass = (Class<? extends DefinitionsChildId>) Class.forName(idClassName);
-        } catch (ClassNotFoundException e) {
-            throw new IllegalStateException("Could not determine id class", e);
+        if (template instanceof TArtifactTemplate) {
+            return getType(((TArtifactTemplate) template));
+        } else if (template instanceof TCapability) {
+            return getType(((TCapability) template));
+        } else if (template instanceof TNodeTemplate) {
+            return getType((TNodeTemplate) template);
+        } else if (template instanceof TPolicyTemplate) {
+            return getType((TPolicyTemplate) template);
+        } else if (template instanceof TRelationshipTemplate) {
+            return getType((TRelationshipTemplate) template);
         }
-        Constructor<? extends DefinitionsChildId> idConstructor;
-        try {
-            idConstructor = idClass.getConstructor(QName.class);
-        } catch (NoSuchMethodException | SecurityException e) {
-            throw new IllegalStateException("Could not get QName id constructor", e);
-        }
-        DefinitionsChildId typeId;
-        try {
-            typeId = idConstructor.newInstance(type);
-        } catch (InstantiationException | IllegalAccessException
-            | IllegalArgumentException | InvocationTargetException e) {
-            throw new IllegalStateException("Could not instantiate type", e);
-        }
+        return null;
+    }
 
-        final Definitions definitions = this.getDefinitions(typeId);
-        return (TEntityType) definitions.getElement();
+    default TArtifactType getType(TArtifactTemplate template) {
+        return getElement(new ArtifactTypeId(template.getTypeAsQName()));
+    }
+
+    default TCapabilityType getType(TCapability template) {
+        return getElement(new CapabilityTypeId(template.getTypeAsQName()));
+    }
+
+    default TNodeType getType(TNodeTemplate template) {
+        return getElement(new NodeTypeId(template.getTypeAsQName()));
+    }
+
+    default TNodeType getType(TNodeTypeImplementation template) {
+        return getElement(new NodeTypeId(template.getTypeAsQName()));
+    }
+
+    default TPolicyType getType(TPolicyTemplate template) {
+        return getElement(new PolicyTypeId(template.getTypeAsQName()));
+    }
+
+    default TRelationshipType getType(TRelationshipTemplate template) {
+        return getElement(new RelationshipTypeId(template.getTypeAsQName()));
+    }
+
+    default TRelationshipType getType(TRelationshipTypeImplementation template) {
+        return getElement(new RelationshipTypeId(template.getTypeAsQName()));
+    }
+
+    default TRequirementType getType(TRequirement template) {
+        return getElement(new RequirementTypeId(template.getTypeAsQName()));
     }
 }

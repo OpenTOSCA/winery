@@ -393,7 +393,16 @@ public interface IRepository extends IWineryRepositoryCommon {
      */
     Collection<Namespace> getComponentsNamespaces(Class<? extends DefinitionsChildId> clazz);
 
-    @Override
+    /**
+     * Loads the TDefinition element belonging to the given id.
+     * <p>
+     * Even if the given id does not exist in the repository (<code>!exists(id)</code>), an empty wrapper definitions
+     * with an empty element is generated
+     *
+     * @param id the DefinitionsChildId to load
+     * @return the definitions belonging to the id
+     * @throws IllegalStateException if repository cannot provide the content (e.g., due to file reading errors)
+     */
     default Definitions getDefinitions(DefinitionsChildId id) {
         RepositoryFileReference ref = BackendUtils.getRefOfDefinitions(id);
         if (!exists(ref)) {
@@ -413,12 +422,45 @@ public interface IRepository extends IWineryRepositoryCommon {
     }
 
     /**
+     * Deletes the TOSCA element <b>and all sub elements</b> referenced by the given id from the repository
+     * <p>
+     * We assume that each id is a directory
+     */
+    void forceDelete(GenericId id) throws IOException;
+
+    /**
+     * Renames a definition child id
+     *
+     * @param oldId the old id
+     * @param newId the new id
+     */
+    default void rename(DefinitionsChildId oldId, DefinitionsChildId newId) throws IOException {
+        this.duplicate(oldId, newId);
+        this.forceDelete(oldId);
+    }
+
+    /**
+     * Copies a definition and renames it to the newId.
+     *
+     * @param from  the source id
+     * @param newId the destination id
+     */
+    void duplicate(DefinitionsChildId from, DefinitionsChildId newId) throws IOException;
+
+    /**
+     * Deletes all definition children nested in the given namespace
+     *
+     * @param definitionsChildIdClazz the type of definition children to delete
+     * @param namespace               the namespace to delete
+     */
+    void forceDelete(Class<? extends DefinitionsChildId> definitionsChildIdClazz, Namespace namespace) throws IOException;
+
+    /**
      * @param clazz          the id class of the entities to discover
      * @param qNameOfTheType the QName of the type, where all DefinitionsChildIds, where the associated element points
      *                       to the type
      */
-    default <X extends
-        DefinitionsChildId> Collection<X> getAllElementsReferencingGivenType(Class<X> clazz, QName qNameOfTheType) {
+    default <X extends DefinitionsChildId> Collection<X> getAllElementsReferencingGivenType(Class<X> clazz, QName qNameOfTheType) {
         Objects.requireNonNull(clazz);
         Objects.requireNonNull(qNameOfTheType);
 
@@ -726,7 +768,7 @@ public interface IRepository extends IWineryRepositoryCommon {
     }
 
     default Collection<DefinitionsChildId> getReferencedDefinitionsChildIds(ServiceTemplateId id) {
-        // We have to use a HashSet to ensure that no duplicate ids are added
+        // We have to use a HashSet to ensure that no duplicate ids are added<
         // E.g., there may be multiple relationship templates having the same type
         Collection<DefinitionsChildId> ids = new HashSet<>();
 

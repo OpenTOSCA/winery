@@ -1674,7 +1674,6 @@ public class BackendUtils {
         versionList.get(0).setReleasable(true);
 
         boolean changesInFile = false;
-        //TODO: In This case the releasability and editablity have to be set:
         if (current[0].isVersionedInWinery() && RepositoryFactory.getRepository() instanceof MultiRepository) {
             for (IRepository repository : ((MultiRepository) RepositoryFactory.getRepository()).getRepositories()) {
                 if (repository.getClass().equals(GitBasedRepository.class)) {

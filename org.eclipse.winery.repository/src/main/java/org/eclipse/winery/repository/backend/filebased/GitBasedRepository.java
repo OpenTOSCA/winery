@@ -254,7 +254,8 @@ public class GitBasedRepository extends AbstractFileBasedRepository {
 
     public void postEventMap() throws GitAPIException {
         Map<DiffEntry, String> diffMap = new HashMap<>();
-        try (OutputStream stream = new ByteArrayOutputStream(); Git git = getGit()) {
+        try (OutputStream stream = new ByteArrayOutputStream();
+             Git git = getGit()) {
             List<DiffEntry> list = git.diff().setOutputStream(stream).call();
             BufferedReader reader = new BufferedReader(new StringReader(stream.toString()));
             for (DiffEntry entry : list) {

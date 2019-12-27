@@ -40,7 +40,7 @@ public class MultiRepositoryManager {
      *
      * @param repositoryList The list of repositories that is copied to the root
      */
-    static void initializeRepositoryListForMultiRepositoryAndReconfigureFactory(List<RepositoryProperties> repositoryList) {
+    void initializeRepositoryListForMultiRepositoryAndReconfigureFactory(List<RepositoryProperties> repositoryList) {
         ObjectMapper objectMapper = new ObjectMapper();
         File repositoryConfiguration = new File(Environments.getRepositoryConfig().getRepositoryRoot(), Filename.FILENAME_JSON_REPOSITORIES);
         if (!repositoryConfiguration.exists()) {

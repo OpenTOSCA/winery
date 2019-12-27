@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
 class RepositoryUtils {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RepositoryUtils.class);
-    
+
     public static void checkGitIgnore(XMLRepository multiRepository) throws IOException {
         File ignore = new File(multiRepository.getRepositoryRoot().toFile(), Constants.FILE_GIT_IGNORE);
 

@@ -103,7 +103,7 @@ public abstract class AbstractFileBasedRepository implements IRepository {
         LOGGER.debug("Repository root: {}", this.repositoryRoot);
     }
 
-    static Path makeAbsoluteAndCreateRepositoryPath(final Path configuredRepositoryPath) {
+    public static Path makeAbsoluteAndCreateRepositoryPath(final Path configuredRepositoryPath) {
         Objects.requireNonNull(configuredRepositoryPath);
         Path repositoryPath = configuredRepositoryPath.toAbsolutePath().normalize();
         try {

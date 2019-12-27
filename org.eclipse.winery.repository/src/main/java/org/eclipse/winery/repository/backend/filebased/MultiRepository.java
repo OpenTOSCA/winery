@@ -297,7 +297,8 @@ public class MultiRepository implements IRepository {
     }
 
     private void createConfigFileAndSetFactoryToMultiRepository() {
-        MultiRepositoryManager.initializeRepositoryListForMultiRepositoryAndReconfigureFactory(repositoriesList);
+        MultiRepositoryManager multiRepositoryManager = new MultiRepositoryManager();
+        multiRepositoryManager.initializeRepositoryListForMultiRepositoryAndReconfigureFactory(repositoriesList);
         try {
             RepositoryFactory.reconfigure();
         } catch (Exception e) {
