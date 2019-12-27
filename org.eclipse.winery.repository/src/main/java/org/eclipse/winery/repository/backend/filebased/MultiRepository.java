@@ -219,8 +219,8 @@ public class MultiRepository implements IRepository {
     }
 
     /**
-     * Returns the repositoryList, if the repositories.json exist, the repositoriesList is first
-     * loaded with the repositories from the json.
+     * Returns the repositoryList, if the repositories.json exist, the repositoriesList is first loaded with the
+     * repositories from the json.
      */
     List<RepositoryProperties> getRepositoriesFromFile() {
         if (repoContainsConfigFile()) {
@@ -234,10 +234,8 @@ public class MultiRepository implements IRepository {
     }
 
     /**
-     * Loads the repositories from the repositories.json file 
-     * into the repositories list.
-     * Then clones the repositories from the repositories list.
-     * @throws IOException
+     * Loads the repositories from the repositories.json file into the repositories list. Then clones the repositories
+     * from the repositories list.
      */
     private void readRepositoriesConfig() throws IOException {
         if (repoContainsConfigFile()) {
@@ -287,8 +285,8 @@ public class MultiRepository implements IRepository {
     }
 
     /**
-     * Clones all repositories of the MultiRepository into the file system.
-     * Does not clone duplicates. Also clones all dependencies of the repositories
+     * Clones all repositories of the MultiRepository into the file system. Does not clone duplicates. Also clones all
+     * dependencies of the repositories
      */
     private void loadRepositoriesByList() {
         for (RepositoryProperties repository : repositoriesList) {
@@ -307,12 +305,12 @@ public class MultiRepository implements IRepository {
     }
 
     /**
-     * This method clones a repository into the file system.
-     * If the cloned repository contains dependencies in the form of a repositories.json file,
-     * the dependencies will be cloned recursively if they are not already in the MultiRepository.
-     * The subrepositories are GitbasedRepositories and are added to the list of repositories to the MultiRepository. 
-     * It the subrepositories have dependencies, they are initialized as MultiRepos
-     * @param url of the repository
+     * This method clones a repository into the file system. If the cloned repository contains dependencies in the form
+     * of a repositories.json file, the dependencies will be cloned recursively if they are not already in the
+     * MultiRepository. The subrepositories are GitbasedRepositories and are added to the list of repositories to the
+     * MultiRepository. It the subrepositories have dependencies, they are initialized as MultiRepos
+     *
+     * @param url    of the repository
      * @param branch which should be cloned
      */
     private void createRepository(String url, String branch) {
@@ -460,17 +458,17 @@ public class MultiRepository implements IRepository {
 
     @Override
     public Path ref2AbsolutePath(RepositoryFileReference ref) {
-        return null;
+        return RepositoryUtils.getRepositoryByRef(ref, this).ref2AbsolutePath(ref);
     }
 
     @Override
     public Path id2RelativePath(GenericId id) {
-        return null;
+        return RepositoryUtils.getRepositoryById(id, this).id2RelativePath(id);
     }
 
     @Override
     public Path id2AbsolutePath(GenericId id) {
-        return null;
+        return RepositoryUtils.getRepositoryById(id, this).id2AbsolutePath(id);
     }
 
     @Override
