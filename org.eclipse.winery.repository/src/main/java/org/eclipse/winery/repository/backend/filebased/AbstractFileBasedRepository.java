@@ -621,7 +621,7 @@ public abstract class AbstractFileBasedRepository implements IRepository {
     }
 
     public Path id2RelativePath(GenericId id) {
-        return this.getRepositoryRoot().getFileSystem().getPath(Util.getPathInsideRepo(id));
+        return this.getRepositoryRoot().getFileSystem().getPath(Util.getUrlPath(id));
     }
 
     public Path id2AbsolutePath(GenericId id) {
