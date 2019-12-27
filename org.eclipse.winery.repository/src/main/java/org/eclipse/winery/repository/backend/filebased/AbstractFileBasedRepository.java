@@ -28,7 +28,6 @@ import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -49,7 +48,6 @@ import java.util.zip.ZipOutputStream;
 import org.eclipse.winery.common.Constants;
 import org.eclipse.winery.common.RepositoryFileReference;
 import org.eclipse.winery.common.Util;
-import org.eclipse.winery.common.configuration.Environments;
 import org.eclipse.winery.common.ids.GenericId;
 import org.eclipse.winery.common.ids.Namespace;
 import org.eclipse.winery.common.ids.XmlId;
@@ -623,7 +621,7 @@ public abstract class AbstractFileBasedRepository implements IRepository {
     }
 
     public Path id2RelativePath(GenericId id) {
-        return Paths.get(Environments.getRepositoryConfig().getRepositoryRoot()).getFileSystem().getPath(Util.getPathInsideRepo(id));
+        return this.getRepositoryRoot().getFileSystem().getPath(Util.getPathInsideRepo(id));
     }
 
     public Path id2AbsolutePath(GenericId id) {
