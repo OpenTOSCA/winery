@@ -473,7 +473,7 @@ public class MultiRepository implements IRepository {
 
     @Override
     public Path makeAbsolute(Path relativePath) {
-        return null;
+        return this.getRepositoryRoot().resolve(relativePath);
     }
 
     @Override
