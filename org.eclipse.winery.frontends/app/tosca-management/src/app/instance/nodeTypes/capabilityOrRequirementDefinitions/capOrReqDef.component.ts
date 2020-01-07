@@ -26,7 +26,6 @@ import { BsModalRef, BsModalService, ModalDirective } from 'ngx-bootstrap';
 import { SpinnerWithInfinityComponent } from '../../../winerySpinnerWithInfinityModule/winerySpinnerWithInfinity.component';
 import { InstanceService } from '../../instance.service';
 import { HttpErrorResponse } from '@angular/common/http';
-import { ValidSourceTypesApiData } from '../../capabilityTypes/validSourceTypes/validSourceTypesApiData';
 import { ValidSourceTypesService } from '../../capabilityTypes/validSourceTypes/validSourceTypes.service';
 import { QNameApiData } from '../../../model/qNameApiData';
 import { QName } from '../../../model/qName';
@@ -40,7 +39,6 @@ import { QName } from '../../../model/qName';
     ]
 })
 export class CapOrReqDefComponent implements OnInit {
-    validSourceTypes: ValidSourceTypesApiData = new ValidSourceTypesApiData();
     columns: Array<WineryTableColumn> = [
         { title: 'Name', name: 'name' },
         { title: 'Type', name: 'type' },
@@ -50,7 +48,7 @@ export class CapOrReqDefComponent implements OnInit {
     ];
 
     addCapabilityColumns: Array<WineryTableColumn> = [
-        { title: 'Name', name: 'localname', sort: true },
+        { title: 'Name', name: 'localPart', sort: true },
         { title: 'Namespace', name: 'namespace', sort: true }
     ];
 
@@ -96,7 +94,7 @@ export class CapOrReqDefComponent implements OnInit {
     @ViewChild('upperBoundSpinner') upperBoundSpinner: SpinnerWithInfinityComponent;
     @ViewChild('editor') editor: any;
     private currentNodeTypes: SelectData[];
-    private currentSelectedItem: QNameApiData;
+    private selectedNodeType: QName;
 
     constructor(public sharedData: InstanceService,
                 private service: CapabilityOrRequirementDefinitionsService,
@@ -141,7 +139,7 @@ export class CapOrReqDefComponent implements OnInit {
         this.validSourceTypesService.getValidSourceTypesForCapabilityDefinition(value.replace('{', '/').replace('}', '/'))
             .subscribe(
                 (current) => {
-                    this.validSourceTypes = current;
+                    current.nodes.forEach(value1 => this.capOrReqDefToBeAdded.validSourceTypes.push(new QName(value1.namespace, value1.localname)));
                 },
                 error => this.handleError(error)
             );
@@ -550,30 +548,34 @@ export class CapOrReqDefComponent implements OnInit {
         this.currentNodeTypes = nodeTypes;
     }
 
-    onRemoveClicked(selected: QNameApiData) {
+    onRemoveClicked(selected: QName) {
         if (selected) {
-            this.validSourceTypes.nodes = this.validSourceTypes.nodes.filter(item => item !== selected);
-            this.validSourceTypesService.saveValidSourceTypesForCapabilityDefinition(this.capOrReqDefToBeAdded.type.replace('{', '/')
+            this.capOrReqDefToBeAdded.validSourceTypes = this.capOrReqDefToBeAdded.validSourceTypes.filter(item => item !== selected);
+            console.log(this.capOrReqDefToBeAdded);
+            /**this.validSourceTypesService.saveValidSourceTypesForCapabilityDefinition(this.capOrReqDefToBeAdded.type.replace('{', '/')
                 .replace('}', '/'), this.validSourceTypes).subscribe(() => {
                     this.notify.success('Saved changes.');
                 },
-                error => this.handleError(error));
+             error => this.handleError(error));*/
+            this.notify.success('Saved changes.');
         }
     }
 
     onAddValidSourceType() {
-        this.validSourceTypes.nodes.push(this.currentSelectedItem);
-        this.validSourceTypesService.saveValidSourceTypesForCapabilityDefinition(this.capOrReqDefToBeAdded.type.replace('{', '/')
+        this.capOrReqDefToBeAdded.validSourceTypes.push(this.selectedNodeType);
+        /**this.validSourceTypesService.saveValidSourceTypesForCapabilityDefinition(this.capOrReqDefToBeAdded.type.replace('{', '/')
             .replace('}', '/'), this.validSourceTypes).subscribe(() => {
             this.notify.success('Saved changes.');
-        });
+        });*/
+        console.log(this.capOrReqDefToBeAdded);
+        this.notify.success('Saved changes.');
     }
 
     onSelectedNodeTypeChanged(value: SelectData) {
         if (value.id !== null && value.id !== undefined) {
-            this.currentSelectedItem = QNameApiData.fromQName(QName.stringToQName(value.id));
+            this.selectedNodeType = QName.stringToQName(value.id);
         } else {
-            this.currentSelectedItem = null;
+            this.selectedNodeType = null;
         }
     }
 }

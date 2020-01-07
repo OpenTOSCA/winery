@@ -61,6 +61,7 @@ public abstract class RequirementOrCapabilityDefinitionsResource<ReqDefOrCapDefR
     @SuppressWarnings("unchecked")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response onPost(RequirementOrCapabilityDefinitionPostData postData) {
+        System.out.println(postData.validSourceTypes);
         return this.performPost(postData);
     }
 
