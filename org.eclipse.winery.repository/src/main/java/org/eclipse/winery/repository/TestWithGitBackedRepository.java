@@ -98,12 +98,10 @@ public abstract class TestWithGitBackedRepository {
 
     protected void setRevisionTo(String ref) throws GitAPIException {
         git.clean().setForce(true).setCleanDirectories(true).call();
-
         git.reset()
             .setMode(ResetCommand.ResetType.HARD)
             .setRef(ref)
             .call();
-
         LOGGER.debug("Switched to commit {}", ref);
     }
 
