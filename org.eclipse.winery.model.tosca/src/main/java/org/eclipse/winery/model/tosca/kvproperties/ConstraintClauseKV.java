@@ -1,5 +1,5 @@
-/********************************************************************************
- * Copyright (c) 2017-2018 Contributors to the Eclipse Foundation
+/*******************************************************************************
+ * Copyright (c) 2019 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -11,27 +11,38 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR Apache-2.0
  *******************************************************************************/
-package org.eclipse.winery.model.tosca.yaml;
 
-import org.eclipse.winery.model.tosca.yaml.visitor.AbstractParameter;
-import org.eclipse.winery.model.tosca.yaml.visitor.AbstractResult;
-import org.eclipse.winery.model.tosca.yaml.visitor.IVisitor;
-import org.eclipse.winery.model.tosca.yaml.visitor.VisitorNode;
+package org.eclipse.winery.model.tosca.kvproperties;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlType;
-
+import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "tConstraintClause", namespace = " http://docs.oasis-open.org/tosca/ns/simple/yaml/1.0")
-public class TConstraintClause implements VisitorNode {
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlRootElement;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+
+@XmlRootElement(name = "ConstraintDefinition")
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class ConstraintClauseKV implements Serializable {
     
     private String key;
     private String value;
+
     private List<String> list;
+    
+    public ConstraintClauseKV() {
+        super();
+    }
+    
+    @XmlElementWrapper
+    @XmlElement(name = "value")
+    public List<String> getValues() {
+        return this.list;
+    }
 
     public String getKey() {
         return key;
@@ -58,19 +69,10 @@ public class TConstraintClause implements VisitorNode {
     }
 
     @Override
-    public String toString() {
-        return "TConstraintClause{" +
-            "key='" + key + '\'' +
-            ", value='" + value + '\'' +
-            ", list=" + list +
-            '}';
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        TConstraintClause that = (TConstraintClause) o;
+        ConstraintClauseKV that = (ConstraintClauseKV) o;
         return Objects.equals(key, that.key) &&
             Objects.equals(value, that.value) &&
             Objects.equals(list, that.list);
@@ -79,9 +81,5 @@ public class TConstraintClause implements VisitorNode {
     @Override
     public int hashCode() {
         return Objects.hash(key, value, list);
-    }
-
-    public <R extends AbstractResult<R>, P extends AbstractParameter<P>> R accept(IVisitor<R, P> visitor, P parameter) {
-        return visitor.visit(this, parameter);
     }
 }

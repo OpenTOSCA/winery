@@ -14,6 +14,7 @@
 package org.eclipse.winery.model.tosca.kvproperties;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlRootElement;
@@ -29,6 +30,8 @@ public class PropertyDefinitionKV implements Serializable {
     private Boolean required;
     private String defaultValue;
     private String description;
+    
+    private ConstraintClauseKVList constraintList;
 
     public PropertyDefinitionKV() {
         super();
@@ -50,6 +53,12 @@ public class PropertyDefinitionKV implements Serializable {
         this(key, type, required, defaultValue);
         this.setDescription(description);
     }
+
+    public PropertyDefinitionKV(String key, String type, Boolean required, String defaultValue, String description, ConstraintClauseKVList constraints) {
+        this(key, type, required, defaultValue, description);
+        this.setConstraints(constraints);
+    }
+
 
     public String getKey() {
         return this.key;
@@ -95,6 +104,14 @@ public class PropertyDefinitionKV implements Serializable {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public ConstraintClauseKVList getConstraints() {
+        return constraintList;
+    }
+
+    public void setConstraints(ConstraintClauseKVList constraintList) {
+        this.constraintList = constraintList;
     }
 
     @Override

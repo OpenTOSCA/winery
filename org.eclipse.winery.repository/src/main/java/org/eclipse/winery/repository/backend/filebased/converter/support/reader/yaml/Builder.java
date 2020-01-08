@@ -34,6 +34,7 @@ import java.util.stream.Stream;
 import javax.xml.namespace.QName;
 
 import org.eclipse.winery.common.version.VersionUtils;
+import org.eclipse.winery.model.tosca.kvproperties.ConstraintClauseKV;
 import org.eclipse.winery.model.tosca.yaml.TArtifactDefinition;
 import org.eclipse.winery.model.tosca.yaml.TArtifactType;
 import org.eclipse.winery.model.tosca.yaml.TAttributeAssignment;
@@ -355,7 +356,7 @@ public class Builder {
             .setRequired(buildRequired(map.get("required")))
             .setDefault(map.get("default"))
             .setStatus(buildStatus(map.get("status")))
-            .setConstraints(buildList(map, "constraints", this::buildConstraintClause, parameter))
+            .addConstraints(buildList(map, "constraints", this::buildConstraintClause, parameter))
             .setEntrySchema(buildEntrySchema(map.get("entry_schema"),
                 new Parameter<TEntrySchema>(parameter.getContext()).addContext("entry_schema")
             ))
@@ -396,40 +397,17 @@ public class Builder {
         if (Objects.isNull(object)) return null;
         TConstraintClause constraintClause = new TConstraintClause();
         switch (parameter.getValue()) {
-            case "equal":
-                constraintClause.setEqual(object);
-                break;
-            case "greater_than":
-                constraintClause.setGreaterThan(object);
-                break;
-            case "greater_or_equal":
-                constraintClause.setGreaterOrEqual(object);
-                break;
-            case "less_than":
-                constraintClause.setLessThan(object);
-                break;
-            case "less_or_equal":
-                constraintClause.setLessOrEqual(object);
-                break;
             case "in_range":
-                constraintClause.setInRange(buildListObject(object));
+                constraintClause.setList(buildListString(object,
+                    new Parameter<List<String>>(parameter.getContext()).addContext("in_range")));
                 break;
             case "valid_values":
-                constraintClause.setValidValues(buildListObject(object));
-                break;
-            case "length":
-                constraintClause.setLength(object);
-                break;
-            case "min_length":
-                constraintClause.setMinLength(object);
-                break;
-            case "max_length":
-                constraintClause.setMaxLength(object);
-                break;
-            case "pattern":
-                constraintClause.setPattern(object);
+                constraintClause.setList(buildListString(object,
+                    new Parameter<List<String>>(parameter.getContext()).addContext("valid_values")));
                 break;
             default:
+                constraintClause.setKey(parameter.getValue());
+                constraintClause.setValue(stringValue(object));
         }
         return constraintClause;
     }

@@ -15,7 +15,8 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { InstanceService } from '../../instance.service';
 import { PropertiesDefinitionService } from './propertiesDefinition.service';
 import {
-    PropertiesDefinition, PropertiesDefinitionEnum, PropertiesDefinitionKVElement, PropertiesDefinitionsResourceApiData, WinerysPropertiesDefinition
+    PropertiesDefinition, PropertiesDefinitionEnum, PropertiesDefinitionKVElement, PropertiesDefinitionsResourceApiData, WinerysPropertiesDefinition,
+    ConstraintClause
 } from './propertiesDefinitionsResourceApiData';
 import { SelectData } from '../../../model/selectData';
 import { isNullOrUndefined } from 'util';
@@ -26,6 +27,12 @@ import { ModalDirective } from 'ngx-bootstrap';
 import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
 import { WineryRepositoryConfigurationService } from '../../../wineryFeatureToggleModule/WineryRepositoryConfiguration.service';
 import { FeatureEnum } from '../../../wineryFeatureToggleModule/wineryRepository.feature.direct';
+import { Constraint } from '../../nodeTypes/capabilityOrRequirementDefinitions/capOrReqDefResourceApiData';
+
+const valid_constraint_keys = ['equal', 'greater_than', 'greater_or_equal', 'less_than', 'less_or_equal', 'in_range',
+    'valid_values', 'length', 'min_length', 'max_length', 'pattern', 'schema'];
+const list_constraint_keys = ['valid_values'];
+const range_constraint_keys = ['in_range'];
 
 @Component({
     templateUrl: 'propertiesDefinition.component.html',
@@ -34,13 +41,14 @@ import { FeatureEnum } from '../../../wineryFeatureToggleModule/wineryRepository
     ],
     providers: [
         PropertiesDefinitionService
-    ]
+    ],
 })
+
 export class PropertiesDefinitionComponent implements OnInit {
 
     propertiesEnum = PropertiesDefinitionEnum;
     loading = true;
-
+    
     resourceApiData: PropertiesDefinitionsResourceApiData;
     selectItems: SelectData[];
     activeElement = new SelectData();
@@ -52,6 +60,7 @@ export class PropertiesDefinitionComponent implements OnInit {
         { title: 'Required', name: 'required' },
         { title: 'Default Value', name: 'defaultValue' },
         { title: 'Description', name: 'description' },
+        { title: 'Constraints', name: 'constraints'},
     ];
     newProperty: PropertiesDefinitionKVElement = new PropertiesDefinitionKVElement();
     configEnum = FeatureEnum;
@@ -235,14 +244,31 @@ export class PropertiesDefinitionComponent implements OnInit {
      * @param description
      */
     addProperty(propType: string, propName: string, required: boolean, defaultValue: string, description: string) {
+        console.log("desc " + description);
+        console.log("con " + this.newProperty.constraints[0].key);
         this.resourceApiData.winerysPropertiesDefinition.propertyDefinitionKVList.push({
             key: propName,
             type: propType,
             defaultValue: defaultValue,
             required: required,
             description: description,
+            constraints: Object.assign([], this.newProperty.constraints),
         });
         this.addModal.hide();
+    }
+
+    addConstraint(selectedConstraintKey:string, constraintValue: string) {
+        var con = new ConstraintClause();
+        con.key = selectedConstraintKey;
+        
+        // lists have to be separated by ',' 
+        if (constraintValue.includes(',')) {
+            con.list = constraintValue.split(',');
+        } else {
+            con.value = constraintValue;
+        }
+        this.newProperty.constraints.push(con);
+        console.log(this.newProperty.constraints)
     }
 
     removeConfirmed() {
@@ -367,6 +393,17 @@ export class PropertiesDefinitionComponent implements OnInit {
         this.loading = false;
         this.notify.error(error.message, 'Error');
     }
+    
+    get valid_constraint_keys() {
+        return valid_constraint_keys;
+    }
+    get list_constraint_keys() {
+        return list_constraint_keys;
+    }
+    get range_constraint_keys() {
+        return range_constraint_keys;
+    }
+    
 
     // endregion
 }

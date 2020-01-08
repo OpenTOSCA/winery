@@ -106,8 +106,13 @@ export class InstanceService {
                 subMenu = ['README', 'LICENSE', 'Detector', 'Test Fragment', 'Relation Mappings', 'XML'];
                 break;
             default: // assume Admin
-                subMenu = ['Namespaces', 'Repository', 'Plan Languages', 'Plan Types',
-                    'Constraint Types', 'Consistency Check', 'Log', 'Configuration'];
+                if (this.configurationService.isYaml()) {
+                    subMenu = ['Namespaces', 'Repository', 'Plan Languages', 'Plan Types', 'Consistency Check', 'Log', 'Configuration'];
+                } else {
+                    // YAML 1.2 does not contain Constraint Types
+                    subMenu = ['Namespaces', 'Repository', 'Plan Languages', 'Plan Types',
+                        'Constraint Types', 'Consistency Check', 'Log', 'Configuration'];
+                }
                 if (this.configurationService.configuration.features.accountability) {
                     subMenu.push('Accountability');
                 }

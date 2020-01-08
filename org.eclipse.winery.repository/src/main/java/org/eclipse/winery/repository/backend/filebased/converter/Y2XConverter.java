@@ -60,6 +60,8 @@ import org.eclipse.winery.model.tosca.TServiceTemplate;
 import org.eclipse.winery.model.tosca.TTag;
 import org.eclipse.winery.model.tosca.TTags;
 import org.eclipse.winery.model.tosca.TTopologyTemplate;
+import org.eclipse.winery.model.tosca.kvproperties.ConstraintClauseKV;
+import org.eclipse.winery.model.tosca.kvproperties.ConstraintClauseKVList;
 import org.eclipse.winery.model.tosca.kvproperties.PropertyDefinitionKV;
 import org.eclipse.winery.model.tosca.kvproperties.PropertyDefinitionKVList;
 import org.eclipse.winery.model.tosca.kvproperties.WinerysPropertiesDefinition;
@@ -255,12 +257,31 @@ public class Y2XConverter {
                     "xsd:" + tPropDef.getType().getLocalPart(),
                     tPropDef.getRequired(),
                     tPropDef.getDefault() != null ? tPropDef.getDefault().toString() : null,
-                    tPropDef.getDescription()
+                    tPropDef.getDescription(),
+                    convertConstraints(tPropDef.getConstraints())
                 )
             );
         }
         winerysPropertiesDefinition.setPropertyDefinitionKVList(wineryProperties);
         return winerysPropertiesDefinition;
+    }
+
+    /**
+     * converts TOSCA YAML constraints to Winery XML constraints
+     * 
+     * @param constraints TOSCA YAML constraints
+     * @return Winery XML constraints
+     */
+    private ConstraintClauseKVList convertConstraints(List<org.eclipse.winery.model.tosca.yaml.TConstraintClause> constraints) {
+        ConstraintClauseKVList constraintList = new ConstraintClauseKVList();
+        for (org.eclipse.winery.model.tosca.yaml.TConstraintClause constraint : constraints) {
+            ConstraintClauseKV con = new ConstraintClauseKV();
+            con.setKey(constraint.getKey());
+            con.setValue(constraint.getValue());
+            con.setList(constraint.getList());
+            constraintList.add(con);
+        }
+        return constraintList;
     }
 
     /**

@@ -222,11 +222,6 @@ public class TPropertyDefinition extends TPropertyAssignmentOrDefinition {
             return setStatus(TStatusValue.getStatus(status));
         }
 
-        public T setConstraints(List<TConstraintClause> constraints) {
-            this.constraints = constraints;
-            return self();
-        }
-
         public T setEntrySchema(TEntrySchema entrySchema) {
             this.entrySchema = entrySchema;
             return self();

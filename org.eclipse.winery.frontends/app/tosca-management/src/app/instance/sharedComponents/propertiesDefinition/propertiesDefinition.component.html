@@ -11,7 +11,8 @@
   ~
   ~ SPDX-License-Identifier: EPL-2.0 OR Apache-2.0
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-<div class="localLoader" [class.hidden]="!loading">
+<div class="localLoader" [class.hidden]="!loading" xmlns:trackBy="http://www.w3.org/1999/xhtml"
+     xmlns:trackBy="http://www.w3.org/1999/xhtml">
     <winery-loader></winery-loader>
 </div>
 <div *ngIf="!loading">
@@ -133,6 +134,23 @@
             <div class="form-group">
                 <label class="control-label" for="defaultValue">Description</label>
                 <input #propertyDescription id="description" class="form-control" type="text"/>
+            </div>
+            <div class="form-group">
+                <div *ngFor="let constraintClause of newProperty.constraints">
+                    <label class="control-label">{{constraintClause.key}} </label> <p>
+                    <label class="control-label">{{constraintClause.value}}</label>
+                </div>
+                <div *ngIf="list_constraint_keys.includes(selectedConstraintKey.value)">
+                    Please separate items by using ',' 
+                </div>
+                <div *ngIf="range_constraint_keys.includes(selectedConstraintKey.value)">
+                    Only two items are allowed. Please separate them by using ','
+                </div>
+                <select #selectedConstraintKey>
+                    <option *ngFor="let item of valid_constraint_keys">{{ item }}</option>
+                </select>
+                <input #constraintValue id="constraintVal" class="form-control" type="text"/>
+                <button type="button" class="btn btn-default" (click)="addConstraint(selectedConstraintKey.value, constraintValue.value)">Add Constraint</button>
             </div>
         </form>
     </winery-modal-body>

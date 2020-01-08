@@ -165,22 +165,16 @@ public class Writer extends AbstractVisitor<Printer, Writer.Parameter> {
             .printKeyValue("required", node.getRequired())
             .printKeyObject("default", node.getDefault())
             .printKeyValue("status", node.getStatus())
-            .print(printList("constraints", node.getConstraints(), parameter))
+            .printKeyObject("constraints", node.getConstraints())
             .print(printVisitorNode(node.getEntrySchema(), parameter));
     }
 
     public Printer visit(TConstraintClause node, Parameter parameter) {
-        return new Printer(parameter.getIndent()).printKeyObject("- equal", node.getEqual())
-            .printKeyObject("- greater_than", node.getGreaterThan())
-            .printKeyObject("- greater_or_equal", node.getGreaterOrEqual())
-            .printKeyObject("- less_than", node.getLessThan())
-            .printKeyObject("- less_or_equal", node.getLessOrEqual())
-            .printKeyListObjectInline("- in_range", node.getInRange())
-            .printKeyListObjectInline("- valid_values", node.getValidValues())
-            .printKeyObject("- length", node.getLength())
-            .printKeyObject("- min_length", node.getMinLength())
-            .printKeyObject("- max_length", node.getMaxLength())
-            .printKeyObject("- pattern", node.getPattern());
+        if (node.getValue() == null) {
+            return new Printer(parameter.getIndent()).printKeyValue("- " + node.getKey(), node.getList());
+        }
+        return new Printer(parameter.getIndent()).printKeyValue("- " + node.getKey(), node.getValue());
+
     }
 
     public Printer visit(TEntrySchema node, Parameter parameter) {

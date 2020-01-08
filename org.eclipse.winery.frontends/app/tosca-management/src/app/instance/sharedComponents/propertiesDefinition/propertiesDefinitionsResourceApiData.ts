@@ -19,12 +19,22 @@ export enum PropertiesDefinitionEnum {
     None = 'None'
 }
 
+
+export class ConstraintClause {
+    key: string = null;
+    // value might be of type list or string
+    // there are probably better solutions possible than this
+    value: string = null;
+    list: string[] = null;
+}
+
 export class PropertiesDefinitionKVElement {
     key: string = null;
     type: string = null;
     required: boolean;
     defaultValue: string;
     description: string;
+    constraints: ConstraintClause[] = [];
 }
 
 export class PropertiesDefinition {
