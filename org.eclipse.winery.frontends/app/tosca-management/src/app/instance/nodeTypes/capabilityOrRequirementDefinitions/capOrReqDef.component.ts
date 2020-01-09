@@ -27,7 +27,6 @@ import { SpinnerWithInfinityComponent } from '../../../winerySpinnerWithInfinity
 import { InstanceService } from '../../instance.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ValidSourceTypesService } from '../../capabilityTypes/validSourceTypes/validSourceTypes.service';
-import { QNameApiData } from '../../../model/qNameApiData';
 import { QName } from '../../../model/qName';
 
 @Component({
@@ -131,18 +130,23 @@ export class CapOrReqDefComponent implements OnInit {
 
     onSelectedValueChanged(value: string) {
         this.capOrReqDefToBeAdded.type = value;
-        this.getConstraintsOfType(value);
         this.noneSelected = this.capOrReqDefToBeAdded.type === '(none)';
+        this.getConstraintsOfType(value);
     }
 
     getConstraintsOfType(value: string) {
-        this.validSourceTypesService.getValidSourceTypesForCapabilityDefinition(value.replace('{', '/').replace('}', '/'))
-            .subscribe(
-                (current) => {
-                    current.nodes.forEach(value1 => this.capOrReqDefToBeAdded.validSourceTypes.push(new QName(value1.namespace, value1.localname)));
-                },
-                error => this.handleError(error)
-            );
+        this.capOrReqDefToBeAdded.validSourceTypes = [];
+        if (!this.noneSelected) {
+            this.validSourceTypesService.getValidSourceTypesForCapabilityDefinition(value.replace('{', '/').replace('}', '/'))
+                .subscribe(
+                    (current) => {
+                        current.nodes.forEach(value1 => {
+                            this.capOrReqDefToBeAdded.validSourceTypes.push(new QName(value1.namespace, value1.localname));
+                        });
+                    },
+                    error => this.handleError(error)
+                );
+        }
     }
 
     /**

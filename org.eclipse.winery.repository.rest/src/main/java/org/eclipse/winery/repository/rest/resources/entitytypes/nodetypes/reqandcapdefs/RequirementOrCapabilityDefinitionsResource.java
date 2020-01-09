@@ -13,6 +13,9 @@
  *******************************************************************************/
 package org.eclipse.winery.repository.rest.resources.entitytypes.nodetypes.reqandcapdefs;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Collection;
 import java.util.List;
 
@@ -25,11 +28,14 @@ import javax.xml.namespace.QName;
 
 import org.eclipse.winery.model.tosca.TCapabilityDefinition;
 import org.eclipse.winery.model.tosca.TRequirementDefinition;
+import org.eclipse.winery.repository.backend.filebased.FilebasedRepository;
 import org.eclipse.winery.repository.rest.RestUtils;
 import org.eclipse.winery.repository.rest.resources._support.collections.withid.EntityWithIdCollectionResource;
 import org.eclipse.winery.repository.rest.resources.apiData.RequirementOrCapabilityDefinitionPostData;
 import org.eclipse.winery.repository.rest.resources.entitytypes.nodetypes.NodeTypeResource;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -60,7 +66,20 @@ public abstract class RequirementOrCapabilityDefinitionsResource<ReqDefOrCapDefR
     // As there is no supertype of TCapabilityType and TRequirementType containing the common attributes, we have to rely on unchecked casts
     @SuppressWarnings("unchecked")
     @Consumes(MediaType.APPLICATION_JSON)
+    //TODO: Can not deserialize postData to RequirementOrCapbilityDefinitionPostData when validSourceTypes are set --> maybe QName
     public Response onPost(RequirementOrCapabilityDefinitionPostData postData) {
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        File test = new File(FilebasedRepository.getActiveRepositoryFilePath(), "TEST.json");
+        try {
+            Files.createFile(test.toPath());
+            objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
+            objectMapper.writeValue(test, postData);
+        } catch (IOException exception) {
+            exception.printStackTrace();
+        }
+
+        System.out.println("Hallo");
         System.out.println(postData.validSourceTypes);
         return this.performPost(postData);
     }
@@ -126,6 +145,7 @@ public abstract class RequirementOrCapabilityDefinitionsResource<ReqDefOrCapDefR
 
             if (def instanceof TCapabilityDefinition) {
                 ((TCapabilityDefinition) def).setCapabilityType(typeQName);
+                ((TCapabilityDefinition) def).setValidSourceTypes(postData.validSourceTypes);
             } else {
                 ((TRequirementDefinition) def).setRequirementType(typeQName);
             }
