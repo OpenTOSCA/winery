@@ -18,11 +18,6 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlType;
 import javax.xml.namespace.QName;
 
 import org.eclipse.winery.model.tosca.constants.Namespaces;
@@ -31,28 +26,13 @@ import org.eclipse.winery.model.tosca.visitor.Visitor;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "tRelationshipType", propOrder = {
-    "instanceStates",
-    "interfaces",
-    "sourceInterfaces",
-    "targetInterfaces",
-    "validSource",
-    "validTarget"
-})
 public class TRelationshipType extends TEntityType {
 
-    @XmlElement(name = "InstanceStates")
     protected TTopologyElementInstanceStates instanceStates;
-    @XmlElement(name = "Interfaces", namespace = Namespaces.TOSCA_WINERY_EXTENSIONS_NAMESPACE)
     protected TInterfaces interfaces;
-    @XmlElement(name = "SourceInterfaces")
     protected TInterfaces sourceInterfaces;
-    @XmlElement(name = "TargetInterfaces")
     protected TInterfaces targetInterfaces;
-    @XmlElement(name = "ValidSource")
     protected TRelationshipType.ValidSource validSource;
-    @XmlElement(name = "ValidTarget")
     protected TRelationshipType.ValidTarget validTarget;
 
     public TRelationshipType() {
@@ -142,11 +122,8 @@ public class TRelationshipType extends TEntityType {
         visitor.visit(this);
     }
 
-    @XmlAccessorType(XmlAccessType.FIELD)
-    @XmlType(name = "")
     public static class ValidSource implements Serializable {
 
-        @XmlAttribute(name = "typeRef", required = true)
         protected QName typeRef;
 
         @NonNull
@@ -173,11 +150,8 @@ public class TRelationshipType extends TEntityType {
         }
     }
 
-    @XmlAccessorType(XmlAccessType.FIELD)
-    @XmlType(name = "")
     public static class ValidTarget implements Serializable {
 
-        @XmlAttribute(name = "typeRef", required = true)
         protected QName typeRef;
 
         @NonNull
