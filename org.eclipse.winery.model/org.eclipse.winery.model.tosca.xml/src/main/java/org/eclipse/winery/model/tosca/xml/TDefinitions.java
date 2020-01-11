@@ -34,7 +34,6 @@ import javax.xml.bind.annotation.XmlType;
 
 import org.eclipse.winery.model.tosca.xml.visitor.Visitor;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.github.adr.embedded.ADR;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
@@ -122,7 +121,6 @@ public class TDefinitions extends HasId implements HasName, HasTargetNamespace {
      * Convenience method for <code>this.getServiceTemplateOrNodeTypeOrNodeTypeImplementation().get(0)</code>
      */
     @XmlTransient
-    @JsonIgnore
     public TExtensibleElements getElement() {
         return this.getServiceTemplateOrNodeTypeOrNodeTypeImplementation().get(0);
     }
@@ -173,7 +171,6 @@ public class TDefinitions extends HasId implements HasName, HasTargetNamespace {
         return this.serviceTemplateOrNodeTypeOrNodeTypeImplementation;
     }
 
-    @JsonIgnore
     @NonNull
     public List<TRelationshipType> getRelationshipTypes() {
         return getServiceTemplateOrNodeTypeOrNodeTypeImplementation().stream()
@@ -182,7 +179,6 @@ public class TDefinitions extends HasId implements HasName, HasTargetNamespace {
             .collect(Collectors.toList());
     }
 
-    @JsonIgnore
     @NonNull
     public List<TRelationshipTypeImplementation> getRelationshipTypeImplementations() {
         return getServiceTemplateOrNodeTypeOrNodeTypeImplementation().stream()
@@ -191,7 +187,6 @@ public class TDefinitions extends HasId implements HasName, HasTargetNamespace {
             .collect(Collectors.toList());
     }
 
-    @JsonIgnore
     @NonNull
     public List<TArtifactTemplate> getArtifactTemplates() {
         return getServiceTemplateOrNodeTypeOrNodeTypeImplementation().stream()
@@ -200,7 +195,6 @@ public class TDefinitions extends HasId implements HasName, HasTargetNamespace {
             .collect(Collectors.toList());
     }
 
-    @JsonIgnore
     @NonNull
     public List<TPolicyTemplate> getPolicyTemplates() {
         return getServiceTemplateOrNodeTypeOrNodeTypeImplementation().stream()
@@ -209,7 +203,6 @@ public class TDefinitions extends HasId implements HasName, HasTargetNamespace {
             .collect(Collectors.toList());
     }
 
-    @JsonIgnore
     @NonNull
     public List<TServiceTemplate> getServiceTemplates() {
         return getServiceTemplateOrNodeTypeOrNodeTypeImplementation().stream()
@@ -218,7 +211,6 @@ public class TDefinitions extends HasId implements HasName, HasTargetNamespace {
             .collect(Collectors.toList());
     }
 
-    @JsonIgnore
     @NonNull
     public List<TArtifactType> getArtifactTypes() {
         return getServiceTemplateOrNodeTypeOrNodeTypeImplementation().stream()
@@ -227,7 +219,6 @@ public class TDefinitions extends HasId implements HasName, HasTargetNamespace {
             .collect(Collectors.toList());
     }
 
-    @JsonIgnore
     @NonNull
     public List<TCapabilityType> getCapabilityTypes() {
         return getServiceTemplateOrNodeTypeOrNodeTypeImplementation().stream()
@@ -236,7 +227,6 @@ public class TDefinitions extends HasId implements HasName, HasTargetNamespace {
             .collect(Collectors.toList());
     }
 
-    @JsonIgnore
     @NonNull
     public List<TInterfaceType> getInterfaceTypes() {
         return getServiceTemplateOrNodeTypeOrNodeTypeImplementation().stream()
@@ -245,7 +235,6 @@ public class TDefinitions extends HasId implements HasName, HasTargetNamespace {
             .collect(Collectors.toList());
     }
 
-    @JsonIgnore
     @NonNull
     public List<TNodeType> getNodeTypes() {
         return getServiceTemplateOrNodeTypeOrNodeTypeImplementation().stream()
@@ -254,7 +243,6 @@ public class TDefinitions extends HasId implements HasName, HasTargetNamespace {
             .collect(Collectors.toList());
     }
 
-    @JsonIgnore
     @NonNull
     public List<TNodeTypeImplementation> getNodeTypeImplementations() {
         return getServiceTemplateOrNodeTypeOrNodeTypeImplementation().stream()
@@ -263,7 +251,6 @@ public class TDefinitions extends HasId implements HasName, HasTargetNamespace {
             .collect(Collectors.toList());
     }
 
-    @JsonIgnore
     @NonNull
     public List<TRequirementType> getRequirementTypes() {
         return getServiceTemplateOrNodeTypeOrNodeTypeImplementation().stream()
@@ -272,7 +259,6 @@ public class TDefinitions extends HasId implements HasName, HasTargetNamespace {
             .collect(Collectors.toList());
     }
 
-    @JsonIgnore
     @NonNull
     public List<TPolicyType> getPolicyTypes() {
         return getServiceTemplateOrNodeTypeOrNodeTypeImplementation().stream()

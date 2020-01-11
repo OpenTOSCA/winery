@@ -22,7 +22,6 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -42,7 +41,6 @@ public class TPatternRefinementModel extends TRefinementModel {
     private List<TStayMapping> stayMappings;
 
     @NonNull
-    @JsonIgnore
     @XmlTransient
     public TTopologyTemplate getRefinementTopology() {
         if (refinementStructure == null) {

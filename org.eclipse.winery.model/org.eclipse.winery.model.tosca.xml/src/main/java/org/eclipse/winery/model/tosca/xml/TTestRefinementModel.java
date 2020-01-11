@@ -20,7 +20,6 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.eclipse.jdt.annotation.NonNull;
 
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -31,7 +30,6 @@ public class TTestRefinementModel extends TRefinementModel {
     private TTopologyTemplate testFragment;
 
     @NonNull
-    @JsonIgnore
     @XmlTransient
     public TTopologyTemplate getRefinementTopology() {
         if (testFragment == null) {

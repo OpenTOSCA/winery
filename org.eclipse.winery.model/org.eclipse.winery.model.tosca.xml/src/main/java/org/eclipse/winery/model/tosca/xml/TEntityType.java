@@ -33,7 +33,6 @@ import org.eclipse.winery.model.tosca.kvproperties.AttributeDefinitionList;
 import org.eclipse.winery.model.tosca.xml.kvproperties.WinerysPropertiesDefinition;
 import org.eclipse.winery.model.tosca.xml.visitor.Visitor;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.github.adr.embedded.ADR;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
@@ -158,7 +157,6 @@ public abstract class TEntityType extends TExtensibleElements implements HasName
         this.name = value;
     }
 
-    @JsonIgnore
     @NonNull
     public QName getQName() {
         return QName.valueOf("{" + this.targetNamespace + "}" + this.name);
@@ -209,7 +207,6 @@ public abstract class TEntityType extends TExtensibleElements implements HasName
      * null if no Winery specific KV properties are defined for the given entity type
      */
     @XmlTransient
-    @JsonIgnore
     public WinerysPropertiesDefinition getWinerysPropertiesDefinition() {
         // similar implementation as org.eclipse.winery.repository.resources.entitytypes.properties.PropertiesDefinitionResource.getListFromEntityType(TEntityType)
         WinerysPropertiesDefinition res = null;
