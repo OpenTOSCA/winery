@@ -77,7 +77,7 @@
             <div *ngIf="this.capOrReqDefToBeAdded.type && this.capOrReqDefToBeAdded.type != 'none'">
                 <winery-table title="Valid Source Types"
                               [columns]="addCapabilityColumns"
-                              [data]="this.capOrReqDefToBeAdded.validSourceTypes"
+                              [data]="validSourceTypesTableData"
                               disableFiltering="true"
                               (addBtnClicked)="onAddSourceTypeClick()"
                               (removeBtnClicked)="onRemoveClicked($event)">

@@ -55,6 +55,7 @@ export class CapOrReqDefComponent implements OnInit {
     loading = true;
     resourceApiData: CapOrRegDefinitionsResourceApiData = null;
     tableData: Array<CapOrRegDefinitionsTableData> = [];
+    validSourceTypesTableData: QName[] = [];
     capabilityTypesList: NameAndQNameApiDataList = { classes: null };
     capOrReqDefToBeAdded: CapOrReqDefinition = null;
     noneSelected = true;
@@ -136,12 +137,14 @@ export class CapOrReqDefComponent implements OnInit {
 
     getConstraintsOfType(value: string) {
         this.capOrReqDefToBeAdded.validSourceTypes = [];
+        this.validSourceTypesTableData = [];
         if (!this.noneSelected) {
             this.validSourceTypesService.getValidSourceTypesForCapabilityDefinition(value.replace('{', '/').replace('}', '/'))
                 .subscribe(
                     (current) => {
                         current.nodes.forEach(value1 => {
-                            this.capOrReqDefToBeAdded.validSourceTypes.push(new QName(value1.namespace, value1.localname));
+                            this.validSourceTypesTableData.push(new QName(value1.namespace, value1.localname));
+                            this.capOrReqDefToBeAdded.validSourceTypes.push('{' + value1.namespace + '}' + value1.localname);
                         });
                     },
                     error => this.handleError(error)
@@ -553,25 +556,17 @@ export class CapOrReqDefComponent implements OnInit {
     }
 
     onRemoveClicked(selected: QName) {
+        const toDelete: String = '{' + selected.namespace + '}' + selected.localPart;
         if (selected) {
-            this.capOrReqDefToBeAdded.validSourceTypes = this.capOrReqDefToBeAdded.validSourceTypes.filter(item => item !== selected);
-            console.log(this.capOrReqDefToBeAdded);
-            /**this.validSourceTypesService.saveValidSourceTypesForCapabilityDefinition(this.capOrReqDefToBeAdded.type.replace('{', '/')
-                .replace('}', '/'), this.validSourceTypes).subscribe(() => {
-                    this.notify.success('Saved changes.');
-                },
-             error => this.handleError(error));*/
+            this.capOrReqDefToBeAdded.validSourceTypes = this.capOrReqDefToBeAdded.validSourceTypes.filter(item => item !== toDelete);
+            this.validSourceTypesTableData = this.validSourceTypesTableData.filter(item => item !== selected);
             this.notify.success('Saved changes.');
         }
     }
 
     onAddValidSourceType() {
-        this.capOrReqDefToBeAdded.validSourceTypes.push(this.selectedNodeType);
-        /**this.validSourceTypesService.saveValidSourceTypesForCapabilityDefinition(this.capOrReqDefToBeAdded.type.replace('{', '/')
-            .replace('}', '/'), this.validSourceTypes).subscribe(() => {
-            this.notify.success('Saved changes.');
-        });*/
-        console.log(this.capOrReqDefToBeAdded);
+        this.capOrReqDefToBeAdded.validSourceTypes.push('{' + this.selectedNodeType.namespace + '}' + this.selectedNodeType.localPart);
+        this.validSourceTypesTableData.push(this.selectedNodeType);
         this.notify.success('Saved changes.');
     }
 

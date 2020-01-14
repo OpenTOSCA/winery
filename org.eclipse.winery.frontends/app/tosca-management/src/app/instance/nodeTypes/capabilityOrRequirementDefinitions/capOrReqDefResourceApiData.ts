@@ -12,6 +12,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR Apache-2.0
  *******************************************************************************/
 import { QName } from '../../../model/qName';
+import { QNameApiData } from '../../../model/qNameApiData';
 
 export class CapabilityOrRequirementDefinition {
     name: string = null;
@@ -23,7 +24,7 @@ export class CapabilityOrRequirementDefinition {
     documentation: any[] = [];
     any: any[] = [];
     otherAttributes: any = null;
-    validSourceTypes: QName[] = [];
+    validSourceTypes: String[] = [];
 }
 
 export class CapOrReqDefinition {
@@ -31,7 +32,7 @@ export class CapOrReqDefinition {
     type: string = null;
     lowerBound: string = null;
     upperBound: string = null;
-    validSourceTypes: QName[] = [];
+    validSourceTypes: String[] = [];
 }
 
 export class Constraint {
