@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017-2018 Contributors to the Eclipse Foundation
+ * Copyright (c) 2017-2020 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -28,6 +28,7 @@ import { InstanceService } from '../../instance.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ValidSourceTypesService } from '../../capabilityTypes/validSourceTypes/validSourceTypes.service';
 import { QName } from '../../../model/qName';
+import { WineryRepositoryConfigurationService } from '../../../wineryFeatureToggleModule/WineryRepositoryConfiguration.service';
 
 @Component({
     selector: 'winery-instance-cap-or-req-definitions',
@@ -89,6 +90,7 @@ export class CapOrReqDefComponent implements OnInit {
     @ViewChild('addModal') addModal: ModalDirective;
     @ViewChild('addValidNodeTypeModal') addValidNodeTypeModal: ModalDirective;
     @ViewChild('editConModal') editConModal: ModalDirective;
+    @ViewChild('showYAMLConModal') showYAMLConModal: ModalDirective;
     @ViewChild('editNewConModal') editNewConModal: ModalDirective;
     @ViewChild('lowerBoundSpinner') lowerBoundSpinner: SpinnerWithInfinityComponent;
     @ViewChild('upperBoundSpinner') upperBoundSpinner: SpinnerWithInfinityComponent;
@@ -101,6 +103,7 @@ export class CapOrReqDefComponent implements OnInit {
                 private validSourceTypesService: ValidSourceTypesService,
                 private notify: WineryNotificationService,
                 private modalService: BsModalService,
+                public configurationService: WineryRepositoryConfigurationService,
                 private router: Router) {
         this.capOrReqDefToBeAdded = new CapOrReqDefinition();
 
@@ -161,9 +164,13 @@ export class CapOrReqDefComponent implements OnInit {
             case 'constraints': {
                 for (const capOrRegDefinition of this.resourceApiData.capOrRegDefinitionsList) {
                     if (data.row.name === capOrRegDefinition.name) {
-                        this.getConstraints(capOrRegDefinition);
-                        this.getConstraintTypes();
-                        this.editConstraints(capOrRegDefinition);
+                        if (this.configurationService.isYaml()) {
+                            this.showConstraints(capOrRegDefinition);
+                        } else {
+                            this.getConstraints(capOrRegDefinition);
+                            this.getConstraintTypes();
+                            this.editConstraints(capOrRegDefinition);
+                        }
                     }
                 }
                 break;
@@ -576,5 +583,14 @@ export class CapOrReqDefComponent implements OnInit {
         } else {
             this.selectedNodeType = null;
         }
+    }
+
+    showConstraints(capOrRegDefinition: CapabilityOrRequirementDefinition) {
+        this.validSourceTypesTableData = [];
+        const self = this;
+        capOrRegDefinition.validSourceTypes.forEach(function (value) {
+            self.validSourceTypesTableData.push(QName.stringToQName(value));
+        });
+        this.showYAMLConModal.show();
     }
 }

@@ -1,5 +1,5 @@
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ~ Copyright (c) 2017-2018 Contributors to the Eclipse Foundation
+  ~ Copyright (c) 2017-2020 Contributors to the Eclipse Foundation
   ~
   ~ See the NOTICE file(s) distributed with this work for additional
   ~ information regarding copyright ownership.
@@ -154,6 +154,25 @@
                          [closeButtonLabel]="'Close'"
                          [okButtonLabel]="'Add new'">
     </winery-modal-footer>
+</winery-modal>
+
+
+<winery-modal bsModal #showYAMLConModal="bs-modal" [modalRef]="showYAMLConModal">
+    <winery-modal-header [title]="'Constraints of Capability Definition'"></winery-modal-header>
+    <winery-modal-body>
+        <winery-table title="Constraints"
+                      [columns]="addCapabilityColumns"
+                      [data]="validSourceTypesTableData"
+                      disableFiltering="true"
+                      disableButtons="true"
+                      (addBtnClicked)="onAddSourceTypeClick()"
+                      (removeBtnClicked)="onRemoveClicked($event)">
+        </winery-table>
+    </winery-modal-body>
+    <winery-modal-footer [closeButtonLabel]="'Close'"
+                         hideOkButton="true">
+    </winery-modal-footer>
+
 </winery-modal>
 
 <!--add/edit constraint modal-->

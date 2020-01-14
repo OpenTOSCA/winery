@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017-2019 Contributors to the Eclipse Foundation
+ * Copyright (c) 2017-2020 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -11,8 +11,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR Apache-2.0
  *******************************************************************************/
-import { QName } from '../../../model/qName';
-import { QNameApiData } from '../../../model/qNameApiData';
 
 export class CapabilityOrRequirementDefinition {
     name: string = null;
@@ -24,7 +22,7 @@ export class CapabilityOrRequirementDefinition {
     documentation: any[] = [];
     any: any[] = [];
     otherAttributes: any = null;
-    validSourceTypes: String[] = [];
+    validSourceTypes: string[] = [];
 }
 
 export class CapOrReqDefinition {
@@ -32,7 +30,7 @@ export class CapOrReqDefinition {
     type: string = null;
     lowerBound: string = null;
     upperBound: string = null;
-    validSourceTypes: String[] = [];
+    validSourceTypes: string[] = [];
 }
 
 export class Constraint {
