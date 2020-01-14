@@ -836,6 +836,7 @@ public class X2YConverter {
                 node.getCapabilityType(),
                 new CapabilityTypeId(node.getCapabilityType())
             ))
+            .setValidSourceTypes(node.getValidSourceTypes())
             .setDescription(convertDocumentation(node.getDocumentation()))
             .setOccurrences(node.getLowerBound(), node.getUpperBound())
             .build();

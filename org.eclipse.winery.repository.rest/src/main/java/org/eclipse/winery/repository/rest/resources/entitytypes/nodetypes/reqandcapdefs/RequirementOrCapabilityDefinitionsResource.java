@@ -152,7 +152,6 @@ public abstract class RequirementOrCapabilityDefinitionsResource<ReqDefOrCapDefR
             // add new element
             this.list.add(def);
         }
-
         return RestUtils.persist(this.res);
     }
 }

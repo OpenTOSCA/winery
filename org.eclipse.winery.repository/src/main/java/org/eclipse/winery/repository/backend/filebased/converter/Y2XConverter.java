@@ -733,6 +733,7 @@ public class Y2XConverter {
             .addDocumentation(node.getDescription())
             .setLowerBound(node.getLowerBound())
             .setUpperBound(node.getUpperBound())
+            .setValidSourceTypes(node.getValidSourceTypes())
             .build();
 
         return result;
