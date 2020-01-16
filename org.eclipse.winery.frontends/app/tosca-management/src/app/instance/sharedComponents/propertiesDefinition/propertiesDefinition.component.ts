@@ -27,11 +27,11 @@ import { ModalDirective } from 'ngx-bootstrap';
 import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
 import { WineryRepositoryConfigurationService } from '../../../wineryFeatureToggleModule/WineryRepositoryConfiguration.service';
 import { FeatureEnum } from '../../../wineryFeatureToggleModule/wineryRepository.feature.direct';
-import { Constraint } from '../../nodeTypes/capabilityOrRequirementDefinitions/capOrReqDefResourceApiData';
+import { PropertiesTableData } from './PropertiesTableData';
 
 const valid_constraint_keys = ['equal', 'greater_than', 'greater_or_equal', 'less_than', 'less_or_equal', 'in_range',
     'valid_values', 'length', 'min_length', 'max_length', 'pattern', 'schema'];
-const list_constraint_keys = ['valid_values'];
+const list_constraint_keys = ['valid_values', 'in_range'];
 const range_constraint_keys = ['in_range'];
 
 @Component({
@@ -48,7 +48,7 @@ export class PropertiesDefinitionComponent implements OnInit {
 
     propertiesEnum = PropertiesDefinitionEnum;
     loading = true;
-    
+
     resourceApiData: PropertiesDefinitionsResourceApiData;
     selectItems: SelectData[];
     activeElement = new SelectData();
@@ -60,8 +60,9 @@ export class PropertiesDefinitionComponent implements OnInit {
         { title: 'Required', name: 'required' },
         { title: 'Default Value', name: 'defaultValue' },
         { title: 'Description', name: 'description' },
-        { title: 'Constraints', name: 'constraints'},
+        { title: 'Constraints', name: 'constraints' },
     ];
+    tableData: Array<PropertiesTableData> = [];
     newProperty: PropertiesDefinitionKVElement = new PropertiesDefinitionKVElement();
     configEnum = FeatureEnum;
 
@@ -80,6 +81,27 @@ export class PropertiesDefinitionComponent implements OnInit {
      */
     ngOnInit() {
         this.getPropertiesDefinitionsResourceApiData();
+    }
+
+    copyToTable() {
+        this.tableData = [];
+        for (let property of this.resourceApiData.winerysPropertiesDefinition.propertyDefinitionKVList) {
+            let constraintsString = '';
+            for (let constraint of property.constraints) {
+                if (constraint.value == null) {
+                    constraintsString += constraint.key + ':' + constraint.list.toString();
+                } else if (constraint.list == null) {
+                    constraintsString += constraint.key + ':' + constraint.value;
+                } else {
+                    constraintsString += constraint.key;
+                }
+                if (property.constraints.indexOf(constraint) != property.constraints.length - 1) {
+                    constraintsString += ', ';
+                }
+            }
+            this.tableData.push(new PropertiesTableData(property.key, property.type, property.required, property.defaultValue, property.description
+                , constraintsString));
+        }
     }
 
     // endregion
@@ -244,37 +266,32 @@ export class PropertiesDefinitionComponent implements OnInit {
      * @param description
      */
     addProperty(propType: string, propName: string, required: boolean, defaultValue: string, description: string) {
-        console.log("desc " + description);
-        console.log("con " + this.newProperty.constraints[0].key);
         this.resourceApiData.winerysPropertiesDefinition.propertyDefinitionKVList.push({
             key: propName,
             type: propType,
             defaultValue: defaultValue,
             required: required,
             description: description,
-            constraints: Object.assign([], this.newProperty.constraints),
+            constraints: this.newProperty.constraints.slice(),
         });
         this.addModal.hide();
+        this.copyToTable();
     }
 
-    addConstraint(selectedConstraintKey:string, constraintValue: string) {
-        var con = new ConstraintClause();
-        con.key = selectedConstraintKey;
-        
+    addConstraint(selectedConstraintKey: string, constraintValue: string) {
         // lists have to be separated by ',' 
-        if (constraintValue.includes(',')) {
-            con.list = constraintValue.split(',');
+        if (list_constraint_keys.indexOf(selectedConstraintKey) > -1) {
+            this.newProperty.constraints.push(new ConstraintClause(selectedConstraintKey, null, constraintValue.split(',')));
         } else {
-            con.value = constraintValue;
+            this.newProperty.constraints.push(new ConstraintClause(selectedConstraintKey, constraintValue, null));
         }
-        this.newProperty.constraints.push(con);
-        console.log(this.newProperty.constraints)
     }
 
     removeConfirmed() {
         this.confirmDeleteModal.hide();
         this.deleteItemFromPropertyDefinitionKvList(this.elementToRemove);
         this.elementToRemove = null;
+        this.copyToTable();
     }
 
     onAddModalShown() {
@@ -319,6 +336,7 @@ export class PropertiesDefinitionComponent implements OnInit {
      */
     private handleSuccess(data: any, actionType?: string): void {
         this.loading = false;
+        this.copyToTable();
         switch (actionType) {
             case 'delete':
                 this.notify.success('Deleted PropertiesDefinition', 'Success');
@@ -385,6 +403,17 @@ export class PropertiesDefinitionComponent implements OnInit {
     }
 
     /**
+     * removes item from constraint list
+     * @param constraintClause
+     */
+    removeConstraint(constraintClause: ConstraintClause) {
+        const index = this.newProperty.constraints.indexOf(constraintClause);
+        if (index > -1) {
+            this.newProperty.constraints.splice(index, 1);
+        }
+    }
+
+    /**
      * Sets loading to false and shows error notification.
      *
      * @param error
@@ -393,17 +422,18 @@ export class PropertiesDefinitionComponent implements OnInit {
         this.loading = false;
         this.notify.error(error.message, 'Error');
     }
-    
+
     get valid_constraint_keys() {
         return valid_constraint_keys;
     }
+
     get list_constraint_keys() {
         return list_constraint_keys;
     }
+
     get range_constraint_keys() {
         return range_constraint_keys;
     }
-    
 
     // endregion
 }

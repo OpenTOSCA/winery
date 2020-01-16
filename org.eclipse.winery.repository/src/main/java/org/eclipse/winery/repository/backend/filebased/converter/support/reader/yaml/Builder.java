@@ -396,6 +396,7 @@ public class Builder {
     public TConstraintClause buildConstraintClause(Object object, Parameter<TConstraintClause> parameter) {
         if (Objects.isNull(object)) return null;
         TConstraintClause constraintClause = new TConstraintClause();
+        constraintClause.setKey(parameter.getValue());
         switch (parameter.getValue()) {
             case "in_range":
                 constraintClause.setList(buildListString(object,

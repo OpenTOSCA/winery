@@ -19,13 +19,11 @@ export enum PropertiesDefinitionEnum {
     None = 'None'
 }
 
-
 export class ConstraintClause {
-    key: string = null;
-    // value might be of type list or string
-    // there are probably better solutions possible than this
-    value: string = null;
-    list: string[] = null;
+    constructor(public key: string,
+                public value: string,
+                public list: string[]) {
+    }
 }
 
 export class PropertiesDefinitionKVElement {

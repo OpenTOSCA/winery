@@ -20,6 +20,7 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -224,13 +225,6 @@ public class Writer extends AbstractVisitor<Printer, Writer.Parameter> {
             .print(printList("constraints", node.getConstraints(), parameter))
             .print(printVisitorNode(node.getEntrySchema(), parameter));
     }
-    
-    public Printer visit(TConstraintClause node, Parameter parameter) {
-        if (node.getValue() == null) {
-            return new Printer(parameter.getIndent()).printKey("- " + node.getKey()).printListObject(node.getList());
-        }
-        return new Printer(parameter.getIndent()).printKeyValue("- " + node.getKey(), node.getValue());
-    }
 
     public Printer visit(TEntrySchema node, Parameter parameter) {
         return new Printer(parameter.getIndent())
@@ -430,6 +424,17 @@ public class Writer extends AbstractVisitor<Printer, Writer.Parameter> {
             .print(printList("constraints", node.getConstraints(), parameter))
             .print(printVisitorNode(node.getEntrySchema(), parameter))
             .printKeyObject(parameter.getKey(), node.getValue());
+    }
+    
+    public Printer visit(TConstraintClause node, Parameter parameter) {
+        if (node.getValue() != null) {
+            return new Printer(parameter.getIndent())
+                .printKeyValue("- " + node.getKey(), node.getValue());
+        } else if (node.getList() != null) {
+            return new Printer(parameter.getIndent())
+                .printKeyListObjectInline("- " + node.getKey(), new ArrayList<>(node.getList()));
+        }
+        return null;
     }
 
     public Printer visit(TCapabilityAssignment node, Parameter parameter) {

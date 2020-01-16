@@ -42,7 +42,6 @@ import org.eclipse.winery.model.tosca.TArtifactTemplate;
 import org.eclipse.winery.model.tosca.TBoolean;
 import org.eclipse.winery.model.tosca.TBoundaryDefinitions;
 import org.eclipse.winery.model.tosca.TCapability;
-import org.eclipse.winery.model.tosca.TConstraint;
 import org.eclipse.winery.model.tosca.TDeploymentArtifact;
 import org.eclipse.winery.model.tosca.TDeploymentArtifacts;
 import org.eclipse.winery.model.tosca.TDocumentation;
@@ -63,7 +62,6 @@ import org.eclipse.winery.model.tosca.TRequirementType;
 import org.eclipse.winery.model.tosca.TTag;
 import org.eclipse.winery.model.tosca.TTags;
 import org.eclipse.winery.model.tosca.TTopologyTemplate;
-import org.eclipse.winery.model.tosca.kvproperties.ConstraintClauseKV;
 import org.eclipse.winery.model.tosca.kvproperties.ConstraintClauseKVList;
 import org.eclipse.winery.model.tosca.kvproperties.PropertyDefinitionKV;
 import org.eclipse.winery.model.tosca.kvproperties.WinerysPropertiesDefinition;
@@ -301,8 +299,10 @@ public class X2YConverter {
                     .build()
             ));
     }
-    
+
     public List<TConstraintClause> convert(ConstraintClauseKVList constraints) {
+        if (Objects.isNull(constraints)) return null;
+
         List<TConstraintClause> list = new ArrayList<>();
         constraints.forEach(entry -> {
             TConstraintClause clause = new TConstraintClause();
@@ -313,7 +313,7 @@ public class X2YConverter {
         });
         return list;
     }
-    
+
     public Map<String, TArtifactType> convert(org.eclipse.winery.model.tosca.TArtifactType node) {
         return Collections.singletonMap(
             node.getIdFromIdOrNameField(),

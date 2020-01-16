@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017 Contributors to the Eclipse Foundation
+ * Copyright (c) 2020 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -11,32 +11,20 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR Apache-2.0
  *******************************************************************************/
-.localLoader {
-    padding-top: 180px;
-}
+export class PropertiesTableData {
+    constructor(key: string, type: string, required: boolean, defaultValue: string, description: string, constraints: string) {
+        this.key = key;
+        this.type = type;
+        this.required = required;
+        this.defaultValue = defaultValue;
+        this.description = description;
+        this.constraints = constraints;
+    }
 
-.radioWrapper {
-    height: 315px;
-}
-
-.left {
-    float: left;
-}
-
-.right {
-    float: right;
-}
-
-.wrapperTab {
-    margin-top: 15px;
-}
-
-.wrapperTabButtom {
-    margin-top: 15px;
-    padding-bottom: 30px;
-}
-
-.constraintField {
-    white-space: nowrap;
-    margin-top: 5px;
+    key: string = null;
+    type: string = null;
+    required: boolean;
+    defaultValue: string;
+    description: string;
+    constraints: string;
 }
