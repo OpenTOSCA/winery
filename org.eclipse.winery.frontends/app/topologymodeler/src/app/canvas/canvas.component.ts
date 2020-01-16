@@ -2275,7 +2275,12 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
             if (this.matchType(reqDefinition.node, targetNodeType.qName, this.entityTypes.unGroupedNodeTypes) &&
                 this.matchType(reqDefinition.capability, capDefinition.capabilityType, this.entityTypes.capabilityTypes)) {
                 // todo check for the conditions set by the capability definition/type (valid_source_types)
-                return true;
+                if (cap.validSourceTypes && cap.validSourceTypes.includes(sourceNodeType.qName)) {
+                    return true;
+                } else {
+                    this.notify.warning(sourceNodeType.localName + ' is not a valid source type for ' + targetNodeType.localName);
+                    return false;
+                }
             } else {
                 this.notify.warning('The Selected Requirement and Capability are not Compatible');
                 return false;

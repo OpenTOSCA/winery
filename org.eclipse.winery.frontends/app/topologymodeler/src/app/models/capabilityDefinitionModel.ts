@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019 Contributors to the Eclipse Foundation
+ * Copyright (c) 2019-2020 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -11,6 +11,8 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR Apache-2.0
  *******************************************************************************/
+import { QName } from './qname';
+
 export class CapabilityDefinitionModel {
     public constraints: any;
     public name: string;
@@ -20,4 +22,5 @@ export class CapabilityDefinitionModel {
     public documentation: any;
     public any: any[];
     public otherAttributes: any;
+    public validSourceTypes: QName[];
 }

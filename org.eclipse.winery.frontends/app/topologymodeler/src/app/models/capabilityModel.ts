@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2017-2018 Contributors to the Eclipse Foundation
+ * Copyright (c) 2017-2020 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -13,6 +13,7 @@
  ********************************************************************************/
 
 import { CapabilityDefinitionModel } from './capabilityDefinitionModel';
+import { QName } from './qname';
 
 /**
  * Encompasses the capability model
@@ -24,6 +25,7 @@ export class CapabilityModel {
     public name: string;
     public otherAttributes: any;
     public type: string;
+    public validSourceTypes: QName[];
     public properties?: any;
 
     static fromCapabilityDefinitionModel(def: CapabilityDefinitionModel): CapabilityModel {
@@ -33,6 +35,7 @@ export class CapabilityModel {
         result.name = def.name;
         result.otherAttributes = def.otherAttributes;
         result.type = def.capabilityType;
+        result.validSourceTypes = def.validSourceTypes;
 
         return result;
     }

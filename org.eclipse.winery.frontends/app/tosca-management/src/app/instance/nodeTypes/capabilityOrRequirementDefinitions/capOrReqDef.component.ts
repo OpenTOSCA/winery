@@ -597,9 +597,11 @@ export class CapOrReqDefComponent implements OnInit {
     showConstraints(capOrRegDefinition: CapabilityOrRequirementDefinition) {
         this.validSourceTypesTableData = [];
         const self = this;
-        capOrRegDefinition.validSourceTypes.forEach(function (value) {
-            self.validSourceTypesTableData.push(QName.stringToQName(value));
-        });
+        if (capOrRegDefinition.validSourceTypes) {
+            capOrRegDefinition.validSourceTypes.forEach(function (value) {
+                self.validSourceTypesTableData.push(QName.stringToQName(value));
+            });
+        }
         this.showYAMLConModal.show();
     }
 }
