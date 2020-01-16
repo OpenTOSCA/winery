@@ -183,6 +183,15 @@ export class CapOrReqDefComponent implements OnInit {
                 }
                 break;
             }
+            case 'localPart': {
+                for (const entry of this.validSourceTypesTableData) {
+                    if (data.row.localPart === entry.localPart) {
+                        const url = '/nodetypes/' + entry.namespace + '/' + entry.localPart;
+                        this.router.navigate([url]);
+                    }
+                }
+                break;
+            }
             default: {
                 // EXTRA: add cell highlighting
                 break;

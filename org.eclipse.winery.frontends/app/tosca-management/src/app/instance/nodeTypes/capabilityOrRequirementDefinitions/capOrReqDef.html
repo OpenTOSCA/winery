@@ -160,13 +160,12 @@
 <winery-modal bsModal #showYAMLConModal="bs-modal" [modalRef]="showYAMLConModal">
     <winery-modal-header [title]="'Constraints of Capability Definition'"></winery-modal-header>
     <winery-modal-body>
-        <winery-table title="Constraints"
+        <winery-table title="Valid Source Types"
                       [columns]="addCapabilityColumns"
                       [data]="validSourceTypesTableData"
                       disableFiltering="true"
                       disableButtons="true"
-                      (addBtnClicked)="onAddSourceTypeClick()"
-                      (removeBtnClicked)="onRemoveClicked($event)">
+                      (cellSelected)="onCellSelected($event)">
         </winery-table>
     </winery-modal-body>
     <winery-modal-footer [closeButtonLabel]="'Close'"
