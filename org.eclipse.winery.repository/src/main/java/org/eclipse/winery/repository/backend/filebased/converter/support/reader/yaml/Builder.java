@@ -34,7 +34,6 @@ import java.util.stream.Stream;
 import javax.xml.namespace.QName;
 
 import org.eclipse.winery.common.version.VersionUtils;
-import org.eclipse.winery.model.tosca.kvproperties.ConstraintClauseKV;
 import org.eclipse.winery.model.tosca.yaml.TArtifactDefinition;
 import org.eclipse.winery.model.tosca.yaml.TArtifactType;
 import org.eclipse.winery.model.tosca.yaml.TAttributeAssignment;
