@@ -16,10 +16,12 @@ metadata:
     ipt1.required = false
     ipt1.default = 99
     ipt1.status = deprecated
-    ipt1.constraints.0.greater_or_equal = 42
+    ipt1.constraints.0.key = greater_or_equal
+    ipt1.constraints.0.value = 42
     ipt1.entry_schema.description = entry_schema description
     ipt1.entry_schema.type = integer
-    ipt1.entry_schema.constraints.0.greater_or_equal = 42    
+    ipt1.entry_schema.constraints.0.key = greater_or_equal
+    ipt1.entry_schema.constraints.0.value = 42    
 
 topology_template:  
   inputs: 

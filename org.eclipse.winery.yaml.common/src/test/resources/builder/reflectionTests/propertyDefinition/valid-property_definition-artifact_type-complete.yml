@@ -14,7 +14,8 @@ metadata:
     prop1.required = true
     prop1.default = 2
     prop1.status = supported
-    prop1.constraints.0.greater_than = 0
+    prop1.constraints.0.key = greater_than
+    prop1.constraints.0.value = 0
     prop1.entry_schema.description = Entry schema description    
 
 artifact_types:  

@@ -346,8 +346,9 @@ public class Builder {
 
     @Nullable
     public TConstraintClause buildConstraintClause(Object object, Parameter<TConstraintClause> parameter) {
-        if (Objects.isNull(object)) return null;
+        if (Objects.isNull(object) || Objects.isNull(parameter.getValue())) return null;
         TConstraintClause constraintClause = new TConstraintClause();
+        constraintClause.setKey(parameter.getValue());
         switch (parameter.getValue()) {
             case "in_range":
                 constraintClause.setList(buildListString(object,
@@ -358,7 +359,6 @@ public class Builder {
                     new Parameter<List<String>>(parameter.getContext()).addContext("valid_values")));
                 break;
             default:
-                constraintClause.setKey(parameter.getValue());
                 constraintClause.setValue(stringValue(object));
         }
         return constraintClause;

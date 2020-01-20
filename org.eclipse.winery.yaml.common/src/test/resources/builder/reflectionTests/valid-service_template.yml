@@ -41,11 +41,13 @@ metadata:
     artifact_types.artf1.properties.artf1.prt1.required = false 
     artifact_types.artf1.properties.artf1.prt1.default = Default value 
     artifact_types.artf1.properties.artf1.prt1.status = supported 
-    artifact_types.artf1.properties.artf1.prt1.constraints.0.valid_values = [Default value, Non default value] 
+    artifact_types.artf1.properties.artf1.prt1.constraints.0.key = valid_values
+    artifact_types.artf1.properties.artf1.prt1.constraints.0.list = [Default value, Non default value]
     artifact_types.artf1.properties.artf1.prt2.type = list 
     artifact_types.artf1.properties.artf1.prt2.entry_schema.description = Entry schema description 
     artifact_types.artf1.properties.artf1.prt2.entry_schema.type = integer 
-    artifact_types.artf1.properties.artf1.prt2.entry_schema.constraints.0.in_range = [1,10]
+    artifact_types.artf1.properties.artf1.prt2.entry_schema.constraints.0.key = in_range
+    artifact_types.artf1.properties.artf1.prt2.entry_schema.constraints.0.list = [1,10]
     data_types.dtp1.derived_from = tosca.datatypes.TimeInterval
     data_types.dtp1.version = 1.0.0
     data_types.dtp1.metadata.md1 = Metadata value
@@ -120,7 +122,8 @@ metadata:
     topology_template.inputs.ipt1.value = 42
     topology_template.inputs.ipt1.required = false
     topology_template.inputs.ipt1.default = 99
-    topology_template.inputs.ipt1.constraints.0.greater_or_equal = 42
+    topology_template.inputs.ipt1.constraints.0.key = greater_or_equal
+    topology_template.inputs.ipt1.constraints.0.value = 42
     topology_template.node_templates.ndt1.type = ntp1
     topology_template.node_templates.ndt1.description = Node template description
     topology_template.node_templates.ndt1.metadata.md1 = Metadata value

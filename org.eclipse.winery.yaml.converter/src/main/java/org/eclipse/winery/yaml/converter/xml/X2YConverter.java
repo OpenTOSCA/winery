@@ -65,6 +65,7 @@ import org.eclipse.winery.model.tosca.TRequirementType;
 import org.eclipse.winery.model.tosca.TTag;
 import org.eclipse.winery.model.tosca.TTags;
 import org.eclipse.winery.model.tosca.TTopologyTemplate;
+import org.eclipse.winery.model.tosca.kvproperties.ConstraintClauseKVList;
 import org.eclipse.winery.model.tosca.kvproperties.PropertyDefinitionKV;
 import org.eclipse.winery.model.tosca.kvproperties.WinerysPropertiesDefinition;
 import org.eclipse.winery.model.tosca.utils.ModelUtilities;
@@ -73,6 +74,7 @@ import org.eclipse.winery.model.tosca.yaml.TArtifactType;
 import org.eclipse.winery.model.tosca.yaml.TCapabilityAssignment;
 import org.eclipse.winery.model.tosca.yaml.TCapabilityDefinition;
 import org.eclipse.winery.model.tosca.yaml.TCapabilityType;
+import org.eclipse.winery.model.tosca.yaml.TConstraintClause;
 import org.eclipse.winery.model.tosca.yaml.TImplementation;
 import org.eclipse.winery.model.tosca.yaml.TImportDefinition;
 import org.eclipse.winery.model.tosca.yaml.TInterfaceDefinition;
@@ -307,9 +309,26 @@ public class X2YConverter {
             .collect(Collectors.toMap(
                 PropertyDefinitionKV::getKey,
                 entry -> new TPropertyDefinition.Builder(convertType(entry.getType()))
-                    .setRequired(false)
+                    .setRequired(entry.isRequired())
+                    .setDefault(entry.getDefaultValue())
+                    .setDescription(entry.getDescription())
+                    .addConstraints(convert(entry.getConstraints()))
                     .build()
             ));
+    }
+
+    public List<TConstraintClause> convert(ConstraintClauseKVList constraints) {
+        if (Objects.isNull(constraints)) return null;
+
+        List<TConstraintClause> list = new ArrayList<>();
+        constraints.forEach(entry -> {
+            TConstraintClause clause = new TConstraintClause();
+            clause.setKey(entry.getKey());
+            clause.setValue(entry.getValue());
+            clause.setList(entry.getList());
+            list.add(clause);
+        });
+        return list;
     }
 
     public Map<String, TArtifactType> convert(org.eclipse.winery.model.tosca.TArtifactType node) {

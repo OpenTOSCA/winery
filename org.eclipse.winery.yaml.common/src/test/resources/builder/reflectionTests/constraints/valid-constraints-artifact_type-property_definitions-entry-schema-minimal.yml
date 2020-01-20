@@ -10,7 +10,8 @@ metadata:
   assert-typeof: |
     0 = TConstraintClause
   assert: |
-    0.max_length = 20
+    0.key = max_length
+    0.value = 20
 
 artifact_types:
   test.artifacttypes.at1:

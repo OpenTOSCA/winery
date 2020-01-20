@@ -11,8 +11,10 @@ metadata:
     properties.prop1.constraints.0 = TConstraintClause
     interfaces.intf1.inputs.input1.constraints.0 = TConstraintClause   
   assert: |
-    properties.prop1.constraints.0.equal = 2
-    interfaces.intf1.inputs.input1.constraints.0.equal = 2
+    properties.prop1.constraints.0.key = equal
+    properties.prop1.constraints.0.value = 2
+    interfaces.intf1.inputs.input1.constraints.0.key = equal
+    interfaces.intf1.inputs.input1.constraints.0.value = 2
 relationship_types:
   test.relationshiptypes.rt1:
     derived_from: tosca.relationships.Root

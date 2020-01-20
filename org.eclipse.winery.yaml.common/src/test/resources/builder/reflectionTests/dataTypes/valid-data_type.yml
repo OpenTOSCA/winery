@@ -15,7 +15,8 @@ metadata:
     version = 1.0.0
     metadata.metaData1 = Metadata value
     description = Data type description
-    constraints.0.equal = 2    
+    constraints.0.key = equal
+    constraints.0.value = 2    
     properties.prop1.type = string
    
 data_types:

@@ -10,7 +10,8 @@ metadata:
   assert-typeof: |
     0 = TConstraintClause
   assert: |
-    0.greater_than = 0
+    0.key = greater_than
+    0.value = 0
 
 interface_types:
   test.interfacetypes.it1:

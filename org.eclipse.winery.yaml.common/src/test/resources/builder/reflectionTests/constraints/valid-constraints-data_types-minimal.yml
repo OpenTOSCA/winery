@@ -11,8 +11,10 @@ metadata:
     constraints.0 = TConstraintClause
     properties.prop1.constraints.0 = TConstraintClause
   assert: |
-    constraints.0.equal = 2
-    properties.prop1.constraints.0.equal = 2
+    constraints.0.key = equal
+    constraints.0.value = 2
+    properties.prop1.constraints.0.key = equal
+    properties.prop1.constraints.0.value = 2
 
 data_types:
   test.datatypes.dt1:

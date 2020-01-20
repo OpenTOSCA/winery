@@ -16,10 +16,12 @@ metadata:
     opt1.required = false
     opt1.default = 99
     opt1.status = deprecated
-    opt1.constraints.0.greater_or_equal = 42
+    opt1.constraints.0.key = greater_or_equal
+    opt1.constraints.0.value = 42
     opt1.entry_schema.description = entry_schema description
     opt1.entry_schema.type = integer
-    opt1.entry_schema.constraints.0.greater_or_equal = 42    
+    opt1.entry_schema.constraints.0.key = greater_or_equal
+    opt1.entry_schema.constraints.0.value = 42    
 
 topology_template:  
   outputs: 

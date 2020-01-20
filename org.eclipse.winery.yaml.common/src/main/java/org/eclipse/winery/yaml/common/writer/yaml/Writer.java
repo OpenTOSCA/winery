@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -165,16 +166,19 @@ public class Writer extends AbstractVisitor<Printer, Writer.Parameter> {
             .printKeyValue("required", node.getRequired())
             .printKeyObject("default", node.getDefault())
             .printKeyValue("status", node.getStatus())
-            .printKeyObject("constraints", node.getConstraints())
+            .print(printList("constraints", node.getConstraints(), parameter))
             .print(printVisitorNode(node.getEntrySchema(), parameter));
     }
 
     public Printer visit(TConstraintClause node, Parameter parameter) {
-        if (node.getValue() == null) {
-            return new Printer(parameter.getIndent()).printKeyValue("- " + node.getKey(), node.getList());
+        if (node.getValue() != null) {
+            return new Printer(parameter.getIndent())
+                .printKeyValue("- " + node.getKey(), node.getValue());
+        } else if (node.getList() != null) {
+            return new Printer(parameter.getIndent())
+                .printKeyListObjectInline("- " + node.getKey(), new ArrayList<>(node.getList()));
         }
-        return new Printer(parameter.getIndent()).printKeyValue("- " + node.getKey(), node.getValue());
-
+        return null;
     }
 
     public Printer visit(TEntrySchema node, Parameter parameter) {

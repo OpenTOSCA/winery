@@ -8,16 +8,26 @@ metadata:
   exception: None
   keyname: artifact_types.test.artifacttypes.at1.properties.p1.constraints
   assert: |
-    0.equal = 2
-    1.greater_than = 1
-    2.less_than = 3
-    3.less_or_equal = 2 
-    4.in_range = [2,3]
-    5.valid_values = [a,b,c]
-    6.length = [1,3]
-    7.min_length = 1
-    8.max_length = 3
-    9.pattern = [a-zA-Z]+
+    0.value = 2
+    1.value = 1
+    2.value = 3
+    3.value = 2 
+    4.list = [2,3]
+    5.list = [a,b,c]
+    6.value = 1
+    7.value = 1
+    8.value = 3
+    9.value = [a-zA-Z]+
+    0.key = equal
+    1.key = greater_than
+    2.key = less_than
+    3.key = less_or_equal
+    4.key = in_range
+    5.key = valid_values
+    6.key = length
+    7.key = min_length
+    8.key = max_length
+    9.key = pattern
 
 artifact_types:
   test.artifacttypes.at1:
@@ -32,7 +42,7 @@ artifact_types:
           - less_or_equal: 2
           - in_range: [ 2, 3 ]
           - valid_values: [ a, b, c ]
-          - length: [1,3]
+          - length: 1
           - min_length: 1
           - max_length: 3
           - pattern: "[a-zA-Z]+"
