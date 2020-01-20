@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2017 Contributors to the Eclipse Foundation
+ * Copyright (c) 2017-2019 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -239,7 +239,7 @@ public class Writer extends AbstractVisitor<Printer, Writer.Parameter> {
             .printKeyValue("type", node.getType())
             .printKeyObject("default", node.getDefault())
             .printKeyValue("status", node.getStatus())
-            .print(printVisitorNode(node.getEntrySchema(), parameter));
+            .print(printVisitorNode(node.getEntrySchema(), parameter.addContext("entry_schema")));
     }
 
     public Printer visit(TDataType node, Parameter parameter) {
@@ -298,7 +298,6 @@ public class Writer extends AbstractVisitor<Printer, Writer.Parameter> {
 
     public Printer visit(TNodeType node, Parameter parameter) {
         return new Printer(parameter.getIndent())
-            .print(printMap("attributes", node.getAttributes(), parameter))
             .print(printListMap("requirements", node.getRequirements().stream().map(TMapRequirementDefinition::getMap).collect(Collectors.toList()), parameter))
             .print(printMap("capabilities", node.getCapabilities(), parameter))
             .print(printMap("interfaces", node.getInterfaces(), parameter))

@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2017 Contributors to the Eclipse Foundation
+ * Copyright (c) 2017-2019 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -93,6 +93,8 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+// todo this class is not uptodate! please use the correct one!
+@Deprecated
 public class Y2XConverter {
     public final static Logger LOGGER = LoggerFactory.getLogger(Y2XConverter.class);
     private final IRepository repository;
@@ -556,7 +558,7 @@ public class Y2XConverter {
         return new TRequirementDefinition.Builder(id,
             convertRequirementDefinition(
                 node,
-                getRequirementTypeName(node.getCapability(), id)
+                getRequirementTypeName(node.getCapability().toString(), id)
             ))
             .setLowerBound(node.getLowerBound())
             .setUpperBound(node.getUpperBound())
@@ -581,9 +583,9 @@ public class Y2XConverter {
         return new QName(namespace, result.getName());
     }
 
-    private String getRequirementTypeName(QName capability, String id) {
+    private String getRequirementTypeName(String capability, String id) {
         if (Objects.isNull(capability)) return id.concat("Type");
-        return "Req".concat(capability.getLocalPart());
+        return "Req".concat(capability);
     }
 
     /**
@@ -604,7 +606,7 @@ public class Y2XConverter {
 
         return new TRequirement.Builder(id, new QName(
             Optional.ofNullable(node.getCapability()).map(QName::getNamespaceURI).orElse(this.namespace),
-            getRequirementTypeName(node.getCapability(), id)
+            getRequirementTypeName(node.getCapability().toString(), id)
         ))
             .build();
     }

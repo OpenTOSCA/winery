@@ -18,13 +18,15 @@ import javax.xml.namespace.QName;
 import org.eclipse.winery.repository.backend.filebased.converter.support.Namespaces;
 
 public class TypeConverter {
+
     public static TypeConverter INSTANCE = new TypeConverter();
 
     public QName convert(QName type) {
+        if (type == null) {
+            return new QName(Namespaces.XML_NS, "string", "xsd");
+        }
         if (type.getNamespaceURI().equals(Namespaces.YAML_NS)) {
             switch (type.getLocalPart()) {
-                case "string":
-                    return new QName(Namespaces.XML_NS, "string", "xsd");
                 case "integer":
                 case "float":
                     return new QName(Namespaces.XML_NS, "decimal", "xsd");
@@ -32,6 +34,7 @@ public class TypeConverter {
                     return new QName(Namespaces.XML_NS, "boolean", "xsd");
                 case "timestamp":
                     return new QName(Namespaces.XML_NS, "date", "xsd");
+                case "string":
                 case "null":
                     return new QName(Namespaces.XML_NS, "string", "xsd");
                 default:
@@ -42,6 +45,9 @@ public class TypeConverter {
     }
 
     public Class convertToJavaType(QName type) {
+        if (type == null) {
+            return Object.class;
+        }
         if (type.getNamespaceURI().equals(Namespaces.YAML_NS)) {
             switch (type.getLocalPart()) {
                 case "integer":

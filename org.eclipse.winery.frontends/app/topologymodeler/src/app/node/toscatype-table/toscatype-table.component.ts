@@ -21,6 +21,11 @@ import { BackendService } from '../../services/backend.service';
 import { EntityTypesModel } from '../../models/entityTypesModel';
 import { ReqCapRelationshipService } from '../../services/req-cap-relationship.service';
 import { ToscaTypes } from '../../../../../tosca-management/src/app/model/enums';
+import { WineryRepositoryConfigurationService } from '../../../../../tosca-management/src/app/wineryFeatureToggleModule/WineryRepositoryConfiguration.service';
+import { ReqCapModalType, ShowReqCapModalEventData } from './showReqCapModalEventData';
+import { RequirementModel } from '../../models/requirementModel';
+import { RequirementDefinitionModel } from '../../models/requirementDefinitonModel';
+import { VisualEntityType } from '../../models/ttopology-template';
 
 @Component({
     selector: 'winery-toscatype-table',
@@ -29,6 +34,8 @@ import { ToscaTypes } from '../../../../../tosca-management/src/app/model/enums'
 })
 export class ToscatypeTableComponent implements OnInit, OnChanges {
 
+    readonly editOperation = ReqCapModalType.Edit;
+    readonly newOperation = ReqCapModalType.AddNew;
     readonly toscaTypes = ToscaTypes;
     readonly tableType = TableType;
 
@@ -38,7 +45,8 @@ export class ToscatypeTableComponent implements OnInit, OnChanges {
     @Input() entityTypes: EntityTypesModel;
 
     // Event emitter for showing the modal of a clicked capability or requirement id
-    @Output() showClickedReqOrCapModal: EventEmitter<any>;
+    @Output() showClickedReqOrCapModal: EventEmitter<ShowReqCapModalEventData>;
+    @Output() relationshipTemplateIdClicked: EventEmitter<string>;
 
     currentToscaTypeData;
     currentToscaType;
@@ -46,8 +54,10 @@ export class ToscatypeTableComponent implements OnInit, OnChanges {
 
     constructor(private entitiesModalService: EntitiesModalService,
                 private backendService: BackendService,
-                private reqCapRelationshipService: ReqCapRelationshipService) {
+                private reqCapRelationshipService: ReqCapRelationshipService,
+                private configurationService: WineryRepositoryConfigurationService) {
         this.showClickedReqOrCapModal = new EventEmitter();
+        this.relationshipTemplateIdClicked = new EventEmitter<string>();
     }
 
     ngOnInit() {
@@ -62,7 +72,7 @@ export class ToscatypeTableComponent implements OnInit, OnChanges {
         }
     }
 
-    isEllipsisActive(cell) {
+    isEllipsisActive(cell): boolean {
         return (cell.offsetWidth < cell.scrollWidth);
     }
 
@@ -150,11 +160,12 @@ export class ToscatypeTableComponent implements OnInit, OnChanges {
 
     /**
      * This modal handler gets triggered upon clicking on a capability or requirement id in the table
-     * @param clickEvent - this holds the information about the click event, needed for determining which element was
-     *     clicked
+     * @param id - the id of the rea/cap that was clicked.
+     * @param operation the type of the requested operation.
      */
-    showExistingReqOrCapModal(clickEvent: any): void {
-        this.showClickedReqOrCapModal.emit(clickEvent);
+    showExistingReqOrCapModal(id: string, operation: ReqCapModalType): void {
+        const event = new ShowReqCapModalEventData(id, operation);
+        this.showClickedReqOrCapModal.emit(event);
     }
 
     /**
@@ -164,16 +175,76 @@ export class ToscatypeTableComponent implements OnInit, OnChanges {
      */
     clickReqOrCapRef(reqOrCapRef: string) {
         let clickedDefinition;
+        let url;
         if (this.toscaType === this.toscaTypes.RequirementType) {
             clickedDefinition = definitionType.RequirementDefinitions;
         } else {
             clickedDefinition = definitionType.CapabilityDefinitions;
         }
-        const url = this.backendService.configuration.uiURL
+
+        url = this.backendService.configuration.uiURL
             + urlElement.NodeTypeURL
             + encodeURIComponent(encodeURIComponent(this.getNamespace(this.currentNodeData.nodeTemplate.type)))
             + '/' + this.getLocalName(this.currentNodeData.nodeTemplate.type) + clickedDefinition;
+
         window.open(url, '_blank');
+    }
+
+    clickYamlReqRef(): void {
+        const url = this.backendService.configuration.uiURL
+            + urlElement.NodeTypeURL
+            + this.getNamespace(this.currentNodeData.nodeTemplate.type)
+            + '/' + this.getLocalName(this.currentNodeData.nodeTemplate.type)
+            + '/requirementdefinitionsyaml/';
+
+        window.open(url, '_blank');
+    }
+
+    clickYamlCapRef(): void {
+        const url = this.backendService.configuration.uiURL
+            + urlElement.NodeTypeURL
+            + this.getNamespace(this.currentNodeData.nodeTemplate.type)
+            + '/' + this.getLocalName(this.currentNodeData.nodeTemplate.type)
+            + definitionType.CapabilityDefinitions;
+
+        window.open(url, '_blank');
+    }
+
+    clickYamlRelationshipTemplateId(id: string, req: RequirementModel) {
+        // the id might not belong to a relationship template if the requirement is not yet fulfilled.
+        if (this.isRequirementFulfilled(req)) {
+            this.relationshipTemplateIdClicked.emit(id);
+        }
+    }
+
+    private getRequirementDefinition(req: RequirementModel): RequirementDefinitionModel {
+        const nodeTypeString = this.currentNodeData.nodeTemplate.type;
+        return this.entityTypes.unGroupedNodeTypes
+            .find(nt => nt.qName === nodeTypeString)
+            .full
+            .serviceTemplateOrNodeTypeOrNodeTypeImplementation[0]
+            .requirementDefinitions
+            .requirementDefinition
+            .find((reqDef: RequirementDefinitionModel) => reqDef.name === req.name);
+    }
+
+    getAllowedRelationshipTypes(req: RequirementModel): VisualEntityType[] {
+        const reqDef: RequirementDefinitionModel = this.getRequirementDefinition(req);
+        // if the requirement definition specifies a requirement type, then it is the only one allowed
+        if (reqDef.relationship) {
+            return this.entityTypes.relationshipTypes.filter(rt => rt.qName === reqDef.relationship);
+        }
+        // otherwise, all types are allowed
+        return this.entityTypes.relationshipTypes;
+    }
+
+    isRequirementFulfilled(req: RequirementModel) {
+        if (req.node) {
+            // if the node value of the requirement model is a node type (rather than a node template), then it is not yet fulfilled.
+            return !this.entityTypes.unGroupedNodeTypes.some(nt => nt.qName === req.node);
+        }
+        // this should never happen..
+        return false;
     }
 
     /**
@@ -189,7 +260,7 @@ export class ToscatypeTableComponent implements OnInit, OnChanges {
             clickedType = urlElement.CapabilityTypeURL;
         }
         const url = this.backendService.configuration.uiURL
-            + '#' + clickedType
+            + clickedType
             + encodeURIComponent(encodeURIComponent(this.getNamespace(reqOrCapType)))
             + '/' + this.getLocalName(reqOrCapType);
         window.open(url, '_blank');

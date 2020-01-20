@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017-2018 Contributors to the Eclipse Foundation
+ * Copyright (c) 2017-2019 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -31,6 +31,7 @@ import { InheritanceModule } from '../../instance/sharedComponents/inheritance/i
 import { WineryReadmeModule } from '../../wineryReadmeModule/wineryReadme.module';
 import { WineryLicenseModule } from '../../wineryLicenseModule/wineryLicense.module';
 import { TagModule } from '../../instance/sharedComponents/tag/tag.module';
+import { YamlRequirementDefinitionsModule } from '../../instance/nodeTypes/yamlRequirementDefinitions/yamlRequirementDefinitions.module';
 
 @NgModule({
     imports: [
@@ -51,7 +52,8 @@ import { TagModule } from '../../instance/sharedComponents/tag/tag.module';
         WineryEditorModule,
         NodeTypeRouterModule,
         WineryReadmeModule,
-        WineryLicenseModule
+        WineryLicenseModule,
+        YamlRequirementDefinitionsModule
     ],
     exports: [],
     declarations: [CapOrReqDefComponent],

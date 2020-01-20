@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013-2018 Contributors to the Eclipse Foundation
+ * Copyright (c) 2013-2019 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -74,7 +74,8 @@ public abstract class TEntityTemplate extends HasId implements HasType, HasName 
     @XmlElement(name = "PropertyConstraints")
     protected TEntityTemplate.PropertyConstraints propertyConstraints;
 
-    @XmlAttribute(name = "type", required = true)
+    // allow empty types to support YAML capability assignments
+    @XmlAttribute(name = "type")
     protected QName type;
 
     public TEntityTemplate() {
@@ -124,7 +125,6 @@ public abstract class TEntityTemplate extends HasId implements HasType, HasName 
         this.propertyConstraints = value;
     }
 
-    @NonNull
     public QName getType() {
         return type;
     }

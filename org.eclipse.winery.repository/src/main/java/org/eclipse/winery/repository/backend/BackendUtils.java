@@ -138,8 +138,8 @@ import org.eclipse.winery.repository.GitInfo;
 import org.eclipse.winery.repository.JAXBSupport;
 import org.eclipse.winery.repository.backend.constants.Filename;
 import org.eclipse.winery.repository.backend.constants.MediaTypes;
-import org.eclipse.winery.repository.backend.filebased.FilebasedRepository;
 import org.eclipse.winery.repository.backend.filebased.GitBasedRepository;
+import org.eclipse.winery.repository.backend.filebased.MultiRepository;
 import org.eclipse.winery.repository.backend.xsd.XsdImportManager;
 import org.eclipse.winery.repository.datatypes.ids.elements.ArtifactTemplateFilesDirectoryId;
 import org.eclipse.winery.repository.datatypes.ids.elements.DirectoryId;
@@ -350,11 +350,11 @@ public class BackendUtils {
     public static RepositoryFileReference getRefOfDefinitions(DefinitionsChildId id) {
         return new RepositoryFileReference(id, getFileNameOfDefinitions(id));
     }
-    
+
     public static String getFileNameOfDefinitions(DefinitionsChildId id) {
         return getFileNameOfDefinitions(id.getClass());
     }
-    
+
     public static <T extends DefinitionsChildId> String getFileNameOfDefinitions(Class<T> id) {
         String name = Util.getTypeForComponentId(id);
         name = name + Constants.SUFFIX_TOSCA_DEFINITIONS;
@@ -716,7 +716,7 @@ public class BackendUtils {
      * @param id      the id of the definition child to persist
      * @param element the element of the definition child
      */
-    public static void persist(IGenericRepository repository, DefinitionsChildId id, TExtensibleElements element) throws IOException {
+    public static void persist(IRepository repository, DefinitionsChildId id, TExtensibleElements element) throws IOException {
         repository.setElement(id, element);
     }
 
@@ -967,8 +967,8 @@ public class BackendUtils {
     /**
      * Returns all components available of the given id type
      * <p>
-     * Similar functionality as {@link IGenericRepository#getAllDefinitionsChildIds(java.lang.Class)}, but it crawls
-     * through the repository
+     * Similar functionality as {@link IRepository#getAllDefinitionsChildIds(java.lang.Class)}, but it crawls through
+     * the repository
      * <p>
      * This method is required as we do not use a database.
      *
@@ -1161,7 +1161,7 @@ public class BackendUtils {
      * @return The synchronized artifact template. Used for testing only, because mockito cannot mock static methods
      * (https://github.com/mockito/mockito/issues/1013).
      */
-    public static TArtifactTemplate synchronizeReferences(IGenericRepository repository, ArtifactTemplateId id) throws IOException {
+    public static TArtifactTemplate synchronizeReferences(IRepository repository, ArtifactTemplateId id) throws IOException {
         TArtifactTemplate template = repository.getElement(id);
         List<TArtifactReference> toRemove = new ArrayList<>();
         List<RepositoryFileReference> toAdd = new ArrayList<>();
@@ -1673,15 +1673,21 @@ public class BackendUtils {
         versionList.get(0).setLatestVersion(true);
         versionList.get(0).setReleasable(true);
 
-        if (current[0].isVersionedInWinery() && RepositoryFactory.getRepository() instanceof GitBasedRepository) {
-            boolean changesInFile = false;
-            for (FilebasedRepository repo : RepositoryFactory.repositoryList) {
-                if (repo.getClass().equals(GitBasedRepository.class)) {
-                    GitBasedRepository gitRepo = (GitBasedRepository) repo;
+        boolean changesInFile = false;
+        if (current[0].isVersionedInWinery() && RepositoryFactory.getRepository() instanceof MultiRepository) {
+            for (IRepository repository : ((MultiRepository) RepositoryFactory.getRepository()).getRepositories()) {
+                if (repository.getClass().equals(GitBasedRepository.class)) {
+                    GitBasedRepository gitRepo = (GitBasedRepository) repository;
                     if (gitRepo.hasChangesInFile(BackendUtils.getRefOfDefinitions(id))) {
                         changesInFile = true;
                     }
                 }
+            }
+        }
+        if (current[0].isVersionedInWinery() && RepositoryFactory.getRepository() instanceof GitBasedRepository) {
+            GitBasedRepository gitRepo = (GitBasedRepository) RepositoryFactory.getRepository();
+            if (gitRepo.hasChangesInFile(BackendUtils.getRefOfDefinitions(id))) {
+                changesInFile = true;
             }
             if (!current[0].isLatestVersion()) {
                 // The current version may still be releasable, if it's the latest WIP version of a component version.

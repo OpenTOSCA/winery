@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2017 Contributors to the Eclipse Foundation
+ * Copyright (c) 2017-2019 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -45,7 +45,7 @@ public class ReferenceVisitor extends ExceptionVisitor<ReferenceVisitor.Result, 
     public ReferenceVisitor(TServiceTemplate serviceTemplate, String namespace, Path path) {
         this.serviceTemplate = serviceTemplate;
         this.namespace = namespace;
-        this.reader = Reader.getReader();
+        this.reader = new Reader();
         this.path = path;
         this.visitors = new LinkedHashMap<>();
         this.serviceTemplates = new LinkedHashMap<>();

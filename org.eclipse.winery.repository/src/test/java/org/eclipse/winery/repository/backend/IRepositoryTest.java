@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2018 Contributors to the Eclipse Foundation
+ * Copyright (c) 2018-2019 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -14,9 +14,6 @@
 
 package org.eclipse.winery.repository.backend;
 
-import org.eclipse.winery.common.ids.definitions.*;
-import org.eclipse.winery.repository.TestWithGitBackedRepository;
-
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
@@ -24,12 +21,20 @@ import java.util.Set;
 
 import javax.xml.namespace.QName;
 
+import org.eclipse.winery.common.ids.definitions.DefinitionsChildId;
+import org.eclipse.winery.common.ids.definitions.NodeTypeId;
+import org.eclipse.winery.common.ids.definitions.NodeTypeImplementationId;
+import org.eclipse.winery.common.ids.definitions.PolicyTemplateId;
+import org.eclipse.winery.common.ids.definitions.PolicyTypeId;
+import org.eclipse.winery.common.ids.definitions.ServiceTemplateId;
+import org.eclipse.winery.repository.TestWithGitBackedRepository;
+
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class IGenericRepositoryTest extends TestWithGitBackedRepository {
+public class IRepositoryTest extends TestWithGitBackedRepository {
 
     @Test
     public void getReferencedDefinitionsChildIds() throws Exception {

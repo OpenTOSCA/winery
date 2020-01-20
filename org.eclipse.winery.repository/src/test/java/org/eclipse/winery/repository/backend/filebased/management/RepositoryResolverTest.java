@@ -22,7 +22,7 @@ import java.util.SortedSet;
 
 import org.eclipse.winery.common.ids.definitions.NodeTypeId;
 import org.eclipse.winery.repository.TestWithGitBackedRepository;
-import org.eclipse.winery.repository.backend.filebased.FilebasedRepository;
+import org.eclipse.winery.repository.backend.filebased.GitBasedRepository;
 
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.junit.jupiter.api.BeforeEach;
@@ -73,7 +73,7 @@ public class RepositoryResolverTest extends TestWithGitBackedRepository {
         Path resolverRepositoryPath = Paths.get(System.getProperty("java.io.tmpdir")).resolve("test-repository");
 
         try {
-            FilebasedRepository resolverRepository = resolver.createRepository(resolverRepositoryPath.toFile());
+            GitBasedRepository resolverRepository = resolver.createRepository(resolverRepositoryPath.toFile());
             assertEquals(59, resolverRepository.getNamespaceManager().getAllNamespaces().size());
 
             SortedSet<NodeTypeId> allNodeTypes = resolverRepository.getAllDefinitionsChildIds(NodeTypeId.class);

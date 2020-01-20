@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2018 Contributors to the Eclipse Foundation
+ * Copyright (c) 2012-2019 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -47,11 +47,11 @@ import javax.xml.validation.SchemaFactory;
 import org.eclipse.winery.common.Util;
 import org.eclipse.winery.common.beans.NamespaceIdOptionalName;
 import org.eclipse.winery.common.constants.MimeTypes;
+import org.eclipse.winery.common.exceptions.QNameAlreadyExistsException;
 import org.eclipse.winery.common.ids.GenericId;
 import org.eclipse.winery.common.ids.IdUtil;
 import org.eclipse.winery.common.ids.Namespace;
 import org.eclipse.winery.common.ids.definitions.DefinitionsChildId;
-import org.eclipse.winery.common.interfaces.QNameAlreadyExistsException;
 import org.eclipse.winery.common.interfaces.QNameWithName;
 import org.eclipse.winery.model.tosca.Definitions;
 import org.eclipse.winery.model.tosca.TDefinitions;

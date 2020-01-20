@@ -24,6 +24,7 @@ import { ILoaded } from '../services/loaded.service';
 import { Subscription } from 'rxjs';
 import { TopologyTemplateUtil } from '../models/topologyTemplateUtil';
 import { EntityTypesModel } from '../models/entityTypesModel';
+import { WineryRepositoryConfigurationService } from '../../../../tosca-management/src/app/wineryFeatureToggleModule/WineryRepositoryConfiguration.service';
 
 /**
  * This is the parent component of the canvas and navbar component.
@@ -54,7 +55,8 @@ export class TopologyRendererComponent implements OnInit, OnDestroy {
     constructor(private ngRedux: NgRedux<IWineryState>,
                 private actions: WineryActions,
                 vcr: ViewContainerRef,
-                private notify: ToastrService) {
+                private notify: ToastrService,
+                private configuration: WineryRepositoryConfigurationService) {
         this.subscriptions.push(this.ngRedux.select(state => state.wineryState.hideNavBarAndPaletteState)
             .subscribe(hideNavBar => this.hideNavBarState = hideNavBar));
     }
@@ -96,7 +98,8 @@ export class TopologyRendererComponent implements OnInit, OnDestroy {
 
                 if (node.state === DifferenceStates.REMOVED) {
                     current = this.oldTopology.nodeTemplates.find(item => item.id === node.element);
-                    current = TopologyTemplateUtil.createTNodeTemplateFromObject(current, this.entityTypes.nodeVisuals, node.state);
+                    current = TopologyTemplateUtil.createTNodeTemplateFromObject(current, this.entityTypes.nodeVisuals,
+                        this.configuration.isYaml(), this.entityTypes, node.state);
                     this.nodeTemplates.push(current);
                 } else {
                     current.state = node.state;

@@ -23,12 +23,12 @@ import java.io.StringWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.FileTime;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.SortedSet;
 import java.util.stream.Collectors;
@@ -82,8 +82,6 @@ import org.eclipse.winery.model.tosca.TTestRefinementModel;
 import org.eclipse.winery.repository.backend.AccountabilityConfigurationManager;
 import org.eclipse.winery.repository.backend.BackendUtils;
 import org.eclipse.winery.repository.backend.EdmmManager;
-import org.eclipse.winery.repository.backend.IRepository;
-import org.eclipse.winery.repository.backend.IRepositoryAdministration;
 import org.eclipse.winery.repository.backend.NamespaceManager;
 import org.eclipse.winery.repository.backend.xsd.XsdImportManager;
 import org.eclipse.winery.repository.exceptions.RepositoryCorruptException;
@@ -113,7 +111,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Allows to reset repository to a certain commit id
  */
-public class GitBasedRepository extends FilebasedRepository implements IRepository, IRepositoryAdministration {
+public class GitBasedRepository extends AbstractFileBasedRepository {
 
     /**
      * Used for synchronizing the method {@link GitBasedRepository#addCommit(RepositoryFileReference)}
@@ -121,73 +119,74 @@ public class GitBasedRepository extends FilebasedRepository implements IReposito
     private static final Object COMMIT_LOCK = new Object();
     private static final Logger LOGGER = LoggerFactory.getLogger(GitBasedRepository.class);
 
+    private static List<String> ignoreFile = new ArrayList<>();
     private final Path workingRepositoryRoot;
 
-    private final Git git;
     private final EventBus eventBus;
     private final GitBasedRepositoryConfiguration configuration;
 
-    private final FilebasedRepository repository;
-    private final Path repositoryRoot;
+    private final AbstractFileBasedRepository repository;
 
     /**
-     * @param configuration the configuration of the repository
-     * @param repository    a repository reference to use
+     * @param repository a repository reference to use, this has to be a YAML or XML based repository
      * @throws IOException         thrown if repository does not exist
      * @throws GitAPIException     thrown if there was an error while checking the status of the repository
      * @throws NoWorkTreeException thrown if the directory is not a git work tree
      */
-    public GitBasedRepository(GitBasedRepositoryConfiguration configuration, FilebasedRepository repository) throws IOException, NoWorkTreeException, GitAPIException {
-        super(Objects.requireNonNull(configuration));
-
-        this.configuration = configuration;
+    public GitBasedRepository(GitBasedRepositoryConfiguration repositoryConfiguration, AbstractFileBasedRepository repository) throws IOException, NoWorkTreeException, GitAPIException {
+        super(repository.getRepositoryRoot());
+        this.configuration = repositoryConfiguration;
         this.repository = repository;
 
-        this.repositoryRoot = repository.getRepositoryRoot();
-
         FileRepositoryBuilder builder = new FileRepositoryBuilder();
-        Repository gitRepo = builder.setWorkTree(this.repositoryRoot.toFile()).setMustExist(false).build();
+        Repository gitRepo = builder.setWorkTree(this.repository.getRepositoryRoot().toFile()).setMustExist(false).build();
 
-        String repoUrl = configuration.getRepositoryUrl();
-        String branch = configuration.getBranch();
+        try (Git git = getGit()) {
 
-        if (!Files.exists(this.repositoryRoot.resolve(".git"))) {
-            if (repoUrl != null && !repoUrl.isEmpty()) {
-                this.git = cloneRepository(repoUrl, branch);
+            if (this.repository.getRepositoryRoot().resolve(Constants.DEFAULT_LOCAL_REPO_NAME).toFile().exists()) {
+                this.workingRepositoryRoot = this.repository.getRepositoryRoot().resolve(Constants.DEFAULT_LOCAL_REPO_NAME);
             } else {
-                gitRepo.create();
-                this.git = new Git(gitRepo);
+                this.workingRepositoryRoot = this.repository.getRepositoryRoot();
             }
-        } else {
-            this.git = new Git(gitRepo);
-        }
 
-        if (this.repositoryRoot.resolve(Constants.DEFAULT_LOCAL_REPO_NAME).toFile().exists()) {
-            if (!(this instanceof MultiRepository)) {
-                this.workingRepositoryRoot = this.repositoryRoot.resolve(Constants.DEFAULT_LOCAL_REPO_NAME);
-            } else {
-                this.workingRepositoryRoot = this.repository.getRepositoryDep();
+            this.eventBus = new EventBus();
+
+            // explicitly enable longpaths to ensure proper handling of long pathss
+            gitRepo.getConfig().setBoolean("core", null, "longpaths", true);
+            gitRepo.getConfig().save();
+            if (configuration.isAutoCommit() && !git.status().call().isClean()) {
+                this.addCommit("Files changed externally.");
             }
-        } else {
-            this.workingRepositoryRoot = this.repository.getRepositoryDep();
-        }
-
-        this.eventBus = new EventBus();
-
-        // explicitly enable longpaths to ensure proper handling of long pathss
-        gitRepo.getConfig().setBoolean("core", null, "longpaths", true);
-        gitRepo.getConfig().save();
-
-        if (configuration.isAutoCommit() && !this.git.status().call().isClean()) {
-            this.addCommit("Files changed externally.");
+        } catch (IOException | GitAPIException ex) {
+            LOGGER.error("Error initializing Git.", ex);
+            throw ex;
         }
     }
 
-    Path generateWorkingRepositoryRoot() {
-        if (this.repositoryRoot.resolve(Constants.DEFAULT_LOCAL_REPO_NAME).toFile().exists()) {
-            return this.repositoryRoot.resolve(Constants.DEFAULT_LOCAL_REPO_NAME);
+    private Git getGit() throws IOException, GitAPIException {
+        FileRepositoryBuilder builder = new FileRepositoryBuilder();
+        Repository gitRepo = builder.setWorkTree(this.repository.getRepositoryRoot().toFile()).setMustExist(false).build();
+        String repoUrl = configuration.getRepositoryUrl();
+        String branch = configuration.getBranch();
+        Git git;
+        if (!Files.exists(this.repository.getRepositoryRoot().resolve(".git"))) {
+            if (repoUrl != null && !repoUrl.isEmpty()) {
+                git = cloneRepository(repoUrl, branch);
+            } else {
+                gitRepo.create();
+                git = new Git(gitRepo);
+            }
         } else {
-            return this.repository.getRepositoryDep();
+            git = new Git(gitRepo);
+        }
+        return git;
+    }
+
+    Path generateWorkingRepositoryRoot() {
+        if (this.repository.getRepositoryRoot().resolve(Constants.DEFAULT_LOCAL_REPO_NAME).toFile().exists()) {
+            return this.repository.getRepositoryRoot().resolve(Constants.DEFAULT_LOCAL_REPO_NAME);
+        } else {
+            return this.repository.getRepositoryRoot();
         }
     }
 
@@ -224,26 +223,30 @@ public class GitBasedRepository extends FilebasedRepository implements IReposito
     public void addCommit(String[] patterns, String message) throws GitAPIException {
         if (!message.isEmpty()) {
             synchronized (COMMIT_LOCK) {
-                AddCommand add = this.git.add();
-                Status status = this.git.status().call();
+                try (Git git = getGit()) {
+                    AddCommand add = git.add();
+                    Status status = git.status().call();
 
-                for (String pattern : patterns) {
-                    add.addFilepattern(pattern);
-                }
-
-                if (!status.getMissing().isEmpty() || !status.getRemoved().isEmpty()) {
-                    RmCommand remove = this.git.rm();
-                    for (String file : Iterables.concat(status.getMissing(), status.getRemoved())) {
-                        remove.addFilepattern(file);
+                    for (String pattern : patterns) {
+                        add.addFilepattern(pattern);
                     }
-                    remove.call();
+
+                    if (!status.getMissing().isEmpty() || !status.getRemoved().isEmpty()) {
+                        RmCommand remove = git.rm();
+                        for (String file : Iterables.concat(status.getMissing(), status.getRemoved())) {
+                            remove.addFilepattern(file);
+                        }
+                        remove.call();
+                    }
+
+                    add.call();
+
+                    CommitCommand commit = git.commit();
+                    commit.setMessage(message);
+                    commit.call();
+                } catch (IOException e) {
+                    LOGGER.error("Error initializing Git.", e);
                 }
-
-                add.call();
-
-                CommitCommand commit = this.git.commit();
-                commit.setMessage(message);
-                commit.call();
             }
         }
         postEventMap();
@@ -251,8 +254,9 @@ public class GitBasedRepository extends FilebasedRepository implements IReposito
 
     public void postEventMap() throws GitAPIException {
         Map<DiffEntry, String> diffMap = new HashMap<>();
-        try (OutputStream stream = new ByteArrayOutputStream()) {
-            List<DiffEntry> list = this.git.diff().setOutputStream(stream).call();
+        try (OutputStream stream = new ByteArrayOutputStream();
+             Git git = getGit()) {
+            List<DiffEntry> list = git.diff().setOutputStream(stream).call();
             BufferedReader reader = new BufferedReader(new StringReader(stream.toString()));
             for (DiffEntry entry : list) {
                 String line = reader.readLine();
@@ -293,9 +297,13 @@ public class GitBasedRepository extends FilebasedRepository implements IReposito
 
     private void clean() throws NoWorkTreeException, GitAPIException {
         // remove untracked files
-        CleanCommand clean = this.git.clean();
-        clean.setCleanDirectories(true);
-        clean.call();
+        try (Git git = getGit()) {
+            CleanCommand clean = git.clean();
+            clean.setCleanDirectories(true);
+            clean.call();
+        } catch (IOException e) {
+            LOGGER.error("Error initializing Git.", e);
+        }
     }
 
     public void cleanAndResetHard() throws NoWorkTreeException, GitAPIException {
@@ -303,19 +311,27 @@ public class GitBasedRepository extends FilebasedRepository implements IReposito
         this.clean();
 
         // reset to the latest version
-        ResetCommand reset = this.git.reset();
-        reset.setMode(ResetType.HARD);
-        reset.call();
+        try (Git git = getGit()) {
+            ResetCommand reset = git.reset();
+            reset.setMode(ResetType.HARD);
+            reset.call();
+        } catch (IOException e) {
+            LOGGER.error("Error initializing Git.", e);
+        }
     }
 
     public void setRevisionTo(String ref) throws GitAPIException {
         this.clean();
 
         // reset repository to the desired reference
-        ResetCommand reset = this.git.reset();
-        reset.setMode(ResetType.HARD);
-        reset.setRef(ref);
-        reset.call();
+        try (Git git = getGit()) {
+            ResetCommand reset = git.reset();
+            reset.setMode(ResetType.HARD);
+            reset.setRef(ref);
+            reset.call();
+        } catch (IOException e) {
+            LOGGER.error("Error initializing Git.", e);
+        }
     }
 
     @Override
@@ -333,9 +349,9 @@ public class GitBasedRepository extends FilebasedRepository implements IReposito
     }
 
     public boolean hasChangesInFile(RepositoryFileReference ref) {
-        try {
-            if (!this.git.status().call().isClean()) {
-                List<DiffEntry> diffEntries = this.git.diff().call();
+        try (Git git = getGit()) {
+            if (!git.status().call().isClean()) {
+                List<DiffEntry> diffEntries = git.diff().call();
                 List<DiffEntry> entries = diffEntries.stream()
                     // we use String::startsWith() and RepositoryFileReference::getParent()
                     // because the component is considered changed, if any file of this component is changed.
@@ -346,16 +362,21 @@ public class GitBasedRepository extends FilebasedRepository implements IReposito
             }
         } catch (GitAPIException e) {
             LOGGER.trace(e.getMessage(), e);
+        } catch (IOException e) {
+            LOGGER.error("Error initializing Git.", e);
         }
 
         return false;
     }
 
     public Status getStatus() {
-        try {
-            return this.git.status().call();
+        try (Git git = getGit()) {
+            return git.status().call();
         } catch (GitAPIException e) {
             LOGGER.trace(e.getMessage(), e);
+            return null;
+        } catch (IOException e) {
+            LOGGER.error("Error initializing Git.", e);
             return null;
         }
     }
@@ -367,59 +388,14 @@ public class GitBasedRepository extends FilebasedRepository implements IReposito
     private Git cloneRepository(String repoUrl, String branch) throws GitAPIException {
         return Git.cloneRepository()
             .setURI(repoUrl)
-            .setDirectory(getRepositoryDep().toFile())
+            .setDirectory(this.repository.getRepositoryRoot().toFile())
             .setBranch(branch)
             .call();
     }
 
     @Override
-    protected Path id2RelativePath(GenericId id) {
-        return repository.id2RelativePath(id);
-    }
-
-    @Override
-    protected Path id2AbsolutePath(GenericId id) {
-        return repository.id2AbsolutePath(id);
-    }
-
-    @Override
-    protected Path ref2AbsolutePath(RepositoryFileReference ref) {
-        return repository.ref2AbsolutePath(ref);
-    }
-
-    @Override
-    public void writeInputStreamToPath(Path targetPath, InputStream inputStream) throws IOException {
-        repository.writeInputStreamToPath(targetPath, inputStream);
-    }
-
-    @Override
-    public <T extends DefinitionsChildId> SortedSet<T> getDefinitionsChildIds(Class<T> idClass, boolean omitDevelopmentVersions) {
-        return repository.getDefinitionsChildIds(idClass, omitDevelopmentVersions);
-    }
-
-    @Override
-    public Collection<? extends DefinitionsChildId> getAllIdsInNamespace(Class<? extends DefinitionsChildId> clazz, Namespace namespace) {
-        return repository.getAllIdsInNamespace(clazz, namespace);
-    }
-
-    @Override
-    public void forceClear() {
-        repository.forceClear();
-    }
-
-    @Override
-    public InputStream newInputStream(Path path) throws IOException {
-        return repository.newInputStream(path);
-    }
-
-    @Override
     public void setMimeType(RepositoryFileReference ref, MediaType mediaType) throws IOException {
         repository.setMimeType(ref, mediaType);
-    }
-
-    @Override
-    public boolean flagAsExisting(GenericId id) {
-        return repository.flagAsExisting(id);
     }
 
     @Override
@@ -485,6 +461,16 @@ public class GitBasedRepository extends FilebasedRepository implements IReposito
     @Override
     public <T extends DefinitionsChildId> SortedSet<T> getStableDefinitionsChildIdsOnly(Class<T> idClass) {
         return repository.getStableDefinitionsChildIdsOnly(idClass);
+    }
+
+    @Override
+    public <T extends DefinitionsChildId> SortedSet<T> getDefinitionsChildIds(Class<T> idClass, boolean omitDevelopmentVersions) {
+        return repository.getDefinitionsChildIds(idClass, omitDevelopmentVersions);
+    }
+
+    @Override
+    public Path ref2AbsolutePath(RepositoryFileReference ref) {
+        return repository.ref2AbsolutePath(ref);
     }
 
     @Override
@@ -685,11 +671,6 @@ public class GitBasedRepository extends FilebasedRepository implements IReposito
     @Override
     public Path getRepositoryRoot() {
         return this.workingRepositoryRoot;
-    }
-
-    @Override
-    public Path getRepositoryDep() {
-        return repository.getRepositoryDep();
     }
 
     @Override

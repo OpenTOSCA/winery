@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2017 Contributors to the Eclipse Foundation
+ * Copyright (c) 2017-2019 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -83,6 +83,8 @@ import org.eclipse.winery.model.tosca.yaml.TPolicyType;
 import org.eclipse.winery.model.tosca.yaml.TPropertyAssignment;
 import org.eclipse.winery.model.tosca.yaml.TPropertyAssignmentOrDefinition;
 import org.eclipse.winery.model.tosca.yaml.TPropertyDefinition;
+import org.eclipse.winery.model.tosca.yaml.TRelationshipAssignment;
+import org.eclipse.winery.model.tosca.yaml.TRelationshipDefinition;
 import org.eclipse.winery.model.tosca.yaml.TRelationshipTemplate;
 import org.eclipse.winery.model.tosca.yaml.TRelationshipType;
 import org.eclipse.winery.model.tosca.yaml.TRequirementAssignment;
@@ -241,16 +243,6 @@ public class X2YConverter {
                 .setProperties(convert(node, node.getProperties()))
                 .setMetadata(meta)
                 .setRequirements(convert(node.getRequirements()))
-                .addRequirements(rTs.stream()
-                    .filter(entry -> Objects.nonNull(entry.getSourceElement()) && entry.getSourceElement().getRef().equals(node))
-                    .map(entry -> new LinkedHashMap.SimpleEntry<>(
-                        Optional.ofNullable(entry.getId()).orElse(entry.getName()),
-                        new TRequirementAssignment.Builder()
-                            .setNode(new QName(entry.getTargetElement().getRef().getId()))
-                            .build()
-                    ))
-                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))
-                )
                 .setCapabilities(convert(node.getCapabilities()))
                 .setArtifacts(convert(node.getDeploymentArtifacts()))
                 .build()
@@ -262,11 +254,7 @@ public class X2YConverter {
         if (Objects.isNull(node)) return new LinkedHashMap<>();
         return Collections.singletonMap(
             node.getIdFromIdOrNameField(),
-            new TRelationshipTemplate.Builder(
-                convert(
-                    node.getType(),
-                    new RelationshipTypeId(node.getType())
-                ))
+            new TRelationshipTemplate.Builder(convert(node.getType(), new RelationshipTypeId(node.getType())))
                 .setProperties(convert(node, node.getProperties()))
                 .build()
         );
@@ -822,22 +810,23 @@ public class X2YConverter {
     }
 
     public TMapRequirementDefinition convert(org.eclipse.winery.model.tosca.TRequirementDefinition node) {
-        if (Objects.isNull(node)) return null;
-        QName type = node.getRequirementType();
-        if (Objects.isNull(type)) return null;
-        TRequirementType requirementType = repository.getElement(new RequirementTypeId(type));
-        if (Objects.isNull(requirementType)
-            || Objects.isNull(requirementType.getRequiredCapabilityType())) return null;
+        if (Objects.isNull(node))
+            return null;
+        TRequirementDefinition.Builder builder = new TRequirementDefinition.Builder(node.getCapability())
+            .setDescription(convertDocumentation(node.getDocumentation()))
+            .setOccurrences(node.getLowerBound(), node.getUpperBound())
+            .setNode(node.getNode());
+
+        if (node.getRelationship() != null) {
+            TRelationshipDefinition.Builder relationshipDefBuilder = new TRelationshipDefinition.Builder(node.getRelationship());
+            builder = builder.setRelationship(relationshipDefBuilder.build());
+        }
 
         return new TMapRequirementDefinition().setMap(
             Collections.singletonMap(
                 node.getName(),
-                new TRequirementDefinition.Builder(convert(requirementType))
-                    .setDescription(convertDocumentation(node.getDocumentation()))
-                    .setOccurrences(node.getLowerBound(), node.getUpperBound())
-                    .build()
-            )
-        );
+                builder.build()
+            ));
     }
 
     public QName convert(@NonNull TRequirementType node) {
@@ -948,6 +937,12 @@ public class X2YConverter {
 
     public Map<String, TCapabilityAssignment> convert(TCapability node) {
         if (Objects.isNull(node)) return null;
+
+        // skip empty capability assignments
+        if (node.getProperties() == null || node.getProperties().getKVProperties() == null || node.getProperties().getKVProperties().size() == 0) {
+            return null;
+        }
+
         return Collections.singletonMap(
             node.getName(),
             new TCapabilityAssignment.Builder()
@@ -961,16 +956,33 @@ public class X2YConverter {
         return node.getRequirement().stream()
             .filter(Objects::nonNull)
             .map(this::convert)
+            .filter(Objects::nonNull)
             .collect(Collectors.toList());
     }
 
     public TMapRequirementAssignment convert(TRequirement node) {
         if (Objects.isNull(node)) return null;
+        TRequirementAssignment.Builder builder = new TRequirementAssignment.Builder();
+        // here we assume the assignment to include template names only (no types!)
+        // todo make s more generic TRequirement conversion
+        // todo allow changing occurrences in TRequirement in topology modeler
+        // todo allow passing relationship assignment parameters
+
+        if (node.getCapability() != null) {
+            builder = builder.setCapability(QName.valueOf(node.getCapability()));
+        }
+
+        if (node.getNode() != null) {
+            builder = builder.setNode(QName.valueOf(node.getNode()));
+        }
+
+        if (node.getRelationship() != null) {
+            builder = builder.setRelationship(new TRelationshipAssignment.Builder(QName.valueOf(node.getRelationship())).build());
+        }
+
         return new TMapRequirementAssignment().setMap(Collections.singletonMap(
             node.getName(),
-            new TRequirementAssignment.Builder()
-                .setCapability(convert(repository.getElement(new RequirementTypeId(node.getType()))))
-                .build()
+            builder.build()
         ));
     }
 

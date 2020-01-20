@@ -23,7 +23,7 @@ table {
 th {
     background-color: #CFD8DC;
     color: #000;
-    text-align: center;
+    text-align: left;
 }
 
 th, td {
@@ -31,6 +31,7 @@ th, td {
     border-left: 0;
     border-right: 0;
     border-bottom: 1px solid #ddd;
+    padding-left: 2px;
 }
 
 tr {

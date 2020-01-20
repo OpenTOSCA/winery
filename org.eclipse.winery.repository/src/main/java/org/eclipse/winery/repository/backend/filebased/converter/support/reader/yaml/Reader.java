@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2017-2018 Contributors to the Eclipse Foundation
+ * Copyright (c) 2017-2019 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -53,22 +53,19 @@ import org.yaml.snakeyaml.scanner.ScannerException;
 
 public class Reader {
     public static final Logger logger = LoggerFactory.getLogger(Builder.class);
-    private static Reader INSTANCE;
     private Yaml yaml;
 
     private Map<Path, byte[]> hashBuffer = new HashMap<>();
     private Map<Path, TServiceTemplate> serviceTemplateBuffer = new HashMap<>();
     private Map<Path, MultiException> exceptionBuffer = new HashMap<>();
 
-    private Reader() {
+    /**
+     * Creates a new instance of the YAML reader. The reader is not thread-safe!!!! because the underlying Yaml object
+     * is not thread safe!. If you implement a singleton pattern, you get some weird exceptions, e.g., when opening the
+     * topology modeler.
+     */
+    public Reader() {
         this.yaml = new Yaml(new SafeConstructor());
-    }
-
-    public static Reader getReader() {
-        if (Objects.isNull(INSTANCE)) {
-            INSTANCE = new Reader();
-        }
-        return INSTANCE;
     }
 
     public TServiceTemplate parse(InputStream inputStream) throws MultiException {

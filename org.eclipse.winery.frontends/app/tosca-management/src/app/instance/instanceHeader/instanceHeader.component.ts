@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017-2018 Contributors to the Eclipse Foundation
+ * Copyright (c) 2017-2019 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -41,6 +41,7 @@ export class InstanceHeaderComponent implements OnInit {
     @Input() typeId: string;
     @Input() typeOf: string;
     @Input() subMenu: string[];
+    @Input() subMenuLinks: string[];
     @Input() imageUrl: string;
     @Output() deleteConfirmed: EventEmitter<any> = new EventEmitter();
 

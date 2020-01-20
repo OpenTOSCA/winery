@@ -17,7 +17,6 @@ package org.eclipse.winery.common.configuration;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Optional;
 import java.util.Properties;
 
 import org.slf4j.Logger;
@@ -126,9 +125,9 @@ public final class Environments {
      *
      * @return an instance of GitBasedRepositoryConfiguration
      */
-    public static Optional<GitBasedRepositoryConfiguration> getGitBasedRepositoryConfiguration() {
+    public static GitBasedRepositoryConfiguration getGitBasedRepositoryConfiguration() {
         final FileBasedRepositoryConfiguration filebasedRepositoryConfiguration = getFilebasedRepositoryConfiguration();
-        return Optional.of(new GitBasedRepositoryConfiguration(getGitConfig().isAutocommit(), filebasedRepositoryConfiguration));
+        return new GitBasedRepositoryConfiguration(getGitConfig().isAutocommit(), filebasedRepositoryConfiguration);
     }
 
     /**

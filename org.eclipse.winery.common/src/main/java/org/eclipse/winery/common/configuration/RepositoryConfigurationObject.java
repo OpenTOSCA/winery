@@ -14,12 +14,9 @@
 
 package org.eclipse.winery.common.configuration;
 
-import java.io.File;
-
-import org.eclipse.winery.common.Constants;
+import org.eclipse.winery.common.Util;
 
 import org.apache.commons.configuration2.YAMLConfiguration;
-import org.apache.commons.io.FileUtils;
 
 public class RepositoryConfigurationObject extends AbstractConfigurationObject {
 
@@ -61,7 +58,9 @@ public class RepositoryConfigurationObject extends AbstractConfigurationObject {
     public String getRepositoryRoot() {
         String repositoryRoot = this.repositoryRoot;
         if (repositoryRoot == null || repositoryRoot.isEmpty()) {
-            return FileUtils.getUserDirectory().getAbsolutePath() + File.separator + Constants.DEFAULT_REPO_NAME;
+            repositoryRoot = Util.determineAndCreateRepositoryPath().toString();
+            Environments.getRepositoryConfig().setRepositoryRoot(repositoryRoot);
+            return repositoryRoot;
         } else {
             return repositoryRoot;
         }

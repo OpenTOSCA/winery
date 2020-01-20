@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2017 Contributors to the Eclipse Foundation
+ * Copyright (c) 2017-2019 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -296,7 +296,7 @@ public class Builder {
         }
         // TODO decide on namespace rules w.r.t Simple Profile spec
         // current solution: use dotted notation for namespaces as in RADON particles
-        
+
         // ignore version when splitting the full name
         String n = VersionUtils.getNameWithoutVersion(name);
         int separatorPos = n.lastIndexOf(".");
@@ -306,7 +306,7 @@ public class Builder {
             return new QName(namespace, localPart);
         }
 
-        return new QName(namespace, name);
+        return new QName(null, name);
     }
 
     @Nullable
@@ -422,14 +422,20 @@ public class Builder {
 
     @Nullable
     public TEntrySchema buildEntrySchema(Object object, Parameter<TEntrySchema> parameter) {
-        if (Objects.isNull(object)) return null;
-        @SuppressWarnings("unchecked")
-        Map<String, Object> map = (Map<String, Object>) object;
-        return new TEntrySchema.Builder()
-            .setType(buildQName(stringValue(map.get("type"))))
-            .setDescription(buildDescription(map.get("description")))
-            .setConstraints(buildList(map, "constraints", this::buildConstraintClause, parameter))
-            .build();
+        if (Objects.isNull(object)) {
+            return null;
+        }
+        if (object instanceof String) {
+            return new TEntrySchema.Builder().setType(buildQName(stringValue(object))).build();
+        } else {
+            @SuppressWarnings("unchecked")
+            Map<String, Object> map = (Map<String, Object>) object;
+            return new TEntrySchema.Builder()
+                .setType(buildQName(stringValue(map.get("type"))))
+                .setDescription(buildDescription(map.get("description")))
+                .setConstraints(buildList(map, "constraints", this::buildConstraintClause, parameter))
+                .build();
+        }
     }
 
     @Nullable

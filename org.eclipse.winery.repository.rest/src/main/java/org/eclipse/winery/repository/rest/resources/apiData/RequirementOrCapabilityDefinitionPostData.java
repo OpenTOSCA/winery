@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 Contributors to the Eclipse Foundation
+ * Copyright (c) 2017-2019 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -11,10 +11,19 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR Apache-2.0
  *******************************************************************************/
-package org.eclipse.winery.common.interfaces;
 
-public class QNameAlreadyExistsException extends Exception {
+package org.eclipse.winery.repository.rest.resources.apiData;
 
-    private static final long serialVersionUID = 1L;
+public class RequirementOrCapabilityDefinitionPostData {
+    public String name;
+    public String type;
+    public String upperBound;
+    public String lowerBound;
+    // the following fields support YAML mode
+    public String capability;
+    public String node;
+    public String relationship;
 
+    RequirementOrCapabilityDefinitionPostData() {
+    }
 }

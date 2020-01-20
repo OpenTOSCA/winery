@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2017 Contributors to the Eclipse Foundation
+ * Copyright (c) 2017-2019 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -45,7 +45,7 @@ public class ImportVisitor extends ExceptionVisitor<Result, Parameter> {
 
     @Override
     public Result visit(TServiceTemplate node, Parameter parameter) {
-        Reader reader = Reader.getReader();
+        Reader reader = new Reader();
         if (!this.namespace.equals(Namespaces.TOSCA_NS)) {
             Set<String> typeDefinitions = new HashSet<>(Arrays.asList(
                 Defaults.TOSCA_NORMATIVE_TYPES, Defaults.TOSCA_NONNORMATIVE_TYPES));
@@ -79,7 +79,7 @@ public class ImportVisitor extends ExceptionVisitor<Result, Parameter> {
 
     @Override
     public Result visit(TImportDefinition node, Parameter parameter) {
-        Reader reader = Reader.getReader();
+        Reader reader = new Reader();
         String importNamespace = node.getNamespaceUri() == null ? this.namespace : node.getNamespaceUri();
         try {
             TServiceTemplate serviceTemplate = reader.parse(node, path, importNamespace);

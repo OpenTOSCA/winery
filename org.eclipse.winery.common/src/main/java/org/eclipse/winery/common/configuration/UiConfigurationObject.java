@@ -48,6 +48,9 @@ public class UiConfigurationObject extends AbstractConfigurationObject {
         endpointIterator.forEachRemaining(key -> endpoints.put(key.replace(endpointPrefix, ""), configuration.getString(key)));
         if (RepositoryConfigurationObject.RepositoryProvider.YAML.equals(Environments.getRepositoryConfig().getProvider())) {
             features.put(RepositoryConfigurationObject.RepositoryProvider.YAML.name().toLowerCase(), true);
+        } else {
+            // closed-world assumption. Apparently..
+            features.put(RepositoryConfigurationObject.RepositoryProvider.YAML.name().toLowerCase(), false);
         }
         this.features = features;
         this.endpoints = endpoints;

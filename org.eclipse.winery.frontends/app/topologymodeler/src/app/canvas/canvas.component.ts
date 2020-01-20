@@ -43,7 +43,6 @@ import { align, toggleModalType } from '../models/enums';
 import { QName } from '../models/qname';
 import { ImportTopologyModalData } from '../models/importTopologyModalData';
 import { ImportTopologyService } from '../services/import-topology.service';
-import { ReqCapService } from '../services/req-cap.service';
 import { SplitMatchTopologyService } from '../services/split-match-topology.service';
 import { PlaceComponentsService } from '../services/placement.service';
 import { DifferenceStates, VersionUtils } from '../models/ToscaDiff';
@@ -55,6 +54,9 @@ import { ThreatCreation } from '../models/threatCreation';
 import { TopologyTemplateUtil } from '../models/topologyTemplateUtil';
 import { ReqCapRelationshipService } from '../services/req-cap-relationship.service';
 import { TPolicy } from '../models/policiesModalData';
+import { WineryRepositoryConfigurationService } from '../../../../tosca-management/src/app/wineryFeatureToggleModule/WineryRepositoryConfiguration.service';
+import { RequirementDefinitionModel } from '../models/requirementDefinitonModel';
+import { CapabilityDefinitionModel } from '../models/capabilityDefinitionModel';
 
 @Component({
     selector: 'winery-canvas',
@@ -160,10 +162,10 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
                 private existsService: ExistsService,
                 private splitMatchService: SplitMatchTopologyService,
                 private placementService: PlaceComponentsService,
-                private reqCapService: ReqCapService,
                 private errorHandler: ErrorHandlerService,
                 private reqCapRelationshipService: ReqCapRelationshipService,
-                private notify: ToastrService) {
+                private notify: ToastrService,
+                private configuration: WineryRepositoryConfigurationService) {
         this.newJsPlumbInstance = this.jsPlumbService.getJsPlumbInstance();
         this.newJsPlumbInstance.setContainer('container');
 
@@ -370,14 +372,14 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
                     try {
                         // request all valid requirement types for that node type for display as name select options in
                         // the modal
-                        this.reqCapService.requestRequirementDefinitionsOfNodeType(currentNodeData.type).subscribe(data => {
-                            this.requirements.reqDefinitionNames = [];
-                            this.requirements.reqDefinitionName = '';
-                            for (const reqType of data) {
-                                const qNameOfType = new QName(reqType.requirementType);
-                                this.requirements.reqDefinitionNames.push(qNameOfType.localName);
-                            }
-                        });
+                        const data = this.getRequirementDefinitionsOfNodeType(currentNodeData.type);
+                        this.requirements.reqDefinitionNames = [];
+                        this.requirements.reqDefinitionName = '';
+
+                        for (const reqType of data) {
+                            const qNameOfType = new QName(reqType.requirementType);
+                            this.requirements.reqDefinitionNames.push(qNameOfType.localName);
+                        }
                     } catch (e) {
                         this.requirements.requirements = '';
                     }
@@ -452,14 +454,14 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
                     try {
                         // request all valid capability types for that node type for display as name select options in
                         // the modal
-                        this.reqCapService.requestCapabilityDefinitionsOfNodeType(currentNodeData.type).subscribe(data => {
-                            this.capabilities.capDefinitionNames = [];
-                            this.capabilities.capDefinitionName = '';
-                            for (const capType of data) {
-                                const qNameOfType = new QName(capType.capabilityType);
-                                this.capabilities.capDefinitionNames.push(qNameOfType.localName);
-                            }
-                        });
+                        const data = this.getCapabilityDefinitionsOfNodeType(currentNodeData.type);
+                        this.capabilities.capDefinitionNames = [];
+                        this.capabilities.capDefinitionName = '';
+                        for (const capType of data) {
+                            const qNameOfType = new QName(capType.capabilityType);
+                            this.capabilities.capDefinitionNames.push(qNameOfType.localName);
+                        }
+
                     } catch (e) {
                         this.capabilities.capabilities = '';
                     }
@@ -467,6 +469,45 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
                 this.capabilitiesModal.show();
                 break;
         }
+    }
+
+    getCapabilityDefinitionsOfNodeType(nodeType: string): CapabilityDefinitionModel[] {
+        const match = this.entityTypes.unGroupedNodeTypes
+            .filter(nt => nt.qName === nodeType)
+            .filter(nt =>
+                nt.full &&
+                nt.full.serviceTemplateOrNodeTypeOrNodeTypeImplementation &&
+                nt.full.serviceTemplateOrNodeTypeOrNodeTypeImplementation.length > 0 &&
+                nt.full.serviceTemplateOrNodeTypeOrNodeTypeImplementation[0].capabilityDefinitions &&
+                nt.full.serviceTemplateOrNodeTypeOrNodeTypeImplementation[0].capabilityDefinitions.capabilityDefinition &&
+                nt.full.serviceTemplateOrNodeTypeOrNodeTypeImplementation[0].capabilityDefinitions.capabilityDefinition.length > 0
+            );
+
+        if (match && match.length > 0) {
+            return match[0].full.serviceTemplateOrNodeTypeOrNodeTypeImplementation[0].capabilityDefinitions.capabilityDefinition;
+        }
+
+        return [];
+    }
+
+    getRequirementDefinitionsOfNodeType(nodeType: string): RequirementDefinitionModel[] {
+        const match = this.entityTypes.unGroupedNodeTypes
+            .filter(nt => nt.qName === nodeType)
+            .filter(nt =>
+                nt.full &&
+                nt.full.serviceTemplateOrNodeTypeOrNodeTypeImplementation &&
+                nt.full.serviceTemplateOrNodeTypeOrNodeTypeImplementation.length > 0 &&
+                nt.full.serviceTemplateOrNodeTypeOrNodeTypeImplementation[0].requirementDefinitions &&
+                nt.full.serviceTemplateOrNodeTypeOrNodeTypeImplementation[0].requirementDefinitions.requirementDefinition &&
+                nt.full.serviceTemplateOrNodeTypeOrNodeTypeImplementation[0].requirementDefinitions.requirementDefinition.length > 0
+            );
+
+        if (match && match.length > 0) {
+            return match[0].full.serviceTemplateOrNodeTypeOrNodeTypeImplementation[0].requirementDefinitions.requirementDefinition;
+        }
+
+        return [];
+
     }
 
     /**
@@ -885,9 +926,31 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
         const storeRelationshipsLength = currentRelationships.length;
         if (storeRelationshipsLength !== localRelationshipsCopyLength) {
             const difference = storeRelationshipsLength - localRelationshipsCopyLength;
+
             if (difference === 1) {
                 this.handleNewRelationship(currentRelationships);
             } else if (difference > 0 || difference < 0) {
+                if (this.configuration.isYaml() && difference < 0) {
+                    // a relationship is deleted. reset the associated source requirement
+                    const deletedRels = this.allRelationshipTemplates.filter(rel => currentRelationships.every(curRel => curRel.id !== rel.id));
+                    deletedRels.forEach(deletedRel => {
+                        const reqId = deletedRel.sourceElement.ref;
+                        const sourceNodeTemplate = this.allNodeTemplates
+                            .find(nt =>
+                                nt.requirements &&
+                                nt.requirements.requirement
+                                && nt.requirements.requirement.some(req => req.id === reqId));
+                        const requirementModel: RequirementModel = sourceNodeTemplate.requirements.requirement
+                            .find(req => req.id === reqId);
+                        const requirementDefinition: RequirementDefinitionModel = this.getRequirementDefinitionsOfNodeType(sourceNodeTemplate.type)
+                            .find(reqDef => reqDef.name === requirementModel.name);
+                        requirementModel.capability = requirementDefinition.capability;
+                        requirementModel.relationship = requirementDefinition.relationship;
+                        requirementModel.node = requirementDefinition.node;
+
+                    });
+
+                }
                 this.allRelationshipTemplates = currentRelationships;
                 this.allRelationshipTemplates.forEach(relTemplate => this.manageRelationships(relTemplate));
             }
@@ -1344,6 +1407,12 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
                         this.hideSidebar();
                     }
                     selectedNodeSideBarVisible = true;
+                    const toDelete = this.newJsPlumbInstance.getConnections().filter(conn => conn.sourceId === node.nodeTemplate.id ||
+                        conn.targetId === node.nodeTemplate.id);
+                    toDelete.forEach(conn => {
+                        this.ngRedux.dispatch(this.actions.deleteRelationshipTemplate(conn.id));
+                        this.newJsPlumbInstance.deleteConnection(conn);
+                    });
                     this.newJsPlumbInstance.deleteConnectionsForElement(node.nodeTemplate.id);
                     this.newJsPlumbInstance.removeAllEndpoints(node.nodeTemplate.id);
                     this.newJsPlumbInstance.removeFromAllPosses(node.nodeTemplate.id);
@@ -1613,7 +1682,8 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
                     ],
                 });
                 this.dragSourceInfos = dragSourceInfo;
-                this.targetNodes = this.getAllCapabilities();
+                this.targetNodes = this.getAllCapabilityIds();
+
                 if (this.targetNodes.length > 0) {
                     this.newJsPlumbInstance.makeTarget(this.targetNodes);
                     this.newJsPlumbInstance.targetEndpointDefinitions = {};
@@ -1624,7 +1694,7 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
         }
     }
 
-    getAllCapabilities() {
+    getAllCapabilityIds() {
         const capIds: string[] = [];
         this.allNodeTemplates.forEach(node => {
             if (node.capabilities) {
@@ -1803,6 +1873,28 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
                 return true;
             }
         });
+
+        // if in YAML mode, automatically add all requirement and capability definitions to the node template!
+        if (this.configuration.isYaml()) {
+            this.newNode.requirements = { requirement: [] };
+            this.newNode.capabilities = { capability: [] };
+            const reqData = this.getRequirementDefinitionsOfNodeType(this.newNode.type);
+            if (reqData) {
+                reqData.forEach(reqDef => {
+                    const reqModel = RequirementModel.fromRequirementDefinition(reqDef);
+                    reqModel.id = `${this.newNode.id}_${reqModel.name}`;
+                    this.newNode.requirements.requirement.push(reqModel);
+                });
+            }
+            const capData = this.getCapabilityDefinitionsOfNodeType(this.newNode.type);
+            if (capData) {
+                capData.forEach(capDef => {
+                    const capModel = CapabilityModel.fromCapabilityDefinitionModel(capDef);
+                    capModel.id = `${this.newNode.id}_${capModel.name}`;
+                    this.newNode.capabilities.capability.push(capModel);
+                });
+            }
+        }
     }
 
     /**
@@ -1871,6 +1963,12 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
                 }
             }
         });
+    }
+
+    onClickRelationshipTemplateName(clickedRelTemplateId: string): void {
+        const currentRelTemplate = this.allRelationshipTemplates.find(rel => rel.id === clickedRelTemplateId);
+        const connection = this.newJsPlumbInstance.getAllConnections().find(conn => conn.id === clickedRelTemplateId);
+        this.onClickJsPlumbConnection(connection, currentRelTemplate);
     }
 
     /**
@@ -2093,10 +2191,11 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
                 this.jsPlumbBindConnection = true;
                 if (this.dragSourceInfos) {
                     const sourceNode = info.sourceId;
-                    const sourceElement = this.dragSourceInfos.dragSource.id;
-                    const targetElement = info.targetId.substring(info.targetId.indexOf('.') + 1);
+                    const requirementId = this.dragSourceInfos.dragSource.id;
+                    const capabilityId: string = info.targetId.substring(info.targetId.indexOf('.') + 1);
                     const currentTypeValid = this.entityTypes.relationshipTypes.some(relType => relType.qName === this.selectedRelationshipType.qName);
                     const currentSourceIdValid = this.allNodeTemplates.some(node => node.id === sourceNode);
+
                     if (sourceNode && currentTypeValid && currentSourceIdValid) {
                         const prefix = this.backendService.configuration.relationshipPrefix;
                         const relName = this.selectedRelationshipType.name;
@@ -2106,10 +2205,26 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
                         do {
                             relationshipId = prefix + '_' + relName + '_' + relNumber++;
                         } while (this.allRelationshipTemplates.find(value => value.id === relationshipId));
-                        if (this.searchTypeAndCheckForCompatibility(this.getCapability(targetElement))) {
+                        const capModel: CapabilityModel = this.getCapability(capabilityId);
+                        const reqModel: RequirementModel = this.dragSourceInfos.dragSource;
+                        const sourceNodeTypeString: string = this.allNodeTemplates
+                            .filter(nodeTemplate => nodeTemplate.id === this.dragSourceInfos.nodeId)
+                            .map(nodeTemplate => nodeTemplate.type)[0];
+                        const targetNodeTypeString: string = this.allNodeTemplates
+                            .filter(nodeTemplate => nodeTemplate.id === info.targetId.substring(0, info.targetId.indexOf('.')))
+                            .map(nodeTemplate => nodeTemplate.type)[0];
+                        const capDef: CapabilityDefinitionModel = this.getCapabilityDefinitionsOfNodeType(targetNodeTypeString)
+                            .filter(current => current.name === capModel.name)[0];
+                        const reqDef: RequirementDefinitionModel = this.getRequirementDefinitionsOfNodeType(sourceNodeTypeString)
+                            .filter(current => current.name === reqModel.name)[0];
+
+                        if (this.checkReqCapCompatibility(reqDef, capDef, capModel, new QName(sourceNodeTypeString), new QName(targetNodeTypeString))) {
+                            reqModel.capability = capModel.name;
+                            reqModel.relationship = relationshipId;
+                            reqModel.node = info.targetId.substring(0, info.targetId.indexOf('.'));
                             const newRelationship = new TRelationshipTemplate(
-                                { ref: sourceElement },
-                                { ref: targetElement },
+                                { ref: requirementId },
+                                { ref: capabilityId },
                                 this.selectedRelationshipType.name,
                                 relationshipId,
                                 this.selectedRelationshipType.qName,
@@ -2127,7 +2242,7 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
                             }
                         }
                         this.dragSourceActive = false;
-                        this.resetDragSource(sourceElement);
+                        this.resetDragSource(requirementId);
                     }
                     this.unbindConnection();
                     this.revalidateContainer();
@@ -2136,13 +2251,13 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
         }
     }
 
-    getCapability(targetElement: string) {
+    getCapability(capabilityId: string): CapabilityModel {
         let capability: any = null;
         this.allNodeTemplates.forEach(node => {
             if (node.capabilities) {
                 if (node.capabilities.capability) {
                     node.capabilities.capability.forEach(cap => {
-                        if (cap.id === targetElement) {
+                        if (cap.id === capabilityId) {
                             capability = cap;
                         }
                     });
@@ -2152,11 +2267,29 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
         return capability;
     }
 
+    checkReqCapCompatibility(reqDefinition: RequirementDefinitionModel, capDefinition: CapabilityDefinitionModel,
+                             cap: CapabilityModel, sourceNodeType: QName, targetNodeType: QName) {
+        if (this.configuration.isYaml()) {
+            // we assume the relationship type is correct
+            // check the conditions set by the requirement definition
+            if (this.matchType(reqDefinition.node, targetNodeType.qName, this.entityTypes.unGroupedNodeTypes) &&
+                this.matchType(reqDefinition.capability, capDefinition.capabilityType, this.entityTypes.capabilityTypes)) {
+                // todo check for the conditions set by the capability definition/type (valid_source_types)
+                return true;
+            } else {
+                this.notify.warning('The Selected Requirement and Capability are not Compatible');
+                return false;
+            }
+        } else {
+            return this.searchTypeAndCheckForCompatibility(cap);
+        }
+    }
+
     /**
      * check for compatibility of Requirement and Capability
-     * @param dragTargetInfo
+     * @param capability the capability model (assignment) to validate
      */
-    searchTypeAndCheckForCompatibility(capability: any) {
+    searchTypeAndCheckForCompatibility(capability: CapabilityModel) {
         let requiredTargetType = '';
 
         this.entityTypes.requirementTypes.some(req => {
@@ -2165,29 +2298,27 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
                 return true;
             }
         });
-        return this.checkForCompatibility(requiredTargetType, capability);
+        return this.matchType(requiredTargetType, capability.type, this.entityTypes.capabilityTypes);
     }
 
     /**
-     * check recursive if the target or a parent of its Capability matches
-     * @param requiredTargetType
-     * @param targetOrParent
+     * check recursively if the target entity type (or any of its parents) match the required entity type
+     * @param requiredType
+     * @param targetElementType
+     * @param targetElementTypeSet
      */
-    checkForCompatibility(requiredTargetType: any, targetOrParent: any) {
-        let parentCapType: any;
-        if (requiredTargetType === targetOrParent.type) {
+    matchType(requiredType: string, targetElementType: string, targetElementTypeSet: EntityType[]) {
+        if (requiredType === targetElementType) {
             return true;
         } else {
-            this.entityTypes.capabilityTypes.some(cap => {
-                if (cap.qName === targetOrParent.type) {
-                    parentCapType = cap.full.serviceTemplateOrNodeTypeOrNodeTypeImplementation[0].derivedFrom;
-                    return true;
-                }
-            });
-            if (parentCapType) {
-                return this.checkForCompatibility(requiredTargetType, parentCapType);
+            const parentType = targetElementTypeSet
+                .filter(type => type.qName === targetElementType)
+                .map(type => type.full.serviceTemplateOrNodeTypeOrNodeTypeImplementation[0].derivedFrom);
+
+            if (parentType && parentType.length > 0 && parentType[0]) {
+                return this.matchType(requiredType, parentType[0].type, targetElementTypeSet);
             }
-            this.notify.warning('The selected Requirement and Capability are not Compatible');
+
             return false;
         }
     }

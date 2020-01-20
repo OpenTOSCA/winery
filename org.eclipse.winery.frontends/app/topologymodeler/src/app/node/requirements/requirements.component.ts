@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2017-2018 Contributors to the Eclipse Foundation
+ * Copyright (c) 2017-2019 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -34,6 +34,7 @@ export class RequirementsComponent implements OnInit, OnChanges, OnDestroy {
     readonly toscaTypes = ToscaTypes;
 
     @Output() toggleModalHandler: EventEmitter<any>;
+    @Output() relationshipTemplateIdClicked: EventEmitter<string>;
     @Input() readonly: boolean;
     @Input() currentNodeData: any;
     requirements: any[] = [];
@@ -45,8 +46,9 @@ export class RequirementsComponent implements OnInit, OnChanges, OnDestroy {
 
     constructor(private ngRedux: NgRedux<IWineryState>) {
         this.toggleModalHandler = new EventEmitter();
+        this.relationshipTemplateIdClicked = new EventEmitter<string>();
         this.subscription = this.ngRedux.select(state => state.wineryState.currentJsonTopology.nodeTemplates)
-            .subscribe(currentNodes => this.updateReqs());
+            .subscribe(() => this.updateReqs());
     }
 
     /**
@@ -69,6 +71,10 @@ export class RequirementsComponent implements OnInit, OnChanges, OnDestroy {
             this.entityTypes = changes.currentNodeData.currentValue.entityTypes;
             this.nodeTemplate = changes.currentNodeData.currentValue.nodeTemplate;
         }
+    }
+
+    public onRelationshipTemplateIdClicked(id: string) {
+        this.relationshipTemplateIdClicked.emit(id);
     }
 
     /**

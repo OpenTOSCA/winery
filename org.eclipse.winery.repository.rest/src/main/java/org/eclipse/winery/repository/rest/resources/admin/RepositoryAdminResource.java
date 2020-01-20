@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2013 Contributors to the Eclipse Foundation
+ * Copyright (c) 2012-2019 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -14,7 +14,6 @@
 package org.eclipse.winery.repository.rest.resources.admin;
 
 import java.io.InputStream;
-import java.util.Collections;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
@@ -27,17 +26,17 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
 
-import org.eclipse.winery.repository.backend.IRepository;
-import org.eclipse.winery.repository.backend.IRepositoryAdministration;
 import org.eclipse.winery.repository.backend.RepositoryFactory;
-import org.eclipse.winery.repository.backend.filebased.MultiRepository;
-import org.eclipse.winery.repository.backend.filebased.RepositoryConfigurationManager;
+import org.eclipse.winery.repository.backend.filebased.MultiRepositoryManager;
 import org.eclipse.winery.repository.backend.filebased.RepositoryProperties;
 
 import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataParam;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class RepositoryAdminResource {
+    private static final Logger LOGGER = LoggerFactory.getLogger(RepositoryAdminResource.class);
 
     /**
      * Imports the given ZIP
@@ -45,19 +44,19 @@ public class RepositoryAdminResource {
     @POST
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     public Response importRepositoryDump(@FormDataParam("file") InputStream uploadedInputStream, @FormDataParam("file") FormDataContentDisposition fileDetail) {
-        ((IRepositoryAdministration) RepositoryFactory.getRepository()).doImport(uploadedInputStream);
+        RepositoryFactory.getRepository().doImport(uploadedInputStream);
         return Response.noContent().build();
     }
 
     @DELETE
     public void deleteRepositoryData() {
-        ((IRepositoryAdministration) RepositoryFactory.getRepository()).doClear();
+        RepositoryFactory.getRepository().doClear();
     }
 
     @GET
     @Produces(org.eclipse.winery.common.constants.MimeTypes.MIMETYPE_ZIP)
     public Response dumpRepository() {
-        StreamingOutput so = output -> ((IRepositoryAdministration) RepositoryFactory.getRepository()).doDump(output);
+        StreamingOutput so = output -> RepositoryFactory.getRepository().doDump(output);
         return Response.ok()
             .header("Content-Disposition", "attachment;filename=\"repository.zip\"")
             .type(org.eclipse.winery.common.constants.MimeTypes.MIMETYPE_ZIP)
@@ -74,11 +73,8 @@ public class RepositoryAdminResource {
     @Path("repositories")
     @Produces(MediaType.APPLICATION_JSON)
     public List<RepositoryProperties> getRepositoriesAsJson() {
-        IRepository repository = RepositoryFactory.getRepository();
-        if (repository instanceof MultiRepository) {
-            return RepositoryConfigurationManager.getRepositoriesFromFile((MultiRepository) repository);
-        }
-        return Collections.emptyList();
+        MultiRepositoryManager multiRepositoryManager = new MultiRepositoryManager();
+        return multiRepositoryManager.getRepositoriesAsList();
     }
 
     /**
@@ -93,7 +89,8 @@ public class RepositoryAdminResource {
                 .entity("Repositories list must be given.")
                 .build();
         }
-        RepositoryConfigurationManager.addRepositoryToFile(repositoriesList);
+        MultiRepositoryManager multiRepositoryManager = new MultiRepositoryManager();
+        multiRepositoryManager.addRepositoryToFile(repositoriesList);
         return Response.ok().build();
     }
 }

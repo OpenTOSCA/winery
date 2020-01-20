@@ -91,6 +91,7 @@ export class NodeComponent implements OnInit, AfterViewInit, OnDestroy, DoCheck 
     @Output() saveNodeRequirements: EventEmitter<any>;
     @Output() sendPaletteStatus: EventEmitter<any>;
     @Output() sendNodeData: EventEmitter<any>;
+    @Output() relationshipTemplateIdClicked: EventEmitter<string>;
 
     @ViewChild('versionModal') versionModal: VersionsComponent;
     previousPosition: any;
@@ -127,6 +128,7 @@ export class NodeComponent implements OnInit, AfterViewInit, OnDestroy, DoCheck 
         this.saveNodeRequirements = new EventEmitter();
         this.sendPaletteStatus = new EventEmitter();
         this.sendNodeData = new EventEmitter();
+        this.relationshipTemplateIdClicked = new EventEmitter<string>();
     }
 
     /**
@@ -261,6 +263,10 @@ export class NodeComponent implements OnInit, AfterViewInit, OnDestroy, DoCheck 
                 this.findOutPropertyDefinitionTypeForProperties(this.nodeTemplate.type, this.entityTypes.groupedNodeTypes);
             }
         }
+    }
+
+    onRelationshipTemplateIdClicked(id: string) {
+        this.relationshipTemplateIdClicked.emit(id);
     }
 
     /**

@@ -12,20 +12,23 @@
  * SPDX-License-Identifier: EPL-2.0 OR Apache-2.0
 -->
 
-<div id="requirementDiv" *ngIf="requirementsExist">
+<div id="requirementDiv" *ngIf="requirements?.length">
     <winery-toscatype-table
         [toscaType]="toscaTypes.RequirementType"
         [currentNodeData]="currentNodeData"
         [toscaTypeData]="requirements"
         [entityTypes]="entityTypes"
+        (relationshipTemplateIdClicked)="onRelationshipTemplateIdClicked($event)"
         (showClickedReqOrCapModal)="toggleModal($event)">
     </winery-toscatype-table>
 </div>
 
-<div *ngIf="!requirementsExist" style="color: dimgray; text-align: center">
+<div *ngIf="!requirements || requirements.length == 0" style="color: dimgray; text-align: center">
     <span>No requirements defined <br> for this Node Template.</span></div>
 
-<div *ngIf="!readonly" (click)="toggleModal($event);" class="btn btn-sm btn-modal" style="display: block;">
-    Add new Requirement
+<div *wineryRepositoryHideOnFeature="'yaml'">
+    <div *ngIf="!readonly" (click)="toggleModal($event);" class="btn btn-sm btn-modal" style="display: block;">
+        Add new Requirement
+    </div>
 </div>
 

@@ -70,51 +70,151 @@
     </tbody>
 </table>
 
-<table *ngIf="toscaType === toscaTypes.CapabilityType || toscaType === toscaTypes.RequirementType"
-       class="toscatype-table">
-    <thead>
-    <tr>
-        <th *ngIf="toscaType === toscaTypes.CapabilityType" width="25px"></th>
-        <th>Endpoint</th>
-        <th>Id</th>
-        <th>Name</th>
-        <th *ngIf="toscaType === toscaTypes.RequirementType"></th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr *ngFor="let reqOrCap of currentToscaTypeData">
-        <td *ngIf="toscaType === toscaTypes.CapabilityType" class="toscatype-table-td">
-            <button type="button" class="reqCap-button btn btn-sm btn-outline-secondary btn-block"
-                    style="font-size: x-small;" id="{{currentNodeData.nodeTemplate.id +'.'+ reqOrCap.id}}">
-                <i class="fa fa-dot-circle-o" aria-hidden="true"></i> {{""}}
-            </button>
-        </td>
-        <td class="toscatype-table-td"
-            [class.cell-with-comment]="isEllipsisActive(reqOrCapType)">
-            <div #reqOrCapType (click)="clickReqOrCapType(reqOrCap.type)">{{ reqOrCap.type | localname }}</div>
-            <span class="cell-comment">{{ reqOrCap.type | localname }}</span>
-        </td>
-        <td class="toscatype-table-td"
-            [class.cell-with-comment]="isEllipsisActive(reqOrCapName)">
-            <div #reqOrCapName (click)="showExistingReqOrCapModal($event)">{{ reqOrCap.id }}</div>
-            <span class="cell-comment">{{ reqOrCap.name }}</span>
-        </td>
-        <td class="toscatype-table-td"
-            [class.cell-with-comment]="isEllipsisActive(reqOrCapRef)">
-            <div #reqOrCapRef (click)="clickReqOrCapRef(reqOrCap.name)">{{ reqOrCap.name }}</div>
-            <span class="cell-comment">{{ reqOrCap.name }}</span>
-        </td>
-        <td *ngIf="toscaType === toscaTypes.RequirementType" class="toscatype-table-td">
-            <div (mousedown)="passCurrentType($event);
+<div *ngIf="toscaType === toscaTypes.CapabilityType || toscaType === toscaTypes.RequirementType">
+
+    <table *wineryRepositoryHideOnFeature="'yaml'"
+           class="toscatype-table">
+        <thead>
+        <tr>
+            <th *ngIf="toscaType === toscaTypes.CapabilityType" width="25px"></th>
+            <th>Endpoint</th>
+            <th>Id</th>
+            <th>Name</th>
+            <th *ngIf="toscaType === toscaTypes.RequirementType"></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let reqOrCap of currentToscaTypeData">
+            <td *ngIf="toscaType === toscaTypes.CapabilityType" class="toscatype-table-td">
+                <button type="button" class="reqCap-button btn btn-sm btn-outline-secondary btn-block"
+                        style="font-size: x-small;" id="{{currentNodeData.nodeTemplate.id +'.'+ reqOrCap.id}}">
+                    <i class="fa fa-dot-circle-o" aria-hidden="true"></i> {{""}}
+                </button>
+            </td>
+            <td class="toscatype-table-td"
+                [class.cell-with-comment]="isEllipsisActive(reqOrCapType)">
+                <div #reqOrCapType (click)="clickReqOrCapType(reqOrCap.type)">{{ reqOrCap.type | localname }}</div>
+                <span class="cell-comment">{{ reqOrCap.type | localname }}</span>
+            </td>
+            <td class="toscatype-table-td"
+                [class.cell-with-comment]="isEllipsisActive(reqOrCapName)">
+                <div #reqOrCapName
+                     (click)="showExistingReqOrCapModal(reqOrCap.id, editOperation)">{{ reqOrCap.id }}</div>
+                <span class="cell-comment">{{ reqOrCap.name }}</span>
+            </td>
+            <td class="toscatype-table-td"
+                [class.cell-with-comment]="isEllipsisActive(reqOrCapRef)">
+                <div #reqOrCapRef (click)="clickReqOrCapRef(reqOrCap.name)">{{ reqOrCap.name }}</div>
+                <span class="cell-comment">{{ reqOrCap.name }}</span>
+            </td>
+            <td *ngIf="toscaType === toscaTypes.RequirementType" class="toscatype-table-td">
+                <div (mousedown)="passCurrentType($event);
             reqCapRelationshipService.createSourceInfo(this.currentNodeData, reqOrCap);">
-                <div class="btn-group-vertical center-block" role="group" id={{dragSource}}>
-                    <button *ngFor="let rel of entityTypes.relationshipTypes"
-                            type="button" class="reqCap-button btn btn-sm btn-outline-secondary btn-block"
-                            style="font-size: xx-small;">{{rel.id}}
-                    </button>
+                    <div class="btn-group-vertical center-block" role="group" id={{dragSource}} style="width: 100%;">
+                        <button *ngFor="let rel of entityTypes.relationshipTypes"
+                                type="button" class="reqCap-button btn btn-sm btn-outline-secondary btn-block"
+                                style="font-size: xx-small;">{{rel.id}}
+                        </button>
+                    </div>
                 </div>
-            </div>
-        </td>
-    </tr>
-    </tbody>
-</table>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div *wineryRepositoryShowOnFeature="'yaml'">
+        <table *ngIf="toscaType === toscaTypes.RequirementType"
+               class="toscatype-table">
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>Current Relationship</th>
+                <th>Possible Relationships</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let req of currentToscaTypeData">
+                <td class="toscatype-table-td"
+                    [class.cell-with-comment]="isEllipsisActive(reqRef)">
+                    <div #reqRef (click)="clickYamlReqRef()">{{ req.name }}</div>
+                    <span class="cell-comment">{{ req.name }}</span>
+                </td>
+                <td class="toscatype-table-td" *ngIf="req.relationship"
+                    [class.cell-with-comment]="isEllipsisActive(reqRelationship)">
+                    <div #reqRelationship
+                         (click)="clickYamlRelationshipTemplateId(req.relationship, req)">{{req.relationship}}</div>
+                    <span class="cell-comment">{{ req.relationship }}</span>
+                </td>
+                <td class="toscatype-table-td" *ngIf="!req.relationship"> N/A</td>
+                <td class="toscatype-table-td" *ngIf="isRequirementFulfilled(req); else newRelationship">
+
+                    <div class="btn-group-vertical center-block" role="group" id={{dragSource}}
+                         style="width: 100%;">
+                        <button *ngFor="let rel of getAllowedRelationshipTypes(req)"
+                                [disabled]="true"
+                                type="button" class="reqCap-button btn btn-sm btn-outline-secondary btn-block"
+                                style="font-size: xx-small; ">{{rel.id}}
+                        </button>
+                    </div>
+
+                </td>
+                <ng-template #newRelationship>
+                    <td class="toscatype-table-td">
+                        <div (mousedown)="passCurrentType($event);
+            reqCapRelationshipService.createSourceInfo(this.currentNodeData, req);">
+                            <div class="btn-group-vertical center-block" role="group" id={{dragSource}}
+                                 style="width: 100%;">
+                                <button *ngFor="let rel of getAllowedRelationshipTypes(req)"
+                                        type="button" class="reqCap-button btn btn-sm btn-outline-secondary btn-block"
+                                        style="font-size: xx-small;">{{rel.id}}
+                                </button>
+                            </div>
+                        </div>
+                    </td>
+                </ng-template>
+            </tr>
+            </tbody>
+        </table>
+
+        <table *ngIf="toscaType === toscaTypes.CapabilityType"
+               class="toscatype-table">
+            <thead>
+            <tr>
+                <th *ngIf="toscaType === toscaTypes.CapabilityType" width="25px"></th>
+                <th>Name</th>
+                <th>Type</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let cap of currentToscaTypeData">
+                <td class="toscatype-table-td">
+                    <button type="button" class="reqCap-button btn btn-sm btn-outline-secondary btn-block"
+                            style="font-size: x-small;" id="{{currentNodeData.nodeTemplate.id +'.'+ cap.id}}">
+                        <i class="fa fa-dot-circle-o" aria-hidden="true"></i> {{''}}
+                    </button>
+                </td>
+                <td class="toscatype-table-td" [class.cell-with-comment]="isEllipsisActive(capName)">
+                    <div #capName (click)="clickYamlCapRef()">{{ cap.name }}</div>
+                    <span class="cell-comment">{{ cap.name }}</span>
+                </td>
+                <td class="toscatype-table-td"
+                    [class.cell-with-comment]="isEllipsisActive(capType)">
+                    <div #capType (click)="clickReqOrCapType(cap.type)">{{ cap.type | localname }}</div>
+                    <span class="cell-comment">{{ cap.type }}</span>
+                </td>
+                <td class="toscatype-table-td">
+                    <div class="btn-group-vertical center-block" role="group" style="width: 100%"
+                         (click)="showExistingReqOrCapModal(cap.id, editOperation)">
+                        <button type="button" class="reqCap-button btn btn-sm btn-outline-secondary btn-block"
+                                style="font-size: xx-small;">
+                            Edit
+                        </button>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+

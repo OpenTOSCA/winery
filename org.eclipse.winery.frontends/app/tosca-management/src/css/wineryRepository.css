@@ -22,6 +22,18 @@
     cursor: pointer;
 }
 
+#reqdef-table tr td:nth-of-type(2) { /* Select the 2nd td */
+    cursor: pointer;
+}
+
+#reqdef-table tr td:nth-of-type(3) { /* Select the 3rd td */
+    cursor: pointer;
+}
+
+#reqdef-table tr td:nth-of-type(4) { /* Select the 4th td */
+    cursor: pointer;
+}
+
 .hidden {
     display: none;
 }

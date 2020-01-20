@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017-2018 Contributors to the Eclipse Foundation
+ * Copyright (c) 2019 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -11,15 +11,13 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR Apache-2.0
  *******************************************************************************/
-
-package org.eclipse.winery.repository.rest.resources.apiData;
-
-public class CapabilityDefinitionPostData {
-    public String name;
-    public String type;
-    public String upperBound;
-    public String lowerBound;
-
-    CapabilityDefinitionPostData() {
-    }
+export class CapabilityDefinitionModel {
+    public constraints: any;
+    public name: string;
+    public capabilityType: string;
+    public lowerBound: string;
+    public upperBound: string;
+    public documentation: any;
+    public any: any[];
+    public otherAttributes: any;
 }
