@@ -85,9 +85,9 @@ export class PropertiesDefinitionComponent implements OnInit {
 
     copyToTable() {
         this.tableData = [];
-        for (let property of this.resourceApiData.winerysPropertiesDefinition.propertyDefinitionKVList) {
+        for (const property of this.resourceApiData.winerysPropertiesDefinition.propertyDefinitionKVList) {
             let constraintsString = '';
-            for (let constraint of property.constraints) {
+            for (const constraint of property.constraints) {
                 if (constraint.value == null) {
                     constraintsString += constraint.key + ':' + constraint.list.toString();
                 } else if (constraint.list == null) {
@@ -95,7 +95,7 @@ export class PropertiesDefinitionComponent implements OnInit {
                 } else {
                     constraintsString += constraint.key;
                 }
-                if (property.constraints.indexOf(constraint) != property.constraints.length - 1) {
+                if (property.constraints.indexOf(constraint) !== property.constraints.length - 1) {
                     constraintsString += ', ';
                 }
             }
@@ -279,7 +279,7 @@ export class PropertiesDefinitionComponent implements OnInit {
     }
 
     addConstraint(selectedConstraintKey: string, constraintValue: string) {
-        // lists have to be separated by ',' 
+        // lists have to be separated by ','
         if (list_constraint_keys.indexOf(selectedConstraintKey) > -1) {
             this.newProperty.constraints.push(new ConstraintClause(selectedConstraintKey, null, constraintValue.split(',')));
         } else {

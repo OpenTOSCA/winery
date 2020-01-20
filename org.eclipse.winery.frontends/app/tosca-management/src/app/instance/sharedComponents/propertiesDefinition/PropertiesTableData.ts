@@ -12,6 +12,12 @@
  * SPDX-License-Identifier: EPL-2.0 OR Apache-2.0
  *******************************************************************************/
 export class PropertiesTableData {
+    key: string = null;
+    type: string = null;
+    required: boolean;
+    defaultValue: string;
+    description: string;
+    constraints: string;
     constructor(key: string, type: string, required: boolean, defaultValue: string, description: string, constraints: string) {
         this.key = key;
         this.type = type;
@@ -20,11 +26,4 @@ export class PropertiesTableData {
         this.description = description;
         this.constraints = constraints;
     }
-
-    key: string = null;
-    type: string = null;
-    required: boolean;
-    defaultValue: string;
-    description: string;
-    constraints: string;
 }
