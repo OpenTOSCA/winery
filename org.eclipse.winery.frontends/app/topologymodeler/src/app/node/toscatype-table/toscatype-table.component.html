@@ -53,7 +53,7 @@
     <tr *ngFor="let artifact of currentToscaTypeData">
         <td class="toscatype-table-td"
             [class.cell-with-comment]="isEllipsisActive(aname)">
-            <div #aname (click)="openDeploymentArtifactModal(artifact)">{{ artifact.id }}</div>
+            <div #aname (click)="openYamlArtifactModal(artifact)">{{ artifact.id }}</div>
             <span class="cell-comment">{{ artifact.id }}</span>
         </td>
         <td class="toscatype-table-td"

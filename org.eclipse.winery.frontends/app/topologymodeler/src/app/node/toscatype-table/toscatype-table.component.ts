@@ -24,7 +24,7 @@ import { WineryRepositoryConfigurationService } from '../../../../../tosca-manag
 import { ReqCapModalType, ShowReqCapModalEventData } from './showReqCapModalEventData';
 import { RequirementModel } from '../../models/requirementModel';
 import { RequirementDefinitionModel } from '../../models/requirementDefinitonModel';
-import { VisualEntityType } from '../../models/ttopology-template';
+import { TArtifact, VisualEntityType } from '../../models/ttopology-template';
 import { TPolicy } from '../../models/policiesModalData';
 import { InheritanceUtils } from '../../models/InheritanceUtils';
 
@@ -159,6 +159,15 @@ export class ToscatypeTableComponent implements OnInit, OnChanges {
         const currentNodeId = this.currentNodeData.currentNodeId;
         // push new event onto Subject
         const eventObject: OpenModalEvent = new OpenModalEvent(currentNodeId, ModalVariant.DeploymentArtifacts, name, templateName, namespace, type);
+        this.entitiesModalService.openModalEvent.next(eventObject);
+    }
+
+    openYamlArtifactModal(yamlArtifact: TArtifact) {
+        const type = yamlArtifact.type;
+        const name = yamlArtifact.id;
+        const currentNodeId = this.currentNodeData.currentNodeId;
+        // push new event onto Subject
+        const eventObject: OpenModalEvent = new OpenModalEvent(currentNodeId, ModalVariant.DeploymentArtifacts, name, '', '', type);
         this.entitiesModalService.openModalEvent.next(eventObject);
     }
 

@@ -315,7 +315,7 @@ export const WineryReducer =
                     }
                 };
             case WineryActions.DELETE_YAML_ARTIFACT:
-                const deletedYamlArtifact: any = (<DeleteYamlArtifactAction>action).nodeYamlArtifact.deletedYamlArtifact;
+                const deletedYamlArtifactId: any = (<DeleteYamlArtifactAction>action).nodeYamlArtifact.deletedYamlArtifactId;
                 const indexOfNodeWithDeletedYamlArtifact = lastState.currentJsonTopology.nodeTemplates
                     .map(node => node.id)
                     .indexOf((<DeleteYamlArtifactAction>action).nodeYamlArtifact.nodeId);
@@ -331,7 +331,7 @@ export const WineryReducer =
                                         artifact: [
                                             ...lastState.currentJsonTopology.nodeTemplates[indexOfNodeWithDeletedYamlArtifact]
                                                 .artifacts.artifact
-                                                .filter(a => a.id !== deletedYamlArtifact.id)
+                                                .filter(a => a.id !== deletedYamlArtifactId)
                                         ]
                                     })
                                 : nodeTemplate

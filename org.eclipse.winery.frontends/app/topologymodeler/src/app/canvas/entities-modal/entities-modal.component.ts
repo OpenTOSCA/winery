@@ -98,6 +98,7 @@ export class EntitiesModalComponent implements OnInit, OnChanges {
             this.deploymentArtifactOrPolicyModalData.modalName = newEvent.modalName;
             this.deploymentArtifactOrPolicyModalData.modalType = newEvent.modalType;
             this.modalVariantForEditDeleteTasks = newEvent.modalVariant.toString();
+            console.debug(this.deploymentArtifactOrPolicyModalData);
             this.modal.show();
         });
         this.ngRedux.select();
@@ -338,6 +339,8 @@ export class EntitiesModalComponent implements OnInit, OnChanges {
         this.deploymentArtifactOrPolicyModalData.modalTemplateName = '';
         this.deploymentArtifactOrPolicyModalData.modalName = '';
         this.deploymentArtifactOrPolicyModalData.modalType = '';
+        this.deploymentArtifactOrPolicyModalData.modalFilePath = '';
+        this.deploymentArtifactOrPolicyModalData.modalTargetLocation = '';
         this.resetModalData();
         this.modal.hide();
     }
@@ -406,6 +409,15 @@ export class EntitiesModalComponent implements OnInit, OnChanges {
             this.resetDeploymentArtifactOrPolicyModalData();
         }
 
+    }
+
+    deleteYamlArtifact() {
+        const actionObject = {
+            nodeId: this.deploymentArtifactOrPolicyModalData.nodeTemplateId,
+            deletedYamlArtifactId: this.deploymentArtifactOrPolicyModalData.modalName
+        };
+        this.ngRedux.dispatch(this.actions.deleteYamlArtifact(actionObject));
+        this.resetDeploymentArtifactOrPolicyModalData();
     }
 
     getLocalName(qName?: string): string {

@@ -161,7 +161,7 @@ export interface SetYamlArtifactAction extends Action {
 export interface DeleteYamlArtifactAction extends Action {
     nodeYamlArtifact: {
         nodeId: string,
-        deletedYamlArtifact: TArtifact
+        deletedYamlArtifactId: TArtifact
     };
 }
 
