@@ -12,7 +12,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR Apache-2.0
  ********************************************************************************/
 
-import { Entity, EntityType, TPolicyType, TTopologyTemplate, VisualEntityType } from './ttopology-template';
+import { Entity, EntityType, TArtifactType, TPolicyType, TTopologyTemplate, VisualEntityType } from './ttopology-template';
 import { TopologyModelerConfiguration } from './topologyModelerConfiguration';
 import { VersionElement } from './versionElement';
 import { Visuals } from './visuals';
@@ -23,7 +23,7 @@ import { TPolicy } from './policiesModalData';
  */
 export class EntityTypesModel {
     artifactTemplates: any;
-    artifactTypes: EntityType[];
+    artifactTypes: TArtifactType[];
     capabilityTypes: EntityType[];
     groupedNodeTypes: any[];
     versionElements: VersionElement[];

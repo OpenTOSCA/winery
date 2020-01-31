@@ -76,7 +76,7 @@ export class TopologyTemplateUtil {
                 console.error('The required entity types model is not available! Unexpected behavior');
             }
             // look for missing capabilities and add them
-            const capDefs: CapabilityDefinitionModel[] = InheritanceUtils.getCapabilityDefinitionsOfNodeType(node.type, types);
+            const capDefs: CapabilityDefinitionModel[] = InheritanceUtils.getEffectiveCapabilityDefinitionsOfNodeType(node.type, types);
             if (!node.capabilities || !node.capabilities.capability) {
                 node.capabilities = { capability: [] };
             }
@@ -99,7 +99,7 @@ export class TopologyTemplateUtil {
                 node.requirements.requirement.forEach(req => req.id = this.generateYAMLRequirementID(node, req.name));
             } else {
                 // If the requirements are not found in the template, they are acquired from the inheritance hierarchy.
-                const reqDefs: RequirementDefinitionModel[] = InheritanceUtils.getRequirementDefinitionsOfNodeType(node.type, types);
+                const reqDefs: RequirementDefinitionModel[] = InheritanceUtils.getEffectiveRequirementDefinitionsOfNodeType(node.type, types);
 
                 if (reqDefs && reqDefs.length > 0) {
                     node.requirements.requirement = reqDefs
@@ -128,10 +128,11 @@ export class TopologyTemplateUtil {
             otherAttributes,
             node.x,
             node.y,
-            node.capabilities ? node.capabilities : {},
-            node.requirements ? node.requirements : {},
+            node.capabilities ? node.capabilities : { capability: [] },
+            node.requirements ? node.requirements : { requirement: [] },
             node.deploymentArtifacts ? node.deploymentArtifacts : {},
-            node.policies ? node.policies : {},
+            node.policies ? node.policies : { policy: [] },
+            node.artifacts ? node.artifacts : { artifact: [] },
             state
         );
     }

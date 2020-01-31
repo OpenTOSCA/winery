@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013-2018 Contributors to the Eclipse Foundation
+ * Copyright (c) 2013-2020 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -41,7 +41,8 @@ import org.eclipse.jdt.annotation.Nullable;
     "requirements",
     "capabilities",
     "policies",
-    "deploymentArtifacts"
+    "deploymentArtifacts",
+    "artifacts"
 })
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonTypeInfo(
@@ -65,6 +66,9 @@ public class TNodeTemplate extends RelationshipSourceOrTarget implements HasPoli
     protected Integer minInstances;
     @XmlAttribute(name = "maxInstances")
     protected String maxInstances;
+    // this element is added to support YAML mode
+    @XmlElement(name = "Artifacts", required = false)
+    protected TArtifacts artifacts;
 
     public TNodeTemplate() {
         super();
@@ -83,6 +87,7 @@ public class TNodeTemplate extends RelationshipSourceOrTarget implements HasPoli
         this.name = builder.name;
         this.minInstances = builder.minInstances;
         this.maxInstances = builder.maxInstances;
+        this.artifacts = builder.artifacts;
 
         if (Objects.nonNull(builder.x) && Objects.nonNull(builder.y)) {
             this.setX(builder.x);
@@ -231,6 +236,14 @@ public class TNodeTemplate extends RelationshipSourceOrTarget implements HasPoli
         visitor.visit(this);
     }
 
+    public TArtifacts getArtifacts() {
+        return artifacts;
+    }
+
+    public void setArtifacts(TArtifacts artifacts) {
+        this.artifacts = artifacts;
+    }
+
     @XmlAccessorType(XmlAccessType.FIELD)
     @XmlType(name = "", propOrder = {
         "capability"
@@ -329,6 +342,7 @@ public class TNodeTemplate extends RelationshipSourceOrTarget implements HasPoli
         private String maxInstances;
         private String x;
         private String y;
+        private TArtifacts artifacts;
 
         public Builder(String id, QName type) {
             super(id, type);
@@ -480,6 +494,11 @@ public class TNodeTemplate extends RelationshipSourceOrTarget implements HasPoli
             TPolicies tmp = new TPolicies();
             tmp.getPolicy().add(policies);
             return addPolicies(tmp);
+        }
+
+        public Builder setArtifacts(List<TArtifact> artifacts) {
+            this.artifacts = new TArtifacts(artifacts);
+            return self();
         }
 
         @Override

@@ -24,7 +24,8 @@
     </p>
     <h4>Artifacts</h4>
     <a class="btn btn-default right-margin-10" [routerLink]="['/artifacttypes']">Artifact Types</a>
-    <a class="btn btn-default" [routerLink]="['/artifacttemplates']">Artifact Templates</a>
+    <a *wineryRepositoryHideOnFeature="configEnum.Yaml" class="btn btn-default" [routerLink]="['/artifacttemplates']">Artifact
+        Templates</a>
     <h4> {{!configurationService.isYaml() ? 'Requirements and ' : ''}} Capabilities</h4>
     <a *wineryRepositoryHideOnFeature="configEnum.Yaml" class="btn btn-default right-margin-10"
        [routerLink]="['/requirementtypes']">

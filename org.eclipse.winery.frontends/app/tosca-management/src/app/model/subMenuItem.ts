@@ -75,5 +75,6 @@ export class SubMenuItems {
     static readonly topologyTemplate: SubMenuItem = { displayName: 'Topology Template', urlFragment: 'topologytemplate' };
     static readonly validSourcesAndTargets: SubMenuItem = { displayName: 'Valid Sources and Targets', urlFragment: 'validsourcesandtargets' };
     static readonly capabilityTypeConstraints: SubMenuItem = { displayName: 'Constraints', urlFragment: 'constraints' };
+    static readonly supportedFiles: SubMenuItem = { displayName: 'Supported File Types', urlFragment: 'supportedfiles' };
     static readonly xml: SubMenuItem = { displayName: 'XML', urlFragment: 'xml' };
 }

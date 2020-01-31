@@ -13,7 +13,9 @@
  ********************************************************************************/
 
 import { AfterViewInit, Component, Input, OnInit } from '@angular/core';
-import { Entity, EntityType, TNodeTemplate, TPolicyType, TRelationshipTemplate, TTopologyTemplate, VisualEntityType } from './models/ttopology-template';
+import {
+    Entity, EntityType, TArtifactType, TNodeTemplate, TPolicyType, TRelationshipTemplate, TTopologyTemplate, VisualEntityType
+} from './models/ttopology-template';
 import { ILoaded, LoadedService } from './services/loaded.service';
 import { AppReadyEventService } from './services/app-ready-event.service';
 import { BackendService } from './services/backend.service';
@@ -151,12 +153,16 @@ export class WineryComponent implements OnInit, AfterViewInit {
             case 'artifactTypes': {
                 this.entityTypes.artifactTypes = [];
                 entityTypeJSON.forEach(artifactType => {
+
                     this.entityTypes.artifactTypes
-                        .push(new EntityType(
+                        .push(new TArtifactType(
                             artifactType.id,
                             artifactType.qName,
                             artifactType.name,
-                            artifactType.namespace
+                            artifactType.namespace,
+                            artifactType.properties,
+                            artifactType.mimeType,
+                            artifactType.fileExtensions
                         ));
                 });
                 break;

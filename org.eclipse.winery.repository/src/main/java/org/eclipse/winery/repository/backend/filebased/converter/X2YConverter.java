@@ -37,8 +37,10 @@ import org.eclipse.winery.common.ids.definitions.RelationshipTypeImplementationI
 import org.eclipse.winery.common.ids.definitions.RequirementTypeId;
 import org.eclipse.winery.model.tosca.Definitions;
 import org.eclipse.winery.model.tosca.TAppliesTo;
+import org.eclipse.winery.model.tosca.TArtifact;
 import org.eclipse.winery.model.tosca.TArtifactReference;
 import org.eclipse.winery.model.tosca.TArtifactTemplate;
+import org.eclipse.winery.model.tosca.TArtifacts;
 import org.eclipse.winery.model.tosca.TBoolean;
 import org.eclipse.winery.model.tosca.TBoundaryDefinitions;
 import org.eclipse.winery.model.tosca.TCapability;
@@ -233,7 +235,7 @@ public class X2YConverter {
                 .setMetadata(meta)
                 .setRequirements(convert(node.getRequirements()))
                 .setCapabilities(convert(node.getCapabilities()))
-                .setArtifacts(convert(node.getDeploymentArtifacts()))
+                .setArtifacts(convert(node.getArtifacts()))
                 .build()
         );
     }
@@ -292,9 +294,13 @@ public class X2YConverter {
     }
 
     public Map<String, TArtifactType> convert(org.eclipse.winery.model.tosca.TArtifactType node) {
+        TArtifactType.Builder builder = new TArtifactType.Builder()
+            .setMimeType(node.getMimeType())
+            .setFileExt(node.getFileExtensions());
+
         return Collections.singletonMap(
             node.getIdFromIdOrNameField(),
-            convert(node, new TArtifactType.Builder(), org.eclipse.winery.model.tosca.TArtifactType.class).build()
+            convert(node, builder, org.eclipse.winery.model.tosca.TArtifactType.class).build()
         );
     }
 
@@ -920,6 +926,18 @@ public class X2YConverter {
         return TypeConverter.INSTANCE.convert(type);
     }
 
+    public Map<String, TArtifactDefinition> convert(TArtifacts node) {
+        if (Objects.isNull(node)) return null;
+
+        return node.getArtifact().stream()
+            .filter(Objects::nonNull)
+            .map(this::convert)
+            .filter(Objects::nonNull)
+            .flatMap(map -> map.entrySet().stream())
+            .filter(Objects::nonNull)
+            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+    }
+
     public Map<String, TCapabilityAssignment> convert(org.eclipse.winery.model.tosca.TNodeTemplate.Capabilities node) {
         if (Objects.isNull(node)) return null;
         return node.getCapability().stream()
@@ -929,6 +947,19 @@ public class X2YConverter {
             .flatMap(map -> map.entrySet().stream())
             .filter(Objects::nonNull)
             .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+    }
+
+    public Map<String, TArtifactDefinition> convert(TArtifact node) {
+        if (Objects.isNull(node)) return null;
+
+        return Collections.singletonMap(
+            node.getName(),
+            new TArtifactDefinition.Builder(
+                this.convert(node.getType(), new ArtifactTypeId(node.getType())),
+                Collections.singletonList(node.getFile()))
+                .setDeployPath(node.getTargetLocation())
+                .build()
+        );
     }
 
     public Map<String, TCapabilityAssignment> convert(TCapability node) {

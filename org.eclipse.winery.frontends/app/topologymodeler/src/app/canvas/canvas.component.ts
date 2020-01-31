@@ -397,7 +397,7 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
                     try {
                         // request all valid requirement types for that node type for display as name select options in
                         // the modal
-                        const data = InheritanceUtils.getRequirementDefinitionsOfNodeType(currentNodeData.type, this.entityTypes);
+                        const data = InheritanceUtils.getEffectiveRequirementDefinitionsOfNodeType(currentNodeData.type, this.entityTypes);
                         this.requirements.reqDefinitionNames = [];
                         this.requirements.reqDefinitionName = '';
 
@@ -479,7 +479,7 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
                     try {
                         // request all valid capability types for that node type for display as name select options in
                         // the modal
-                        const data = InheritanceUtils.getCapabilityDefinitionsOfNodeType(currentNodeData.type, this.entityTypes);
+                        const data = InheritanceUtils.getEffectiveCapabilityDefinitionsOfNodeType(currentNodeData.type, this.entityTypes);
                         this.capabilities.capDefinitionNames = [];
                         this.capabilities.capDefinitionName = '';
                         for (const capType of data) {
@@ -929,7 +929,7 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
                         const requirementModel: RequirementModel = sourceNodeTemplate.requirements.requirement
                             .find(req => req.id === reqId);
                         const requirementDefinition: RequirementDefinitionModel = InheritanceUtils
-                            .getRequirementDefinitionsOfNodeType(sourceNodeTemplate.type, this.entityTypes)
+                            .getEffectiveRequirementDefinitionsOfNodeType(sourceNodeTemplate.type, this.entityTypes)
                             .find(reqDef => reqDef.name === requirementModel.name);
                         requirementModel.capability = requirementDefinition.capability;
                         requirementModel.relationship = requirementDefinition.relationship;
@@ -1870,7 +1870,7 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
         if (this.configuration.isYaml()) {
             this.newNode.requirements = { requirement: [] };
             this.newNode.capabilities = { capability: [] };
-            const reqData = InheritanceUtils.getRequirementDefinitionsOfNodeType(this.newNode.type, this.entityTypes);
+            const reqData = InheritanceUtils.getEffectiveRequirementDefinitionsOfNodeType(this.newNode.type, this.entityTypes);
             if (reqData) {
                 reqData.forEach(reqDef => {
                     const reqModel = RequirementModel.fromRequirementDefinition(reqDef);
@@ -1878,7 +1878,7 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
                     this.newNode.requirements.requirement.push(reqModel);
                 });
             }
-            const capData = InheritanceUtils.getCapabilityDefinitionsOfNodeType(this.newNode.type, this.entityTypes);
+            const capData = InheritanceUtils.getEffectiveCapabilityDefinitionsOfNodeType(this.newNode.type, this.entityTypes);
             if (capData) {
                 capData.forEach(capDef => {
                     const capModel = CapabilityModel.fromCapabilityDefinitionModel(capDef);
@@ -2205,10 +2205,10 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
                             .filter(nodeTemplate => nodeTemplate.id === info.targetId.substring(0, info.targetId.indexOf('.')))
                             .map(nodeTemplate => nodeTemplate.type)[0];
                         const capDef: CapabilityDefinitionModel = InheritanceUtils
-                            .getCapabilityDefinitionsOfNodeType(targetNodeTypeString, this.entityTypes)
+                            .getEffectiveCapabilityDefinitionsOfNodeType(targetNodeTypeString, this.entityTypes)
                             .filter(current => current.name === capModel.name)[0];
                         const reqDef: RequirementDefinitionModel = InheritanceUtils
-                            .getRequirementDefinitionsOfNodeType(sourceNodeTypeString, this.entityTypes)
+                            .getEffectiveRequirementDefinitionsOfNodeType(sourceNodeTypeString, this.entityTypes)
                             .filter(current => current.name === reqModel.name)[0];
 
                         if (this.checkReqCapCompatibility(reqDef, capDef, capModel, new QName(sourceNodeTypeString), new QName(targetNodeTypeString))) {

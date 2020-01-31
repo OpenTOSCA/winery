@@ -71,8 +71,13 @@ export class InstanceService {
                     SubMenuItems.propertiesDefinition, SubMenuItems.inheritance, SubMenuItems.documentation, SubMenuItems.xml];
                 break;
             case ToscaTypes.ArtifactType:
-                subMenu = [SubMenuItems.readme, SubMenuItems.license, SubMenuItems.propertiesDefinition, SubMenuItems.inheritance, SubMenuItems.templates,
-                    SubMenuItems.documentation, SubMenuItems.xml];
+                if (this.configurationService.isYaml()) {
+                    subMenu = [SubMenuItems.readme, SubMenuItems.license, SubMenuItems.propertiesDefinition, SubMenuItems.inheritance, SubMenuItems.supportedFiles,
+                        SubMenuItems.documentation];
+                } else {
+                    subMenu = [SubMenuItems.readme, SubMenuItems.license, SubMenuItems.propertiesDefinition, SubMenuItems.inheritance, SubMenuItems.templates,
+                        SubMenuItems.documentation, SubMenuItems.xml];
+                }
                 break;
             case ToscaTypes.ArtifactTemplate:
                 subMenu = [SubMenuItems.readme, SubMenuItems.license, SubMenuItems.files, SubMenuItems.source, SubMenuItems.properties,
