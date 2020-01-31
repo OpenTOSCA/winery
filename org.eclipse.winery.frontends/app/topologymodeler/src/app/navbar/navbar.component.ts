@@ -26,6 +26,7 @@ import { WineryActions } from '../redux/actions/winery.actions';
 import { StatefulAnnotationsService } from '../services/statefulAnnotations.service';
 import { FeatureEnum } from '../../../../tosca-management/src/app/wineryFeatureToggleModule/wineryRepository.feature.direct';
 import { TPolicy } from '../models/policiesModalData';
+import { WineryRepositoryConfigurationService } from '../../../../tosca-management/src/app/wineryFeatureToggleModule/WineryRepositoryConfiguration.service';
 
 /**
  * The navbar of the topologymodeler.
@@ -69,7 +70,8 @@ export class NavbarComponent implements OnDestroy {
                 private wineryActions: WineryActions,
                 private backendService: BackendService,
                 private statefulService: StatefulAnnotationsService,
-                private hotkeysService: HotkeysService) {
+                private hotkeysService: HotkeysService,
+                private configurationService: WineryRepositoryConfigurationService) {
         this.subscriptions.push(ngRedux.select(state => state.topologyRendererState)
             .subscribe(newButtonsState => this.setButtonsState(newButtonsState)));
         this.subscriptions.push(ngRedux.select(currentState => currentState.wineryState.currentJsonTopology)

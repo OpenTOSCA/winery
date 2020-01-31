@@ -311,4 +311,8 @@ export class ToscatypeTableComponent implements OnInit, OnChanges {
             policy.targets = [this.currentNodeData.currentNodeId];
         }
     }
+
+    clickArtifactFile(file: string) {
+
+    }
 }

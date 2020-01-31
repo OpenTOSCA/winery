@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2017 Contributors to the Eclipse Foundation
+ * Copyright (c) 2017-2020 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -12,8 +12,6 @@
  * SPDX-License-Identifier: EPL-2.0 OR Apache-2.0
  *******************************************************************************/
 package org.eclipse.winery.repository.backend.filebased.converter.support.yaml.extension;
-
-import java.util.List;
 
 import javax.xml.namespace.QName;
 
@@ -53,8 +51,8 @@ public class TImplementationArtifactDefinition extends TArtifactDefinition {
         private String interfaceName;
         private String operationName;
 
-        public Builder(QName type, List<String> files) {
-            super(type, files);
+        public Builder(QName type, String file) {
+            super(type, file);
         }
 
         public Builder(TArtifactDefinition artifactDefinition) {

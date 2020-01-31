@@ -40,6 +40,42 @@
     </tbody>
 </table>
 
+<table *ngIf="tableType === tableTypes.YamlArtifacts" class="toscatype-table" style="">
+    <thead>
+    <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>File</th>
+        <th>Depl. Path</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let artifact of currentToscaTypeData">
+        <td class="toscatype-table-td"
+            [class.cell-with-comment]="isEllipsisActive(aname)">
+            <div #aname (click)="openDeploymentArtifactModal(artifact)">{{ artifact.id }}</div>
+            <span class="cell-comment">{{ artifact.id }}</span>
+        </td>
+        <td class="toscatype-table-td"
+            [class.cell-with-comment]="isEllipsisActive(atype)">
+            <div #atype (click)="clickArtifactType(artifact.type)">{{ artifact.type | localname }}</div>
+            <span class="cell-comment">{{ artifact.type | localname }}</span>
+        </td>
+        <td class="toscatype-table-td"
+            [class.cell-with-comment]="isEllipsisActive(afile)">
+            <div #afile (click)="clickArtifactFile(artifact.file)">{{ artifact.file }}</div>
+            <span class="cell-comment">{{ artifact.file }}</span>
+        </td>
+        <td class="toscatype-table-td"
+            [class.cell-with-comment]="isEllipsisActive(atargetLocation)">
+            <div #atargetLocation>{{ artifact.targetLocation }}</div>
+            <span class="cell-comment">{{ artifact.targetLocation }}</span>
+        </td>
+
+    </tr>
+    </tbody>
+</table>
+
 <table *ngIf="tableType === tableTypes.Policies" class="toscatype-table">
     <thead>
     <tr>

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2019 Contributors to the Eclipse Foundation
+ * Copyright (c) 2012-2020 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -735,7 +735,7 @@ public class YamlRepository extends AbstractFileBasedRepository {
      * @return edited interfaces
      **/
     private Map<String, TInterfaceDefinition> addArtifactToInterfaces(Map<String, TInterfaceDefinition> interfaces, TArtifactDefinition artifact, String id) {
-        if (artifact.getFiles().isEmpty()) {
+        if (artifact.getFile() == null) {
             return interfaces;
         }
         for (Map.Entry<String, TInterfaceDefinition> interfaceDefinitionEntry : interfaces.entrySet()) {
@@ -757,7 +757,7 @@ public class YamlRepository extends AbstractFileBasedRepository {
         for (Map.Entry<String, TOperationDefinition> operation : operations.entrySet()) {
             if (operation.getKey().equalsIgnoreCase(target)) {
                 TImplementation implementation = operation.getValue().getImplementation();
-                implementation.setPrimary(new QName(artifact.getFiles().get(0)));
+                implementation.setPrimary(new QName(artifact.getFile()));
                 TOperationDefinition operationDefinition = operation.getValue();
                 operationDefinition.setImplementation(implementation);
                 operation.setValue(operationDefinition);
@@ -767,7 +767,7 @@ public class YamlRepository extends AbstractFileBasedRepository {
                     if (operationDefinition.getImplementation().getPrimary() != null) {
                         if (operationDefinition.getImplementation().getPrimary().getLocalPart().equalsIgnoreCase(target)) {
                             TImplementation implementation = operationDefinition.getImplementation();
-                            implementation.setPrimary(new QName(artifact.getFiles().get(0)));
+                            implementation.setPrimary(new QName(artifact.getFile()));
                             operationDefinition.setImplementation(implementation);
                         }
                     }

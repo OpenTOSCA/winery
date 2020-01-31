@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2017 Contributors to the Eclipse Foundation
+ * Copyright (c) 2017-2020 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -63,15 +63,14 @@ public class DefinitionValidator extends ExceptionVisitor<Result, Parameter> {
 
     @Override
     public Result visit(TArtifactDefinition node, Parameter parameter) {
-        node.getFiles().forEach(file -> {
-                if (!Files.exists(path.resolve(file))) {
-                    setException(new UndefinedFile(
-                        "Artifact file '{}' is undefined",
-                        path.resolve(file)
-                    ));
-                }
-            }
-        );
+        String file = node.getFile();
+        if (!Files.exists(path.resolve(file))) {
+            setException(new UndefinedFile(
+                "Artifact file '{}' is undefined",
+                path.resolve(file)
+            ));
+        }
+
         return super.visit(node, parameter);
     }
 

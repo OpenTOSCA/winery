@@ -617,7 +617,7 @@ public class X2YConverter {
             new ArtifactTypeId(node.getType()),
             node.getType().getNamespaceURI(),
             node.getType().getLocalPart()
-        ), files)
+        ), files.get(0))
             .build();
     }
 

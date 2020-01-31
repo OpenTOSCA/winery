@@ -338,8 +338,7 @@ public class Writer extends AbstractVisitor<Printer, Writer.Parameter> {
             .printKeyValue("repository", node.getRepository())
             .printKeyValue("description", node.getDescription())
             .printKeyValue("deploy_path", node.getDeployPath())
-            .printKeyValue("file", node.getFile())
-            .printKeyValue("files", node.getFiles());
+            .printKeyValue("file", node.getFile());
     }
 
     public Printer visit(TGroupType node, Parameter parameter) {

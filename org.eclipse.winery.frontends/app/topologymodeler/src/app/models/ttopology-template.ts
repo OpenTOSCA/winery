@@ -223,14 +223,14 @@ export class TRelationshipTemplate extends AbstractTTemplate {
 }
 
 export class TArtifact extends AbstractTTemplate {
-    constructor(id: string,
-                type: string,
-                file: string,
-                targetLocation?: string,
-                properties?: any,
-                documentation?: any,
-                any?: any,
-                otherAttributes?: any) {
+    constructor(public id: string,
+                public type: string,
+                public file: string,
+                public targetLocation?: string,
+                public properties?: any,
+                public documentation?: any,
+                public any?: any,
+                public otherAttributes?: any) {
         super(documentation, any, otherAttributes);
     }
 }

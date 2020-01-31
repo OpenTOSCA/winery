@@ -13,9 +13,6 @@
  *******************************************************************************/
 package org.eclipse.winery.model.tosca.yaml;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -37,7 +34,7 @@ import org.eclipse.jdt.annotation.Nullable;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "tArtifactDefinition", namespace = " http://docs.oasis-open.org/tosca/ns/simple/yaml/1.3", propOrder = {
     "type",
-    "files",
+    "file",
     "repository",
     "description",
     "deployPath"
@@ -51,8 +48,8 @@ public class TArtifactDefinition implements VisitorNode {
     private String deployPath;
 
     @Annotations.StandardExtension
-    @XmlAttribute(name = "files", required = true)
-    private List<String> files;
+    @XmlAttribute(name = "file", required = true)
+    private String file;
     @Annotations.StandardExtension
     private Map<String, TPropertyAssignment> properties;
 
@@ -61,7 +58,7 @@ public class TArtifactDefinition implements VisitorNode {
 
     public TArtifactDefinition(Builder builder) {
         this.setType(builder.type);
-        this.setFiles(builder.files);
+        this.setFile(builder.file);
         this.setRepository(builder.repository);
         this.setDescription(builder.description);
         this.setDeployPath(builder.deployPath);
@@ -77,13 +74,13 @@ public class TArtifactDefinition implements VisitorNode {
             Objects.equals(getRepository(), that.getRepository()) &&
             Objects.equals(getDescription(), that.getDescription()) &&
             Objects.equals(getDeployPath(), that.getDeployPath()) &&
-            Objects.equals(getFiles(), that.getFiles()) &&
+            Objects.equals(getFile(), that.getFile()) &&
             Objects.equals(getProperties(), that.getProperties());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getType(), getRepository(), getDescription(), getDeployPath(), getFiles(), getProperties());
+        return Objects.hash(getType(), getRepository(), getDescription(), getDeployPath(), getFile(), getProperties());
     }
 
     @Override
@@ -93,7 +90,7 @@ public class TArtifactDefinition implements VisitorNode {
             ", repository='" + getRepository() + '\'' +
             ", description='" + getDescription() + '\'' +
             ", deployPath='" + getDeployPath() + '\'' +
-            ", files=" + getFiles() +
+            ", file=" + getFile() +
             ", properties=" + getProperties() +
             '}';
     }
@@ -107,24 +104,12 @@ public class TArtifactDefinition implements VisitorNode {
         this.type = type;
     }
 
-    @NonNull
-    public List<String> getFiles() {
-        return files;
-    }
-
-    public void setFiles(List<String> files) {
-        this.files = files;
-    }
-
-    @Deprecated
-    @NonNull
     public String getFile() {
-        return this.getFiles().get(0);
+        return this.file;
     }
 
-    @Deprecated
     public void setFile(String file) {
-        this.files = new ArrayList<>(Collections.singleton(file));
+        this.file = file;
     }
 
     @Nullable
@@ -168,21 +153,21 @@ public class TArtifactDefinition implements VisitorNode {
 
     public static class Builder {
         private final QName type;
-        private final List<String> files;
+        private final String file;
 
         private String repository;
         private String description;
         private String deployPath;
         private Map<String, TPropertyAssignment> properties;
 
-        public Builder(QName type, List<String> files) {
+        public Builder(QName type, String file) {
             this.type = type;
-            this.files = files;
+            this.file = file;
         }
 
         public Builder(TArtifactDefinition artifactDefinition) {
             this.type = artifactDefinition.getType();
-            this.files = artifactDefinition.getFiles();
+            this.file = artifactDefinition.getFile();
             this.repository = artifactDefinition.getRepository();
             this.description = artifactDefinition.getDescription();
             this.deployPath = artifactDefinition.getDeployPath();

@@ -15,7 +15,6 @@ package org.eclipse.winery.yaml.common.reader.yaml;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -742,25 +741,20 @@ public class Builder {
             if (Objects.isNull(file)) return null;
             // TODO infer artifact type and mime type from file URI
             String type = file.substring(file.lastIndexOf("."), file.length());
-            return new TArtifactDefinition.Builder(buildQName(type), new ArrayList<>(Collections.singleton(file))).build();
+            return new TArtifactDefinition.Builder(buildQName(type), file).build();
         }
         if (!validate(TArtifactDefinition.class, object, parameter)) return null;
         @SuppressWarnings("unchecked")
         Map<String, Object> map = (Map<String, Object>) object;
 
-        List<String> files;
+        String file;
         if (map.get("file") instanceof String) {
-            files = new ArrayList<>(Collections.singleton(stringValue(map.get("file"))));
-        } else if (map.get("files") instanceof List) {
-            // TODO capability check
-            files = buildListString(map.get("files"),
-                new Parameter<List<String>>(parameter.getContext()).addContext("files")
-            );
+            file = stringValue(map.get("file"));
         } else {
-            files = null;
+            file = null;
             assert false;
         }
-        return new TArtifactDefinition.Builder(buildQName(stringValue(map.get("type"))), files)
+        return new TArtifactDefinition.Builder(buildQName(stringValue(map.get("type"))), file)
             .setRepository(stringValue(map.get("repository")))
             .setDescription(buildDescription(map.get("description")))
             .setDeployPath(stringValue(map.get("deploy_path")))

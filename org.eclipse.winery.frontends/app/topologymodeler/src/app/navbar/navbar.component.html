@@ -88,7 +88,7 @@
                 id="deploymentArtifacts"
                 (click)="toggleButton($event)"
                 [style.background-color]="getStyle(navbarButtonsState.buttonsState.deploymentArtifactsButton)">
-                Deployment Artifacts
+                {{this.configurationService.isYaml() ? 'Artifacts' : 'Deployment Artifacts'}}
             </button>
             <button
                 class="btn btn-sm align-middle dark-button-style"

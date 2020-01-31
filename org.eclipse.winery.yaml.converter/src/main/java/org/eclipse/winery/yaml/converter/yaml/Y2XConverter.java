@@ -30,7 +30,6 @@ import javax.xml.namespace.QName;
 import org.eclipse.winery.common.Util;
 import org.eclipse.winery.model.tosca.Definitions;
 import org.eclipse.winery.model.tosca.TAppliesTo;
-import org.eclipse.winery.model.tosca.TArtifactReference;
 import org.eclipse.winery.model.tosca.TArtifactTemplate;
 import org.eclipse.winery.model.tosca.TArtifactType;
 import org.eclipse.winery.model.tosca.TBoundaryDefinitions;
@@ -299,12 +298,7 @@ public class Y2XConverter {
     @NonNull
     private TArtifactTemplate convert(TArtifactDefinition node, String id) {
         return new TArtifactTemplate.Builder(id, node.getType())
-            .addArtifactReferences(node.getFiles().stream()
-                .filter(Objects::nonNull)
-                // TODO change filepath
-                .map(file -> new TArtifactReference.Builder(file).build())
-                .collect(Collectors.toList())
-            )
+            .addArtifactReferences(new ArrayList<>())
             .setProperties(convertPropertyAssignments(node.getProperties(), getPropertyTypeName(node.getType())))
             .build();
     }

@@ -1,5 +1,5 @@
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ~ Copyright (c) 2018 Contributors to the Eclipse Foundation
+  ~ Copyright (c) 2018-2020 Contributors to the Eclipse Foundation
   ~
   ~ See the NOTICE file(s) distributed with this work for additional
   ~ information regarding copyright ownership.
@@ -32,143 +32,150 @@
                            [disabled]="modalVariantForEditDeleteTasks !== '(none)'"
                            id="modalName" type="text" autocomplete="on"/>
                 </div>
-                <div class="radio"
-                     *ngIf="modalVariantForEditDeleteTasks === '(none)'">
-                    <label>
-                        <input type="radio" name="templateCreation" value="create" checked="checked"
-                               [(ngModel)]="modalSelectedRadioButton"/>
-                        <div style="display: inline-block;">
-                            &nbsp;Create {{modalVariantAndState.modalVariant === 'deployment_artifacts' ? 'Artifact' : 'Policy'}}
-                            Template
-                        </div>
-                    </label>
-                    <p *ngIf="modalVariantAndState.modalVariant === 'deployment_artifacts'"
-                       class="help-block">If you want to add files to this deployment artifact you can do so via <a
-                        target="_blank" href="{{backendService.configuration.uiURL + '/artifacttemplates'}}">Winery's
-                        management UI</a>,
-                        after creating it.</p>
-                    <p *ngIf="modalVariantAndState.modalVariant === 'policies'"
-                       class="help-block">You can manage this policy template via <a
-                        target="_blank" href="{{backendService.configuration.uiURL + '/policytemplates'}}">Winery's
-                        management UI</a>,
-                        after creating it.</p>
-                </div>
-                <div class="radio" *ngIf="modalVariantForEditDeleteTasks === '(none)'">
-                    <label>
-                        <input type="radio" name="templateCreation" value="link"
-                               [(ngModel)]="modalSelectedRadioButton"/>
-                        <div style="display: inline-block;">
-                            &nbsp;Link {{modalVariantAndState.modalVariant === 'deployment_artifacts' ? 'Artifact' : 'Policy'}}
-                            Template
-                        </div>
-                    </label>
-                    <p class="help-block">Check if you want to reuse existing files.</p>
-                </div>
-                <div class="radio" *ngIf="modalVariantForEditDeleteTasks === '(none)'">
-                    <label style="margin-bottom: 1em;">
-                        <input type="radio" name="templateCreation" value="skip"
-                               [(ngModel)]="modalSelectedRadioButton"/>
-                        Do not create a template.
-                    </label>
-                    <p *ngIf="modalVariantAndState.modalVariant === 'deployment_artifacts'"
-                       class="help-block">Check if you want to point to an image library.</p>
+                <div *wineryRepositoryHideOnFeature="'yaml'">
+                    <div class="radio"
+                         *ngIf="modalVariantForEditDeleteTasks === '(none)'">
+                        <label>
+                            <input type="radio" name="templateCreation" value="create" checked="checked"
+                                   [(ngModel)]="modalSelectedRadioButton"/>
+                            <div style="display: inline-block;">
+                                &nbsp;Create {{modalVariantAndState.modalVariant === 'deployment_artifacts' ? 'Artifact' : 'Policy'}}
+                                Template
+                            </div>
+                        </label>
+                        <p *ngIf="modalVariantAndState.modalVariant === 'deployment_artifacts'"
+                           class="help-block">If you want to add files to this deployment artifact you can do so via <a
+                            target="_blank" href="{{backendService.configuration.uiURL + '/artifacttemplates'}}">Winery's
+                            management UI</a>,
+                            after creating it.</p>
+                        <p *ngIf="modalVariantAndState.modalVariant === 'policies'"
+                           class="help-block">You can manage this policy template via <a
+                            target="_blank" href="{{backendService.configuration.uiURL + '/policytemplates'}}">Winery's
+                            management UI</a>,
+                            after creating it.</p>
+                    </div>
+                    <div class="radio" *ngIf="modalVariantForEditDeleteTasks === '(none)'">
+                        <label>
+                            <input type="radio" name="templateCreation" value="link"
+                                   [(ngModel)]="modalSelectedRadioButton"/>
+                            <div style="display: inline-block;">
+                                &nbsp;Link {{modalVariantAndState.modalVariant === 'deployment_artifacts' ? 'Artifact' : 'Policy'}}
+                                Template
+                            </div>
+                        </label>
+                        <p class="help-block">Check if you want to reuse existing files.</p>
+                    </div>
+                    <div class="radio" *ngIf="modalVariantForEditDeleteTasks === '(none)'">
+                        <label style="margin-bottom: 1em;">
+                            <input type="radio" name="templateCreation" value="skip"
+                                   [(ngModel)]="modalSelectedRadioButton"/>
+                            Do not create a template.
+                        </label>
+                        <p *ngIf="modalVariantAndState.modalVariant === 'deployment_artifacts'"
+                           class="help-block">Check if you want to point to an image library.</p>
+                    </div>
                 </div>
             </fieldset>
-            <fieldset>
-                <div class="form-group-grouping" *ngIf="modalSelectedRadioButton === 'create'">
+            <div *wineryRepositoryHideOnFeature="'yaml'">
+                <fieldset>
+                    <div class="form-group-grouping" *ngIf="modalSelectedRadioButton === 'create'">
 
-                    <!-- createArtifactTemplate class is required for artifactcreationdialog -->
-                    <div class="form-group createArtifactTemplate">
-                        <label for="artifactTemplateNS" class="control-label">Namespace</label>
-                        <input [(ngModel)]="deploymentArtifactOrPolicyModalData.modalTemplateNameSpace" type="text"
-                               class="form-control"
-                               name="artifactTemplateNS"
-                               id="artifactTemplateNS"
-                               (keyup)="checkIfArtifactOrPolicyAlreadyExists($event, 'namespace')"
-                               [typeahead]="allNamespaces"
-                               typeaheadOptionField="namespace"/>
-                    </div>
-
-                    <!-- createArtifactTemplate class is required for artifactcreationdialog -->
-                    <div class="form-group createArtifactTemplate">
-                        <label>{{modalVariantAndState.modalVariant === 'policies' ? 'Policy' : 'Artifact'}} Template
-                            Name</label>
-                        <!-- name is an NCName -->
-                        <input [(ngModel)]="deploymentArtifactOrPolicyModalData.modalTemplateName"
-                               class="artifactData form-control"
-                               id="artifactTemplateName" name="artifactTemplateName" type="text" required
-                               autocomplete="on"
-                               (keyup)="checkIfArtifactOrPolicyAlreadyExists($event, 'templateName')"
-                               placeholder="Enter a name for the {{modalVariantAndState.modalVariant === 'policies' ? 'Policy' : 'Artifact'}} Template"
-                               #artifactTemplateName="ngModel"/>
-                        <div id="artifactTemplateNameIsValid" class="invalid">
-                            <span id="artifactTemplateNameIsInvalidReason"></span>
+                        <!-- createArtifactTemplate class is required for artifactcreationdialog -->
+                        <div class="form-group createArtifactTemplate">
+                            <label for="artifactTemplateNS" class="control-label">Namespace</label>
+                            <input [(ngModel)]="deploymentArtifactOrPolicyModalData.modalTemplateNameSpace" type="text"
+                                   class="form-control"
+                                   name="artifactTemplateNS"
+                                   id="artifactTemplateNS"
+                                   (keyup)="checkIfArtifactOrPolicyAlreadyExists($event, 'namespace')"
+                                   [typeahead]="allNamespaces"
+                                   typeaheadOptionField="namespace"/>
                         </div>
-                        <div class="alert alert-info"
-                             *ngIf="artifactOrPolicyAlreadyExists && (artifactTemplateName.dirty || artifactTemplateName.touched) &&
+
+                        <!-- createArtifactTemplate class is required for artifactcreationdialog -->
+                        <div class="form-group createArtifactTemplate">
+                            <label>{{modalVariantAndState.modalVariant === 'policies' ? 'Policy' : 'Artifact'}} Template
+                                Name</label>
+                            <!-- name is an NCName -->
+                            <input [(ngModel)]="deploymentArtifactOrPolicyModalData.modalTemplateName"
+                                   class="artifactData form-control"
+                                   id="artifactTemplateName" name="artifactTemplateName" type="text" required
+                                   autocomplete="on"
+                                   (keyup)="checkIfArtifactOrPolicyAlreadyExists($event, 'templateName')"
+                                   placeholder="Enter a name for the {{modalVariantAndState.modalVariant === 'policies' ? 'Policy' : 'Artifact'}} Template"
+                                   #artifactTemplateName="ngModel"/>
+                            <div id="artifactTemplateNameIsValid" class="invalid">
+                                <span id="artifactTemplateNameIsInvalidReason"></span>
+                            </div>
+                            <div class="alert alert-info"
+                                 *ngIf="artifactOrPolicyAlreadyExists && (artifactTemplateName.dirty || artifactTemplateName.touched) &&
                             artifactTemplateName.valid">
-                            {{modalVariantAndState.modalVariant === 'policies' ? 'Policy' : 'Artifact'}} Template with
-                            this name already exists.
-                        </div>
-                        <div class="alert alert-success"
-                             *ngIf="!artifactOrPolicyAlreadyExists && (artifactTemplateName.dirty || artifactTemplateName.touched) &&
+                                {{modalVariantAndState.modalVariant === 'policies' ? 'Policy' : 'Artifact'}} Template
+                                with
+                                this name already exists.
+                            </div>
+                            <div class="alert alert-success"
+                                 *ngIf="!artifactOrPolicyAlreadyExists && (artifactTemplateName.dirty || artifactTemplateName.touched) &&
                             artifactTemplateName.valid">
-                            Will be created.
+                                Will be created.
+                            </div>
                         </div>
-                    </div>
 
-                </div>
-                <!-- link ArtifactTemplate or PolicyTemplate -->
-                <ng-container *ngIf="modalSelectedRadioButton === 'link'">
-                    <div id="linkArtifactTemplateOrPolicyTemplate" class="form-group">
-                        <label *ngIf="modalVariantAndState.modalVariant === 'deployment_artifacts' ||
+                    </div>
+                    <!-- link ArtifactTemplate or PolicyTemplate -->
+                    <ng-container *ngIf="modalSelectedRadioButton === 'link'">
+                        <div id="linkArtifactTemplateOrPolicyTemplate" class="form-group">
+                            <label *ngIf="modalVariantAndState.modalVariant === 'deployment_artifacts' ||
                                       modalVariantForEditDeleteTasks === 'deployment_artifacts'"
-                               for="artifactTemplateOrPolicyTemplateToLink">Artifact Template</label>
-                        <label *ngIf="modalVariantAndState.modalVariant === 'policies' ||
+                                   for="artifactTemplateOrPolicyTemplateToLink">Artifact Template</label>
+                            <label *ngIf="modalVariantAndState.modalVariant === 'policies' ||
                                       modalVariantForEditDeleteTasks === 'policies'"
-                               for="artifactTemplateOrPolicyTemplateToLink">Policy Template</label>
-                        <input type="text"
-                               class="form-control"
-                               *ngIf="modalVariantForEditDeleteTasks !== '(none)'"
-                               [disabled]="modalVariantForEditDeleteTasks !== '(none)'"
-                               [value]="deploymentArtifactOrPolicyModalData.modalTemplateName">
-                        <div id="artifactTemplateOrPolicyTemplateToLinkDiv"
-                             *ngIf="modalVariantForEditDeleteTasks === '(none)'">
-                            <select id=artifactTemplateOrPolicyTemplateToLink name="artifactTemplateOrPolicyTemplate"
-                                    class="form-control"
-                                    [(ngModel)]="defaultValue"
-                                    required
-                                    (change)="updatedTemplateToBeLinkedInModal($event.target.value, modalVariantAndState.modalVariant)">
-                                <ng-container *ngIf="modalVariantAndState.modalVariant === 'deployment_artifacts'">
-                                    <option *ngIf="deploymentArtifactOrPolicyModalData.artifactTemplates === undefined"
+                                   for="artifactTemplateOrPolicyTemplateToLink">Policy Template</label>
+                            <input type="text"
+                                   class="form-control"
+                                   *ngIf="modalVariantForEditDeleteTasks !== '(none)'"
+                                   [disabled]="modalVariantForEditDeleteTasks !== '(none)'"
+                                   [value]="deploymentArtifactOrPolicyModalData.modalTemplateName">
+                            <div id="artifactTemplateOrPolicyTemplateToLinkDiv"
+                                 *ngIf="modalVariantForEditDeleteTasks === '(none)'">
+                                <select id=artifactTemplateOrPolicyTemplateToLink
+                                        name="artifactTemplateOrPolicyTemplate"
+                                        class="form-control"
+                                        [(ngModel)]="defaultValue"
+                                        required
+                                        (change)="updatedTemplateToBeLinkedInModal($event.target.value, modalVariantAndState.modalVariant)">
+                                    <ng-container *ngIf="modalVariantAndState.modalVariant === 'deployment_artifacts'">
+                                        <option
+                                            *ngIf="deploymentArtifactOrPolicyModalData.artifactTemplates === undefined"
                                             value="null" disabled="true" [selected]="true">Artifact Templates are still
-                                        loading...
-                                    </option>
+                                            loading...
+                                        </option>
 
-                                    <option
-                                        *ngFor="let artifactTemplate of deploymentArtifactOrPolicyModalData.artifactTemplates"
-                                        [value]="artifactTemplate | json"
-                                        [disabled]="modalVariantForEditDeleteTasks !== '(none)'">
-                                        {{artifactTemplate.name}}
-                                    </option>
-                                </ng-container>
-                                <ng-container *ngIf="modalVariantAndState.modalVariant === 'policies'">
-                                    <option
-                                        *ngFor="let policyTemplate of deploymentArtifactOrPolicyModalData.policyTemplates"
-                                        [value]="policyTemplate | json"
-                                        [disabled]="modalVariantForEditDeleteTasks !== '(none)'">
-                                        {{policyTemplate.name}}
-                                    </option>
-                                </ng-container>
-                            </select>
-                            <i *ngIf="deploymentArtifactOrPolicyModalData.artifactTemplates === undefined"
-                               class="fa fa-refresh fa-spin"></i>
-                            <a href="#" target="_blank" class="btn btn-info btn-sm" id="viewArtifactTemplateToLink"
-                               (click)="clickArtifactRef()">open</a>
+                                        <option
+                                            *ngFor="let artifactTemplate of deploymentArtifactOrPolicyModalData.artifactTemplates"
+                                            [value]="artifactTemplate | json"
+                                            [disabled]="modalVariantForEditDeleteTasks !== '(none)'">
+                                            {{artifactTemplate.name}}
+                                        </option>
+                                    </ng-container>
+                                    <ng-container *ngIf="modalVariantAndState.modalVariant === 'policies'">
+                                        <option
+                                            *ngFor="let policyTemplate of deploymentArtifactOrPolicyModalData.policyTemplates"
+                                            [value]="policyTemplate | json"
+                                            [disabled]="modalVariantForEditDeleteTasks !== '(none)'">
+                                            {{policyTemplate.name}}
+                                        </option>
+                                    </ng-container>
+                                </select>
+                                <i *ngIf="deploymentArtifactOrPolicyModalData.artifactTemplates === undefined"
+                                   class="fa fa-refresh fa-spin"></i>
+                                <a href="#" target="_blank" class="btn btn-info btn-sm" id="viewArtifactTemplateToLink"
+                                   (click)="clickArtifactRef()">open</a>
+                            </div>
                         </div>
-                    </div>
-                </ng-container>
-            </fieldset>
+                    </ng-container>
+                </fieldset>
+            </div>
             <fieldset id="artifactTypeFieldset">
                 <div class="form-group" id="artifactTypeOrPolicyTypeDiv">
                     <label for="artifactTypeOrPolicyTypeField">

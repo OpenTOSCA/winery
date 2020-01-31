@@ -203,7 +203,7 @@ export class BackendService {
      */
     private requestArtifactTypes(): Observable<any> {
         if (this.configuration) {
-            return this.http.get(this.configuration.repositoryURL + '/artifacttypes', { headers: this.headers });
+            return this.http.get(this.configuration.repositoryURL + '/artifacttypes?full', { headers: this.headers });
         }
     }
 
@@ -392,6 +392,8 @@ export class BackendService {
             { headers: headers, responseType: 'text', observe: 'response' }
         );
     }
+
+    addYamlArtifactToNodeTemplate;
 
     /**
      * Requests all topology template ids

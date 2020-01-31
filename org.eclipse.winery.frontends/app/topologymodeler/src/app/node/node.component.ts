@@ -76,7 +76,8 @@ export class NodeComponent implements OnInit, AfterViewInit, OnDestroy, DoCheck 
     policyIcons: string[];
     configEnum = FeatureEnum;
     policiesOfNode: TPolicy[];
-    policyChangeSubscription: Subscription;
+    private policyChangeSubscription: Subscription;
+    private artifactsChangedSubscription: Subscription;
 
     @Input() readonly: boolean;
     @Input() entityTypes: EntityTypesModel;
@@ -147,6 +148,19 @@ export class NodeComponent implements OnInit, AfterViewInit, OnDestroy, DoCheck 
                         this.policiesOfNode = this.getAllowedPolicies();
                     }
                 });
+
+            this.artifactsChangedSubscription = $ngRedux.select(wineryState => wineryState
+                .wineryState
+                .currentJsonTopology
+                .nodeTemplates
+                .find(nt => {
+                    return this.nodeTemplate && nt.id === this.nodeTemplate.id;
+                })
+            ).subscribe(nodeTemplate => {
+                if (this.nodeTemplate && nodeTemplate) {
+                    this.nodeTemplate.artifacts = nodeTemplate.artifacts;
+                }
+            });
         }
         this.$ngRedux.subscribe(() => this.setPolicyIcons());
     }
@@ -506,6 +520,10 @@ export class NodeComponent implements OnInit, AfterViewInit, OnDestroy, DoCheck 
 
         if (this.policyChangeSubscription) {
             this.policyChangeSubscription.unsubscribe();
+        }
+
+        if (this.artifactsChangedSubscription) {
+            this.artifactsChangedSubscription.unsubscribe();
         }
     }
 

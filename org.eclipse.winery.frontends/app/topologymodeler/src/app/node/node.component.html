@@ -160,7 +160,7 @@
             panelClass="accordionGroupPanel"
             *ngIf="navbarButtonsState.buttonsState.deploymentArtifactsButton">
             <div accordion-heading>
-                Deployment Artifacts
+                {{this.configurationService.isYaml() ? 'Artifacts' : 'Deployment Artifacts'}}
                 <i class="pull-sm-0 float-sm-right fa icon-styling padding-top--2px"
                    [ngClass]="{'fa-chevron-down': deploymentartifactsgroup?.isOpen,
                    'fa-chevron-right': !deploymentartifactsgroup?.isOpen}"
@@ -172,7 +172,8 @@
                 [currentNodeData]="{currentNodeId: nodeTemplate.id,
                                     currentNodePart: 'DEPLOYMENT_ARTIFACTS',
                                     currentProperties: nodeTemplate}"
-                [deploymentArtifacts]="nodeTemplate.deploymentArtifacts?.deploymentArtifact">
+                [deploymentArtifacts]="nodeTemplate.deploymentArtifacts?.deploymentArtifact"
+                [yamlArtifacts]="nodeTemplate.artifacts?.artifact">
             </winery-deployment-artifacts>
         </accordion-group>
 

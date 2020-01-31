@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2018 Contributors to the Eclipse Foundation
+ * Copyright (c) 2018-2020 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -29,6 +29,8 @@ import { DeploymentArtifactOrPolicyModalData, ModalVariant, ModalVariantAndState
 import { EntitiesModalService, OpenModalEvent } from './entities-modal.service';
 import { QName } from '../../models/qname';
 import { urlElement } from '../../models/enums';
+import { TArtifact } from '../../models/ttopology-template';
+import { WineryRepositoryConfigurationService } from '../../../../../tosca-management/src/app/wineryFeatureToggleModule/WineryRepositoryConfiguration.service';
 
 @Component({
     selector: 'winery-entities-modal',
@@ -68,7 +70,8 @@ export class EntitiesModalComponent implements OnInit, OnChanges {
                 private actions: WineryActions,
                 private existsService: ExistsService,
                 private entitiesModalService: EntitiesModalService,
-                private alert: ToastrService) {
+                private alert: ToastrService,
+                private configurationService: WineryRepositoryConfigurationService) {
     }
 
     ngOnInit() {
@@ -97,6 +100,7 @@ export class EntitiesModalComponent implements OnInit, OnChanges {
             this.modalVariantForEditDeleteTasks = newEvent.modalVariant.toString();
             this.modal.show();
         });
+        this.ngRedux.select();
     }
 
     ngOnChanges(changes: SimpleChanges) {
@@ -138,7 +142,21 @@ export class EntitiesModalComponent implements OnInit, OnChanges {
         this.artifactOrPolicy.localname = this.deploymentArtifactOrPolicyModalData.modalTemplateName;
         this.artifactOrPolicy.namespace = this.deploymentArtifactOrPolicyModalData.modalTemplateNameSpace;
         this.artifactOrPolicy.type = this.deploymentArtifactOrPolicyModalData.modalType;
-        if (this.modalSelectedRadioButton === 'create' && this.modalVariantAndState.modalVariant === ModalVariant.DeploymentArtifacts) {
+
+        if (this.modalVariantAndState.modalVariant === ModalVariant.DeploymentArtifacts && this.configurationService.isYaml()) {
+            const yamlArtifact: TArtifact = new TArtifact(
+                this.deploymentArtifactOrPolicyModalData.modalName,
+                this.deploymentArtifactOrPolicyModalData.modalType,
+                this.deploymentArtifactOrPolicyModalData.modalFilePath,
+                this.deploymentArtifactOrPolicyModalData.modalTargetLocation,
+                {},
+                [],
+                [],
+                {}
+            );
+            this.saveYamlArtifactsToModel(yamlArtifact);
+
+        } else if (this.modalSelectedRadioButton === 'create' && this.modalVariantAndState.modalVariant === ModalVariant.DeploymentArtifacts) {
             const deploymentArtifactToBeSavedToRedux: TDeploymentArtifact = new TDeploymentArtifact(
                 [],
                 [],
@@ -337,6 +355,18 @@ export class EntitiesModalComponent implements OnInit, OnChanges {
     }
 
     /**
+     * Saves a yaml artifact to the model and gets pushed into the Redux state of the application
+     */
+    saveYamlArtifactsToModel(artifact: TArtifact): void {
+        const actionObject = {
+            nodeId: this.currentNodeData.id,
+            newYamlArtifact: artifact
+        };
+        this.ngRedux.dispatch(this.actions.setYamlArtifact(actionObject));
+        this.resetDeploymentArtifactOrPolicyModalData();
+    }
+
+    /**
      * Saves a policy to the nodeTemplate model and gets pushed into the Redux state of the application
      */
     savePoliciesToModel(policyToBeSavedToRedux: TPolicy): void {
@@ -408,4 +438,3 @@ export class EntitiesModalComponent implements OnInit, OnChanges {
     }
 
 }
-

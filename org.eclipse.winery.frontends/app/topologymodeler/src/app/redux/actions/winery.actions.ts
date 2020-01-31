@@ -14,7 +14,7 @@
 
 import { Action, ActionCreator } from 'redux';
 import { Injectable } from '@angular/core';
-import { TNodeTemplate, TRelationshipTemplate } from '../../models/ttopology-template';
+import { TArtifact, TNodeTemplate, TRelationshipTemplate } from '../../models/ttopology-template';
 import { TDeploymentArtifact } from '../../models/artifactsModalData';
 import { TPolicy } from '../../models/policiesModalData';
 import { Visuals } from '../../models/visuals';
@@ -151,6 +151,20 @@ export interface SetDeploymentArtifactAction extends Action {
     };
 }
 
+export interface SetYamlArtifactAction extends Action {
+    nodeYamlArtifact: {
+        nodeId: string,
+        newYamlArtifact: TArtifact
+    };
+}
+
+export interface DeleteYamlArtifactAction extends Action {
+    nodeYamlArtifact: {
+        nodeId: string,
+        deletedYamlArtifact: TArtifact
+    };
+}
+
 export interface DeleteDeploymentArtifactAction extends Action {
     nodeDeploymentArtifact: {
         nodeId: string,
@@ -222,6 +236,8 @@ export class WineryActions {
     static SET_REQUIREMENT = 'SET_REQUIREMENT';
     static SET_DEPLOYMENT_ARTIFACT = 'SET_DEPLOYMENT_ARTIFACT';
     static DELETE_DEPLOYMENT_ARTIFACT = 'DELETE_DEPLOYMENT_ARTIFACT';
+    static SET_YAML_ARTIFACT = 'SET_YAML_ARTIFACT';
+    static DELETE_YAML_ARTIFACT = 'DELETE_YAML_ARTIFACT';
     static SET_POLICY = 'SET_POLICY';
     static UPDATE_YAML_POLICIES = 'UPDATE_YAML_POLICIES';
     static SET_TARGET_LOCATION = 'SET_TARGET_LOCATION';
@@ -334,6 +350,16 @@ export class WineryActions {
         ((deletedDeploymentArtifact) => ({
             type: WineryActions.DELETE_DEPLOYMENT_ARTIFACT,
             nodeDeploymentArtifact: deletedDeploymentArtifact
+        }));
+    setYamlArtifact: ActionCreator<SetYamlArtifactAction> =
+        ((newYamlArt) => ({
+            type: WineryActions.SET_YAML_ARTIFACT,
+            nodeYamlArtifact: newYamlArt
+        }));
+    deleteYamlArtifact: ActionCreator<DeleteYamlArtifactAction> =
+        ((deletedYamlArt) => ({
+            type: WineryActions.DELETE_YAML_ARTIFACT,
+            nodeYamlArtifact: deletedYamlArt
         }));
     setPolicy: ActionCreator<SetPolicyAction> =
         ((newPolicy) => ({

@@ -13,23 +13,24 @@
  *******************************************************************************/
 package org.eclipse.winery.yaml.common.validator;
 
-import org.eclipse.winery.model.tosca.yaml.TArtifactDefinition;
-import org.eclipse.winery.model.tosca.yaml.TImportDefinition;
-import org.eclipse.winery.model.tosca.yaml.TServiceTemplate;
-import org.eclipse.winery.yaml.common.Namespaces;
-import org.eclipse.winery.yaml.common.exception.MultiException;
-import org.eclipse.winery.yaml.common.exception.UndefinedField;
-import org.eclipse.winery.yaml.common.exception.UndefinedFile;
-import org.eclipse.winery.yaml.common.validator.support.ExceptionVisitor;
-import org.eclipse.winery.yaml.common.validator.support.Parameter;
-import org.eclipse.winery.yaml.common.validator.support.Result;
-
-import javax.xml.namespace.QName;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+
+import javax.xml.namespace.QName;
+
+import org.eclipse.winery.model.tosca.yaml.TArtifactDefinition;
+import org.eclipse.winery.model.tosca.yaml.TImportDefinition;
+import org.eclipse.winery.model.tosca.yaml.TServiceTemplate;
+import org.eclipse.winery.repository.backend.filebased.converter.support.exception.UndefinedFile;
+import org.eclipse.winery.yaml.common.Namespaces;
+import org.eclipse.winery.yaml.common.exception.MultiException;
+import org.eclipse.winery.yaml.common.exception.UndefinedField;
+import org.eclipse.winery.yaml.common.validator.support.ExceptionVisitor;
+import org.eclipse.winery.yaml.common.validator.support.Parameter;
+import org.eclipse.winery.yaml.common.validator.support.Result;
 
 public class DefinitionValidator extends ExceptionVisitor<Result, Parameter> {
     public final Path path;
@@ -62,15 +63,14 @@ public class DefinitionValidator extends ExceptionVisitor<Result, Parameter> {
 
     @Override
     public Result visit(TArtifactDefinition node, Parameter parameter) {
-        node.getFiles().forEach(file -> {
-                if (!Files.exists(path.resolve(file))) {
-                    setException(new UndefinedFile(
-                        "Artifact file '{}' is undefined",
-                        path.resolve(file)
-                    ));
-                }
-            }
-        );
+        String file = node.getFile();
+        if (!Files.exists(path.resolve(file))) {
+            setException(new UndefinedFile(
+                "Artifact file '{}' is undefined",
+                path.resolve(file)
+            ));
+        }
+
         return super.visit(node, parameter);
     }
 

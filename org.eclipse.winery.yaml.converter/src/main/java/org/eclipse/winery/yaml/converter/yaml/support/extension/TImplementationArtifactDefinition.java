@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2017 Contributors to the Eclipse Foundation
+ * Copyright (c) 2017-2020 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -13,10 +13,9 @@
  *******************************************************************************/
 package org.eclipse.winery.yaml.converter.yaml.support.extension;
 
-import org.eclipse.winery.model.tosca.yaml.TArtifactDefinition;
-
 import javax.xml.namespace.QName;
-import java.util.List;
+
+import org.eclipse.winery.model.tosca.yaml.TArtifactDefinition;
 
 public class TImplementationArtifactDefinition extends TArtifactDefinition {
     private String interfaceName;
@@ -52,8 +51,8 @@ public class TImplementationArtifactDefinition extends TArtifactDefinition {
         private String interfaceName;
         private String operationName;
 
-        public Builder(QName type, List<String> files) {
-            super(type, files);
+        public Builder(QName type, String file) {
+            super(type, file);
         }
 
         public Builder(TArtifactDefinition artifactDefinition) {

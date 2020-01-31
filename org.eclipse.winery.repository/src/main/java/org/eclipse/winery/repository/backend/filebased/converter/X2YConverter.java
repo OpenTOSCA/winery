@@ -15,6 +15,7 @@ package org.eclipse.winery.repository.backend.filebased.converter;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -789,6 +790,7 @@ public class X2YConverter {
         return convertArtifactTemplate(node);
     }
 
+    @Deprecated
     public TArtifactDefinition convertArtifactTemplate(TArtifactTemplate node) {
         List<String> files = new ArrayList<>();
         TArtifactTemplate.ArtifactReferences artifactReferences = node.getArtifactReferences();
@@ -806,7 +808,7 @@ public class X2YConverter {
             new ArtifactTypeId(node.getType()),
             node.getType().getNamespaceURI(),
             node.getType().getLocalPart()
-        ), files)
+        ), files.size() > 0 ? files.get(0) : null)
             .build();
     }
 
@@ -927,7 +929,11 @@ public class X2YConverter {
     }
 
     public Map<String, TArtifactDefinition> convert(TArtifacts node) {
-        if (Objects.isNull(node)) return null;
+        if (Objects.isNull(node))
+            return null;
+
+        if (Objects.isNull(node.getArtifact()))
+            return new HashMap<>();
 
         return node.getArtifact().stream()
             .filter(Objects::nonNull)
@@ -954,9 +960,7 @@ public class X2YConverter {
 
         return Collections.singletonMap(
             node.getName(),
-            new TArtifactDefinition.Builder(
-                this.convert(node.getType(), new ArtifactTypeId(node.getType())),
-                Collections.singletonList(node.getFile()))
+            new TArtifactDefinition.Builder(this.convert(node.getType(), new ArtifactTypeId(node.getType())), node.getFile())
                 .setDeployPath(node.getTargetLocation())
                 .build()
         );

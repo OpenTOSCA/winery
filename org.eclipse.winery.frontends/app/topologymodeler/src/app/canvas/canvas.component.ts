@@ -323,7 +323,11 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
         switch (currentNodeData.currentNodePart) {
             case toggleModalType.DeploymentArtifacts:
                 this.modalData.modalVariant = ModalVariant.DeploymentArtifacts;
-                this.modalData.modalTitle = 'Deployment Artifact';
+                if (this.configuration.isYaml()) {
+                    this.modalData.modalTitle = 'Artifact';
+                } else {
+                    this.modalData.modalTitle = 'Deployment Artifact';
+                }
                 break;
             case toggleModalType.Policies:
                 this.modalData.modalVariant = ModalVariant.Policies;

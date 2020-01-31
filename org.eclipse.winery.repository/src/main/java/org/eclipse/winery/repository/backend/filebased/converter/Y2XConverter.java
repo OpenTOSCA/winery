@@ -16,6 +16,7 @@ package org.eclipse.winery.repository.backend.filebased.converter;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -337,13 +338,8 @@ public class Y2XConverter {
     @Deprecated
     private TArtifactTemplate convert(TArtifactDefinition node, String id) {
         TArtifactTemplate.Builder builder = new TArtifactTemplate.Builder(id, node.getType());
-        if (node.getFiles() != null) {
-            builder.addArtifactReferences(node.getFiles().stream()
-                .filter(Objects::nonNull)
-                // TODO change filepath
-                .map(file -> new TArtifactReference.Builder(file).build())
-                .collect(Collectors.toList())
-            );
+        if (node.getFile() != null) {
+            builder.addArtifactReferences(Collections.singletonList(new TArtifactReference.Builder(node.getFile()).build()));
         }
         if (node.getProperties() != null) {
             builder.setProperties(new TEntityTemplate.Properties());
@@ -359,18 +355,14 @@ public class Y2XConverter {
      */
     @NonNull
     private TArtifact convertToTArtifact(TArtifactDefinition node, String id) {
-        TArtifact.Builder builder = new TArtifact.Builder(id, node.getType());
-
-        builder.setTargetLocation(node.getDeployPath());
-
-        if (node.getFiles().size() > 0) {
-            builder.setFile(node.getFiles().get(0));
-        }
+        TArtifact.Builder builder = new TArtifact.Builder(id, node.getType())
+            .setTargetLocation(node.getDeployPath())
+            .setFile(node.getFile());
 
         if (node.getProperties() != null) {
             builder.setProperties(convertPropertyAssignments(node.getProperties()));
         }
-        
+
         return new TArtifact(builder);
     }
 

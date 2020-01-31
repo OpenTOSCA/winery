@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2017-2019 Contributors to the Eclipse Foundation
+ * Copyright (c) 2017-2020 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -336,11 +336,8 @@ public class Writer extends AbstractVisitor<Printer, Writer.Parameter> {
             .printKeyValue("repository", node.getRepository())
             .printKeyValue("description", node.getDescription())
             .printKeyValue("deploy_path", node.getDeployPath());
-        if (node.getFiles() != null) {
-            if (!node.getFiles().isEmpty()) {
-                output.printKeyValue("file", node.getFile())
-                    .printKeyValue("files", node.getFiles());
-            }
+        if (node.getFile() != null) {
+            output.printKeyValue("file", node.getFile());
         }
         return output;
     }
@@ -425,7 +422,7 @@ public class Writer extends AbstractVisitor<Printer, Writer.Parameter> {
             .print(printVisitorNode(node.getEntrySchema(), parameter))
             .printKeyObject(parameter.getKey(), node.getValue());
     }
-    
+
     public Printer visit(TConstraintClause node, Parameter parameter) {
         if (node.getValue() != null) {
             return new Printer(parameter.getIndent())
