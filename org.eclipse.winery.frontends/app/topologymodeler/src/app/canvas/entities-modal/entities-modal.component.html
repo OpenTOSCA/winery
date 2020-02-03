@@ -215,9 +215,8 @@
             <div *wineryRepositoryShowOnFeature="'yaml'">
                 <fieldset id="yamlArtifactTypeFieldset">
                     <div class="form-group" id="artifactTypeDiv">
-                        <label for="artifactTypeField">
-                            {{modalVariantAndState.modalVariant === 'deployment_artifacts' ? 'Artifact' : 'Policy'}}
-                            Type
+                        <label for="artifactTypeChooser">
+                            Artifact Type
                         </label>
 
                         <select [(ngModel)]="deploymentArtifactOrPolicyModalData.modalType"
@@ -226,14 +225,37 @@
                                 id="artifactTypeChooser"
                                 type="text"
                                 required="required"
-                                [disabled]="modalVariantForEditDeleteTasks !== '(none)'"
-                        >
+                                (ngModelChange)="yamlArtifactTypeChanged()"
+                                [disabled]="modalVariantForEditDeleteTasks !== '(none)'">
 
                             <option *ngFor="let artifactType of deploymentArtifactOrPolicyModalData.artifactTypes"
                                     [value]="artifactType.qName">{{artifactType.name}}
                             </option>
 
                         </select>
+                    </div>
+                </fieldset>
+                <fieldset id="yamlArtifactFileFieldSet">
+                    <div class="form-group" id="yamlArtifactFileDiv">
+                        <label for="fileUploader">Select Artifact File (will be uploaded when clicking on "Add")</label>
+                        <br>
+                        <input type="file" id="fileUploader" name="fileUploader"
+                               [disabled]="modalVariantForEditDeleteTasks !== '(none)'"
+                               [accept]="selectedYamlArtifactAllowedTypes"
+                               (change)="yamlArtifactFileSelected($event.target.files)"/>
+                    </div>
+                </fieldset>
+                <fieldset id="yamlDeployPathFieldset">
+                    <div class="form-group" id="artifactDeployPathDiv">
+                        <label for="artifactDeployPathInput">
+                            Deploy Path
+                        </label>
+                        <input [(ngModel)]="deploymentArtifactOrPolicyModalData.modalTargetLocation"
+                               class="form-control"
+                               name="artifactDeployPathInput"
+                               [disabled]="modalVariantForEditDeleteTasks !== '(none)'"
+                               id="artifactDeployPathInput" type="text"/>
+
                     </div>
                 </fieldset>
             </div>

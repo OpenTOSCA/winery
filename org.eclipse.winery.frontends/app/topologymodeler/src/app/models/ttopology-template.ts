@@ -179,10 +179,11 @@ export class TArtifactType extends EntityType {
                 qName: string,
                 name: string,
                 namespace: string,
+                full?: any,
                 properties?: any,
-                mimeType?: string,
-                fileExtensions?: string[]) {
-        super(id, qName, name, namespace, properties);
+                public mimeType?: string,
+                public fileExtensions?: string[]) {
+        super(id, qName, name, namespace, properties, full);
     }
 }
 

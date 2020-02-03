@@ -167,7 +167,15 @@ export class ToscatypeTableComponent implements OnInit, OnChanges {
         const name = yamlArtifact.id;
         const currentNodeId = this.currentNodeData.currentNodeId;
         // push new event onto Subject
-        const eventObject: OpenModalEvent = new OpenModalEvent(currentNodeId, ModalVariant.DeploymentArtifacts, name, '', '', type);
+        const eventObject: OpenModalEvent = new OpenModalEvent(
+            currentNodeId,
+            ModalVariant.DeploymentArtifacts,
+            name,
+            '',
+            '',
+            type,
+            yamlArtifact.file,
+            yamlArtifact.targetLocation);
         this.entitiesModalService.openModalEvent.next(eventObject);
     }
 

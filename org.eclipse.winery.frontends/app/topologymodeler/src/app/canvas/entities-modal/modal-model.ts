@@ -59,7 +59,7 @@ export class DeploymentArtifactOrPolicyModalData {
         // all namespaces
         public namespaces?: string[],
         // the file path of a yaml artifact
-        public modalFilePath?: string,
+        public modalFileName?: string,
         // the deployment path of a yaml artifact
         public modalTargetLocation?: string
     ) {

@@ -64,6 +64,8 @@ export class EntitiesModalComponent implements OnInit, OnChanges {
 
     // this is required for some reason
     ModalVariant = ModalVariant;
+    private selectedYamlArtifactFile: File;
+    private selectedYamlArtifactAllowedTypes = '';
 
     constructor(public backendService: BackendService,
                 private ngRedux: NgRedux<IWineryState>,
@@ -98,7 +100,8 @@ export class EntitiesModalComponent implements OnInit, OnChanges {
             this.deploymentArtifactOrPolicyModalData.modalName = newEvent.modalName;
             this.deploymentArtifactOrPolicyModalData.modalType = newEvent.modalType;
             this.modalVariantForEditDeleteTasks = newEvent.modalVariant.toString();
-            console.debug(this.deploymentArtifactOrPolicyModalData);
+            this.deploymentArtifactOrPolicyModalData.modalFileName = newEvent.modalFilePath;
+            this.deploymentArtifactOrPolicyModalData.modalTargetLocation = newEvent.modalTargetLocation;
             this.modal.show();
         });
         this.ngRedux.select();
@@ -145,17 +148,30 @@ export class EntitiesModalComponent implements OnInit, OnChanges {
         this.artifactOrPolicy.type = this.deploymentArtifactOrPolicyModalData.modalType;
 
         if (this.modalVariantAndState.modalVariant === ModalVariant.DeploymentArtifacts && this.configurationService.isYaml()) {
+            // the name is retrieved from the open file dialog
+            this.deploymentArtifactOrPolicyModalData.modalFileName = this.selectedYamlArtifactFile.name;
             const yamlArtifact: TArtifact = new TArtifact(
                 this.deploymentArtifactOrPolicyModalData.modalName,
                 this.deploymentArtifactOrPolicyModalData.modalType,
-                this.deploymentArtifactOrPolicyModalData.modalFilePath,
+                this.deploymentArtifactOrPolicyModalData.modalFileName,
                 this.deploymentArtifactOrPolicyModalData.modalTargetLocation,
                 {},
                 [],
                 [],
                 {}
             );
-            this.saveYamlArtifactsToModel(yamlArtifact);
+            this.backendService.saveYamlArtifact(
+                this.currentNodeData.id,
+                yamlArtifact.id,
+                this.selectedYamlArtifactFile,
+            ).subscribe(() => {
+                this.alert.success('<p>Successfully Saved the Artifact!</p>');
+                this.saveYamlArtifactsToModel(yamlArtifact);
+
+            }, error => {
+                this.alert.info('<p>Something went wrong! The DA was not added to the Topology Template!<br>' + 'Error: '
+                    + error + '</p>');
+            });
 
         } else if (this.modalSelectedRadioButton === 'create' && this.modalVariantAndState.modalVariant === ModalVariant.DeploymentArtifacts) {
             const deploymentArtifactToBeSavedToRedux: TDeploymentArtifact = new TDeploymentArtifact(
@@ -339,7 +355,7 @@ export class EntitiesModalComponent implements OnInit, OnChanges {
         this.deploymentArtifactOrPolicyModalData.modalTemplateName = '';
         this.deploymentArtifactOrPolicyModalData.modalName = '';
         this.deploymentArtifactOrPolicyModalData.modalType = '';
-        this.deploymentArtifactOrPolicyModalData.modalFilePath = '';
+        this.deploymentArtifactOrPolicyModalData.modalFileName = '';
         this.deploymentArtifactOrPolicyModalData.modalTargetLocation = '';
         this.resetModalData();
         this.modal.hide();
@@ -387,6 +403,8 @@ export class EntitiesModalComponent implements OnInit, OnChanges {
         this.deploymentArtifactOrPolicyModalData.modalName = undefined;
         this.deploymentArtifactOrPolicyModalData.modalTemplate = undefined;
         this.deploymentArtifactOrPolicyModalData.modalTemplateName = undefined;
+        this.selectedYamlArtifactFile = undefined;
+        this.selectedYamlArtifactAllowedTypes = '';
         this.modalVariantForEditDeleteTasks = '(none)';
         this.modalVariantAndState.modalVariant = ModalVariant.None;
         this.modalDataChange.emit(this.modalVariantAndState);
@@ -449,4 +467,33 @@ export class EntitiesModalComponent implements OnInit, OnChanges {
         // TODO: add upload ability "this.uploadUrl = this.artifactOrPolicyUrl + 'files/';"
     }
 
+    yamlArtifactFileSelected(files: FileList) {
+        if (files.length > 0) {
+            this.selectedYamlArtifactFile = files[0];
+        } else {
+            this.selectedYamlArtifactFile = undefined;
+        }
+    }
+
+    yamlArtifactTypeChanged() {
+        this.selectedYamlArtifactAllowedTypes = '';
+
+        if (this.deploymentArtifactOrPolicyModalData.modalType) {
+            const selectedYamlArtifactType = this.entityTypes
+                .artifactTypes
+                .find(artiTyep => artiTyep.qName === this.deploymentArtifactOrPolicyModalData.modalType);
+            if (selectedYamlArtifactType) {
+                if (selectedYamlArtifactType.fileExtensions && selectedYamlArtifactType.fileExtensions.length > 0) {
+                    this.selectedYamlArtifactAllowedTypes = selectedYamlArtifactType.fileExtensions.join(',');
+                }
+                if (selectedYamlArtifactType.mimeType) {
+                    if (this.selectedYamlArtifactAllowedTypes.length > 0) {
+                        this.selectedYamlArtifactAllowedTypes += ',';
+                    }
+
+                    this.selectedYamlArtifactAllowedTypes += selectedYamlArtifactType.mimeType;
+                }
+            }
+        }
+    }
 }

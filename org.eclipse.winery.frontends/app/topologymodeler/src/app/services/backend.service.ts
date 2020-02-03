@@ -294,6 +294,18 @@ export class BackendService {
         }
     }
 
+    saveYamlArtifact(nodeTemplateId: string,
+                     artifactName: string,
+                     file: File): Observable<any> {
+        const url =
+            `${this.serviceTemplateURL}${urlElement.TopologyTemplate}${urlElement.NodeTemplates}${nodeTemplateId}${urlElement.YamlArtifacts}/${artifactName}`;
+        // handle entries managed by the backend
+        const formData: FormData = new FormData();
+        formData.append('file', file, file.name);
+
+        return this.http.post(url, formData);
+    }
+
     /**
      * Imports the template.
      */
@@ -392,8 +404,6 @@ export class BackendService {
             { headers: headers, responseType: 'text', observe: 'response' }
         );
     }
-
-    addYamlArtifactToNodeTemplate;
 
     /**
      * Requests all topology template ids

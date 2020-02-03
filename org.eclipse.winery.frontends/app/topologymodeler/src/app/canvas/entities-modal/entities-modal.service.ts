@@ -55,6 +55,8 @@ export class OpenModalEvent {
                 public modalName: string,
                 public modalTemplateName: string,
                 public modalTemplateNameSpace: string,
-                public modalType: string) {
+                public modalType: string,
+                public modalFilePath?: string,
+                public modalTargetLocation?: string) {
     }
 }

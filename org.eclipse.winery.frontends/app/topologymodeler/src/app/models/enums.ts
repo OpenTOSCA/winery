@@ -31,7 +31,9 @@ export enum urlElement {
     RelationshipTypeURL = '/relationshiptypes/',
     ReadMe = '/readme',
     ServiceTemplates = '/servicetemplates/',
-    TopologyTemplate = '/topologytemplate/'
+    TopologyTemplate = '/topologytemplate/',
+    NodeTemplates = 'nodetemplates/',
+    YamlArtifacts = '/yamlartifacts'
 }
 
 export enum TableType {

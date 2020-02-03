@@ -160,9 +160,10 @@ export class WineryComponent implements OnInit, AfterViewInit {
                             artifactType.qName,
                             artifactType.name,
                             artifactType.namespace,
+                            artifactType.full,
                             artifactType.properties,
-                            artifactType.mimeType,
-                            artifactType.fileExtensions
+                            artifactType.full.serviceTemplateOrNodeTypeOrNodeTypeImplementation[0].mimeType,
+                            artifactType.full.serviceTemplateOrNodeTypeOrNodeTypeImplementation[0].fileExtensions
                         ));
                 });
                 break;
