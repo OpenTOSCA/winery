@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2019 Contributors to the Eclipse Foundation
+ * Copyright (c) 2012-2020 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -66,6 +66,7 @@ import org.eclipse.winery.common.Constants;
 import org.eclipse.winery.common.RepositoryFileReference;
 import org.eclipse.winery.common.Util;
 import org.eclipse.winery.common.ids.GenericId;
+import org.eclipse.winery.common.ids.IdNames;
 import org.eclipse.winery.common.ids.Namespace;
 import org.eclipse.winery.common.ids.XmlId;
 import org.eclipse.winery.common.ids.admin.AdminId;
@@ -143,6 +144,7 @@ import org.eclipse.winery.repository.backend.filebased.MultiRepository;
 import org.eclipse.winery.repository.backend.xsd.XsdImportManager;
 import org.eclipse.winery.repository.datatypes.ids.elements.ArtifactTemplateFilesDirectoryId;
 import org.eclipse.winery.repository.datatypes.ids.elements.DirectoryId;
+import org.eclipse.winery.repository.datatypes.ids.elements.GenericDirectoryId;
 import org.eclipse.winery.repository.datatypes.ids.elements.VisualAppearanceId;
 import org.eclipse.winery.repository.exceptions.RepositoryCorruptException;
 import org.eclipse.winery.repository.export.ToscaExportUtil;
@@ -734,6 +736,7 @@ public class BackendUtils {
     }
 
     // todo this should not depend on JAXB !
+
     /**
      * @throws IOException           if content could not be updated in the repository
      * @throws IllegalStateException if an JAXBException occurred. This should never happen.
@@ -1110,6 +1113,18 @@ public class BackendUtils {
             LOGGER.error("Error in XML in " + ref.getFileName(), e);
         }
         return null;
+    }
+
+    public static DirectoryId getYamlArtifactsDirectoryOfNodeTemplate(ServiceTemplateId serviceTemplateId, String nodeTemplateId) {
+        DirectoryId serviceTemplateYamlArtifactsDir =
+            new GenericDirectoryId(serviceTemplateId, IdNames.FILES_DIRECTORY);
+        return new GenericDirectoryId(serviceTemplateYamlArtifactsDir, nodeTemplateId);
+    }
+
+    public static DirectoryId getYamlArtifactDirectoryOfNodeTemplate(ServiceTemplateId serviceTemplateId,
+                                                                     String nodeTemplateId, String yamlArtifactId) {
+        DirectoryId nodeTemplateYamlArtifactsDir = getYamlArtifactsDirectoryOfNodeTemplate(serviceTemplateId, nodeTemplateId);
+        return new GenericDirectoryId(nodeTemplateYamlArtifactsDir, yamlArtifactId);
     }
 
     /**

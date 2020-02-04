@@ -329,7 +329,18 @@ export class ToscatypeTableComponent implements OnInit, OnChanges {
         }
     }
 
-    clickArtifactFile(file: string) {
-
+    clickArtifactFile(artifact: TArtifact) {
+        if (artifact) {
+            this.backendService.downloadYamlArtifactFile(this.currentNodeData.currentNodeId,
+                artifact.id,
+                artifact.file).subscribe(data => {
+                const blob = new Blob([data.body], { type: 'application/octet-stream' });
+                const url = window.URL.createObjectURL(blob);
+                const anchor = document.createElement('a');
+                anchor.download = artifact.file;
+                anchor.href = url;
+                anchor.click();
+            });
+        }
     }
 }

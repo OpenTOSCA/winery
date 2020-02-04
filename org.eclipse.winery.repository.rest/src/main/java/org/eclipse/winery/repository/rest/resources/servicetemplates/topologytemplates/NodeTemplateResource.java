@@ -91,10 +91,10 @@ public class NodeTemplateResource extends TEntityTemplateResource<TNodeTemplate>
 
     @Path("yamlartifacts/{artifactId}")
     public GenericFileResource postYamlArtifactFile(@PathParam("artifactId") String id) {
-        DirectoryId serviceTemplatYamlArtifactsDir =
+        DirectoryId serviceTemplateYamlArtifactsDir =
             new GenericDirectoryId(getServiceTemplateResource().getId(), IdNames.FILES_DIRECTORY);
         DirectoryId nodeTemplateYamlArtifactsDir =
-            new GenericDirectoryId(serviceTemplatYamlArtifactsDir, nodeTemplate.getId());
+            new GenericDirectoryId(serviceTemplateYamlArtifactsDir, nodeTemplate.getId());
         DirectoryId yamlArtifactFilesDirectoryId =
             new GenericDirectoryId(nodeTemplateYamlArtifactsDir, id);
 

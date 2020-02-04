@@ -236,14 +236,23 @@
                     </div>
                 </fieldset>
                 <fieldset id="yamlArtifactFileFieldSet">
-                    <div class="form-group" id="yamlArtifactFileDiv">
+                    <div class="form-group" id="yamlArtifactFileDiv"
+                         *ngIf="modalVariantForEditDeleteTasks === '(none)' else artifactFileNameOnly">
                         <label for="fileUploader">Select Artifact File (will be uploaded when clicking on "Add")</label>
                         <br>
-                        <input type="file" id="fileUploader" name="fileUploader"
-                               [disabled]="modalVariantForEditDeleteTasks !== '(none)'"
+                        <input type="file" #fileUploader id="fileUploader" name="fileUploader"
                                [accept]="selectedYamlArtifactAllowedTypes"
                                (change)="yamlArtifactFileSelected($event.target.files)"/>
                     </div>
+                    <ng-template #artifactFileNameOnly>
+                        <div class="form-group" id="yamlArtifactFileNameDiv">
+                            <label for="fileUploader">Selected File</label>
+                            <br>
+                            <button type="button"
+                                    class="btn btn-link btn-anchor"
+                                    (click)="downloadYamlArtifactFile()">{{deploymentArtifactOrPolicyModalData.modalFileName}}</button>
+                        </div>
+                    </ng-template>
                 </fieldset>
                 <fieldset id="yamlDeployPathFieldset">
                     <div class="form-group" id="artifactDeployPathDiv">

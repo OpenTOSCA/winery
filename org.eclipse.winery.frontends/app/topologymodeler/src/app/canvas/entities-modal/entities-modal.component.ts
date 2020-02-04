@@ -12,7 +12,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR Apache-2.0
  *******************************************************************************/
 
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { ModalDirective } from 'ngx-bootstrap';
 import { TPolicy } from '../../models/policiesModalData';
 import { TDeploymentArtifact } from '../../models/artifactsModalData';
@@ -29,17 +29,19 @@ import { DeploymentArtifactOrPolicyModalData, ModalVariant, ModalVariantAndState
 import { EntitiesModalService, OpenModalEvent } from './entities-modal.service';
 import { QName } from '../../models/qname';
 import { urlElement } from '../../models/enums';
-import { TArtifact } from '../../models/ttopology-template';
+import { TArtifact, TTopologyTemplate } from '../../models/ttopology-template';
 import { WineryRepositoryConfigurationService } from '../../../../../tosca-management/src/app/wineryFeatureToggleModule/WineryRepositoryConfiguration.service';
+import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'winery-entities-modal',
     templateUrl: './entities-modal.component.html',
     styleUrls: ['./entities-modal.component.css']
 })
-export class EntitiesModalComponent implements OnInit, OnChanges {
+export class EntitiesModalComponent implements OnInit, OnChanges, OnDestroy {
 
     @ViewChild('modal') public modal: ModalDirective;
+    @ViewChild('fileUploader') fileUploader: ElementRef;
 
     @Input() modalVariantAndState: ModalVariantAndState;
     @Input() entityTypes: EntityTypesModel;
@@ -66,6 +68,8 @@ export class EntitiesModalComponent implements OnInit, OnChanges {
     ModalVariant = ModalVariant;
     private selectedYamlArtifactFile: File;
     private selectedYamlArtifactAllowedTypes = '';
+    private currentTopologyTemplate: TTopologyTemplate;
+    private subscriptions: Subscription[] = [];
 
     constructor(public backendService: BackendService,
                 private ngRedux: NgRedux<IWineryState>,
@@ -78,33 +82,41 @@ export class EntitiesModalComponent implements OnInit, OnChanges {
 
     ngOnInit() {
         this.deploymentArtifactOrPolicyModalData = new DeploymentArtifactOrPolicyModalData();
-        this.entitiesModalService.requestNamespaces()
-            .subscribe(
-                data => {
-                    this.allNamespaces = data;
-                },
-                error => this.alert.info((error.toString()))
-            );
-        this.entitiesModalService.openModalEvent.subscribe((newEvent: OpenModalEvent) => {
-            try {
-                this.deploymentArtifactOrPolicyModalData.artifactTypes = this.entityTypes.artifactTypes;
-                this.deploymentArtifactOrPolicyModalData.policyTypes = this.entityTypes.policyTypes;
-                this.deploymentArtifactOrPolicyModalData.artifactTemplates = this.entityTypes.artifactTemplates;
-                this.deploymentArtifactOrPolicyModalData.policyTemplates = this.entityTypes.policyTemplates;
-            } catch (e) {
-                console.log(e);
-            }
-            this.deploymentArtifactOrPolicyModalData.nodeTemplateId = newEvent.currentNodeId;
-            this.deploymentArtifactOrPolicyModalData.modalTemplateNameSpace = newEvent.modalTemplateNameSpace;
-            this.deploymentArtifactOrPolicyModalData.modalTemplateName = newEvent.modalTemplateName;
-            this.deploymentArtifactOrPolicyModalData.modalName = newEvent.modalName;
-            this.deploymentArtifactOrPolicyModalData.modalType = newEvent.modalType;
-            this.modalVariantForEditDeleteTasks = newEvent.modalVariant.toString();
-            this.deploymentArtifactOrPolicyModalData.modalFileName = newEvent.modalFilePath;
-            this.deploymentArtifactOrPolicyModalData.modalTargetLocation = newEvent.modalTargetLocation;
-            this.modal.show();
-        });
-        this.ngRedux.select();
+        this.subscriptions.push(
+            this.entitiesModalService.requestNamespaces()
+                .subscribe(
+                    data => {
+                        this.allNamespaces = data;
+                    },
+                    error => this.alert.info((error.toString()))
+                ));
+        this.subscriptions.push(
+            this.entitiesModalService.openModalEvent.subscribe((newEvent: OpenModalEvent) => {
+                try {
+                    this.deploymentArtifactOrPolicyModalData.artifactTypes = this.entityTypes.artifactTypes;
+                    this.deploymentArtifactOrPolicyModalData.policyTypes = this.entityTypes.policyTypes;
+                    this.deploymentArtifactOrPolicyModalData.artifactTemplates = this.entityTypes.artifactTemplates;
+                    this.deploymentArtifactOrPolicyModalData.policyTemplates = this.entityTypes.policyTemplates;
+                } catch (e) {
+                    console.log(e);
+                }
+                this.deploymentArtifactOrPolicyModalData.nodeTemplateId = newEvent.currentNodeId;
+                this.deploymentArtifactOrPolicyModalData.modalTemplateNameSpace = newEvent.modalTemplateNameSpace;
+                this.deploymentArtifactOrPolicyModalData.modalTemplateName = newEvent.modalTemplateName;
+                this.deploymentArtifactOrPolicyModalData.modalName = newEvent.modalName;
+                this.deploymentArtifactOrPolicyModalData.modalType = newEvent.modalType;
+                this.modalVariantForEditDeleteTasks = newEvent.modalVariant.toString();
+                this.deploymentArtifactOrPolicyModalData.modalFileName = newEvent.modalFilePath;
+                this.deploymentArtifactOrPolicyModalData.modalTargetLocation = newEvent.modalTargetLocation;
+                this.modal.show();
+            }));
+        this.subscriptions.push(
+            this.ngRedux.select(currentState => currentState.wineryState.currentJsonTopology)
+                .subscribe(topologyTemplate => this.currentTopologyTemplate = topologyTemplate));
+    }
+
+    ngOnDestroy(): void {
+        this.subscriptions.forEach(sub => sub.unsubscribe());
     }
 
     ngOnChanges(changes: SimpleChanges) {
@@ -160,14 +172,15 @@ export class EntitiesModalComponent implements OnInit, OnChanges {
                 [],
                 {}
             );
+            this.saveYamlArtifactsToModel(yamlArtifact);
             this.backendService.saveYamlArtifact(
+                this.currentTopologyTemplate,
                 this.currentNodeData.id,
                 yamlArtifact.id,
                 this.selectedYamlArtifactFile,
-            ).subscribe(() => {
-                this.alert.success('<p>Successfully Saved the Artifact!</p>');
-                this.saveYamlArtifactsToModel(yamlArtifact);
-
+            ).subscribe((res) => {
+                this.resetDeploymentArtifactOrPolicyModalData();
+                this.alert.success('Successfully Saved the Artifact!', 'Operation Successful');
             }, error => {
                 this.alert.info('<p>Something went wrong! The DA was not added to the Topology Template!<br>' + 'Error: '
                     + error + '</p>');
@@ -357,6 +370,11 @@ export class EntitiesModalComponent implements OnInit, OnChanges {
         this.deploymentArtifactOrPolicyModalData.modalType = '';
         this.deploymentArtifactOrPolicyModalData.modalFileName = '';
         this.deploymentArtifactOrPolicyModalData.modalTargetLocation = '';
+
+        if (this.fileUploader && this.fileUploader.nativeElement) {
+            this.fileUploader.nativeElement.value = '';
+        }
+
         this.resetModalData();
         this.modal.hide();
     }
@@ -382,7 +400,6 @@ export class EntitiesModalComponent implements OnInit, OnChanges {
             newYamlArtifact: artifact
         };
         this.ngRedux.dispatch(this.actions.setYamlArtifact(actionObject));
-        this.resetDeploymentArtifactOrPolicyModalData();
     }
 
     /**
@@ -495,5 +512,18 @@ export class EntitiesModalComponent implements OnInit, OnChanges {
                 }
             }
         }
+    }
+
+    downloadYamlArtifactFile() {
+        this.backendService.downloadYamlArtifactFile(this.deploymentArtifactOrPolicyModalData.nodeTemplateId,
+            this.deploymentArtifactOrPolicyModalData.modalName,
+            this.deploymentArtifactOrPolicyModalData.modalFileName).subscribe(data => {
+            const blob = new Blob([data.body], { type: 'application/octet-stream' });
+            const url = window.URL.createObjectURL(blob);
+            const anchor = document.createElement('a');
+            anchor.download = this.deploymentArtifactOrPolicyModalData.modalFileName;
+            anchor.href = url;
+            anchor.click();
+        });
     }
 }

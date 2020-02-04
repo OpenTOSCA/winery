@@ -53,7 +53,7 @@ export class TNodeTemplate extends AbstractTTemplate {
                 public deploymentArtifacts?: any,
                 public policies?: { policy: any[] },
                 public artifacts?: { artifact: Array<TArtifact> },
-                private _state?: DifferenceStates) {
+                public _state?: DifferenceStates) {
         super(documentation, any, otherAttributes);
     }
 

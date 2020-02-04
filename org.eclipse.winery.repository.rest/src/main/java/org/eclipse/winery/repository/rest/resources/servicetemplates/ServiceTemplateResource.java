@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2012-2019 Contributors to the Eclipse Foundation
+ * Copyright (c) 2012-2020 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -36,6 +36,8 @@ import javax.xml.bind.JAXBException;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.eclipse.winery.common.configuration.Environments;
+import org.eclipse.winery.common.configuration.RepositoryConfigurationObject;
 import org.eclipse.winery.common.ids.definitions.ServiceTemplateId;
 import org.eclipse.winery.common.version.VersionUtils;
 import org.eclipse.winery.common.version.WineryVersion;
@@ -52,6 +54,7 @@ import org.eclipse.winery.model.tosca.TServiceTemplate;
 import org.eclipse.winery.model.tosca.TTopologyTemplate;
 import org.eclipse.winery.model.tosca.utils.ModelUtilities;
 import org.eclipse.winery.repository.backend.BackendUtils;
+import org.eclipse.winery.repository.backend.YamlArtifactsSynchronizer;
 import org.eclipse.winery.repository.driverspecificationandinjection.DASpecification;
 import org.eclipse.winery.repository.driverspecificationandinjection.DriverInjection;
 import org.eclipse.winery.repository.rest.RestUtils;
@@ -90,6 +93,21 @@ public class ServiceTemplateResource extends AbstractComponentInstanceResourceCo
 
     @Override
     public void setTopology(TTopologyTemplate topologyTemplate, String type) {
+        // if we are in yaml mode, replacing the topology can result in yaml artifacts having to be deleted.
+        if (Environments.getRepositoryConfig().getProvider() == RepositoryConfigurationObject.RepositoryProvider.YAML) {
+            try {
+                YamlArtifactsSynchronizer synchronizer = new YamlArtifactsSynchronizer
+                    .Builder()
+                    .setOriginalTemplate(this.getServiceTemplate().getTopologyTemplate())
+                    .setNewTemplate(topologyTemplate)
+                    .setServiceTemplateId((ServiceTemplateId) this.getId())
+                    .build();
+                synchronizer.synchronizeNodeTemplates();
+                synchronizer.synchronizeRelationshipTemplates();
+            } catch (IOException e) {
+                LOGGER.error("Failed to delete yaml artifact files from disk. Reason {}", e.getMessage());
+            }
+        }
         this.getServiceTemplate().setTopologyTemplate(topologyTemplate);
     }
 
