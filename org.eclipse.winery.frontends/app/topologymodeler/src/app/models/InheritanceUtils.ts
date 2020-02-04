@@ -161,8 +161,7 @@ export class InheritanceUtils {
             if (!obj.value && obj.defaultValue) {
                 value = obj.defaultValue;
             } else if (!obj.value) {
-                // TODO quick hack: set a "system" default
-                value = 'N/A';
+                value = '';
             } else {
                 value = obj.value;
             }

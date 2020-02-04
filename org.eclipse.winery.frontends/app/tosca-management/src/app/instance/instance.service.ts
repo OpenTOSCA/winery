@@ -44,8 +44,8 @@ export class InstanceService {
         switch (this.toscaComponent.toscaType) {
             case ToscaTypes.NodeType:
                 if (this.configurationService.isYaml()) {
-                    subMenu = [SubMenuItems.readme, SubMenuItems.license, SubMenuItems.appearance, SubMenuItems.instanceStates, SubMenuItems.interfaces,
-                        SubMenuItems.implementations, SubMenuItems.requirementDefinitionsYaml, SubMenuItems.capabilityDefinitions,
+                    subMenu = [SubMenuItems.readme, SubMenuItems.license, SubMenuItems.appearance, SubMenuItems.interfaces,
+                        SubMenuItems.requirementDefinitionsYaml, SubMenuItems.capabilityDefinitions,
                         SubMenuItems.propertiesDefinition, SubMenuItems.inheritance];
                 } else {
                     subMenu = [SubMenuItems.readme, SubMenuItems.license, SubMenuItems.appearance, SubMenuItems.instanceStates, SubMenuItems.interfaces,
@@ -63,7 +63,6 @@ export class InstanceService {
                         subMenu.push(SubMenuItems.threatModeling);
                     }
                 }
-
                 break;
             case ToscaTypes.RelationshipType:
                 subMenu = [SubMenuItems.readme, SubMenuItems.license, SubMenuItems.appearance, SubMenuItems.instanceStates, SubMenuItems.sourceInterfaces,
@@ -134,8 +133,7 @@ export class InstanceService {
                 break;
             default: // assume Admin
                 if (this.configurationService.isYaml()) {
-                    subMenu = [SubMenuItems.namespaces, SubMenuItems.repository, SubMenuItems.planLanguages, SubMenuItems.planTypes,
-                        SubMenuItems.consistencyCheck, SubMenuItems.log, SubMenuItems.configuration];
+                    subMenu = [SubMenuItems.namespaces, SubMenuItems.repository, SubMenuItems.log, SubMenuItems.configuration];
                 } else {
                     // YAML 1.2 does not contain Constraint Types
                     subMenu = [SubMenuItems.namespaces, SubMenuItems.repository, SubMenuItems.planLanguages, SubMenuItems.planTypes,

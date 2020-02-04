@@ -67,11 +67,11 @@ import org.eclipse.winery.model.tosca.yaml.support.TMapImportDefinition;
 import org.eclipse.winery.repository.JAXBSupport;
 import org.eclipse.winery.repository.backend.BackendUtils;
 import org.eclipse.winery.repository.backend.constants.MediaTypes;
-import org.eclipse.winery.repository.backend.filebased.converter.X2YConverter;
-import org.eclipse.winery.repository.backend.filebased.converter.Y2XConverter;
-import org.eclipse.winery.repository.backend.filebased.converter.support.exception.MultiException;
-import org.eclipse.winery.repository.backend.filebased.converter.support.reader.yaml.Reader;
-import org.eclipse.winery.repository.backend.filebased.converter.support.writer.yaml.Writer;
+import org.eclipse.winery.repository.converter.X2YConverter;
+import org.eclipse.winery.repository.converter.Y2XConverter;
+import org.eclipse.winery.repository.converter.support.exception.MultiException;
+import org.eclipse.winery.repository.converter.support.reader.YamlReader;
+import org.eclipse.winery.repository.converter.support.writer.YamlWriter;
 
 import org.apache.tika.mime.MediaType;
 import org.slf4j.Logger;
@@ -330,7 +330,7 @@ public class YamlRepository extends AbstractFileBasedRepository {
                     } else {
                         nodeType.getRelationshipTypes().entrySet().iterator().next().setValue(removeRelationshipArtifact(nodeType.getRelationshipTypes().entrySet().iterator().next().getValue(), targetArtifactName));
                     }
-                    Writer writer = new Writer();
+                    YamlWriter writer = new YamlWriter();
                     InputStream output = writer.writeToInputStream(nodeType);
                     writeInputStreamToPath(targetPath, output);
                 } catch (Exception e) {
@@ -571,7 +571,7 @@ public class YamlRepository extends AbstractFileBasedRepository {
      **/
     private TServiceTemplate readServiceTemplate(Path targetPath) throws IOException, MultiException {
         InputStream in = newInputStream(targetPath);
-        return new Reader().parse(in);
+        return new YamlReader().parse(in);
     }
 
     /**
@@ -583,7 +583,7 @@ public class YamlRepository extends AbstractFileBasedRepository {
     private TServiceTemplate readServiceTemplate(RepositoryFileReference ref) throws IOException, MultiException {
         Path targetPath = ref2AbsolutePath(ref);
         InputStream in = newInputStream(targetPath);
-        return new Reader().parse(in);
+        return new YamlReader().parse(in);
     }
 
     /**
@@ -715,7 +715,7 @@ public class YamlRepository extends AbstractFileBasedRepository {
                 } else {
                     serviceTemplate = converter.convert(definitions);
                 }
-                Writer writer = new Writer();
+                YamlWriter writer = new YamlWriter();
                 return writer.writeToInputStream(serviceTemplate);
             } catch (Exception e) {
                 LOGGER.error("Error converting service template. Reason: {}", e.getMessage(), e);

@@ -106,6 +106,7 @@ public class AdminTopResource {
     @Produces(MediaType.APPLICATION_JSON)
     public UiConfigurationObject setConfig(UiConfigurationObject changedConfiguration) {
         Environments.save(changedConfiguration);
+        Environments.save(Environments.getRepositoryConfig());
         return Environments.getUiConfig();
     }
 

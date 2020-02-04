@@ -107,8 +107,6 @@ import org.eclipse.winery.repository.rest.resources.apiData.converter.QNameConve
 import org.eclipse.winery.repository.rest.resources.entitytemplates.artifacttemplates.ArtifactTemplateResource;
 import org.eclipse.winery.repository.rest.resources.entitytemplates.artifacttemplates.ArtifactTemplatesResource;
 import org.eclipse.winery.repository.rest.resources.servicetemplates.ServiceTemplateResource;
-import org.eclipse.winery.yaml.common.exception.MultiException;
-import org.eclipse.winery.yaml.converter.Converter;
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
@@ -259,40 +257,44 @@ public class RestUtils {
     }
 
     public static Response getYamlOfSelectedResource(DefinitionsChildId id) {
-        final Converter converter = new Converter();
-        try {
-            // MimeTypes.MIMETYPE_YAML not chosen, because firefox always demands download
-            return Response.ok(converter.convertDefinitionsChildToYaml(id)).type(MediaType.TEXT_PLAIN_TYPE).build();
-        } catch (MultiException e) {
-            throw new WebApplicationException(e);
-        }
+        // TODO
+//        final Converter converter = new Converter();
+//        try {
+//            // MimeTypes.MIMETYPE_YAML not chosen, because firefox always demands download
+//            return Response.ok(converter.convertDefinitionsChildToYaml(id)).type(MediaType.TEXT_PLAIN_TYPE).build();
+//        } catch (MultiException e) {
+//            throw new WebApplicationException(e);
+//        }
+        return Response.noContent().build();
     }
 
     public static Response getYamlCSARofSelectedResource(final AbstractComponentInstanceResource resource) {
-        final Converter converter = new Converter();
-        StreamingOutput so = output -> {
-            try {
-                InputStream is = converter.convertX2Y(resource.getId());
-                byte[] buffer = new byte[1024];
-                int bytesRead;
-                //read from is to buffer
-                while ((bytesRead = is.read(buffer)) != -1) {
-                    output.write(buffer, 0, bytesRead);
-                }
-                is.close();
-                //flush OutputStream to write any buffered data to file
-                output.flush();
-                output.close();
-            } catch (Exception e) {
-                throw new WebApplicationException(e);
-            }
-        };
-        StringBuilder sb = new StringBuilder();
-        sb.append("attachment;filename=\"");
-        sb.append(resource.getXmlId().getEncoded());
-        sb.append(Constants.SUFFIX_CSAR);
-        sb.append("\"");
-        return Response.ok().header("Content-Disposition", sb.toString()).type(MimeTypes.MIMETYPE_ZIP).entity(so).build();
+        // TODO
+//        final Converter converter = new Converter();
+//        StreamingOutput so = output -> {
+//            try {
+//                InputStream is = converter.convertX2Y(resource.getId());
+//                byte[] buffer = new byte[1024];
+//                int bytesRead;
+//                //read from is to buffer
+//                while ((bytesRead = is.read(buffer)) != -1) {
+//                    output.write(buffer, 0, bytesRead);
+//                }
+//                is.close();
+//                //flush OutputStream to write any buffered data to file
+//                output.flush();
+//                output.close();
+//            } catch (Exception e) {
+//                throw new WebApplicationException(e);
+//            }
+//        };
+//        StringBuilder sb = new StringBuilder();
+//        sb.append("attachment;filename=\"");
+//        sb.append(resource.getXmlId().getEncoded());
+//        sb.append(Constants.SUFFIX_CSAR);
+//        sb.append("\"");
+//        return Response.ok().header("Content-Disposition", sb.toString()).type(MimeTypes.MIMETYPE_ZIP).entity(so).build();
+        return Response.noContent().build();
     }
 
     public static Response getEdmmModel(TServiceTemplate element) {

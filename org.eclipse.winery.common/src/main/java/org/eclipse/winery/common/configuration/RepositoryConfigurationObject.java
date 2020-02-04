@@ -27,7 +27,19 @@ public class RepositoryConfigurationObject extends AbstractConfigurationObject {
     private YAMLConfiguration configuration;
 
     public enum RepositoryProvider {
-        FILE, YAML
+
+        FILE("file"), YAML("yaml");
+
+        private final String name;
+
+        RepositoryProvider(String name) {
+            this.name = name;
+        }
+
+        @Override
+        public String toString() {
+            return name;
+        }
     }
 
     RepositoryConfigurationObject(YAMLConfiguration configuration) {
@@ -44,7 +56,7 @@ public class RepositoryConfigurationObject extends AbstractConfigurationObject {
 
     @Override
     void save() {
-        configuration.setProperty(key + "provider", this.getProvider());
+        configuration.setProperty(key + "provider", this.getProvider().toString());
         configuration.setProperty(key + "repositoryRoot", this.repositoryRoot);
         this.getGitConfiguration().save();
         Environment.save();
