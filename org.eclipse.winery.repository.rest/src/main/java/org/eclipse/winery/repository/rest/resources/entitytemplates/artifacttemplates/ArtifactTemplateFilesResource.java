@@ -74,7 +74,6 @@ public class ArtifactTemplateFilesResource extends GenericFileResource {
         return response;
     }
     
-
     @POST
     @Path("/{fileName}")
     @Consumes(MediaType.APPLICATION_JSON)

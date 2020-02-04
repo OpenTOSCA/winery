@@ -34,6 +34,15 @@ public class TArtifactType extends TEntityType {
     @XmlAttribute(name = "fileextensions", required = false)
     private List<String> fileExtensions;
 
+    public TArtifactType() {
+    }
+
+    public TArtifactType(Builder builder) {
+        super(builder);
+        this.mimeType = builder.mimeType;
+        this.fileExtensions = builder.fileExtensions;
+    }
+
     @Nullable
     public String getMimeType() {
         return mimeType;
@@ -50,15 +59,6 @@ public class TArtifactType extends TEntityType {
 
     public void setFileExtensions(@Nullable List<String> fileExtensions) {
         this.fileExtensions = fileExtensions;
-    }
-
-    public TArtifactType() {
-    }
-
-    public TArtifactType(Builder builder) {
-        super(builder);
-        this.mimeType = builder.mimeType;
-        this.fileExtensions = builder.fileExtensions;
     }
 
     @Override
