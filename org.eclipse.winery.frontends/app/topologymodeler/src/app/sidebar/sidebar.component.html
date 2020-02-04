@@ -21,12 +21,13 @@
             <span aria-hidden="true">&times;</span>
         </button>
         <fieldset>
-            <div class="form-group">
+            <div class="form-group" *wineryRepositoryHideOnFeature="'yaml'">
                 <label for="nodetemplateid">Id</label>
                 <input id="nodetemplateid" disabled="disabled" class="form-control" value="{{sidebarState.id}}">
             </div>
             <div class="form-group">
-                <label for="nodetemplatename" class="control-label">Name</label>
+                <label for="nodetemplatename" *wineryRepositoryHideOnFeature="'yaml'" class="control-label">Name</label>
+                <label for="nodetemplatename" *wineryRepositoryHideOnFeature="'xml'" class="control-label">Id</label>
                 <input id="nodetemplatename" name="name" class="form-control"
                        value="{{sidebarState.nameTextFieldValue}}"
                        (keyup)="nodeNameKeyUp.next($event.target.value)"

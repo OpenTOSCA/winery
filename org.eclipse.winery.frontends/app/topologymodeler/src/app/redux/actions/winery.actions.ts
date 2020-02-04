@@ -42,7 +42,14 @@ export interface SidebarStateAction extends Action {
     };
 }
 
-export interface SidebarNodeNamechange extends Action {
+export interface SidebarNodeIdChange extends Action {
+    nodeIds: {
+        newNodeId: string,
+        id: string
+    };
+}
+
+export interface SidebarNodeNameChange extends Action {
     nodeNames: {
         newNodeName: string,
         id: string
@@ -219,6 +226,7 @@ export class WineryActions {
     static SAVE_RELATIONSHIP = 'SAVE_RELATIONSHIP';
     static DELETE_NODE_TEMPLATE = 'DELETE_NODE_TEMPLATE';
     static DELETE_RELATIONSHIP_TEMPLATE = 'DELETE_RELATIONSHIP_TEMPLATE';
+    static CHANGE_NODE_ID = 'CHANGE_NODE_ID';
     static CHANGE_NODE_NAME = 'CHANGE_NODE_NAME';
     static OPEN_SIDEBAR = 'OPEN_SIDEBAR';
     static UPDATE_NODE_COORDINATES = 'UPDATE_NODE_COORDINATES';
@@ -260,7 +268,12 @@ export class WineryActions {
             type: WineryActions.OPEN_SIDEBAR,
             sidebarContents: newSidebarData.sidebarContents
         }));
-    changeNodeName: ActionCreator<SidebarNodeNamechange> =
+    changeNodeId: ActionCreator<SidebarNodeIdChange> =
+        ((nodeIds) => ({
+            type: WineryActions.CHANGE_NODE_ID,
+            nodeIds: nodeIds.nodeIds
+        }));
+    changeNodeName: ActionCreator<SidebarNodeNameChange> =
         ((nodeNames) => ({
             type: WineryActions.CHANGE_NODE_NAME,
             nodeNames: nodeNames.nodeNames

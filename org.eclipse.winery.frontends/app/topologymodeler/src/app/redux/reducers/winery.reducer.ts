@@ -17,7 +17,8 @@ import {
     ChangeYamlPoliciesAction, DecMaxInstances, DecMinInstances, DeleteDeploymentArtifactAction, DeleteNodeAction, DeletePolicyAction, DeleteRelationshipAction,
     DeleteYamlArtifactAction, HideNavBarAndPaletteAction, IncMaxInstances, IncMinInstances, SaveNodeTemplateAction, SaveRelationshipAction,
     SendCurrentNodeIdAction, SendPaletteOpenedAction, SetCababilityAction, SetDeploymentArtifactAction, SetNodeVisuals, SetPolicyAction, SetPropertyAction,
-    SetRequirementAction, SetTargetLocation, SetYamlArtifactAction, SidebarMaxInstanceChanges, SidebarMinInstanceChanges, SidebarNodeNamechange,
+    SetRequirementAction, SetTargetLocation, SetYamlArtifactAction, SidebarMaxInstanceChanges, SidebarMinInstanceChanges, SidebarNodeIdChange,
+    SidebarNodeNameChange,
     SidebarStateAction, UpdateNodeCoordinatesAction, UpdateRelationshipNameAction, WineryActions
 } from '../actions/winery.actions';
 import { TArtifact, TNodeTemplate, TRelationshipTemplate, TTopologyTemplate } from '../../models/ttopology-template';
@@ -414,8 +415,22 @@ export const WineryReducer =
                             )
                     }
                 };
+            case WineryActions.CHANGE_NODE_ID:
+                const newId: any = (<SidebarNodeIdChange>action).nodeIds.newNodeId;
+                const currentId: any = (<SidebarNodeIdChange>action).nodeIds.id;
+                return <WineryState>{
+                    ...lastState,
+                    currentJsonTopology: {
+                        ...lastState.currentJsonTopology,
+                        nodeTemplates: lastState.currentJsonTopology.nodeTemplates
+                            .map(nodeTemplate => nodeTemplate.id === currentId ?
+                                nodeTemplate.generateNewNodeTemplateWithUpdatedAttribute('id', newId)
+                                : nodeTemplate
+                            )
+                    }
+                };
             case WineryActions.CHANGE_NODE_NAME:
-                const newNodeName: any = (<SidebarNodeNamechange>action).nodeNames;
+                const newNodeName: any = (<SidebarNodeNameChange>action).nodeNames;
                 const indexChangeNodeName = lastState.currentJsonTopology.nodeTemplates
                     .map(el => el.id).indexOf(newNodeName.id);
 
