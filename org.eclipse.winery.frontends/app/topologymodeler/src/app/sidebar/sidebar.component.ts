@@ -24,6 +24,8 @@ import { QName } from '../models/qname';
 import { PropertyDefinitionType, urlElement } from '../models/enums';
 import { BackendService } from '../services/backend.service';
 import { isNullOrUndefined } from 'util';
+import { HideOnFeatureDirective } from '../../../../tosca-management/src/app/wineryFeatureToggleModule/wineryRepository.hideOnFeature.direct';
+import { WineryRepositoryConfigurationService } from '../../../../tosca-management/src/app/wineryFeatureToggleModule/WineryRepositoryConfiguration.service';
 
 /**
  * This is the right sidebar, where attributes of nodes and relationships get displayed.
@@ -64,7 +66,8 @@ export class SidebarComponent implements OnInit, OnDestroy {
 
     constructor(private $ngRedux: NgRedux<IWineryState>,
                 private actions: WineryActions,
-                private backendService: BackendService) {
+                private backendService: BackendService,
+                private configurationService: WineryRepositoryConfigurationService) {
     }
 
     deleteButtonSidebarClicked($event) {
@@ -143,6 +146,14 @@ export class SidebarComponent implements OnInit, OnDestroy {
                             id: this.sidebarState.id
                         }
                     }));
+                    if (this.configurationService.isYaml() && data !== '') {
+                        this.$ngRedux.dispatch(this.actions.changeNodeId({
+                            nodeIds: {
+                                newNodeId: data,
+                                id: this.sidebarState.id
+                            }
+                        }));
+                    }
                 } else {
                     this.$ngRedux.dispatch(this.actions.updateRelationshipName({
                         relData: {
