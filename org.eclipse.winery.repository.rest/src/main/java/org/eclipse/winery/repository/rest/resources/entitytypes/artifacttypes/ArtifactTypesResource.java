@@ -85,9 +85,7 @@ public class ArtifactTypesResource extends AbstractComponentsWithoutTypeReferenc
         ArtifactTypeResource res = null;
         for (ArtifactTypeId id : allArtifactTypeIds) {
             ArtifactTypeResource r = new ArtifactTypeResource(id);
-            if (r.getAssociatedFileExtensions()
-                .stream()
-                .anyMatch(fileExtension -> fileExtension.equalsIgnoreCase(extension))) {
+            if (extension.equalsIgnoreCase(r.getAssociatedFileExtension())) {
                 res = r;
                 break;
             }
