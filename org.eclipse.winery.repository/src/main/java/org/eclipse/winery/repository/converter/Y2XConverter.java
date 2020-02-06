@@ -583,7 +583,8 @@ public class Y2XConverter {
         TNodeType.Builder builder = convert(node, new TNodeType.Builder(id))
             .addRequirementDefinitions(convert(node.getRequirements()))
             .addCapabilityDefinitions(convert(node.getCapabilities()))
-            .addInterfaces(convert(refactor(node.getInterfaces(), node)));
+            .addInterfaces(convert(refactor(node.getInterfaces(), node)))
+            .addArtifacts(convert(node.getArtifacts()));
         TNodeType output = builder.build();
         convertNodeTypeImplementation(
             refactorImplementationArtifacts(node.getArtifacts(), node),

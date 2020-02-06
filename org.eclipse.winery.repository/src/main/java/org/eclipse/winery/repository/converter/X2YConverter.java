@@ -323,6 +323,7 @@ public class X2YConverter {
                 .setRequirements(convert(node.getRequirementDefinitions()))
                 .setCapabilities(convert(node.getCapabilityDefinitions()))
                 .setInterfaces(convert(node.getInterfaces()))
+                .setArtifacts(convert(node.getArtifacts()))
                 .build()
         );
     }
