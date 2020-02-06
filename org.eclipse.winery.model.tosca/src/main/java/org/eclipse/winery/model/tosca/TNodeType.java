@@ -327,7 +327,7 @@ public class TNodeType extends TEntityType {
         }
 
         public Builder addArtifacts(TArtifacts artifacts) {
-            if (artifacts == null) {
+            if (artifacts == null || artifacts.getArtifact().isEmpty()) {
                 return this;
             }
 
