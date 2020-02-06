@@ -27,6 +27,7 @@ export class SubMenuItems {
     static readonly appearance: SubMenuItem = { displayName: 'Appearance', urlFragment: 'appearance' };
     static readonly appliesTo: SubMenuItem = { displayName: 'Applies To', urlFragment: 'appliesto' };
     static readonly attributeMappings: SubMenuItem = { displayName: 'Attribute Mappings', urlFragment: 'attributemappings' };
+    static readonly artifacts: SubMenuItem = { displayName: 'Artifacts', urlFragment: 'artifacts' };
     static readonly boundaryDefinitions: SubMenuItem = { displayName: 'Boundary Definitions', urlFragment: 'boundarydefinitions' };
     static readonly capabilityDefinitions: SubMenuItem = { displayName: 'Capability Definitions', urlFragment: 'capabilitydefinitions' };
     static readonly configuration: SubMenuItem = { displayName: 'Configuration', urlFragment: 'configuration' };
