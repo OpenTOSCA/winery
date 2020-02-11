@@ -13,6 +13,7 @@ import { WineryDuplicateValidatorModule } from '../../../wineryValidators/winery
 import { WineryPipesModule } from '../../../wineryPipes/wineryPipes.module';
 import { WineryAddModule } from '../../../wineryAddComponentModule/addComponent.moudle';
 import { ArtifactsComponent } from './artifacts.component';
+import { WineryQNameSelectorModule } from '../../../wineryQNameSelector/wineryQNameSelector.module';
 
 /*******************************************************************************
  * Copyright (c) 2020 Contributors to the Eclipse Foundation
@@ -45,6 +46,7 @@ import { ArtifactsComponent } from './artifacts.component';
         WineryDuplicateValidatorModule,
         WineryPipesModule,
         WineryAddModule,
+        WineryQNameSelectorModule,
     ],
     exports: [],
     declarations: [

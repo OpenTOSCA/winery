@@ -50,6 +50,10 @@ public class TArtifacts {
         this.artifact = artifact;
     }
 
+    public void addArtifact(TArtifact artifact) {
+        this.artifact.add(artifact);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

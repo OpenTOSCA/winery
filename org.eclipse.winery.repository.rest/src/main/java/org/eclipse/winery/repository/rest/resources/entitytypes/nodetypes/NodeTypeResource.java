@@ -13,15 +13,22 @@
  *******************************************************************************/
 package org.eclipse.winery.repository.rest.resources.entitytypes.nodetypes;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import org.eclipse.winery.common.ids.definitions.NodeTypeId;
 import org.eclipse.winery.common.ids.definitions.NodeTypeImplementationId;
+import org.eclipse.winery.model.tosca.TArtifact;
+import org.eclipse.winery.model.tosca.TArtifacts;
 import org.eclipse.winery.model.tosca.TExtensibleElements;
 import org.eclipse.winery.model.tosca.TInterfaces;
 import org.eclipse.winery.model.tosca.TNodeType;
@@ -29,8 +36,11 @@ import org.eclipse.winery.model.tosca.TNodeType.RequirementDefinitions;
 import org.eclipse.winery.model.tosca.TTopologyElementInstanceStates;
 import org.eclipse.winery.repository.rest.RestUtils;
 import org.eclipse.winery.repository.rest.resources.apiData.QNameApiData;
+import org.eclipse.winery.repository.rest.resources.artifacts.DeploymentArtifactResource;
 import org.eclipse.winery.repository.rest.resources.entitytypes.InstanceStatesResource;
 import org.eclipse.winery.repository.rest.resources.entitytypes.TopologyGraphElementEntityTypeResource;
+import org.eclipse.winery.repository.rest.resources.entitytypes.artifacttypes.ArtifactTypeResource;
+import org.eclipse.winery.repository.rest.resources.entitytypes.artifacttypes.ArtifactTypesResource;
 import org.eclipse.winery.repository.rest.resources.entitytypes.nodetypes.reqandcapdefs.CapabilityDefinitionsResource;
 import org.eclipse.winery.repository.rest.resources.entitytypes.nodetypes.reqandcapdefs.RequirementDefinitionsResource;
 import org.eclipse.winery.repository.rest.resources.interfaces.InterfacesResource;
@@ -102,6 +112,27 @@ public class NodeTypeResource extends TopologyGraphElementEntityTypeResource {
     @Path("appearance")
     public VisualAppearanceResource getVisualAppearanceResource() {
         return new VisualAppearanceResource(this, this.getElement().getOtherAttributes(), (NodeTypeId) this.id);
+    }
+
+    @GET
+    @Path("artifacts")
+    @Produces(MediaType.APPLICATION_JSON)
+    public TArtifact[] getArtifacts() {
+        TArtifacts artifacts = this.getNodeType().getArtifacts();
+        if (artifacts == null) {
+            artifacts = new TArtifacts();
+            this.getNodeType().setArtifacts(artifacts);
+        }
+        return artifacts.getArtifact().toArray(new TArtifact[0]);
+    }
+
+    @POST
+    @Path("artifacts")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response addArtifact(TArtifact data) {
+        System.out.println("HALLO");
+        this.getNodeType().getArtifacts().addArtifact(data);
+        return Response.status(Response.Status.OK).build();
     }
 
     @Override

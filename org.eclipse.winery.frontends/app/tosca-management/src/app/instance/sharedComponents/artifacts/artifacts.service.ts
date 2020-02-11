@@ -1,8 +1,14 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { InstanceService } from '../../instance.service';
 import { Utils } from '../../../wineryUtils/utils';
+import { NameAndQNameApiData } from '../../../wineryQNameSelector/wineryNameAndQNameApiData';
+import { Observable } from 'rxjs';
+import { backendBaseURL } from '../../../configuration';
+import { CapabilityOrRequirementDefinition } from '../../nodeTypes/capabilityOrRequirementDefinitions/capOrReqDefResourceApiData';
+import { TDeploymentArtifact } from '../../../../../../topologymodeler/src/app/models/artifactsModalData';
+import { TArtifact } from '../../../../../../topologymodeler/src/app/models/ttopology-template';
 
 /*******************************************************************************
  * Copyright (c) 2020 Contributors to the Eclipse Foundation
@@ -20,7 +26,32 @@ import { Utils } from '../../../wineryUtils/utils';
 
 @Injectable()
 export class ArtifactsService {
-    constructor(private http: HttpClient,
-                private route: Router, private sharedData: ArtifactsService) {
+    private path: string;
+
+    constructor(private http: HttpClient, private route: Router) {
+        this.path = this.route.url;
+    }
+
+    getAllArtifacts(types: string) {
+        return this.sendJsonRequest<NameAndQNameApiData[]>('/' + types);
+    }
+
+    private sendJsonRequest<T>(requestPath: string): Observable<T> {
+        return this.http.get<T>(backendBaseURL + requestPath);
+    }
+
+    getArtifactsData() {
+        return this.sendJsonRequest<TArtifact []>(this.path);
+    }
+
+    sendPostRequest(artifactToBeAdded: TArtifact) {
+        console.log(artifactToBeAdded);
+        const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+        return this.http
+            .post(
+                backendBaseURL + this.path + '/',
+                artifactToBeAdded,
+                { headers: headers, observe: 'response', responseType: 'text' }
+            );
     }
 }
