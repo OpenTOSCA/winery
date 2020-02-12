@@ -22,7 +22,6 @@ import { WineryValidatorObject } from '../../../wineryValidators/wineryDuplicate
 @Component({
     selector: 'winery-instance-artifacts',
     templateUrl: 'artifacts.component.html',
-    providers: [ArtifactsService],
 })
 export class ArtifactsComponent implements OnInit {
 
@@ -95,8 +94,11 @@ export class ArtifactsComponent implements OnInit {
                 arr.splice(i, 1);
             }
         }
-        this.selectedArtifact = new Artifact();
-        this.ngOnInit();
+        this.loading = true;
+        this.artifactsService.deleteArtifact(this.selectedArtifact).subscribe(() => {
+            this.selectedArtifact = new Artifact();
+            this.ngOnInit();
+        });
     }
 
     onArtifactTypeChanged(value: string) {

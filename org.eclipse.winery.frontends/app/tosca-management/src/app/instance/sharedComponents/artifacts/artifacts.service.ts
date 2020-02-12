@@ -36,13 +36,18 @@ export class ArtifactsService {
     }
 
     createArtifact(artifact: Artifact, file: File) {
-        const artifactUrl = `${backendBaseURL}${this.route.url}/${artifact.name}`;
+        const url = `${backendBaseURL}${this.route.url}/${artifact.name}`;
         const formData: FormData = new FormData();
         formData.append('file', file, file.name);
         return concat(
             this.postJson(backendBaseURL + this.route.url, artifact),
-            this.http.post(artifactUrl, formData, { observe: 'response', responseType: 'text' })
+            this.http.post(url, formData, { observe: 'response', responseType: 'text' })
         ).pipe(takeLast(1));
+    }
+
+    deleteArtifact(artifact: Artifact): Observable<HttpResponse<string>> {
+        const url = `${backendBaseURL}${this.route.url}/f/${artifact.name}`;
+        return this.http.delete(url, { observe: 'response', responseType: 'text' });
     }
 
     private getJson<T>(path: string): Observable<T> {

@@ -14,6 +14,7 @@ import { WineryPipesModule } from '../../../wineryPipes/wineryPipes.module';
 import { WineryAddModule } from '../../../wineryAddComponentModule/addComponent.moudle';
 import { ArtifactsComponent } from './artifacts.component';
 import { WineryQNameSelectorModule } from '../../../wineryQNameSelector/wineryQNameSelector.module';
+import { ArtifactsService } from './artifacts.service';
 
 /*******************************************************************************
  * Copyright (c) 2020 Contributors to the Eclipse Foundation
@@ -52,7 +53,9 @@ import { WineryQNameSelectorModule } from '../../../wineryQNameSelector/wineryQN
     declarations: [
         ArtifactsComponent
     ],
-    providers: [],
+    providers: [
+        ArtifactsService
+    ],
 })
 export class ArtifactsModule {
 }

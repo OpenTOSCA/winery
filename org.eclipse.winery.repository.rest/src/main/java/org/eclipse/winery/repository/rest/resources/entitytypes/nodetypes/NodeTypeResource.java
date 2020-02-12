@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -141,6 +142,30 @@ public class NodeTypeResource extends TopologyGraphElementEntityTypeResource {
             nodeType.setArtifacts(new TArtifacts());
         }
         this.getNodeType().getArtifacts().addArtifact(artifact);
+        return RestUtils.persist(this);
+    }
+
+    @DELETE
+    @Path("artifacts/f/{name}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response deleteArtifact(@PathParam("name") String name) {
+        TNodeType nodeType = this.getNodeType();
+        if (nodeType.getArtifacts() == null) {
+            nodeType.setArtifacts(new TArtifacts());
+        }
+        TArtifact artifact = null;
+        for (TArtifact item : nodeType.getArtifacts().getArtifact()) {
+            if (name.equalsIgnoreCase(item.getName())) {
+                artifact = item;
+            }
+        }
+        if (artifact == null) {
+            return Response.noContent().build();
+        }
+        List<TArtifact> artifacts = nodeType.getArtifacts().getArtifact();
+        artifacts.remove(artifact);
+        this.getNodeType().getArtifacts().setArtifact(artifacts);
+        this.uploadArtifact(name).deleteFile(artifact.getFile(), null);
         return RestUtils.persist(this);
     }
 
