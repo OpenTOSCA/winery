@@ -13,13 +13,11 @@
  *******************************************************************************/
 package org.eclipse.winery.repository.rest.resources.entitytypes.nodetypes;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
@@ -36,12 +34,9 @@ import org.eclipse.winery.model.tosca.TNodeType.RequirementDefinitions;
 import org.eclipse.winery.model.tosca.TTopologyElementInstanceStates;
 import org.eclipse.winery.repository.rest.RestUtils;
 import org.eclipse.winery.repository.rest.resources.apiData.QNameApiData;
-import org.eclipse.winery.repository.rest.resources.artifacts.DeploymentArtifactResource;
 import org.eclipse.winery.repository.rest.resources.entitytypes.InstanceStatesResource;
 import org.eclipse.winery.repository.rest.resources.entitytypes.InterfaceDefinitionsResource;
 import org.eclipse.winery.repository.rest.resources.entitytypes.TopologyGraphElementEntityTypeResource;
-import org.eclipse.winery.repository.rest.resources.entitytypes.artifacttypes.ArtifactTypeResource;
-import org.eclipse.winery.repository.rest.resources.entitytypes.artifacttypes.ArtifactTypesResource;
 import org.eclipse.winery.repository.rest.resources.entitytypes.nodetypes.reqandcapdefs.CapabilityDefinitionsResource;
 import org.eclipse.winery.repository.rest.resources.entitytypes.nodetypes.reqandcapdefs.RequirementDefinitionsResource;
 import org.eclipse.winery.repository.rest.resources.interfaces.InterfacesResource;
