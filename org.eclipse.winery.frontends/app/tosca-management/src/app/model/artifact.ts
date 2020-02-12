@@ -12,17 +12,10 @@
  * SPDX-License-Identifier: EPL-2.0 OR Apache-2.0
  *******************************************************************************/
 
-export class ArtifactsTableData {
+export class Artifact {
     name: string = null;
     type: string = null;
-    file: string = null;
-    targetLocation: string = null;
-
-    constructor(name: string, type: string, file: string, targetLocation: string) {
-        this.name = name;
-        this.type = type;
-        this.file = file;
-        this.targetLocation = targetLocation;
-    }
+    description = '';
+    file = '';
+    deployPath = '';
 }
-

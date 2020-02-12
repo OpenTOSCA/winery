@@ -20,7 +20,6 @@ import { SelectableListComponent } from '../interfaces/selectableList/selectable
 import { InterfaceDefinitionsService } from './interfaceDefinitions.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { SelectData } from '../../../model/selectData';
-import { SelectItem } from 'ng2-select';
 
 @Component({
     selector: 'winery-interfaces',

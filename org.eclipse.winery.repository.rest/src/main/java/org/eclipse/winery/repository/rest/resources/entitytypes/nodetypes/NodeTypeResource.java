@@ -20,10 +20,12 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.eclipse.winery.common.ids.IdNames;
 import org.eclipse.winery.common.ids.definitions.NodeTypeId;
 import org.eclipse.winery.common.ids.definitions.NodeTypeImplementationId;
 import org.eclipse.winery.model.tosca.TArtifact;
@@ -33,7 +35,10 @@ import org.eclipse.winery.model.tosca.TInterfaces;
 import org.eclipse.winery.model.tosca.TNodeType;
 import org.eclipse.winery.model.tosca.TNodeType.RequirementDefinitions;
 import org.eclipse.winery.model.tosca.TTopologyElementInstanceStates;
+import org.eclipse.winery.repository.datatypes.ids.elements.DirectoryId;
+import org.eclipse.winery.repository.datatypes.ids.elements.GenericDirectoryId;
 import org.eclipse.winery.repository.rest.RestUtils;
+import org.eclipse.winery.repository.rest.resources._support.GenericFileResource;
 import org.eclipse.winery.repository.rest.resources.apiData.QNameApiData;
 import org.eclipse.winery.repository.rest.resources.entitytypes.InstanceStatesResource;
 import org.eclipse.winery.repository.rest.resources.entitytypes.InterfaceDefinitionsResource;
@@ -137,6 +142,13 @@ public class NodeTypeResource extends TopologyGraphElementEntityTypeResource {
         }
         this.getNodeType().getArtifacts().addArtifact(artifact);
         return RestUtils.persist(this);
+    }
+
+    @Path("artifacts/{name}")
+    public GenericFileResource uploadArtifact(@PathParam("name") String name) {
+        DirectoryId dir = new GenericDirectoryId(this.getId(), IdNames.FILES_DIRECTORY);
+        DirectoryId files = new GenericDirectoryId(dir, name);
+        return new GenericFileResource(files);
     }
 
     @Override

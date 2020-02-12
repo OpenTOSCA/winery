@@ -11,120 +11,107 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR Apache-2.0
  *******************************************************************************/
-
-import { Component, Input, OnInit, ViewChild } from '@angular/core';
-import { WineryNotificationService } from '../../../wineryNotificationModule/wineryNotification.service';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { ArtifactsService } from './artifacts.service';
-import { TArtifact } from '../../../../../../topologymodeler/src/app/models/ttopology-template';
+import { NameAndQNameApiDataList } from '../../../wineryQNameSelector/wineryNameAndQNameApiData';
+import { Artifact } from '../../../model/artifact';
 import { ModalDirective } from 'ngx-bootstrap';
-import { NameAndQNameApiData, NameAndQNameApiDataList } from '../../../wineryQNameSelector/wineryNameAndQNameApiData';
-import { ArtifactsTableData } from './artifactsTableData';
+import { InstanceService } from '../../instance.service';
+import { WineryValidatorObject } from '../../../wineryValidators/wineryDuplicateValidator.directive';
 
 @Component({
     selector: 'winery-instance-artifacts',
     templateUrl: 'artifacts.component.html',
-    providers: [ArtifactsService,
-        WineryNotificationService],
+    providers: [ArtifactsService],
 })
 export class ArtifactsComponent implements OnInit {
 
     loading: boolean;
 
-    @Input() currentNodeData: any;
-
-    artifacts: TArtifact[] = [];
+    artifacts: Artifact[] = [];
+    selectedArtifact: Artifact = new Artifact();
+    artifactTypes: NameAndQNameApiDataList = { classes: null };
     columns = [
         { title: 'Name', name: 'name' },
         { title: 'Type', name: 'type' },
         { title: 'File', name: 'file' },
-        { title: 'Deployment Path', name: 'targetLocation' }
+        { title: 'Description', name: 'description' },
+        { title: 'Deployment Path', name: 'deployPath' }
     ];
 
-    @ViewChild('addModal') addModal: ModalDirective;
-    artifactTypes: NameAndQNameApiDataList = { classes: null };
-    artifactToBeAdded: TArtifact = new TArtifact('', null, '', '');
-    selectedYamlArtifactAllowedTypes = '';
-    selectedYamlArtifactFile: File;
-    artifactsTableDataList: Array<ArtifactsTableData> = [];
+    @ViewChild('modal') modal: ModalDirective;
+    @ViewChild('removeModal') removeModal: ModalDirective;
+    validatorObject: WineryValidatorObject;
 
-    constructor(private service: ArtifactsService) {
+    selectedFile: File;
+    allowedTypes = '';
+
+    constructor(private artifactsService: ArtifactsService, public instanceService: InstanceService) {
     }
 
     ngOnInit(): void {
-        this.getArtifactsResourceApiData();
-        this.getAllArtifacts('artifacttypes');
+        this.loading = true;
+        this.artifactsService.getArtifacts().subscribe(data => {
+            this.artifacts = [];
+            data.forEach(item => this.artifacts.push({ ...new Artifact(), ...item }));
+            this.loading = false;
+        }, error => ArtifactsComponent.handleError(error));
+        this.artifactsService.getArtifactTypes().subscribe(data => {
+            this.artifactTypes.classes = data;
+        }, error => ArtifactsComponent.handleError(error));
     }
 
-    onAddClick() {
-        this.addModal.show();
+    private static handleError(error: any) {
+        console.error(error);
     }
 
-    onRemoveClick($event: any) {
-
-    }
-
-    private getArtifactsResourceApiData() {
-        this.service.getArtifactsData().subscribe(
-            data => this.handleArtifactsDefinitionsData(data),
-            error => this.handleError(error)
-        );
-    }
-
-    private getAllArtifacts(types: string) {
-        this.service.getAllArtifacts(types).subscribe(
-            data => this.handleArtifactsData(data),
-            error => this.handleError(error)
-        );
-    }
-
-    private handleError(error: any) {
-    }
-
-    private handleArtifactsData(data: NameAndQNameApiData[]) {
-        this.artifactTypes.classes = data;
-    }
-
-    private handleArtifactsDefinitionsData(data: TArtifact[]) {
-        for (const entry of data) {
-            const name = entry.id;
-            const type = entry.type;
-            const file = entry.file;
-            const targetLocation = entry.targetLocation;
-            this.artifactsTableDataList.push(new ArtifactsTableData(name, type, file, targetLocation));
-        }
-    }
-
-    onSelectedArtifactTypeChanged(value: string) {
-        this.artifactToBeAdded.type = value;
-    }
-
-    yamlArtifactFileSelected(files: any) {
-        if (files.length > 0) {
-            this.selectedYamlArtifactFile = files[0];
-        } else {
-            this.selectedYamlArtifactFile = undefined;
-        }
-    }
-
-    downloadYamlArtifactFile() {
-
+    openModal() {
+        this.selectedArtifact = new Artifact();
+        this.validatorObject = new WineryValidatorObject(this.artifacts, 'name');
+        this.modal.show();
     }
 
     addArtifact() {
-        this.addModal.hide();
-        this.addNewArtifact(this.artifactToBeAdded);
-    }
-
-    private addNewArtifact(artifactToBeAdded: TArtifact) {
+        this.artifacts.push(Object.assign(new Artifact(), this.selectedArtifact));
         this.loading = true;
-        this.service.sendPostRequest(artifactToBeAdded).subscribe(
-            data => this.handlePostResponse(),
-            error => this.handleError(error)
-        );
+        this.artifactsService.createArtifact(this.selectedArtifact, this.selectedFile).subscribe(() => {
+            this.loading = false;
+            this.selectedArtifact = new Artifact();
+        });
     }
 
-    private handlePostResponse() {
-        this.loading = false;
-        this.getArtifactsResourceApiData();
+    openRemoveModal(artifact: Artifact) {
+        if (artifact === null || artifact === undefined) {
+            return;
+        }
+        this.selectedArtifact = artifact;
+        this.removeModal.show();
+    }
+
+    removeArtifact() {
+        const arr = this.artifacts;
+        for (let i = 0; i < arr.length; i++) {
+            if (arr[i].name === this.selectedArtifact.name) {
+                arr.splice(i, 1);
+            }
+        }
+        this.selectedArtifact = new Artifact();
+        this.ngOnInit();
+    }
+
+    onArtifactTypeChanged(value: string) {
+        this.allowedTypes = ''; // TODO
+        if (this.selectedArtifact) {
+            this.selectedArtifact.type = value;
+        }
+    }
+
+    fileSelected(files: any) {
+        if (files.length > 0) {
+            this.selectedFile = files[0];
+            this.selectedArtifact.file = this.selectedFile.name;
+        } else {
+            this.selectedFile = undefined;
+        }
     }
 }

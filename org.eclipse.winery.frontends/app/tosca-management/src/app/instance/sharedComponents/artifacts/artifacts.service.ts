@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { NameAndQNameApiData } from '../../../wineryQNameSelector/wineryNameAndQNameApiData';
-import { Observable } from 'rxjs';
+import { concat, Observable } from 'rxjs';
 import { backendBaseURL } from '../../../configuration';
-import { TArtifact } from '../../../../../../topologymodeler/src/app/models/ttopology-template';
+import { Artifact } from '../../../model/artifact';
+import { takeLast } from 'rxjs/operators';
 
 /*******************************************************************************
  * Copyright (c) 2020 Contributors to the Eclipse Foundation
@@ -26,26 +27,30 @@ export class ArtifactsService {
     constructor(private http: HttpClient, private route: Router) {
     }
 
-    getAllArtifacts(types: string) {
-        return this.sendJsonRequest<NameAndQNameApiData[]>('/' + types);
+    getArtifactTypes() {
+        return this.getJson<NameAndQNameApiData[]>(backendBaseURL + '/artifacttypes');
     }
 
-    private sendJsonRequest<T>(requestPath: string): Observable<T> {
-        return this.http.get<T>(backendBaseURL + requestPath);
+    getArtifacts() {
+        return this.getJson<Artifact[]>(backendBaseURL + this.route.url);
     }
 
-    getArtifactsData() {
-        return this.sendJsonRequest<TArtifact []>(this.route.url);
+    createArtifact(artifact: Artifact, file: File) {
+        const artifactUrl = `${backendBaseURL}${this.route.url}/${artifact.name}`;
+        const formData: FormData = new FormData();
+        formData.append('file', file, file.name);
+        return concat(
+            this.postJson(backendBaseURL + this.route.url, artifact),
+            this.http.post(artifactUrl, formData, { observe: 'response', responseType: 'text' })
+        ).pipe(takeLast(1));
     }
 
-    sendPostRequest(artifactToBeAdded: TArtifact) {
-        console.log(artifactToBeAdded);
+    private getJson<T>(path: string): Observable<T> {
+        return this.http.get<T>(path);
+    }
+
+    private postJson<T>(path: string, data: T): Observable<HttpResponse<string>> {
         const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-        return this.http
-            .post(
-                backendBaseURL + this.route.url + '/',
-                artifactToBeAdded,
-                { headers: headers, observe: 'response', responseType: 'text' }
-            );
+        return this.http.post(path, data, { headers: headers, observe: 'response', responseType: 'text' });
     }
 }

@@ -347,6 +347,7 @@ public class X2YConverter {
                 .setCapabilities(convert(node.getCapabilityDefinitions()))
                 .setInterfaces(convert(node.getInterfaceDefinitions()))
                 .setArtifacts(convert(node.getArtifacts()))
+                // .setArtifacts(convert(node.getArtifacts().getArtifact()))
                 .build()
         );
     }
@@ -904,7 +905,8 @@ public class X2YConverter {
         return Collections.singletonMap(
             node.getName(),
             new TArtifactDefinition.Builder(this.convert(node.getType(), new ArtifactTypeId(node.getType())), node.getFile())
-                .setDeployPath(node.getTargetLocation())
+                .setDescription(node.getDescription())
+                .setDeployPath(node.getDeployPath())
                 .build()
         );
     }
@@ -993,6 +995,8 @@ public class X2YConverter {
                     return convert((org.eclipse.winery.model.tosca.TInterfaceDefinition) node).entrySet().stream();
                 } else if (node instanceof org.eclipse.winery.model.tosca.TOperationDefinition) {
                     return convert((org.eclipse.winery.model.tosca.TOperationDefinition) node).entrySet().stream();
+                } else if (node instanceof org.eclipse.winery.model.tosca.TArtifact) {
+                    return convert((org.eclipse.winery.model.tosca.TArtifact) node).entrySet().stream();
                 }
                 throw new AssertionError();
             })

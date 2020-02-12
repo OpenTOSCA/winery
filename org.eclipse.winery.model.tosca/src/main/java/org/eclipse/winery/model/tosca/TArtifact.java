@@ -15,7 +15,6 @@ package org.eclipse.winery.model.tosca;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.namespace.QName;
 
@@ -25,22 +24,33 @@ import org.eclipse.winery.model.tosca.visitor.Visitor;
  * Class to represent an artifact in TOSCA YAML.
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "tArtifact")
+@XmlType(name = "tArtifact", propOrder = {
+    "description",
+    "file",
+    "deployPath"
+})
 public class TArtifact extends TEntityTemplate {
 
-    @XmlAttribute(name = "file", required = true)
-    protected String file;
-
-    @XmlAttribute(name = "targetLocation", required = false)
-    protected String targetLocation;
+    private String description;
+    private String file;
+    private String deployPath;
 
     public TArtifact() {
     }
 
     public TArtifact(Builder builder) {
         super(builder);
+        this.description = builder.description;
         this.file = builder.file;
-        this.targetLocation = builder.targetLocation;
+        this.deployPath = builder.deployPath;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public String getFile() {
@@ -51,12 +61,12 @@ public class TArtifact extends TEntityTemplate {
         this.file = file;
     }
 
-    public String getTargetLocation() {
-        return targetLocation;
+    public String getDeployPath() {
+        return deployPath;
     }
 
-    public void setTargetLocation(String targetLocation) {
-        this.targetLocation = targetLocation;
+    public void setDeployPath(String deployPath) {
+        this.deployPath = deployPath;
     }
 
     @Override
@@ -76,11 +86,17 @@ public class TArtifact extends TEntityTemplate {
 
     public static class Builder extends TEntityTemplate.Builder<TArtifact.Builder> {
 
+        private String description;
         private String file;
-        private String targetLocation;
+        private String deployPath;
 
-        public Builder(String id, QName type) {
-            super(id, type);
+        public Builder(String name, QName type) {
+            super(name, type);
+        }
+
+        public Builder setDescription(String description) {
+            this.description = description;
+            return self();
         }
 
         public Builder setFile(String file) {
@@ -88,8 +104,8 @@ public class TArtifact extends TEntityTemplate {
             return self();
         }
 
-        public Builder setTargetLocation(String location) {
-            this.targetLocation = location;
+        public Builder setDeployPath(String deployPath) {
+            this.deployPath = deployPath;
             return self();
         }
 
