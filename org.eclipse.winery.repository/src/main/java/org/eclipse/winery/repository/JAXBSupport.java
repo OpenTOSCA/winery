@@ -22,6 +22,8 @@ import javax.xml.bind.Unmarshaller;
 import org.eclipse.winery.model.selfservice.Application;
 import org.eclipse.winery.model.tosca.TDefinitions;
 import org.eclipse.winery.model.tosca.constants.Namespaces;
+import org.eclipse.winery.model.tosca.kvproperties.AttributeDefinitionList;
+import org.eclipse.winery.model.tosca.kvproperties.ParameterDefinitionList;
 import org.eclipse.winery.model.tosca.kvproperties.WinerysPropertiesDefinition;
 import org.eclipse.winery.repository.backend.MockXMLElement;
 import org.eclipse.winery.repository.backend.RepositoryFactory;
@@ -83,17 +85,16 @@ public class JAXBSupport {
     private static JAXBContext initContext() {
         JAXBContext context;
         try {
-            // For winery classes, eventually the package+jaxb.index method could be better. See http://stackoverflow.com/a/3628525/873282
-            // @formatter:off
+            // For winery classes, eventually the package+jaxb.index method could be better.
+            // See http://stackoverflow.com/a/3628525/873282
             context = JAXBContext.newInstance(
-                //InjectorReplaceData.class,
                 TDefinitions.class, // all other elements are referred by "@XmlSeeAlso"
                 WinerysPropertiesDefinition.class,
-                // for the self-service portal
+                ParameterDefinitionList.class,
+                AttributeDefinitionList.class,
                 Application.class,
-                // MockXMLElement is added for testing purposes only.
-                MockXMLElement.class);
-            // @formatter:on
+                MockXMLElement.class // MockXMLElement is added for testing purposes only.
+            );
         } catch (JAXBException e) {
             LOGGER.error("Could not initialize JAXBContext", e);
             throw new IllegalStateException(e);

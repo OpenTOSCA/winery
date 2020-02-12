@@ -118,7 +118,6 @@ public class YamlReader {
      * @return Object (Lists, Maps, Strings, Integers, Dates)
      * @throws UndefinedFile if the file could not be found.
      */
-
     private Object readObject(Path path) throws MultiException {
         try (InputStream inputStream = new FileInputStream(path.toFile())) {
             return readObjectFromInputStream(inputStream);
@@ -209,35 +208,22 @@ public class YamlReader {
     private TServiceTemplate readServiceTemplate(InputStream inputStream, String namespace) throws MultiException {
         Object object = null;
         logger.debug("Read Service Template: {}", inputStream);
+        // pre parse checking
         try {
-            // pre parse checking
-            try {
-                object = readObjectFromInputStream(inputStream);
-                ObjectValidator objectValidator = new ObjectValidator();
-                objectValidator.validateObject(object);
-            } catch (ConstructorException e) {
-                ExceptionInterpreter interpreter = new ExceptionInterpreter();
-                throw new MultiException().add(interpreter.interpret(e));
-            } catch (ScannerException e) {
-                ExceptionInterpreter interpreter = new ExceptionInterpreter();
-                throw new MultiException().add(interpreter.interpret(e));
-            } catch (InvalidToscaSyntax invalidToscaSyntax) {
-                invalidToscaSyntax.printStackTrace();
-            }
-
-            // parse checking
-            TServiceTemplate serviceTemplate = buildServiceTemplate(object, namespace);
-            return serviceTemplate;
-
-//            // post parse checking
-//            Validator validator = new Validator(path);
-//            validator.validate(result, namespace);
-//
-//            serviceTemplateBuffer.put(filePath, result);
-        } catch (MultiException e) {
-//            exceptionBuffer.put(filePath, e);
-            throw e;
+            object = readObjectFromInputStream(inputStream);
+            ObjectValidator objectValidator = new ObjectValidator();
+            objectValidator.validateObject(object);
+        } catch (ConstructorException e) {
+            ExceptionInterpreter interpreter = new ExceptionInterpreter();
+            throw new MultiException().add(interpreter.interpret(e));
+        } catch (ScannerException e) {
+            ExceptionInterpreter interpreter = new ExceptionInterpreter();
+            throw new MultiException().add(interpreter.interpret(e));
+        } catch (InvalidToscaSyntax invalidToscaSyntax) {
+            invalidToscaSyntax.printStackTrace();
         }
+        // parse checking
+        return buildServiceTemplate(object, namespace);
     }
 
     private TServiceTemplate readServiceTemplate(Path path, Path file, String namespace) throws MultiException {

@@ -31,6 +31,8 @@ import { WineryReadmeComponent } from '../../wineryReadmeModule/wineryReadme.com
 import { WineryLicenseComponent } from '../../wineryLicenseModule/wineryLicense.component';
 import { TagComponent } from '../../instance/sharedComponents/tag/tag.component';
 import { YamlRequirementDefinitionsComponent } from '../../instance/nodeTypes/yamlRequirementDefinitions/yamlRequirementDefinitions.component';
+import { AttributesComponent } from '../../instance/sharedComponents/attributes/attributes.component';
+import { InterfaceDefinitionsComponent } from '../../instance/sharedComponents/interfaceDefinitions/interfaceDefinitions.component';
 import { ArtifactsComponent } from '../../instance/sharedComponents/artifacts/artifacts.component';
 
 const toscaType = ToscaTypes.NodeType;
@@ -58,6 +60,8 @@ const nodeTypeRoutes: Routes = [
             { path: 'inheritance', component: InheritanceComponent },
             { path: 'documentation', component: DocumentationComponent },
             { path: 'xml', component: EditXMLComponent },
+            { path: 'attributes', component: AttributesComponent },
+            { path: 'interfacedefinitions', component: InterfaceDefinitionsComponent },
             { path: '', redirectTo: 'readme', pathMatch: 'full' }
         ]
     }

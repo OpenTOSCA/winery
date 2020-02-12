@@ -536,32 +536,46 @@ public class YamlBuilder {
     }
 
     @Nullable
+    @SuppressWarnings("unchecked")
     public TOperationDefinition buildOperationDefinition(Object object, Parameter<TOperationDefinition> parameter) {
         if (Objects.isNull(object) || !validate(TOperationDefinition.class, object, parameter)) return null;
-        // short notation
-        if (object instanceof String) {
-            return new TOperationDefinition.Builder()
-                .setImplementation(new TImplementation.Builder(buildQName(stringValue(object))).build())
-                .build();
-        } else if (object instanceof Map) {
-            @SuppressWarnings("unchecked")
+        if (object instanceof Map) {
             Map<String, Object> map = (Map<String, Object>) object;
+            String description = buildDescription(map.get("description"));
+            Map<String, TParameterDefinition> inputs = buildParameterDefinitions(map.get("inputs"),
+                new Parameter<>(parameter.getContext()).addContext("inputs").setValue(parameter.getValue())
+            );
+            Map<String, TParameterDefinition> outputs = buildParameterDefinitions(map.get("outputs"),
+                new Parameter<>(parameter.getContext()).addContext("outputs").setValue(parameter.getValue())
+            );
+            TImplementation implementation = buildImplementation(map.get("implementation"),
+                new Parameter<TImplementation>(parameter.getContext()).addContext("implementation")
+            );
             return new TOperationDefinition.Builder()
-                .setDescription(buildDescription(map.get("description")))
-                .setInputs(buildPropertyAssignmentOrDefinition(map.get("inputs"),
-                    new Parameter<>(parameter.getContext()).addContext("Inputs")
-                        .setValue(parameter.getValue())
-                ))
-                .setOutputs(buildPropertyAssignmentOrDefinition(map.get("outputs"),
-                    new Parameter<>(parameter.getContext()).addContext("outputs")
-                        .setValue(parameter.getValue())
-                ))
-                .setImplementation(buildImplementation(map.get("implementation"),
-                    new Parameter<TImplementation>(parameter.getContext()).addContext("implementation")
-                ))
+                .setDescription(description)
+                .setInputs(inputs)
+                .setOutputs(outputs)
+                .setImplementation(implementation)
                 .build();
         }
-        return null;
+        return new TOperationDefinition();
+    }
+
+    @Nullable
+    public Map<String, TParameterDefinition> buildParameterDefinitions(Object object, Parameter<Object> parameter) {
+        if (Objects.isNull(object)) return null;
+        String context = stringValue(parameter.getValue());
+        if ("TNodeType".equals(context) ||
+            "TRelationshipType".equals(context) ||
+            "TGroupType".equals(context) ||
+            "TInterfaceType".equals(context)) {
+            return buildMap(object, new Parameter<TParameterDefinition>(parameter.getContext())
+                .setClazz(TParameterDefinition.class)
+                .setBuilderOO(this::buildParameterDefinition));
+        } else {
+            return buildMap(object, new Parameter<TParameterDefinition>(parameter.getContext())
+                .setBuilderOO(this::buildParameterAssignment));
+        }
     }
 
     @Nullable
@@ -590,18 +604,23 @@ public class YamlBuilder {
     }
 
     @Nullable
+    @SuppressWarnings("unchecked")
     public TImplementation buildImplementation(Object object, Parameter<TImplementation> parameter) {
-        // TImplementation has required fields but is used not in a map context
         if (Objects.isNull(object)) return null;
-        if (object instanceof String) return new TImplementation(buildQName(stringValue(object)));
-        if (!validate(TImplementation.class, object, parameter)) return null;
-        @SuppressWarnings("unchecked")
-        Map<String, Object> map = (Map<String, Object>) object;
-        return new TImplementation.Builder(buildQName(stringValue(map.get("primary"))))
-            .setDependencies(buildListQName(buildListString(map.get("dependencies"),
+        if (object instanceof String) return new TImplementation(stringValue(object));
+        if (object instanceof Map) {
+            Map<String, Object> map = (Map<String, Object>) object;
+            TImplementation implementation = new TImplementation();
+            implementation.setPrimaryArtifactName(stringValue(map.get("primary")));
+            implementation.setDependencyArtifactNames(buildListString(map.get("dependencies"),
                 new Parameter<List<String>>(parameter.getContext()).addContext("dependencies")
-            )))
-            .build();
+            ));
+            implementation.setOperationHost(stringValue(map.get("operation_host")));
+            String timeout = stringValue(map.get("timeout"));
+            implementation.setTimeout(timeout == null ? null : Integer.valueOf(timeout));
+            return implementation;
+        }
+        return null;
     }
 
     @Nullable
@@ -624,19 +643,20 @@ public class YamlBuilder {
     }
 
     @Nullable
+    @SuppressWarnings("unchecked")
     public TInterfaceDefinition buildInterfaceDefinition(Object object, Parameter<TInterfaceDefinition> parameter) {
         if (Objects.isNull(object) || !validate(TInterfaceType.class, object, parameter)) return null;
-        @SuppressWarnings("unchecked")
         Map<String, Object> map = (Map<String, Object>) object;
-        TInterfaceDefinition.Builder output = new TInterfaceDefinition.Builder()
+        TInterfaceDefinition.Builder<?> output = new TInterfaceDefinition.Builder<>()
             .setType(buildQName(stringValue(map.get("type"))))
-            .setInputs(buildPropertyAssignmentOrDefinition(map.get("inputs"),
+            .setInputs(buildParameterDefinitions(map.get("inputs"),
                 new Parameter<>(parameter.getContext()).addContext("inputs")
                     .setValue(parameter.getValue())
             ));
-        Map<String, TOperationDefinition> operations = buildMap(object,
+        Map<String, TOperationDefinition> operations = buildMap(map.get("operations"),
             new Parameter<TOperationDefinition>(parameter.getContext())
-                .setValue(parameter.getValue()).addContext("(operation)")
+                .setValue(parameter.getValue())
+                .addContext("(operation)")
                 .setBuilderOO(this::buildOperationDefinition)
                 .setFilter(this::filterInterfaceAssignmentOperation)
         );
@@ -819,6 +839,14 @@ public class YamlBuilder {
     }
 
     @Nullable
+    public TParameterDefinition buildParameterAssignment(Object object, Parameter<TParameterDefinition> parameter) {
+        if (Objects.isNull(object)) return null;
+        return new TParameterDefinition.Builder()
+            .setValue(object)
+            .build();
+    }
+
+    @Nullable
     public TNodeTemplate buildNodeTemplate(Object object, Parameter<TNodeTemplate> parameter) {
         if (Objects.isNull(object)) return new TNodeTemplate();
         if (!validate(TNodeTemplate.class, object, parameter)) return null;
@@ -835,9 +863,9 @@ public class YamlBuilder {
             .setRequirements(buildList(map, "requirements", this::buildMapRequirementAssignment, parameter))
             .setCapabilities(buildMap(map, "capabilities", this::buildCapabilityAssignment, parameter))
             .setInterfaces(buildMap(map.get("interfaces"),
-                new Parameter<TInterfaceDefinition>(parameter.getContext()).addContext("interfaces")
+                new Parameter<TInterfaceAssignment>(parameter.getContext()).addContext("interfaces")
                     .setValue("TNodeTemplate")
-                    .setBuilderOO(this::buildInterfaceDefinition)
+                    .setBuilderOO(this::buildInterfaceAssignment)
             ))
             .setArtifacts(buildMap(map, "artifacts", this::buildArtifactDefinition, parameter))
             .setNodeFilter(buildNodeFilterDefinition(map.get("node_filter"),
@@ -916,20 +944,20 @@ public class YamlBuilder {
     }
 
     @Nullable
+    @SuppressWarnings("unchecked")
     public TInterfaceAssignment buildInterfaceAssignment(Object object, Parameter<TInterfaceAssignment> parameter) {
         if (Objects.isNull(object) || !validate(TInterfaceAssignment.class, object, parameter)) return null;
-        @SuppressWarnings("unchecked")
         Map<String, Object> map = (Map<String, Object>) object;
         return new TInterfaceAssignment.Builder()
             .setType(buildQName(stringValue(map.get("type"))))
-            .setInputs(buildPropertyAssignmentOrDefinition(map.get("inputs"),
+            .setInputs(buildParameterDefinitions(map.get("inputs"),
                 new Parameter<>(parameter.getContext())
                     .setValue("TInterfaceAssignment")
             ))
-            .setOperations(buildMap(object,
+            .setOperations(buildMap(map.get("operations"),
                 new Parameter<TOperationDefinition>(parameter.getContext()).addContext("(operations)")
                     .setBuilderOO(this::buildOperationDefinition)
-                    .setFilter(this::filterInterfaceAssignmentOperation)
+                    // .setFilter(this::filterInterfaceAssignmentOperation)
                     .setValue("TInterfaceAssignment")
             ))
             .build();
@@ -1076,6 +1104,11 @@ public class YamlBuilder {
     @Nullable
     private String stringValue(@Nullable Object object) {
         if (Objects.isNull(object)) return null;
+        return String.valueOf(object);
+    }
+
+    private String stringValue(@Nullable Object object, String defaultValue) {
+        if (Objects.isNull(object)) return defaultValue;
         return String.valueOf(object);
     }
 

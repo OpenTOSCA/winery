@@ -52,6 +52,7 @@ import org.eclipse.jdt.annotation.Nullable;
     "metadata"
 })
 public class TNodeTemplate implements VisitorNode {
+
     @XmlAttribute(name = "type", required = true)
     private QName type;
     private String description;
@@ -61,7 +62,7 @@ public class TNodeTemplate implements VisitorNode {
     private Map<String, TAttributeAssignment> attributes;
     private List<TMapRequirementAssignment> requirements;
     private Map<String, TCapabilityAssignment> capabilities;
-    private Map<String, TInterfaceDefinition> interfaces;
+    private Map<String, TInterfaceAssignment> interfaces;
     private Map<String, TArtifactDefinition> artifacts;
     @XmlAttribute(name = "node_filter")
     private TNodeFilterDefinition nodeFilter;
@@ -225,7 +226,7 @@ public class TNodeTemplate implements VisitorNode {
     }
 
     @NonNull
-    public Map<String, TInterfaceDefinition> getInterfaces() {
+    public Map<String, TInterfaceAssignment> getInterfaces() {
         if (this.interfaces == null) {
             this.interfaces = new LinkedHashMap<>();
         }
@@ -233,7 +234,7 @@ public class TNodeTemplate implements VisitorNode {
         return interfaces;
     }
 
-    public void setInterfaces(Map<String, TInterfaceDefinition> interfaces) {
+    public void setInterfaces(Map<String, TInterfaceAssignment> interfaces) {
         this.interfaces = interfaces;
     }
 
@@ -281,7 +282,7 @@ public class TNodeTemplate implements VisitorNode {
         private Map<String, TAttributeAssignment> attributes;
         private List<TMapRequirementAssignment> requirements;
         private Map<String, TCapabilityAssignment> capabilities;
-        private Map<String, TInterfaceDefinition> interfaces;
+        private Map<String, TInterfaceAssignment> interfaces;
         private Map<String, TArtifactDefinition> artifacts;
         private TNodeFilterDefinition nodeFilter;
         private QName copy;
@@ -327,7 +328,7 @@ public class TNodeTemplate implements VisitorNode {
             return this;
         }
 
-        public Builder setInterfaces(Map<String, TInterfaceDefinition> interfaces) {
+        public Builder setInterfaces(Map<String, TInterfaceAssignment> interfaces) {
             this.interfaces = interfaces;
             return this;
         }
@@ -479,7 +480,7 @@ public class TNodeTemplate implements VisitorNode {
             return addCapabilities(Collections.singletonMap(name, capability));
         }
 
-        public Builder addInterfaces(Map<String, TInterfaceDefinition> interfaces) {
+        public Builder addInterfaces(Map<String, TInterfaceAssignment> interfaces) {
             if (interfaces == null || interfaces.isEmpty()) {
                 return this;
             }
@@ -493,12 +494,12 @@ public class TNodeTemplate implements VisitorNode {
             return this;
         }
 
-        public Builder addInterfaces(String name, TInterfaceDefinition interfaceDefinition) {
+        public Builder addInterface(String name, TInterfaceAssignment interfaceAssignment) {
             if (name == null || name.isEmpty()) {
                 return this;
             }
 
-            return addInterfaces(Collections.singletonMap(name, interfaceDefinition));
+            return addInterfaces(Collections.singletonMap(name, interfaceAssignment));
         }
 
         public Builder addArtifacts(Map<String, TArtifactDefinition> artifacts) {

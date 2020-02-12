@@ -58,7 +58,7 @@ export class SelectableListComponent implements OnInit {
         this.selectionChanged.emit(value);
     }
 
-    selectItem(item: InterfacesApiData) {
+    selectItem(item: any) {
         this.currentSelected = item;
         this.onChange(item);
     }

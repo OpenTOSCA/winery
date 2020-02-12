@@ -46,7 +46,7 @@ import { ComplianceRuleModule } from './wineryMainModules/complianceRules/compli
 import { HttpClientModule } from '@angular/common/http';
 import { PatternRefinementModelModule } from './wineryMainModules/patternRefinementModels/patternRefinementModel.module';
 import { TestRefinementModelModule } from './wineryMainModules/testRefinementModels/testRefinementModel.module';
-import {WineryRepositoryConfigurationService} from './wineryFeatureToggleModule/WineryRepositoryConfiguration.service';
+import { WineryRepositoryConfigurationService } from './wineryFeatureToggleModule/WineryRepositoryConfiguration.service';
 import { WineryFeatureToggleModule } from './wineryFeatureToggleModule/winery-feature-toggle.module';
 
 @NgModule({

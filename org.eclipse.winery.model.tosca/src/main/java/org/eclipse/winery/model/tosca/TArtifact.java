@@ -11,7 +11,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR Apache-2.0
  *******************************************************************************/
-
 package org.eclipse.winery.model.tosca;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -22,7 +21,9 @@ import javax.xml.namespace.QName;
 
 import org.eclipse.winery.model.tosca.visitor.Visitor;
 
-// this entire class is added to support YAML mode
+/**
+ * Class to represent an artifact in TOSCA YAML.
+ */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "tArtifact")
 public class TArtifact extends TEntityTemplate {
@@ -34,7 +35,6 @@ public class TArtifact extends TEntityTemplate {
     protected String targetLocation;
 
     public TArtifact() {
-
     }
 
     public TArtifact(Builder builder) {
@@ -75,6 +75,7 @@ public class TArtifact extends TEntityTemplate {
     }
 
     public static class Builder extends TEntityTemplate.Builder<TArtifact.Builder> {
+
         private String file;
         private String targetLocation;
 

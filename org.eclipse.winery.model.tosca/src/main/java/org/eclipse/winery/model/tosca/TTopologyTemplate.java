@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013-2018 Contributors to the Eclipse Foundation
+ * Copyright (c) 2013-2020 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -26,6 +26,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlType;
 
+import org.eclipse.winery.model.tosca.kvproperties.ParameterDefinitionList;
 import org.eclipse.winery.model.tosca.visitor.Visitor;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -35,7 +36,10 @@ import org.eclipse.jdt.annotation.Nullable;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "tTopologyTemplate", propOrder = {
-    "nodeTemplateOrRelationshipTemplate", "policies"
+    "nodeTemplateOrRelationshipTemplate",
+    "policies",
+    "inputs",
+    "outputs"
 })
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class TTopologyTemplate extends TExtensibleElements {
@@ -48,6 +52,10 @@ public class TTopologyTemplate extends TExtensibleElements {
     // added to support conversion from/to YAML policies
     protected TPolicies policies;
 
+    // added to support conversion from/to YAML inputs/outputs
+    protected ParameterDefinitionList inputs;
+    protected ParameterDefinitionList outputs;
+
     public TTopologyTemplate() {
     }
 
@@ -55,6 +63,8 @@ public class TTopologyTemplate extends TExtensibleElements {
         super(builder);
         this.nodeTemplateOrRelationshipTemplate = builder.getNodeTemplateOrRelationshipTemplate();
         this.policies = builder.policies;
+        this.inputs = builder.inputs;
+        this.outputs = builder.outputs;
     }
 
     @Override
@@ -159,6 +169,24 @@ public class TTopologyTemplate extends TExtensibleElements {
         this.policies = policies;
     }
 
+    @Nullable
+    public ParameterDefinitionList getInputs() {
+        return inputs;
+    }
+
+    public void setInputs(ParameterDefinitionList inputs) {
+        this.inputs = inputs;
+    }
+
+    @Nullable
+    public ParameterDefinitionList getOutputs() {
+        return outputs;
+    }
+
+    public void setOutputs(ParameterDefinitionList outputs) {
+        this.outputs = outputs;
+    }
+
     public void accept(Visitor visitor) {
         visitor.visit(this);
     }
@@ -167,6 +195,8 @@ public class TTopologyTemplate extends TExtensibleElements {
         private List<TNodeTemplate> nodeTemplates;
         private List<TRelationshipTemplate> relationshipTemplates;
         private TPolicies policies;
+        private ParameterDefinitionList inputs;
+        private ParameterDefinitionList outputs;
 
         public Builder() {
         }
@@ -234,6 +264,16 @@ public class TTopologyTemplate extends TExtensibleElements {
 
         public Builder setPolicies(TPolicies policies) {
             this.policies = policies;
+            return this;
+        }
+
+        public Builder setInputs(ParameterDefinitionList inputs) {
+            this.inputs = inputs;
+            return this;
+        }
+
+        public Builder setOutputs(ParameterDefinitionList outputs) {
+            this.outputs = outputs;
             return this;
         }
 

@@ -385,4 +385,12 @@ public class ServiceTemplateResource extends AbstractComponentInstanceResourceCo
     public void synchronizeReferences() throws IOException {
         BackendUtils.synchronizeReferences((ServiceTemplateId) this.id);
     }
+
+    @Path("parameters")
+    public ParameterResource getParameterResource() {
+        if (this.getServiceTemplate().getTopologyTemplate() == null) {
+            this.getServiceTemplate().setTopologyTemplate(new TTopologyTemplate());
+        }
+        return new ParameterResource(this, this.getServiceTemplate().getTopologyTemplate());
+    }
 }

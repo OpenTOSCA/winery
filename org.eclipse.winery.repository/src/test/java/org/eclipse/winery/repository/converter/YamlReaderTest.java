@@ -19,11 +19,15 @@ import java.io.InputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import org.eclipse.winery.model.tosca.yaml.TInterfaceDefinition;
+import org.eclipse.winery.model.tosca.yaml.TNodeType;
+import org.eclipse.winery.model.tosca.yaml.TServiceTemplate;
 import org.eclipse.winery.repository.converter.support.reader.YamlReader;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
@@ -41,5 +45,19 @@ public class YamlReaderTest extends AbstractConverterTest {
         YamlReader reader = new YamlReader();
         InputStream is = new FileInputStream(new File(path.toFile(), filename.toString()));
         Assertions.assertNotNull(reader.parse(is));
+    }
+
+    @Test
+    public void testSupportedInterfaceDefinitions() throws Exception {
+        YamlReader reader = new YamlReader();
+        Path file = getYamlFile("src/test/resources/yaml/supported_interfaces");
+        InputStream is = new FileInputStream(file.toFile());
+        TServiceTemplate template = reader.parse(is);
+        Assertions.assertNotNull(template);
+        TNodeType server = template.getNodeTypes().get("server");
+        Assertions.assertEquals(2, server.getArtifacts().size());
+        TInterfaceDefinition standard = server.getInterfaces().get("Standard");
+        Assertions.assertEquals(2, standard.getOperations().size());
+        Assertions.assertEquals(1, standard.getInputs().size());
     }
 }

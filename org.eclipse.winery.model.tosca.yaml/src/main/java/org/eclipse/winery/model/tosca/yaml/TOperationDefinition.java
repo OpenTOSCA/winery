@@ -38,15 +38,15 @@ import org.eclipse.jdt.annotation.Nullable;
     "implementation"
 })
 public class TOperationDefinition implements VisitorNode {
+
     private String description;
-    private Map<String, TPropertyAssignmentOrDefinition> inputs;
+    private Map<String, TParameterDefinition> inputs;
     @Annotations.StandardExtension
-    private Map<String, TPropertyAssignmentOrDefinition> outputs;
+    private Map<String, TParameterDefinition> outputs;
     @Annotations.StandardExtension
     private TImplementation implementation;
 
     public TOperationDefinition() {
-
     }
 
     public TOperationDefinition(Builder builder) {
@@ -92,7 +92,7 @@ public class TOperationDefinition implements VisitorNode {
     }
 
     @NonNull
-    public Map<String, TPropertyAssignmentOrDefinition> getInputs() {
+    public Map<String, TParameterDefinition> getInputs() {
         if (this.inputs == null) {
             this.inputs = new LinkedHashMap<>();
         }
@@ -100,19 +100,19 @@ public class TOperationDefinition implements VisitorNode {
         return inputs;
     }
 
-    public void setInputs(Map<String, TPropertyAssignmentOrDefinition> inputs) {
+    public void setInputs(Map<String, TParameterDefinition> inputs) {
         this.inputs = inputs;
     }
 
     @NonNull
-    public Map<String, TPropertyAssignmentOrDefinition> getOutputs() {
+    public Map<String, TParameterDefinition> getOutputs() {
         if (this.outputs == null) {
             this.outputs = new LinkedHashMap<>();
         }
         return outputs;
     }
 
-    public TOperationDefinition setOutputs(Map<String, TPropertyAssignmentOrDefinition> outputs) {
+    public TOperationDefinition setOutputs(Map<String, TParameterDefinition> outputs) {
         this.outputs = outputs;
         return this;
     }
@@ -131,9 +131,10 @@ public class TOperationDefinition implements VisitorNode {
     }
 
     public static class Builder {
+
         private String description;
-        private Map<String, TPropertyAssignmentOrDefinition> inputs;
-        private Map<String, TPropertyAssignmentOrDefinition> outputs;
+        private Map<String, TParameterDefinition> inputs;
+        private Map<String, TParameterDefinition> outputs;
         private TImplementation implementation;
 
         public Builder setDescription(String description) {
@@ -141,12 +142,12 @@ public class TOperationDefinition implements VisitorNode {
             return this;
         }
 
-        public Builder setInputs(Map<String, TPropertyAssignmentOrDefinition> inputs) {
+        public Builder setInputs(Map<String, TParameterDefinition> inputs) {
             this.inputs = inputs;
             return this;
         }
 
-        public Builder setOutputs(Map<String, TPropertyAssignmentOrDefinition> outputs) {
+        public Builder setOutputs(Map<String, TParameterDefinition> outputs) {
             this.outputs = outputs;
             return this;
         }
@@ -156,7 +157,7 @@ public class TOperationDefinition implements VisitorNode {
             return this;
         }
 
-        public Builder addInputs(Map<String, TPropertyAssignmentOrDefinition> inputs) {
+        public Builder addInputs(Map<String, TParameterDefinition> inputs) {
             if (inputs == null || inputs.isEmpty()) {
                 return this;
             }
@@ -170,7 +171,7 @@ public class TOperationDefinition implements VisitorNode {
             return this;
         }
 
-        public Builder addInputs(String name, TPropertyAssignmentOrDefinition input) {
+        public Builder addInputs(String name, TParameterDefinition input) {
             if (name == null || name.isEmpty()) {
                 return this;
             }
@@ -178,7 +179,7 @@ public class TOperationDefinition implements VisitorNode {
             return addInputs(Collections.singletonMap(name, input));
         }
 
-        public Builder addOutputs(Map<String, TPropertyAssignmentOrDefinition> outputs) {
+        public Builder addOutputs(Map<String, TParameterDefinition> outputs) {
             if (outputs == null || outputs.isEmpty()) {
                 return this;
             }
@@ -192,7 +193,7 @@ public class TOperationDefinition implements VisitorNode {
             return this;
         }
 
-        public Builder addOutputs(String name, TPropertyAssignmentOrDefinition output) {
+        public Builder addOutputs(String name, TParameterDefinition output) {
             if (name == null || name.isEmpty()) {
                 return this;
             }

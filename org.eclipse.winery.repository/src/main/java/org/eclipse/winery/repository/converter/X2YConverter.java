@@ -65,11 +65,15 @@ import org.eclipse.winery.model.tosca.TRequirementType;
 import org.eclipse.winery.model.tosca.TTag;
 import org.eclipse.winery.model.tosca.TTags;
 import org.eclipse.winery.model.tosca.TTopologyTemplate;
+import org.eclipse.winery.model.tosca.kvproperties.AttributeDefinition;
+import org.eclipse.winery.model.tosca.kvproperties.AttributeDefinitionList;
 import org.eclipse.winery.model.tosca.kvproperties.ConstraintClauseKVList;
+import org.eclipse.winery.model.tosca.kvproperties.ParameterDefinition;
 import org.eclipse.winery.model.tosca.kvproperties.PropertyDefinitionKV;
 import org.eclipse.winery.model.tosca.kvproperties.WinerysPropertiesDefinition;
 import org.eclipse.winery.model.tosca.yaml.TArtifactDefinition;
 import org.eclipse.winery.model.tosca.yaml.TArtifactType;
+import org.eclipse.winery.model.tosca.yaml.TAttributeDefinition;
 import org.eclipse.winery.model.tosca.yaml.TCapabilityAssignment;
 import org.eclipse.winery.model.tosca.yaml.TCapabilityDefinition;
 import org.eclipse.winery.model.tosca.yaml.TCapabilityType;
@@ -80,6 +84,7 @@ import org.eclipse.winery.model.tosca.yaml.TInterfaceDefinition;
 import org.eclipse.winery.model.tosca.yaml.TNodeTemplate;
 import org.eclipse.winery.model.tosca.yaml.TNodeType;
 import org.eclipse.winery.model.tosca.yaml.TOperationDefinition;
+import org.eclipse.winery.model.tosca.yaml.TParameterDefinition;
 import org.eclipse.winery.model.tosca.yaml.TPolicyDefinition;
 import org.eclipse.winery.model.tosca.yaml.TPolicyType;
 import org.eclipse.winery.model.tosca.yaml.TPropertyAssignment;
@@ -107,6 +112,7 @@ import org.eclipse.winery.repository.converter.support.xml.TypeConverter;
 
 import org.eclipse.collections.impl.bimap.mutable.HashBiMap;
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -196,6 +202,7 @@ public class X2YConverter {
     }
 
     public TTopologyTemplateDefinition convert(org.eclipse.winery.model.tosca.TServiceTemplate node) {
+        // TODO substitution mappings are currently not converted
         if (Objects.isNull(node)) return null;
         TTopologyTemplate topologyTemplate = node.getTopologyTemplate();
         if (Objects.isNull(topologyTemplate)) return null;
@@ -203,9 +210,9 @@ public class X2YConverter {
             .setDescription(convertDocumentation(topologyTemplate.getDocumentation()))
             .setNodeTemplates(convert(topologyTemplate.getNodeTemplates(), topologyTemplate.getRelationshipTemplates()))
             .setRelationshipTemplates(convert(topologyTemplate.getRelationshipTemplates()))
-            .setPolicies(topologyTemplate.getPolicies() == null ? null : convert(topologyTemplate.getPolicies()))
-            // TODO substitution mappings are currently not converted
-            //.setSubstitutionMappings(convert(boundary))
+            .setPolicies(convert(topologyTemplate.getPolicies()))
+            .setInputs(convert(topologyTemplate.getInputs()))
+            .setOutputs(convert(topologyTemplate.getOutputs()))
             .build();
     }
 
@@ -226,6 +233,10 @@ public class X2YConverter {
         if (Objects.nonNull(node.getX()) && Objects.nonNull(node.getY())) {
             meta.add(org.eclipse.winery.repository.converter.support.Defaults.X_COORD, node.getX());
             meta.add(org.eclipse.winery.repository.converter.support.Defaults.Y_COORD, node.getY());
+        }
+
+        if (Objects.nonNull(node.getName())) {
+            meta.add(org.eclipse.winery.repository.converter.support.Defaults.DISPLAY_NAME, node.getName());
         }
 
         return Collections.singletonMap(
@@ -262,7 +273,8 @@ public class X2YConverter {
             .addMetadata("targetNamespace", node.getTargetNamespace())
             .addMetadata("abstract", node.getAbstract().value())
             .addMetadata("final", node.getFinal().value())
-            .setProperties(convert(node, node.getPropertiesDefinition()));
+            .setProperties(convert(node, node.getPropertiesDefinition()))
+            .setAttributes(convert(node, node.getAttributeDefinitions()));
     }
 
     public Map<String, TPropertyDefinition> convert(TEntityType type, TEntityType.PropertiesDefinition node) {
@@ -281,6 +293,17 @@ public class X2YConverter {
                     .addConstraints(convert(entry.getConstraints()))
                     .build()
             ));
+    }
+
+    public Map<String, TAttributeDefinition> convert(TEntityType node, @Nullable AttributeDefinitionList attributes) {
+        if (Objects.isNull(node) || Objects.isNull(attributes)) return new HashMap<>();
+        return attributes.stream().collect(Collectors.toMap(
+            AttributeDefinition::getKey,
+            entry -> new TAttributeDefinition.Builder(entry.getType())
+                .setDescription(entry.getDescription())
+                .setDefault(entry.getDefaultValue())
+                .build()
+        ));
     }
 
     public List<TConstraintClause> convert(ConstraintClauseKVList constraints) {
@@ -322,7 +345,7 @@ public class X2YConverter {
             convert(node, new TNodeType.Builder(), org.eclipse.winery.model.tosca.TNodeType.class)
                 .setRequirements(convert(node.getRequirementDefinitions()))
                 .setCapabilities(convert(node.getCapabilityDefinitions()))
-                .setInterfaces(convert(node.getInterfaces()))
+                .setInterfaces(convert(node.getInterfaceDefinitions()))
                 .setArtifacts(convert(node.getArtifacts()))
                 .build()
         );
@@ -488,26 +511,18 @@ public class X2YConverter {
                 Metadata::new));
     }
 
-//    public Map<String, TInterfaceDefinition> convert(TInterfaces node) {
-//        if (Objects.isNull(node)) return null;
-//        return node.getInterface().stream()
-//            .filter(Objects::nonNull)
-//            .map(entry -> convert(entry)
-//            )
-//            .flatMap(entry -> entry.entrySet().stream())
-//            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-//    }
-
+    @Deprecated
     public Map<String, TInterfaceDefinition> convert(TInterface node) {
         if (Objects.isNull(node)) return new LinkedHashMap<>();
         return Collections.singletonMap(
             node.getName(),
-            new TInterfaceDefinition.Builder()
+            new TInterfaceDefinition.Builder<>()
                 .setOperations(convertOperations(node.getOperation()))
                 .build()
         );
     }
 
+    @Deprecated
     public Map<String, TOperationDefinition> convertOperations(List<TOperation> nodes) {
         if (Objects.isNull(nodes)) return null;
         return nodes.stream()
@@ -519,17 +534,16 @@ public class X2YConverter {
     }
 
     @NonNull
+    @Deprecated
     public Map<String, TOperationDefinition> convert(TOperation node) {
         if (Objects.isNull(node)) return new LinkedHashMap<>();
         return Collections.singletonMap(
             node.getName(),
-            new TOperationDefinition.Builder()
-                .setInputs(convert(node.getInputParameters()))
-                .setOutputs(convert(node.getOutputParameters()))
-                .build()
+            new TOperationDefinition.Builder().build()
         );
     }
 
+    @Deprecated
     public Map<String, TInterfaceDefinition> convert(TInterfaces node, TNodeTypeImplementation implementation) {
         if (Objects.isNull(node)) return null;
         return node.getInterface().stream()
@@ -547,14 +561,10 @@ public class X2YConverter {
     }
 
     @NonNull
+    @Deprecated
     public Map<String, TInterfaceDefinition> convert(TInterface node, @NonNull List<TImplementationArtifact> impl) {
         if (Objects.isNull(node)) return new LinkedHashMap<>();
-        return Collections.singletonMap(
-            node.getName(),
-            new TInterfaceDefinition.Builder()
-                .setOperations(convertOperations(node.getOperation(), impl))
-                .build()
-        );
+        return Collections.singletonMap(node.getName(), new TInterfaceDefinition.Builder<>().build());
     }
 
     public Map<String, TOperationDefinition> convertOperations(List<TOperation> nodes, @NonNull List<TImplementationArtifact> impl) {
@@ -574,18 +584,16 @@ public class X2YConverter {
     }
 
     @NonNull
+    @Deprecated
     public Map<String, TOperationDefinition> convert(TOperation node, List<TImplementationArtifact> impl) {
         if (Objects.isNull(node)) return new LinkedHashMap<>();
         return Collections.singletonMap(
             node.getName(),
-            new TOperationDefinition.Builder()
-                .setInputs(convert(node.getInputParameters()))
-                .setOutputs(convert(node.getOutputParameters()))
-//                .setImplementation(convertImplementation(impl))
-                .build()
+            new TOperationDefinition.Builder().build()
         );
     }
 
+    @Deprecated
     public TServiceTemplate convertNodeTypeImplementation(TServiceTemplate type, TNodeTypeImplementation node) {
         if (Objects.isNull(node)) return null;
         TNodeType nodeType = type.getNodeTypes().entrySet().iterator().next().getValue();
@@ -596,10 +604,11 @@ public class X2YConverter {
         return type;
     }
 
+    @Deprecated
     public TServiceTemplate convertRelationshipTypeImplementation(TServiceTemplate type, TRelationshipTypeImplementation node) {
         if (Objects.isNull(node)) return null;
         TRelationshipType relationshipType = type.getRelationshipTypes().entrySet().iterator().next().getValue();
-        relationshipType.setInterfaces(convertRelationshipInterfaces(relationshipType.getInterfaces(), node.getImplementationArtifacts()));
+        // relationshipType.setInterfaces(convertRelationshipInterfaces(relationshipType.getInterfaces(), node.getImplementationArtifacts()));
         type.getRelationshipTypes().entrySet().iterator().next().setValue(relationshipType);
         return type;
     }
@@ -629,49 +638,7 @@ public class X2YConverter {
         return imports;
     }
 
-    private Map<String, TInterfaceDefinition> convertRelationshipInterfaces(Map<String, TInterfaceDefinition> interfaces, TImplementationArtifacts implementationArtifacts) {
-        if (implementationArtifacts == null) {
-            return interfaces;
-        }
-        List<TImplementationArtifacts.ImplementationArtifact> listImplArt = implementationArtifacts.getImplementationArtifact();
-        for (TImplementationArtifacts.ImplementationArtifact implementationArtifact : listImplArt) {
-            TInterfaceDefinition selectedInterface = interfaces.get(implementationArtifact.getInterfaceName());
-            if (selectedInterface != null) {
-                TOperationDefinition operation = selectedInterface.getOperations().get(implementationArtifact.getOperationName());
-                operation.setImplementation(convertrelationshipImplementation(implementationArtifact, operation.getImplementation()));
-            }
-        }
-        return interfaces;
-    }
-
-    public TImplementation convertrelationshipImplementation(TImplementationArtifacts.ImplementationArtifact node, TImplementation implementation) {
-        if (Objects.isNull(node)) return null;
-        QName name = new QName(node.getArtifactRef().getLocalPart());
-        if (implementation.getPrimary() == null) {
-            implementation.setPrimary(name);
-            return implementation;
-        } else if (implementation.getPrimary().getLocalPart().equalsIgnoreCase("null")) {
-            implementation.setPrimary(name);
-            return implementation;
-        } else if (implementation.getPrimary().equals(name)) {
-            return implementation;
-        } else if (implementation.getDependencies() != null) {
-            if (implementation.getDependencies().contains(name)) {
-                return implementation;
-            } else {
-                List<QName> dependencies = implementation.getDependencies();
-                dependencies.add(name);
-                implementation.setDependencies(dependencies);
-                return implementation;
-            }
-        } else {
-            List<QName> dependencies = new ArrayList<>();
-            dependencies.add(name);
-            implementation.setDependencies(dependencies);
-            return implementation;
-        }
-    }
-
+    @Deprecated
     private Map<String, TInterfaceDefinition> convertInterfaces(Map<String, TInterfaceDefinition> interfaces, TImplementationArtifacts implementationArtifacts) {
         if (implementationArtifacts == null) {
             return interfaces;
@@ -681,38 +648,10 @@ public class X2YConverter {
             TInterfaceDefinition selectedInterface = interfaces.get(implementationArtifact.getInterfaceName());
             if (selectedInterface != null) {
                 TOperationDefinition operation = selectedInterface.getOperations().get(implementationArtifact.getOperationName());
-                operation.setImplementation(convertImplementation(implementationArtifact, operation.getImplementation()));
+                // operation.setImplementation(convertImplementation(implementationArtifact, operation.getImplementation()));
             }
         }
         return interfaces;
-    }
-
-    public TImplementation convertImplementation(TImplementationArtifacts.ImplementationArtifact node, TImplementation implementation) {
-        if (Objects.isNull(node)) return null;
-        QName name = new QName(node.getArtifactRef().getLocalPart());
-        if (implementation.getPrimary() == null) {
-            implementation.setPrimary(name);
-            return implementation;
-        } else if (implementation.getPrimary().getLocalPart().equalsIgnoreCase("null")) {
-            implementation.setPrimary(name);
-            return implementation;
-        } else if (implementation.getPrimary().equals(name)) {
-            return implementation;
-        } else if (implementation.getDependencies() != null) {
-            if (implementation.getDependencies().contains(name)) {
-                return implementation;
-            } else {
-                List<QName> dependencies = implementation.getDependencies();
-                dependencies.add(name);
-                implementation.setDependencies(dependencies);
-                return implementation;
-            }
-        } else {
-            List<QName> dependencies = new ArrayList<>();
-            dependencies.add(name);
-            implementation.setDependencies(dependencies);
-            return implementation;
-        }
     }
 
     public List<TMapRequirementDefinition> convert(org.eclipse.winery.model.tosca.TNodeType.RequirementDefinitions node) {
@@ -1030,6 +969,7 @@ public class X2YConverter {
     }
 
     private <T, K> Map<String, K> convert(List<T> nodes) {
+        if (Objects.isNull(nodes)) return null;
         return nodes.stream()
             .filter(Objects::nonNull)
             .flatMap(node -> {
@@ -1047,12 +987,66 @@ public class X2YConverter {
                     return convert((org.eclipse.winery.model.tosca.TPolicyType) node).entrySet().stream();
                 } else if (node instanceof TPolicy) {
                     return convert((TPolicy) node).entrySet().stream();
+                } else if (node instanceof ParameterDefinition) {
+                    return convert((ParameterDefinition) node).entrySet().stream();
+                } else if (node instanceof org.eclipse.winery.model.tosca.TInterfaceDefinition) {
+                    return convert((org.eclipse.winery.model.tosca.TInterfaceDefinition) node).entrySet().stream();
+                } else if (node instanceof org.eclipse.winery.model.tosca.TOperationDefinition) {
+                    return convert((org.eclipse.winery.model.tosca.TOperationDefinition) node).entrySet().stream();
                 }
                 throw new AssertionError();
             })
             .peek(entry -> LOGGER.debug("entry: {}", entry))
             .filter(Objects::nonNull)
             .collect(Collectors.toMap(Map.Entry::getKey, entry -> (K) entry.getValue()));
+    }
+
+    private Map<String, TParameterDefinition> convert(ParameterDefinition node) {
+        if (Objects.isNull(node)) return new HashMap<>();
+        return Collections.singletonMap(
+            node.getKey(),
+            new TParameterDefinition.Builder()
+                .setType(node.getType())
+                .setDescription(node.getDescription())
+                .setRequired(node.getRequired())
+                .setDefault(node.getDefaultValue())
+                .setValue(node.getValue())
+                .build()
+        );
+    }
+
+    private Map<String, TInterfaceDefinition> convert(org.eclipse.winery.model.tosca.TInterfaceDefinition node) {
+        if (Objects.isNull(node)) return new HashMap<>();
+        return Collections.singletonMap(
+            node.getName(),
+            new TInterfaceDefinition.Builder<>()
+                .setType(node.getType())
+                .setInputs(convert(node.getInputs()))
+                .setOperations(convert(node.getOperations()))
+                .build());
+    }
+
+    private Map<String, TOperationDefinition> convert(org.eclipse.winery.model.tosca.TOperationDefinition node) {
+        if (Objects.isNull(node)) return new HashMap<>();
+        return Collections.singletonMap(
+            node.getName(),
+            new TOperationDefinition.Builder()
+                .setDescription(node.getDescription())
+                .setInputs(convert(node.getInputs()))
+                .setOutputs(convert(node.getOutputs()))
+                .setImplementation(convert(node.getImplementation()))
+                .build());
+    }
+
+    @Nullable
+    private TImplementation convert(org.eclipse.winery.model.tosca.TImplementation node) {
+        if (Objects.isNull(node)) return null;
+        TImplementation implementation = new TImplementation();
+        implementation.setPrimaryArtifactName(node.getPrimary());
+        implementation.setDependencyArtifactNames(node.getDependencies());
+        implementation.setOperationHost(node.getOperationHost());
+        implementation.setTimeout(node.getTimeout());
+        return implementation;
     }
 
     private String getNamespacePrefix(String uri) {

@@ -29,6 +29,7 @@ import javax.xml.bind.annotation.adapters.CollapsedStringAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import javax.xml.namespace.QName;
 
+import org.eclipse.winery.model.tosca.kvproperties.AttributeDefinitionList;
 import org.eclipse.winery.model.tosca.kvproperties.WinerysPropertiesDefinition;
 import org.eclipse.winery.model.tosca.visitor.Visitor;
 
@@ -41,7 +42,8 @@ import org.eclipse.jdt.annotation.Nullable;
 @XmlType(name = "tEntityType", propOrder = {
     "tags",
     "derivedFrom",
-    "propertiesDefinition"
+    "propertiesDefinition",
+    "attributeDefinitions"
 })
 @XmlSeeAlso( {
     TNodeType.class,
@@ -72,6 +74,9 @@ public abstract class TEntityType extends TExtensibleElements implements HasName
     @XmlSchemaType(name = "anyURI")
     protected String targetNamespace;
 
+    // added to support conversion from/to YAML
+    protected AttributeDefinitionList attributeDefinitions;
+
     public TEntityType() {
     }
 
@@ -84,6 +89,7 @@ public abstract class TEntityType extends TExtensibleElements implements HasName
         this._abstract = builder.abstractValue;
         this._final = builder.finalValue;
         this.targetNamespace = builder.targetNamespace;
+        this.attributeDefinitions = builder.attributeDefinitions;
     }
 
     @Override
@@ -103,6 +109,15 @@ public abstract class TEntityType extends TExtensibleElements implements HasName
     @Override
     public int hashCode() {
         return Objects.hash(tags, derivedFrom, propertiesDefinition, name, _abstract, _final, targetNamespace);
+    }
+
+    @Nullable
+    public AttributeDefinitionList getAttributeDefinitions() {
+        return attributeDefinitions;
+    }
+
+    public void setAttributeDefinitions(AttributeDefinitionList attributeDefinitions) {
+        this.attributeDefinitions = attributeDefinitions;
     }
 
     @Nullable
@@ -329,6 +344,7 @@ public abstract class TEntityType extends TExtensibleElements implements HasName
         private TBoolean abstractValue;
         private TBoolean finalValue;
         private String targetNamespace;
+        private AttributeDefinitionList attributeDefinitions;
 
         public Builder(String name) {
             this.name = name;
@@ -343,6 +359,7 @@ public abstract class TEntityType extends TExtensibleElements implements HasName
             this.finalValue = entityType.getFinal();
             this.targetNamespace = entityType.getTargetNamespace();
             this.propertiesDefinition = entityType.getPropertiesDefinition();
+            this.attributeDefinitions = entityType.getAttributeDefinitions();
         }
 
         public T setTags(TTags tags) {
@@ -453,6 +470,11 @@ public abstract class TEntityType extends TExtensibleElements implements HasName
             tag.setName(key);
             tag.setValue(value);
             return addTags(tag);
+        }
+
+        public T setAttributeDefinitions(AttributeDefinitionList attributeDefinitions) {
+            this.attributeDefinitions = attributeDefinitions;
+            return self();
         }
 
         public TEntityType build() {

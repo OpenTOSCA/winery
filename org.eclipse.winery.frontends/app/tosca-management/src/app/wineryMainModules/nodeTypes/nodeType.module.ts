@@ -32,6 +32,7 @@ import { WineryReadmeModule } from '../../wineryReadmeModule/wineryReadme.module
 import { WineryLicenseModule } from '../../wineryLicenseModule/wineryLicense.module';
 import { TagModule } from '../../instance/sharedComponents/tag/tag.module';
 import { YamlRequirementDefinitionsModule } from '../../instance/nodeTypes/yamlRequirementDefinitions/yamlRequirementDefinitions.module';
+import { AttributesModule } from '../../instance/sharedComponents/attributes/attributes.module';
 import { ArtifactsModule } from '../../instance/sharedComponents/artifacts/artifacts.module';
 
 @NgModule({
@@ -55,7 +56,8 @@ import { ArtifactsModule } from '../../instance/sharedComponents/artifacts/artif
         WineryReadmeModule,
         WineryLicenseModule,
         YamlRequirementDefinitionsModule,
-        ArtifactsModule
+        AttributesModule,
+        ArtifactsModule,
     ],
     exports: [],
     declarations: [CapOrReqDefComponent],

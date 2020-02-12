@@ -11,6 +11,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR Apache-2.0
  *******************************************************************************/
+import { Constraint } from '../../../model/constraint';
 
 export enum PropertiesDefinitionEnum {
     Custom = 'Custom',
@@ -19,20 +20,13 @@ export enum PropertiesDefinitionEnum {
     None = 'None'
 }
 
-export class ConstraintClause {
-    constructor(public key: string,
-                public value: string,
-                public list: string[]) {
-    }
-}
-
 export class PropertiesDefinitionKVElement {
     key: string = null;
     type: string = null;
     required: boolean;
     defaultValue: string;
     description: string;
-    constraints: ConstraintClause[] = [];
+    constraints: Constraint[] = [];
 }
 
 export class PropertiesDefinition {

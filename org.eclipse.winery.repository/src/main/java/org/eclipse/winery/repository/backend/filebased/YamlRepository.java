@@ -79,6 +79,8 @@ import org.slf4j.LoggerFactory;
 
 public class YamlRepository extends AbstractFileBasedRepository {
 
+    public static final QName ROOT_TYPE_QNAME = new QName("tosca.entity", "Root");
+
     private static final Logger LOGGER = LoggerFactory.getLogger(YamlRepository.class);
 
     private final Pattern namePattern;
@@ -363,18 +365,18 @@ public class YamlRepository extends AbstractFileBasedRepository {
                             if (operationDefinition != null) {
                                 TImplementation implementation = operationDefinition.getImplementation();
                                 if (implementation != null) {
-                                    if (implementation.getPrimary() != null) {
-                                        if (implementation.getPrimary().getLocalPart().equalsIgnoreCase(targetArtifactName)) {
+                                    if (implementation.getPrimaryArtifactName() != null) {
+                                        if (implementation.getPrimaryArtifactName().equalsIgnoreCase(targetArtifactName)) {
                                             operationDefinition.setImplementation(null);
                                         } else {
-                                            if (implementation.getDependencies() != null) {
-                                                List<QName> qNames = implementation.getDependencies();
-                                                for (QName name : implementation.getDependencies()) {
-                                                    if (name.getLocalPart().equalsIgnoreCase(targetArtifactName)) {
-                                                        qNames.remove(name);
+                                            if (implementation.getDependencyArtifactNames() != null) {
+                                                List<String> names = implementation.getDependencyArtifactNames();
+                                                for (String name : implementation.getDependencyArtifactNames()) {
+                                                    if (name.equalsIgnoreCase(targetArtifactName)) {
+                                                        names.remove(name);
                                                     }
                                                 }
-                                                implementation.setDependencies(qNames);
+                                                implementation.setDependencyArtifactNames(names);
                                             }
                                         }
                                     }
@@ -412,18 +414,19 @@ public class YamlRepository extends AbstractFileBasedRepository {
                         if (operationDefinition != null) {
                             TImplementation implementation = operationDefinition.getImplementation();
                             if (implementation != null) {
-                                if (implementation.getPrimary() != null) {
-                                    if (implementation.getPrimary().getLocalPart().equalsIgnoreCase(targetArtifactName)) {
+                                if (implementation.getPrimaryArtifactName() != null) {
+                                    // TODO
+                                    if (implementation.getPrimaryArtifactName().equalsIgnoreCase(targetArtifactName)) {
                                         operationDefinition.setImplementation(null);
                                     } else {
-                                        if (implementation.getDependencies() != null) {
-                                            List<QName> qNames = implementation.getDependencies();
-                                            for (QName name : implementation.getDependencies()) {
-                                                if (name.getLocalPart().equalsIgnoreCase(targetArtifactName)) {
-                                                    qNames.remove(name);
+                                        if (implementation.getDependencyArtifactNames() != null) {
+                                            List<String> names = implementation.getDependencyArtifactNames();
+                                            for (String name : implementation.getDependencyArtifactNames()) {
+                                                if (name.equalsIgnoreCase(targetArtifactName)) {
+                                                    names.remove(name);
                                                 }
                                             }
-                                            implementation.setDependencies(qNames);
+                                            implementation.setDependencyArtifactNames(names);
                                         }
                                     }
                                 }
@@ -632,13 +635,6 @@ public class YamlRepository extends AbstractFileBasedRepository {
      **/
     @Override
     public void putContentToFile(RepositoryFileReference ref, InputStream inputStream, MediaType mediaType) throws IOException {
-//        if (mediaType == null) {
-//            // quick hack for storing mime type called this method
-//            assert (ref.getFileName().endsWith(Constants.SUFFIX_MIMETYPE));
-//            // we do not need to store the mime type of the file containing the mime type information
-//        } else {
-//            this.setMimeType(ref, mediaType);
-//        }
         Path targetPath = this.ref2AbsolutePath(ref);
         inputStream = convertToServiceTemplate(ref, inputStream, mediaType);
         writeInputStreamToPath(targetPath, inputStream);
@@ -757,17 +753,17 @@ public class YamlRepository extends AbstractFileBasedRepository {
         for (Map.Entry<String, TOperationDefinition> operation : operations.entrySet()) {
             if (operation.getKey().equalsIgnoreCase(target)) {
                 TImplementation implementation = operation.getValue().getImplementation();
-                implementation.setPrimary(new QName(artifact.getFile()));
+                implementation.setPrimaryArtifactName(artifact.getFile());
                 TOperationDefinition operationDefinition = operation.getValue();
                 operationDefinition.setImplementation(implementation);
                 operation.setValue(operationDefinition);
             } else {
                 TOperationDefinition operationDefinition = operation.getValue();
                 if (operationDefinition.getImplementation() != null) {
-                    if (operationDefinition.getImplementation().getPrimary() != null) {
-                        if (operationDefinition.getImplementation().getPrimary().getLocalPart().equalsIgnoreCase(target)) {
+                    if (operationDefinition.getImplementation().getPrimaryArtifactName() != null) {
+                        if (operationDefinition.getImplementation().getPrimaryArtifactName().equalsIgnoreCase(target)) {
                             TImplementation implementation = operationDefinition.getImplementation();
-                            implementation.setPrimary(new QName(artifact.getFile()));
+                            implementation.setPrimaryArtifactName(artifact.getFile());
                             operationDefinition.setImplementation(implementation);
                         }
                     }
@@ -873,6 +869,7 @@ public class YamlRepository extends AbstractFileBasedRepository {
         oldNodeType.setRequirements(newNodeType.getRequirements());
         oldNodeType.setCapabilities(newNodeType.getCapabilities());
         oldNodeType.setInterfaces(replaceInterfaceDefinitions(oldNodeType.getInterfaces(), newNodeType.getInterfaces()));
+        oldNodeType.setAttributes(newNodeType.getAttributes());
         oldData.getNodeTypes().entrySet().iterator().next().setValue(oldNodeType);
         return oldData;
     }

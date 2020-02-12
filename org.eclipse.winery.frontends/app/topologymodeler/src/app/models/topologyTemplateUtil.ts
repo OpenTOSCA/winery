@@ -206,7 +206,7 @@ export class TopologyTemplateUtil {
                 // the id was calculated before by the init node template method
                 relationship.sourceElement = { ref: foundRequirement.id };
                 // now we look for the target node template / capability.
-                const targetNodeTemplate = nodeTemplateArray.find(nt => nt.name === foundRequirement.node);
+                const targetNodeTemplate = nodeTemplateArray.find(nt => nt.id === foundRequirement.node);
                 if (targetNodeTemplate) {
                     const targetCapability = targetNodeTemplate.capabilities.capability
                         .find(cap => cap.name === foundRequirement.capability);

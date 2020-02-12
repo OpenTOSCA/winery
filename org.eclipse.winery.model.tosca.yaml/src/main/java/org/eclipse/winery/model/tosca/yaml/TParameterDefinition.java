@@ -176,6 +176,7 @@ public class TParameterDefinition implements VisitorNode {
     }
 
     public static class Builder {
+
         private QName type;
         private String description;
         private Boolean required;

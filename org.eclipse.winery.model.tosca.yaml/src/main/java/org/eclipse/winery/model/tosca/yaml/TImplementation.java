@@ -13,8 +13,6 @@
  *******************************************************************************/
 package org.eclipse.winery.model.tosca.yaml;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -22,126 +20,84 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
-import javax.xml.namespace.QName;
 
 import org.eclipse.winery.model.tosca.yaml.visitor.AbstractParameter;
 import org.eclipse.winery.model.tosca.yaml.visitor.AbstractResult;
 import org.eclipse.winery.model.tosca.yaml.visitor.IVisitor;
 import org.eclipse.winery.model.tosca.yaml.visitor.VisitorNode;
 
-import org.eclipse.jdt.annotation.NonNull;
-
 /**
  * Part of Operation Definition
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "tImplementation", namespace = " http://docs.oasis-open.org/tosca/ns/simple/yaml/1.3", propOrder = {
-    "primary",
-    "dependencies"
+    "primaryArtifactName",
+    "dependencyArtifactNames",
+    "operationHost",
+    "timeout",
 })
 public class TImplementation implements VisitorNode {
+
     @XmlAttribute(name = "primary", required = true)
-    private QName primary;
-    private List<QName> dependencies;
+    private String primaryArtifactName;
+    private List<String> dependencyArtifactNames;
+    private String operationHost;
+    private Integer timeout;
 
     public TImplementation() {
-
     }
 
-    public TImplementation(QName primary) {
-        this.primary = primary;
+    public TImplementation(String primaryArtifactName) {
+        this.primaryArtifactName = primaryArtifactName;
     }
 
-    public TImplementation(Builder builder) {
-        this.setPrimary(builder.primary);
-        this.setDependencies(builder.dependencies);
+    public String getPrimaryArtifactName() {
+        return primaryArtifactName;
+    }
+
+    public void setPrimaryArtifactName(String primaryArtifactName) {
+        this.primaryArtifactName = primaryArtifactName;
+    }
+
+    public List<String> getDependencyArtifactNames() {
+        return dependencyArtifactNames;
+    }
+
+    public void setDependencyArtifactNames(List<String> dependencyArtifactNames) {
+        this.dependencyArtifactNames = dependencyArtifactNames;
+    }
+
+    public String getOperationHost() {
+        return operationHost;
+    }
+
+    public void setOperationHost(String operationHost) {
+        this.operationHost = operationHost;
+    }
+
+    public Integer getTimeout() {
+        return timeout;
+    }
+
+    public void setTimeout(Integer timeout) {
+        this.timeout = timeout;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof TImplementation)) return false;
+        if (o == null || getClass() != o.getClass()) return false;
         TImplementation that = (TImplementation) o;
-        return Objects.equals(getPrimary(), that.getPrimary()) &&
-            Objects.equals(getDependencies(), that.getDependencies());
+        return Objects.equals(primaryArtifactName, that.primaryArtifactName) &&
+            Objects.equals(dependencyArtifactNames, that.dependencyArtifactNames);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getPrimary(), getDependencies());
-    }
-
-    @Override
-    public String toString() {
-        return "TImplementation{" +
-            "primary=" + getPrimary() +
-            ", dependencies=" + getDependencies() +
-            '}';
-    }
-
-    @NonNull
-    public QName getPrimary() {
-        return primary;
-    }
-
-    public void setPrimary(QName primary) {
-        this.primary = primary;
-    }
-
-    @NonNull
-    public List<QName> getDependencies() {
-        if (this.dependencies == null) {
-            this.dependencies = new ArrayList<>();
-        }
-
-        return dependencies;
-    }
-
-    public void setDependencies(List<QName> dependencies) {
-        this.dependencies = dependencies;
+        return Objects.hash(primaryArtifactName, dependencyArtifactNames);
     }
 
     public <R extends AbstractResult<R>, P extends AbstractParameter<P>> R accept(IVisitor<R, P> visitor, P parameter) {
         return visitor.visit(this, parameter);
-    }
-
-    public static class Builder {
-        private final QName primary;
-        private List<QName> dependencies;
-
-        public Builder(QName primary) {
-            this.primary = primary;
-        }
-
-        public Builder setDependencies(List<QName> dependencies) {
-            this.dependencies = dependencies;
-            return this;
-        }
-
-        public Builder addDependencies(List<QName> dependencies) {
-            if (dependencies == null || dependencies.isEmpty()) {
-                return this;
-            }
-
-            if (this.dependencies == null) {
-                this.dependencies = new ArrayList<>(dependencies);
-            } else {
-                this.dependencies.addAll(dependencies);
-            }
-
-            return this;
-        }
-
-        public Builder addDependencies(QName dependency) {
-            if (dependency == null) {
-                return this;
-            }
-
-            return addDependencies(Collections.singletonList(dependency));
-        }
-
-        public TImplementation build() {
-            return new TImplementation(this);
-        }
     }
 }

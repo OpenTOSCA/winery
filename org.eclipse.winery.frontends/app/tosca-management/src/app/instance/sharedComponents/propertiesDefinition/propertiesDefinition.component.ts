@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017-2018 Contributors to the Eclipse Foundation
+ * Copyright (c) 2017-2020 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -15,8 +15,7 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { InstanceService } from '../../instance.service';
 import { PropertiesDefinitionService } from './propertiesDefinition.service';
 import {
-    PropertiesDefinition, PropertiesDefinitionEnum, PropertiesDefinitionKVElement, PropertiesDefinitionsResourceApiData, WinerysPropertiesDefinition,
-    ConstraintClause
+    PropertiesDefinition, PropertiesDefinitionEnum, PropertiesDefinitionKVElement, PropertiesDefinitionsResourceApiData, WinerysPropertiesDefinition
 } from './propertiesDefinitionsResourceApiData';
 import { SelectData } from '../../../model/selectData';
 import { isNullOrUndefined } from 'util';
@@ -28,6 +27,7 @@ import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
 import { WineryRepositoryConfigurationService } from '../../../wineryFeatureToggleModule/WineryRepositoryConfiguration.service';
 import { FeatureEnum } from '../../../wineryFeatureToggleModule/wineryRepository.feature.direct';
 import { PropertiesTableData } from './PropertiesTableData';
+import { Constraint } from '../../../model/constraint';
 
 const valid_constraint_keys = ['equal', 'greater_than', 'greater_or_equal', 'less_than', 'less_or_equal', 'in_range',
     'valid_values', 'length', 'min_length', 'max_length', 'pattern', 'schema'];
@@ -98,6 +98,12 @@ export class PropertiesDefinitionComponent implements OnInit {
                 if (property.constraints.indexOf(constraint) !== property.constraints.length - 1) {
                     constraintsString += ', ';
                 }
+            }
+            if (!property.defaultValue) {
+                property.defaultValue = '';
+            }
+            if (!property.description) {
+                property.description = '';
             }
             this.tableData.push(new PropertiesTableData(property.key, property.type, property.required, property.defaultValue, property.description
                 , constraintsString));
@@ -276,14 +282,15 @@ export class PropertiesDefinitionComponent implements OnInit {
         });
         this.addModal.hide();
         this.copyToTable();
+        this.save();
     }
 
     addConstraint(selectedConstraintKey: string, constraintValue: string) {
         // lists have to be separated by ','
         if (list_constraint_keys.indexOf(selectedConstraintKey) > -1) {
-            this.newProperty.constraints.push(new ConstraintClause(selectedConstraintKey, null, constraintValue.split(',')));
+            this.newProperty.constraints.push(new Constraint(selectedConstraintKey, null, constraintValue.split(',')));
         } else {
-            this.newProperty.constraints.push(new ConstraintClause(selectedConstraintKey, constraintValue, null));
+            this.newProperty.constraints.push(new Constraint(selectedConstraintKey, constraintValue, null));
         }
     }
 
@@ -292,6 +299,7 @@ export class PropertiesDefinitionComponent implements OnInit {
         this.deleteItemFromPropertyDefinitionKvList(this.elementToRemove);
         this.elementToRemove = null;
         this.copyToTable();
+        this.save();
     }
 
     onAddModalShown() {
@@ -406,7 +414,7 @@ export class PropertiesDefinitionComponent implements OnInit {
      * removes item from constraint list
      * @param constraintClause
      */
-    removeConstraint(constraintClause: ConstraintClause) {
+    removeConstraint(constraintClause: Constraint) {
         const index = this.newProperty.constraints.indexOf(constraintClause);
         if (index > -1) {
             this.newProperty.constraints.splice(index, 1);

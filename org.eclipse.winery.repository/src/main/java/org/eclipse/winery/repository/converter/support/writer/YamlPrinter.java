@@ -154,7 +154,7 @@ public class YamlPrinter extends AbstractResult<YamlPrinter> {
         return this;
     }
 
-    public YamlPrinter printKeyValue(String key, List<? extends Object> value) {
+    public YamlPrinter printKeyValue(String key, List<?> value) {
         if (Objects.isNull(value) || value.isEmpty()) return this;
         return print(key)
             .print(':')

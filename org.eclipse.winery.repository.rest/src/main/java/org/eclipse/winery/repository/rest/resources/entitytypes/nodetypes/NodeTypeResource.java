@@ -38,6 +38,7 @@ import org.eclipse.winery.repository.rest.RestUtils;
 import org.eclipse.winery.repository.rest.resources.apiData.QNameApiData;
 import org.eclipse.winery.repository.rest.resources.artifacts.DeploymentArtifactResource;
 import org.eclipse.winery.repository.rest.resources.entitytypes.InstanceStatesResource;
+import org.eclipse.winery.repository.rest.resources.entitytypes.InterfaceDefinitionsResource;
 import org.eclipse.winery.repository.rest.resources.entitytypes.TopologyGraphElementEntityTypeResource;
 import org.eclipse.winery.repository.rest.resources.entitytypes.artifacttypes.ArtifactTypeResource;
 import org.eclipse.winery.repository.rest.resources.entitytypes.artifacttypes.ArtifactTypesResource;
@@ -112,6 +113,11 @@ public class NodeTypeResource extends TopologyGraphElementEntityTypeResource {
     @Path("appearance")
     public VisualAppearanceResource getVisualAppearanceResource() {
         return new VisualAppearanceResource(this, this.getElement().getOtherAttributes(), (NodeTypeId) this.id);
+    }
+
+    @Path("interfacedefinitions")
+    public InterfaceDefinitionsResource InterfaceDefinitionsResource() {
+        return new InterfaceDefinitionsResource(this);
     }
 
     @GET

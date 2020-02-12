@@ -22,9 +22,9 @@ import org.eclipse.winery.model.tosca.yaml.visitor.AbstractResult;
 import org.eclipse.winery.model.tosca.yaml.visitor.IVisitor;
 
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "tInterfaceAssignment", namespace = " http://docs.oasis-open.org/tosca/ns/simple/yaml/1.3", propOrder = {
-})
+@XmlType(name = "tInterfaceAssignment", namespace = " http://docs.oasis-open.org/tosca/ns/simple/yaml/1.3")
 public class TInterfaceAssignment extends TInterfaceDefinition {
+
     public TInterfaceAssignment() {
     }
 
@@ -48,6 +48,7 @@ public class TInterfaceAssignment extends TInterfaceDefinition {
     }
 
     public static class Builder extends TInterfaceDefinition.Builder<Builder> {
+
         @Override
         public Builder self() {
             return this;

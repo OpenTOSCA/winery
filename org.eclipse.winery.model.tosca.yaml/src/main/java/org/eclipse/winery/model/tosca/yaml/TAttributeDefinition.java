@@ -39,6 +39,7 @@ import org.eclipse.jdt.annotation.Nullable;
     "entrySchema"
 })
 public class TAttributeDefinition implements VisitorNode {
+
     private String description;
     @XmlAttribute(name = "type", required = true)
     private QName type;

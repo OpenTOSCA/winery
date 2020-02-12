@@ -39,14 +39,15 @@ import org.eclipse.jdt.annotation.Nullable;
     "operations"
 })
 public class TInterfaceDefinition implements VisitorNode {
+
     private QName type;
-    private Map<String, TPropertyAssignmentOrDefinition> inputs;
+    private Map<String, TParameterDefinition> inputs;
     private Map<String, TOperationDefinition> operations;
 
     public TInterfaceDefinition() {
     }
 
-    public TInterfaceDefinition(Builder builder) {
+    public TInterfaceDefinition(Builder<?> builder) {
         this.setType(builder.type);
         this.setInputs(builder.inputs);
         this.setOperations(builder.operations);
@@ -67,15 +68,6 @@ public class TInterfaceDefinition implements VisitorNode {
         return Objects.hash(getType(), getInputs(), getOperations());
     }
 
-    @Override
-    public String toString() {
-        return "TInterfaceDefinition{" +
-            "type=" + getType() +
-            ", inputs=" + getInputs() +
-            ", operations=" + getOperations() +
-            '}';
-    }
-
     @Nullable
     public QName getType() {
         return type;
@@ -86,15 +78,14 @@ public class TInterfaceDefinition implements VisitorNode {
     }
 
     @NonNull
-    public Map<String, TPropertyAssignmentOrDefinition> getInputs() {
+    public Map<String, TParameterDefinition> getInputs() {
         if (this.inputs == null) {
             this.inputs = new LinkedHashMap<>();
         }
-
         return inputs;
     }
 
-    public void setInputs(Map<String, TPropertyAssignmentOrDefinition> inputs) {
+    public void setInputs(Map<String, TParameterDefinition> inputs) {
         this.inputs = inputs;
     }
 
@@ -103,7 +94,6 @@ public class TInterfaceDefinition implements VisitorNode {
         if (this.operations == null) {
             this.operations = new LinkedHashMap<>();
         }
-
         return operations;
     }
 
@@ -116,11 +106,13 @@ public class TInterfaceDefinition implements VisitorNode {
     }
 
     public static class Builder<T extends Builder<T>> {
+
         private QName type;
-        private Map<String, TPropertyAssignmentOrDefinition> inputs;
+        private Map<String, TParameterDefinition> inputs;
         private Map<String, TOperationDefinition> operations;
 
         @ADR(11)
+        @SuppressWarnings("unchecked")
         public T self() {
             return (T) this;
         }
@@ -130,7 +122,7 @@ public class TInterfaceDefinition implements VisitorNode {
             return self();
         }
 
-        public T setInputs(Map<String, TPropertyAssignmentOrDefinition> inputs) {
+        public T setInputs(Map<String, TParameterDefinition> inputs) {
             this.inputs = inputs;
             return self();
         }
@@ -140,7 +132,7 @@ public class TInterfaceDefinition implements VisitorNode {
             return self();
         }
 
-        public T addInputs(Map<String, TPropertyAssignmentOrDefinition> inputs) {
+        public T addInputs(Map<String, TParameterDefinition> inputs) {
             if (inputs == null || inputs.isEmpty()) {
                 return self();
             }
@@ -154,7 +146,7 @@ public class TInterfaceDefinition implements VisitorNode {
             return self();
         }
 
-        public T addInputs(String name, TPropertyAssignmentOrDefinition input) {
+        public T addInput(String name, TParameterDefinition input) {
             if (name == null || name.isEmpty()) {
                 return self();
             }
@@ -176,7 +168,7 @@ public class TInterfaceDefinition implements VisitorNode {
             return self();
         }
 
-        public T addOperations(String name, TOperationDefinition operation) {
+        public T addOperation(String name, TOperationDefinition operation) {
             if (name == null || name.isEmpty()) {
                 return self();
             }

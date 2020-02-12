@@ -44,6 +44,7 @@ import org.eclipse.jdt.annotation.Nullable;
     "entrySchema"
 })
 public class TPropertyDefinition extends TPropertyAssignmentOrDefinition {
+
     @XmlAttribute(name = "type", required = true)
     private QName type;
     private String description;

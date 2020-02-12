@@ -1,5 +1,5 @@
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ~ Copyright (c) 2017-2018 Contributors to the Eclipse Foundation
+  ~ Copyright (c) 2017-2020 Contributors to the Eclipse Foundation
   ~
   ~ See the NOTICE file(s) distributed with this work for additional
   ~ information regarding copyright ownership.
@@ -11,13 +11,13 @@
   ~
   ~ SPDX-License-Identifier: EPL-2.0 OR Apache-2.0
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-<div class="localLoader" [class.hidden]="!loading" xmlns:trackBy="http://www.w3.org/1999/xhtml"
-     xmlns:trackBy="http://www.w3.org/1999/xhtml">
+<div class="localLoader" [class.hidden]="!loading"
+>
     <winery-loader></winery-loader>
 </div>
 <div *ngIf="!loading">
-    <div class="radioWrapper">
-        <div class="left" *wineryRepositoryHideOnFeature="configEnum.Yaml">
+    <div class="radioWrapper" *wineryRepositoryHideOnFeature="configEnum.Yaml">
+        <div class="left">
             <input id="nopropdef" type="radio" name="kind" (click)="onNoneSelected()"
                    [disabled]="!sharedData?.currentVersion?.editable"
                    [checked]="resourceApiData.selectedValue === propertiesEnum.None">
@@ -52,7 +52,7 @@
         </div>
 
         <div *ngIf="resourceApiData.selectedValue === propertiesEnum.Custom">
-            <tabset>
+            <tabset *wineryRepositoryHideOnFeature="configEnum.Yaml">
                 <tab heading="Properties">
                     <winery-table
                         [data]="tableData"
@@ -62,7 +62,7 @@
                         (addBtnClicked)="onAddClick();">
                     </winery-table>
                 </tab>
-                <tab heading="Wrapper" *wineryRepositoryHideOnFeature="configEnum.Yaml">
+                <tab heading="Wrapper">
                     <div class="wrapperTab">
                         <label for="wrapperName">Name of Wrapper Element</label><br>
                         <input id="wrapperName"
@@ -79,6 +79,14 @@
                     </div>
                 </tab>
             </tabset>
+        </div>
+        <div *wineryRepositoryShowOnFeature="configEnum.Yaml">
+            <winery-table [data]="tableData"
+                          [columns]="columns"
+                          (cellSelected)="onCellSelected($event)"
+                          (removeBtnClicked)="onRemoveClick($event)"
+                          (addBtnClicked)="onAddClick()">
+            </winery-table>
         </div>
     </div>
 </div>
@@ -116,11 +124,17 @@
             <div class="form-group">
                 <label class="control-label" for="propType">Type</label>
                 <select #selectProperty name="type" class="form-control" id="propType">
-                    <option value="xsd:string">xsd:string</option>
-                    <option value="xsd:float">xsd:float</option>
-                    <option value="xsd:decimal">xsd:decimal</option>
-                    <option value="xsd:anyURI">xsd:anyURI</option>
-                    <option value="xsd:QName">xsd:QName</option>
+                    <option *wineryRepositoryHideOnFeature="'yaml'" value="xsd:string">xsd:string</option>
+                    <option *wineryRepositoryHideOnFeature="'yaml'" value="xsd:float">xsd:float</option>
+                    <option *wineryRepositoryHideOnFeature="'yaml'" value="xsd:decimal">xsd:decimal</option>
+                    <option *wineryRepositoryHideOnFeature="'yaml'" value="xsd:anyURI">xsd:anyURI</option>
+                    <option *wineryRepositoryHideOnFeature="'yaml'" value="xsd:QName">xsd:QName</option>
+                    <!-- YAML types -->
+                    <option *wineryRepositoryShowOnFeature="'yaml'" value="string">string</option>
+                    <option *wineryRepositoryShowOnFeature="'yaml'" value="integer">integer</option>
+                    <option *wineryRepositoryShowOnFeature="'yaml'" value="float">float</option>
+                    <option *wineryRepositoryShowOnFeature="'yaml'" value="boolean">boolean</option>
+                    <option *wineryRepositoryShowOnFeature="'yaml'" value="timestamp">timestamp</option>
                 </select>
             </div>
             <div class="form-group">

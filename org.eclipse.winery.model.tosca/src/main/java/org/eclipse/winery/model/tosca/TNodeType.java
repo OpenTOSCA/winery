@@ -35,6 +35,7 @@ import org.eclipse.jdt.annotation.Nullable;
     "capabilityDefinitions",
     "instanceStates",
     "interfaces",
+    "interfaceDefinitions",
     "artifacts"
 })
 public class TNodeType extends TEntityType {
@@ -49,6 +50,9 @@ public class TNodeType extends TEntityType {
     @XmlElement(name = "Artifacts")
     protected TArtifacts artifacts;
 
+    // added to support TOSCA YAML 
+    protected List<TInterfaceDefinition> interfaceDefinitions;
+
     public TNodeType() {
     }
 
@@ -58,6 +62,7 @@ public class TNodeType extends TEntityType {
         this.capabilityDefinitions = builder.capabilityDefinitions;
         this.instanceStates = builder.instanceStates;
         this.interfaces = builder.interfaces;
+        this.interfaceDefinitions = builder.interfaceDefinitions;
         this.artifacts = builder.artifacts;
     }
 
@@ -110,6 +115,15 @@ public class TNodeType extends TEntityType {
 
     public void setInterfaces(@Nullable TInterfaces value) {
         this.interfaces = value;
+    }
+
+    @Nullable
+    public List<TInterfaceDefinition> getInterfaceDefinitions() {
+        return interfaceDefinitions;
+    }
+
+    public void setInterfaceDefinitions(List<TInterfaceDefinition> interfaceDefinitions) {
+        this.interfaceDefinitions = interfaceDefinitions;
     }
 
     public @Nullable TArtifacts getArtifacts() {
@@ -192,6 +206,7 @@ public class TNodeType extends TEntityType {
         private CapabilityDefinitions capabilityDefinitions;
         private TTopologyElementInstanceStates instanceStates;
         private TInterfaces interfaces;
+        private List<TInterfaceDefinition> interfaceDefinitions;
         private TArtifacts artifacts;
 
         public Builder(String name) {
@@ -324,6 +339,11 @@ public class TNodeType extends TEntityType {
             TInterfaces tmp = new TInterfaces();
             tmp.getInterface().add(interfaces);
             return addInterfaces(tmp);
+        }
+
+        public Builder setInterfaceDefinitions(List<TInterfaceDefinition> interfaceDefinitions) {
+            this.interfaceDefinitions = interfaceDefinitions;
+            return self();
         }
 
         public Builder addArtifacts(TArtifacts artifacts) {

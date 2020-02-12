@@ -32,11 +32,11 @@ import org.eclipse.jdt.annotation.Nullable;
     "value"
 })
 public class TAttributeAssignment implements VisitorNode {
+
     private String description;
     private Object value;
 
     public TAttributeAssignment() {
-
     }
 
     public TAttributeAssignment(Builder builder) {

@@ -44,7 +44,7 @@
     <div *ngIf="nodeClass !== 'pattern'; else showPattern"
          class="row rounded col-sm-12 node-template-header"
          (click)="openSidebar($event); closeConnectorEndpoints($event)">
-        <div class="col-sm-1" style="padding: 0;">
+        <div class="col-sm-1" style="padding: 0;" *wineryRepositoryHideOnFeature="'yaml'">
             <table class="table table-responsive table-active table-border--grey table-sm">
                 <tr style="padding: 0">
                     <td class="td-maxinstances"
