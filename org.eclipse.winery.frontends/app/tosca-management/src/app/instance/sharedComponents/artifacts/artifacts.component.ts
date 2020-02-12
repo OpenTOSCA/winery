@@ -40,14 +40,13 @@ export class ArtifactsComponent implements OnInit {
 
     @ViewChild('addModal') addModal: ModalDirective;
     artifactTypes: NameAndQNameApiDataList = { classes: null };
-    artifactToBeAdded: TArtifact = null;
+    artifactToBeAdded: TArtifact = new TArtifact('', null, '', '');
     private selectedYamlArtifactAllowedTypes = '';
     private selectedYamlArtifactFile: File;
     private loading: boolean;
     artifactsTableDataList: Array<ArtifactsTableData> = [];
 
     constructor(private service: ArtifactsService) {
-        this.artifactToBeAdded = new TArtifact(null, null, null);
     }
 
     ngOnInit(): void {

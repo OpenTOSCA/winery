@@ -13,6 +13,7 @@
  *******************************************************************************/
 package org.eclipse.winery.repository.rest.resources.entitytypes.nodetypes;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
@@ -116,24 +117,26 @@ public class NodeTypeResource extends TopologyGraphElementEntityTypeResource {
     }
 
     @GET
-    @Path("artifacts")
+    @Path("artifacts/")
     @Produces(MediaType.APPLICATION_JSON)
-    public TArtifact[] getArtifacts() {
+    public List<TArtifact> getArtifacts() {
         TArtifacts artifacts = this.getNodeType().getArtifacts();
         if (artifacts == null) {
-            artifacts = new TArtifacts();
-            this.getNodeType().setArtifacts(artifacts);
+            return new ArrayList<>();
         }
-        return artifacts.getArtifact().toArray(new TArtifact[0]);
+        return artifacts.getArtifact();
     }
 
     @POST
-    @Path("artifacts")
+    @Path("artifacts/")
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response addArtifact(TArtifact data) {
-        System.out.println("HALLO");
-        this.getNodeType().getArtifacts().addArtifact(data);
-        return Response.status(Response.Status.OK).build();
+    public Response addArtifact(TArtifact artifact) {
+        TNodeType nodeType = this.getNodeType();
+        if (nodeType.getArtifacts() == null) {
+            nodeType.setArtifacts(new TArtifacts());
+        }
+        this.getNodeType().getArtifacts().addArtifact(artifact);
+        return RestUtils.persist(this);
     }
 
     @Override

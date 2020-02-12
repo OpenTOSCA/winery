@@ -38,7 +38,9 @@ import { SelectModule } from 'ng2-select';
         WineryDuplicateValidatorModule,
         ParametersModule,
     ],
-    exports: [],
+    exports: [
+        InterfaceDefinitionsComponent,
+    ],
     declarations: [
         InterfaceDefinitionsComponent,
     ],

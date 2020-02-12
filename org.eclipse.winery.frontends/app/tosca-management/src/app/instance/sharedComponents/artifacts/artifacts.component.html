@@ -14,74 +14,48 @@
 <div class="localLoader" [class.hidden]="!loading">
     <winery-loader></winery-loader>
 </div>
-<div>
-    <winery-table
-        [columns]="columns"
-        [data]="artifactsTableDataList"
-        (addBtnClicked)="onAddClick()"
-        (removeBtnClicked)="onRemoveClick($event)">
+<div *ngIf="!loading">
+    <winery-table [columns]="columns"
+                  [data]="artifactsTableDataList"
+                  (addBtnClicked)="onAddClick()"
+                  (removeBtnClicked)="onRemoveClick($event)">
     </winery-table>
-
-    <winery-modal bsModal #addModal="bs-modal" [modalRef]="addModal">
-        <winery-modal-header [title]="'Add Artifact'"></winery-modal-header>
-        <winery-modal-body>
-            <form #addArtifactForm="ngForm" id="addArtifactForm">
-                <div class="form-group">
-                    <label class="control-label" for="name">Name</label>
-                    <input #artifactName="ngModel"
-                           id="name"
-                           class="form-control"
-                           type="text"
-                           name="name"
-                           required
-                           [(ngModel)]="artifactToBeAdded.id">
-
-                    <div class="form-group">
-                        <winery-qname-selector
-                            [width]="'none'"
-                            [title]="'Artifact Type'"
-                            [displayList]="artifactTypes"
-                            [toscaType]=""
-                            [selectedValue]="artifactToBeAdded.id"
-                            [showOpenButton]="false"
-                            (selectedValueChanged)="onSelectedArtifactTypeChanged($event.value)"
-                        ></winery-qname-selector>
-                    </div>
-
-                    <div class="form-group" id="yamlArtifactFileDiv">
-                        <label for="fileUploader">Select Artifact File (will be uploaded when clicking on "Add")</label>
-                        <br>
-                        <input type="file" #fileUploader id="fileUploader" name="fileUploader"
-                               [accept]="selectedYamlArtifactAllowedTypes"
-                               (change)="yamlArtifactFileSelected($event.target.files)"/>
-                    </div>
-
-                    <ng-template #artifactFileNameOnly>
-                        <div class="form-group" id="yamlArtifactFileNameDiv">
-                            <label for="fileUploader">Selected File</label>
-                            <br>
-                            <button type="button"
-                                    class="btn btn-link btn-anchor"
-                                    (click)="downloadYamlArtifactFile()">{{deploymentArtifactOrPolicyModalData.modalFileName}}</button>
-                        </div>
-                    </ng-template>
-
-                    <label class="control-label" for="deplPath">Deployment Path</label>
-                    <input #artifactDeplPath="ngModel"
-                           id="deplPath"
-                           class="form-control"
-                           type="text"
-                           name="name"
-                           required
-                           [(ngModel)]="artifactToBeAdded.targetLocation">
-                </div>
-            </form>
-        </winery-modal-body>
-        <winery-modal-footer [showDefaultButtons]="false">
-            <button type="button" class="btn btn-default" data-dismiss="modal" (click)="addModal.hide()">Cancel</button>
-            <button type="button" [disabled]="!addArtifactForm?.form.valid" class="btn btn-primary"
-                    (click)="addArtifact()">Add
-            </button>
-        </winery-modal-footer>
-    </winery-modal>
 </div>
+
+<winery-modal bsModal #addModal="bs-modal" [modalRef]="addModal" (onHide)="addArtifactForm.reset()">
+    <winery-modal-header [title]="'Add Artifact'"></winery-modal-header>
+    <winery-modal-body>
+        <form #addArtifactForm="ngForm" id="addArtifactForm">
+            <div class="form-group">
+                <label class="control-label" for="name">Name</label>
+                <input type="text" id="name" name="name" required
+                       [(ngModel)]="artifactToBeAdded.id" class="form-control">
+            </div>
+            <div class="form-group">
+                <winery-qname-selector width="100%" [title]="'Artifact Type'" [displayList]="artifactTypes"
+                                       [toscaType]="" [showOpenButton]="false"
+                                       (selectedValueChanged)="onSelectedArtifactTypeChanged($event.value)">
+                </winery-qname-selector>
+            </div>
+            <div class="form-group" id="yamlArtifactFileDiv">
+                <label for="fileUploader">Select Artifact File (will be uploaded when clicking on "Add")</label>
+                <br>
+                <input type="file" #fileUploader id="fileUploader" name="fileUploader"
+                       [accept]="selectedYamlArtifactAllowedTypes"
+                       (change)="yamlArtifactFileSelected($event.target.files)"/>
+            </div>
+            <div class="form-group">
+                <label class="control-label" for="targetLocation">Deployment Path</label>
+                <input type="text" id="targetLocation" name="targetLocation"
+                       [(ngModel)]="artifactToBeAdded.targetLocation" class="form-control">
+            </div>
+        </form>
+    </winery-modal-body>
+    <winery-modal-footer [showDefaultButtons]="false">
+        <button type="button" class="btn btn-default" data-dismiss="modal" (click)="addModal.hide()">Cancel</button>
+        <button type="button" [disabled]="!addArtifactForm?.form.valid || artifactToBeAdded.type === null"
+                class="btn btn-primary" (click)="addArtifact()">
+            Add
+        </button>
+    </winery-modal-footer>
+</winery-modal>

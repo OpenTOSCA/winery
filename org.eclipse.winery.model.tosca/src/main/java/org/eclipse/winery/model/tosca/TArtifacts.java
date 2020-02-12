@@ -28,6 +28,7 @@ import javax.xml.bind.annotation.XmlType;
     "artifact"
 })
 public class TArtifacts {
+
     @XmlElement(name = "Artifact", required = true)
     List<TArtifact> artifact;
 
@@ -51,6 +52,9 @@ public class TArtifacts {
     }
 
     public void addArtifact(TArtifact artifact) {
+        if (this.artifact == null) {
+            this.artifact = new ArrayList<>();
+        }
         this.artifact.add(artifact);
     }
 
