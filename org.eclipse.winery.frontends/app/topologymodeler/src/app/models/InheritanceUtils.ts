@@ -108,6 +108,29 @@ export class InheritanceUtils {
     }
 
     /**
+     * Returns a list of decendants of an entity type.
+     *
+     * Returns a list of all decendants of the entity type in no particular order.
+     * The list contains the entity type itself at position 0.
+     * @param entityType
+     * @param entityTypes
+     */
+    static getDescendantsOfEntityType<T extends EntityType>(entityType: string, entityTypes: T[]): T[] {
+        const listOfDescendants: T[] = [];
+        listOfDescendants.push(entityTypes.find(et => et.qName === entityType));
+        // Look for any entityTypes, that have the given entityType somewhere along their inheritance hierarchy.
+        for (const entType of entityTypes) {
+            if (entType.qName !== entityType) {
+                if (this.getInheritanceAncestry(entType.qName, entityTypes).find(candidate => candidate.qName === entityType)) {
+                    // Those elements are the descendants
+                    listOfDescendants.push(entType);
+                }
+            }
+        }
+        return listOfDescendants;
+    }
+
+    /**
      * Gets the active set of allowed target node types for this YAML policy type
      * i.e., returns the targets array which is the lowest possible.
      * @param policyTypeQName
@@ -240,4 +263,26 @@ export class InheritanceUtils {
         }
     }
 
+    /**
+     * Returns a list of valid source types for the given capability definition.
+     *
+     * If the capabilities definition itself has a list of valid source types it is used.
+     * Otherwise the valid source types of the closest capability type regarding ancestry is used.
+     *
+     * @param capabilityDefinition The capability definition for which the valid source types list is queried.
+     * @param capabilityTypes The list of all Capability Types
+     */
+    static getValidSourceTypes(capabilityDefinition: CapabilityDefinitionModel, capabilityTypes: EntityType[]): string[] {
+        if (capabilityDefinition.validSourceTypes) {
+            return capabilityDefinition.validSourceTypes;
+        } else {
+            const ancestry: EntityType[] = InheritanceUtils.getInheritanceAncestry(capabilityDefinition.capabilityType, capabilityTypes);
+            for (const ancestor of ancestry) {
+                const listOfValidSourceTypes = ancestor.full.serviceTemplateOrNodeTypeOrNodeTypeImplementation[0].validNodeTypes;
+                if (listOfValidSourceTypes) {
+                    return listOfValidSourceTypes;
+                }
+            }
+        }
+    }
 }

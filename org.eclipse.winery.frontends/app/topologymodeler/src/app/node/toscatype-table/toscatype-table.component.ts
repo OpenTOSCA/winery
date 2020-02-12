@@ -260,9 +260,10 @@ export class ToscatypeTableComponent implements OnInit, OnChanges {
 
     getAllowedRelationshipTypes(req: RequirementModel): VisualEntityType[] {
         const reqDef: RequirementDefinitionModel = this.getRequirementDefinition(req);
-        // if the requirement definition specifies a requirement type, then it is the only one allowed
+        // if the requirement definition specifies a relationship type, then it is the only one allowed
         if (reqDef.relationship) {
-            return this.entityTypes.relationshipTypes.filter(rt => rt.qName === reqDef.relationship);
+            return InheritanceUtils.getDescendantsOfEntityType<VisualEntityType>(reqDef.relationship, this.entityTypes.relationshipTypes)
+                .sort((a, b) => a.name.localeCompare(b.name));
         }
         // otherwise, all types are allowed
         return this.entityTypes.relationshipTypes;

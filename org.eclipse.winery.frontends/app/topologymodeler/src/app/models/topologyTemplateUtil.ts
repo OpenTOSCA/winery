@@ -82,7 +82,7 @@ export class TopologyTemplateUtil {
             }
             capDefs.forEach(def => {
                 const capAssignment = node.capabilities.capability.find(capAss => capAss.name === def.name);
-                const cap = CapabilityModel.fromCapabilityDefinitionModel(def);
+                const cap: CapabilityModel = CapabilityModel.fromCapabilityDefinitionModel(def);
 
                 if (capAssignment) {
                     const capAssignmentIndex = node.capabilities.capability.indexOf(capAssignment);

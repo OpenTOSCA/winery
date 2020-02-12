@@ -24,7 +24,6 @@ export class CapabilityModel {
     public name: string;
     public otherAttributes: any;
     public type: string;
-    public validSourceTypes: string[];
     public properties?: any;
     static fromCapabilityDefinitionModel(def: CapabilityDefinitionModel): CapabilityModel {
         const result = new CapabilityModel();
@@ -33,7 +32,6 @@ export class CapabilityModel {
         result.name = def.name;
         result.otherAttributes = def.otherAttributes;
         result.type = def.capabilityType;
-        result.validSourceTypes = def.validSourceTypes;
 
         return result;
     }
