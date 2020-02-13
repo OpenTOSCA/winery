@@ -1189,11 +1189,19 @@ div.col-xs-4.bordered div.listheading > button {
 
 table.dataTable {
     font-size: 12px;
+    max-width: 100%;
+    table-layout: fixed;
 }
 
 table.dataTable thead th {
     font-size: 11px;
     color: #3F3F3F;
+}
+
+table.dataTable tbody tr td {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 div.titledTableBox {
