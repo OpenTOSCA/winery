@@ -17,7 +17,7 @@ import { ShowOnFeatureDirective } from './wineryRepository.showOnFeature.direct'
 export enum FeatureEnum {
     Accountability = 'accountability', Completion = 'completion', Compliance = 'compliance', FreezeAndDefrost = 'freezeAndDefrost',
     ManagementFeatureEnrichment = 'managementFeatureEnrichment', NFV = 'nfv', PatternRefinement = 'patternRefinement', ProblemDetection = 'problemDetection',
-    Splitting = 'splitting', TestRefinement = 'testRefinement', Placement = 'placement', updateTemplates = 'updateTemplates', Yaml = 'yaml'
+    Radon = 'radon', Splitting = 'splitting', TestRefinement = 'testRefinement', Placement = 'placement', updateTemplates = 'updateTemplates', Yaml = 'yaml'
 }
 
 @Directive({

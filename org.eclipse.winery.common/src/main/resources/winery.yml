@@ -8,7 +8,7 @@ ui:
     nfv: true
     patternRefinement: true
     problemDetection: true
-    radon: true
+    radon: false
     splitting: true
     testRefinement: true
     placement: true
