@@ -38,7 +38,7 @@ export class PropertyMappingsComponent implements OnInit {
 
     loading = true;
     targetTypeSelected = false;
-    apiData: PropertyMappingsApiData;
+    apiData: PropertyMappingsApiData = { propertyMappings: { propertyMapping: [] } };
     columns: Array<WineryTableColumn> = [
         { title: 'Service Template Property', name: 'serviceTemplatePropertyRef', sort: true },
         { title: 'Target', name: 'targetObjectRef', sort: true },
@@ -53,6 +53,8 @@ export class PropertyMappingsComponent implements OnInit {
     currentSelectedItem: Property = new Property();
     addOrUpdate = 'Add';
     properties: { name: string, property: string } = { name: '', property: '' };
+    propertiesList: Array<SelectData> = [];
+    propertiesAreKeyValuePairs = false;
     xmlData: any;
     selectedProperty = '';
     templateList: Array<SelectData> = [];
@@ -71,13 +73,14 @@ export class PropertyMappingsComponent implements OnInit {
 
     ngOnInit() {
         this.getMappings();
-        this.getProperties();
-        this.getTopologyTemplate();
     }
 
     getMappings() {
         this.service.getPropertyMappings().subscribe(
-            data => this.handleData(data),
+            data => {
+                this.handleData(data);
+                this.getProperties();
+            },
             error => this.notify.error(error.toString())
         );
     }
@@ -91,26 +94,42 @@ export class PropertyMappingsComponent implements OnInit {
 
     getProperties() {
         this.service.getPropertiesOfServiceTemplate().subscribe(
-            data => this.handleProperties(data),
+            data => {
+                this.handleProperties(data);
+                this.getTopologyTemplate();
+            },
             error => this.handleError(error)
         );
     }
 
     handleTopologyTemplateData(data: WineryTopologyTemplate) {
         this.topologyTemplate = data;
-        if (!isNullOrUndefined(this.xmlData) && !isNullOrUndefined(this.apiData)) {
-            this.loading = false;
+        this.loading = false;
+    }
+
+    handleProperties(props: any) {
+        if (props.isXML) {
+            if (props.properties) {
+                const parser = new DOMParser();
+                this.xmlData = parser.parseFromString(props.properties, 'application/xml');
+                this.properties.name = this.xmlData.firstChild.localName;
+                this.properties.property = '/*[local-name()=\'' + this.properties.name + '\']';
+            }
+        } else {
+            this.propertiesAreKeyValuePairs = true;
+            if (props.properties) {
+                for (const p in props.properties) {
+                    if (props.properties.hasOwnProperty(p)) {
+                        this.propertiesList.push({ 'id': p, 'text': p });
+                    }
+                }
+            }
         }
     }
 
-    handleProperties(props: string) {
-        const parser = new DOMParser();
-        this.xmlData = parser.parseFromString(props, 'application/xml');
-        this.properties.name = this.xmlData.firstChild.localName;
-        this.properties.property = '/*[local-name()=\'' + this.properties.name + '\']';
-
-        if (!isNullOrUndefined(this.topologyTemplate) && !isNullOrUndefined(this.apiData)) {
-            this.loading = false;
+    onPropertySelected(property: any) {
+        if (property.text && property.text.length > 0) {
+            this.currentSelectedItem.serviceTemplatePropertyRef = property.text;
         }
     }
 
@@ -200,9 +219,6 @@ export class PropertyMappingsComponent implements OnInit {
 
     handleData(data: PropertyMappingsApiData) {
         this.apiData = data;
-        if (!isNullOrUndefined(this.xmlData) && !isNullOrUndefined(this.topologyTemplate)) {
-            this.loading = false;
-        }
     }
 
     onCellSelected(selectedItem: WineryRowData) {

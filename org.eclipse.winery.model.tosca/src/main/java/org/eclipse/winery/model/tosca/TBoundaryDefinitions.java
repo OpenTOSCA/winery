@@ -21,7 +21,6 @@ import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
@@ -174,25 +173,10 @@ public class TBoundaryDefinitions implements Serializable {
     }
 
     @XmlAccessorType(XmlAccessType.FIELD)
-    @XmlType(name = "", propOrder = {
-        "any",
-        "propertyMappings"
-    })
-    public static class Properties implements Serializable {
+    public static class Properties extends TEntityTemplate.Properties {
 
-        @XmlAnyElement(lax = true)
-        protected Object any;
         @XmlElement(name = "PropertyMappings")
         protected TBoundaryDefinitions.Properties.PropertyMappings propertyMappings;
-
-        @Nullable
-        public Object getAny() {
-            return any;
-        }
-
-        public void setAny(@Nullable Object value) {
-            this.any = value;
-        }
 
         public TBoundaryDefinitions.Properties.@Nullable PropertyMappings getPropertyMappings() {
             return propertyMappings;

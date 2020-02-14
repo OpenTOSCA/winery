@@ -23,13 +23,11 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlSeeAlso;
-import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.CollapsedStringAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import javax.xml.namespace.QName;
 
-import org.eclipse.winery.model.tosca.kvproperties.WinerysPropertiesDefinition;
 import org.eclipse.winery.model.tosca.visitor.Visitor;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -52,7 +50,6 @@ import org.eclipse.jdt.annotation.Nullable;
     TPolicyType.class
 })
 public abstract class TEntityType extends TExtensibleElements implements HasName, HasInheritance, HasTargetNamespace {
-    public static final String NS_SUFFIX_PROPERTIESDEFINITION_WINERY = "propertiesdefinition/winery";
 
     @XmlElement(name = "Tags")
     protected TTags tags;
@@ -182,47 +179,6 @@ public abstract class TEntityType extends TExtensibleElements implements HasName
 
     public void setTargetNamespace(@Nullable String value) {
         this.targetNamespace = value;
-    }
-
-    /**
-     * This is a special method for Winery. Winery allows to define a property definition by specifying name/type
-     * values. Instead of parsing the extensible elements returned TDefinitions, this method is a convenience method to
-     * access this information
-     *
-     * @return a WinerysPropertiesDefinition object, which includes a map of name/type-pairs denoting the associated
-     * property definitions. A default element name and namespace is added if it is not defined in the underlying XML.
-     * null if no Winery specific KV properties are defined for the given entity type
-     */
-    @XmlTransient
-    @JsonIgnore
-    public WinerysPropertiesDefinition getWinerysPropertiesDefinition() {
-        // similar implementation as org.eclipse.winery.repository.resources.entitytypes.properties.PropertiesDefinitionResource.getListFromEntityType(TEntityType)
-        WinerysPropertiesDefinition res = null;
-        for (Object o : this.getAny()) {
-            if (o instanceof WinerysPropertiesDefinition) {
-                res = (WinerysPropertiesDefinition) o;
-            }
-        }
-
-        if (res != null) {
-            // we put defaults if elementname and namespace have not been set
-
-            if (res.getElementName() == null) {
-                res.setElementName("Properties");
-            }
-
-            if (res.getNamespace() == null) {
-                // we use the targetnamespace of the original element
-                String ns = this.getTargetNamespace();
-                if (!ns.endsWith("/")) {
-                    ns += "/";
-                }
-                ns += NS_SUFFIX_PROPERTIESDEFINITION_WINERY;
-                res.setNamespace(ns);
-            }
-        }
-
-        return res;
     }
 
     @XmlAccessorType(XmlAccessType.FIELD)

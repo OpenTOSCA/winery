@@ -50,7 +50,8 @@ export class InstanceService {
                 break;
             case ToscaTypes.ServiceTemplate:
                 subMenu = [SubMenuItems.readme, SubMenuItems.license, SubMenuItems.topologyTemplate, SubMenuItems.plans, SubMenuItems.selfServicePortal,
-                    SubMenuItems.boundaryDefinitions, SubMenuItems.tags, SubMenuItems.constraintChecking, SubMenuItems.documentation, SubMenuItems.xml];
+                    SubMenuItems.boundaryDefinitions, SubMenuItems.tags, SubMenuItems.propertiesDefinition, SubMenuItems.constraintChecking,
+                    SubMenuItems.documentation, SubMenuItems.xml];
                 if (this.configurationService.configuration.features.nfv) {
                     subMenu.push(SubMenuItems.threatModeling);
                 }

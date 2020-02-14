@@ -35,7 +35,6 @@ import org.eclipse.winery.model.tosca.TBoundaryDefinitions.Properties.PropertyMa
 import org.eclipse.winery.model.tosca.TBoundaryDefinitions.Requirements;
 import org.eclipse.winery.model.tosca.TCapabilityRef;
 import org.eclipse.winery.model.tosca.TRequirementRef;
-import org.eclipse.winery.model.tosca.utils.ModelUtilities;
 import org.eclipse.winery.repository.rest.RestUtils;
 import org.eclipse.winery.repository.rest.resources.servicetemplates.ServiceTemplateResource;
 import org.eclipse.winery.repository.rest.resources.servicetemplates.boundarydefinitions.interfaces.InterfacesResource;
@@ -44,14 +43,11 @@ import org.eclipse.winery.repository.rest.resources.servicetemplates.boundarydef
 import org.eclipse.winery.repository.rest.resources.servicetemplates.boundarydefinitions.reqscaps.RequirementsResource;
 
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import org.w3c.dom.Document;
 
 public class BoundaryDefinitionsResource {
 
     private final ServiceTemplateResource serviceTemplateResource;
     private final TBoundaryDefinitions boundaryDefinitions;
-
 
     public BoundaryDefinitionsResource(ServiceTemplateResource serviceTemplateResource, TBoundaryDefinitions boundaryDefinitions) {
         this.serviceTemplateResource = serviceTemplateResource;
@@ -80,24 +76,9 @@ public class BoundaryDefinitionsResource {
     }
 
     @Path("properties/")
-    @GET
-    @Produces(MediaType.APPLICATION_XML)
-    public String getProperties(@Context UriInfo uriInfo) {
-        return new BoundaryDefinitionsJSPData(this.serviceTemplateResource.getServiceTemplate(), uriInfo.getBaseUri()).getPropertiesAsXMLString();
-    }
-
-    /**
-     * The well-formedness of the XML element is done using the framework. If you see <code>[Fatal Error] :1:19: The
-     * prefix "tosca" for element "tosca:properties" is not bound.</code> in the console, it is an indicator that the XML element is not well-formed.
-     */
-    @Path("properties/")
-    @PUT
-    @Consumes( {MediaType.APPLICATION_XML, MediaType.TEXT_XML})
-    @ApiOperation(value = "saves properties of boundary definitions", notes = "Models the user-defined properties. The property mappings go into a separate resource propertymappings.")
-    public Response putProperties(@ApiParam(value = "Stored properties. The XSD allows a single element only. Therefore, we go for the contained element") Document doc) {
-        org.eclipse.winery.model.tosca.TBoundaryDefinitions.Properties properties = ModelUtilities.getProperties(this.boundaryDefinitions);
-        properties.setAny(doc.getDocumentElement());
-        return RestUtils.persist(this.serviceTemplateResource);
+    public BoundaryDefinitionsPropertiesResource getProperties(@Context UriInfo uriInfo) {
+        return new BoundaryDefinitionsPropertiesResource(this.serviceTemplateResource);
+        //return new BoundaryDefinitionsJSPData(this.serviceTemplateResource.getServiceTemplate(), uriInfo.getBaseUri()).getPropertiesAsXMLString();
     }
 
     @Path("requirements/")

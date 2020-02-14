@@ -31,6 +31,7 @@ import { WineryReadmeComponent } from '../../wineryReadmeModule/wineryReadme.com
 import { WineryLicenseComponent } from '../../wineryLicenseModule/wineryLicense.component';
 import { ConstraintCheckingComponent } from '../../instance/serviceTemplates/constraintChecking/constraintChecking.component';
 import { ThreatAssessmentComponent } from '../../instance/serviceTemplates/threatAssessment/threatAssessment.component';
+import { PropertiesDefinitionComponent } from '../../instance/sharedComponents/propertiesDefinition/propertiesDefinition.component';
 
 const toscaType = ToscaTypes.ServiceTemplate;
 
@@ -60,6 +61,7 @@ const serviceTemplateRoutes: Routes = [
                 // 'app/instance/serviceTemplates/boundaryDefinitions/boundaryDefinitions.module#BoundaryDefinitionsModule'
                 children: boundaryDefinitionsRoutes
             },
+            { path: 'propertiesdefinition', component: PropertiesDefinitionComponent},
             { path: 'constraintchecking', component: ConstraintCheckingComponent },
             { path: 'tags', component: TagComponent },
             { path: 'documentation', component: DocumentationComponent },

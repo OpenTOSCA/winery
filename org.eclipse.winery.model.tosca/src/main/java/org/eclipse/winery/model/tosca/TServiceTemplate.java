@@ -25,6 +25,8 @@ import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.namespace.QName;
 
+import org.eclipse.winery.model.tosca.constants.Namespaces;
+import org.eclipse.winery.model.tosca.kvproperties.WinerysPropertiesDefinition;
 import org.eclipse.winery.model.tosca.utils.RemoveEmptyLists;
 import org.eclipse.winery.model.tosca.visitor.Visitor;
 
@@ -32,12 +34,16 @@ import org.eclipse.jdt.annotation.Nullable;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "tServiceTemplate", propOrder = {
+    "propertiesDefinition",
     "tags",
     "boundaryDefinitions",
     "topologyTemplate",
     "plans"
 })
 public class TServiceTemplate extends HasId implements HasName, HasTargetNamespace {
+    
+    @XmlElement(name = "BoundaryDefPropertiesDefinition", namespace = Namespaces.TOSCA_WINERY_EXTENSIONS_NAMESPACE)
+    protected TServiceTemplate.PropertiesDefinition propertiesDefinition;
 
     @XmlElement(name = "Tags")
     protected TTags tags;
@@ -66,6 +72,7 @@ public class TServiceTemplate extends HasId implements HasName, HasTargetNamespa
 
     public TServiceTemplate(Builder builder) {
         super(builder);
+        this.propertiesDefinition = builder.propertiesDefinition;
         this.tags = builder.tags;
         this.boundaryDefinitions = builder.boundaryDefinitions;
         this.topologyTemplate = builder.topologyTemplate;
@@ -81,7 +88,8 @@ public class TServiceTemplate extends HasId implements HasName, HasTargetNamespa
         if (!(o instanceof TServiceTemplate)) return false;
         if (!super.equals(o)) return false;
         TServiceTemplate that = (TServiceTemplate) o;
-        return Objects.equals(tags, that.tags) &&
+        return Objects.equals(propertiesDefinition, that.propertiesDefinition) &&
+            Objects.equals(tags, that.tags) &&
             Objects.equals(boundaryDefinitions, that.boundaryDefinitions) &&
             Objects.equals(topologyTemplate, that.topologyTemplate) &&
             Objects.equals(plans, that.plans) &&
@@ -92,7 +100,7 @@ public class TServiceTemplate extends HasId implements HasName, HasTargetNamespa
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), tags, boundaryDefinitions, topologyTemplate, plans, name, targetNamespace, substitutableNodeType);
+        return Objects.hash(super.hashCode(), propertiesDefinition, tags, boundaryDefinitions, topologyTemplate, plans, name, targetNamespace, substitutableNodeType);
     }
 
     @Nullable
@@ -169,11 +177,41 @@ public class TServiceTemplate extends HasId implements HasName, HasTargetNamespa
         visitor.visit(this);
     }
 
+    public TServiceTemplate.@Nullable PropertiesDefinition getPropertiesDefinition() {
+        return propertiesDefinition;
+    }
+
+    public void setPropertiesDefinition(TServiceTemplate.@Nullable PropertiesDefinition value) {
+        this.propertiesDefinition = value;
+    }
+
+    /**
+     * <p>Java class for anonymous complex type.
+     * <p>
+     * <p>The following schema fragment specifies the expected content contained within this class.
+     * <p>
+     * <pre>
+     * &lt;complexType>
+     *   &lt;complexContent>
+     *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
+     *       &lt;attribute name="element" type="{http://www.w3.org/2001/XMLSchema}QName" />
+     *       &lt;attribute name="type" type="{http://www.w3.org/2001/XMLSchema}QName" />
+     *     &lt;/restriction>
+     *   &lt;/complexContent>
+     * &lt;/complexType>
+     * </pre>
+     */
+    @XmlAccessorType(XmlAccessType.FIELD)
+    @XmlType(name = "")
+    public static class PropertiesDefinition extends TEntityType.PropertiesDefinition {
+    }
+
     public static class Builder extends HasId.Builder<Builder> {
         private final TTopologyTemplate topologyTemplate;
 
         private TTags tags;
         private TBoundaryDefinitions boundaryDefinitions;
+        private TServiceTemplate.PropertiesDefinition propertiesDefinition;
         private TPlans plans;
         private String name;
         private String targetNamespace;
@@ -254,6 +292,11 @@ public class TServiceTemplate extends HasId implements HasName, HasTargetNamespa
 
         public TServiceTemplate build() {
             return new TServiceTemplate(this);
+        }
+
+        public Builder setPropertiesDefinition(PropertiesDefinition propertiesDefinition) {
+            this.propertiesDefinition = propertiesDefinition;
+            return this;
         }
     }
 }

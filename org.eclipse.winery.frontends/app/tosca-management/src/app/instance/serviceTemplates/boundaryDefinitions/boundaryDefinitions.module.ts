@@ -35,9 +35,10 @@ import { InterfacesComponent } from '../../sharedComponents/interfaces/interface
 import { InterfacesModule } from '../../sharedComponents/interfaces/interfaces.module';
 import { WineryQNameSelectorModule } from '../../../wineryQNameSelector/wineryQNameSelector.module';
 import { WineryEditorModule } from '../../../wineryEditorModule/wineryEditor.module';
+import { PropertiesComponent } from '../../sharedComponents/properties/properties.component';
 
 export const boundaryDefinitionsRoutes: Routes = [
-    { path: 'properties', component: EditXMLComponent },
+    { path: 'properties', component: PropertiesComponent},
     { path: 'propertymappings', component: PropertyMappingsComponent },
     { path: 'propertyconstraints', component: PropertyConstraintsComponent },
     { path: 'requirements', component: RequirementsComponent },

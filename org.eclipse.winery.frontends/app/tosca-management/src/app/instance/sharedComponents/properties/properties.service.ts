@@ -17,6 +17,7 @@ import { Observable } from 'rxjs';
 import { backendBaseURL } from '../../../configuration';
 import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
 import { map } from 'rxjs/operators';
+import { ToscaTypes } from '../../../model/enums';
 
 @Injectable()
 export class PropertiesService {
@@ -26,6 +27,9 @@ export class PropertiesService {
     constructor(private http: HttpClient,
                 private sharedData: InstanceService) {
         this.path = backendBaseURL + this.sharedData.path + '/properties/';
+        if (this.sharedData.toscaComponent.toscaType === ToscaTypes.ServiceTemplate ) {
+            this.path = this.path.replace('/properties/', '/boundarydefinitions/properties/');
+        }
     }
 
     /**
@@ -46,8 +50,7 @@ export class PropertiesService {
     }
 
     public saveProperties(properties: any, isXML: boolean): Observable<HttpResponse<string>> {
-        const headers = new HttpHeaders();
-        headers.set('Content-Type', isXML ? 'application/xml' : 'application/json');
+        const headers = new HttpHeaders({ 'Content-Type' : isXML ? 'application/xml' : 'application/json'});
         return this.http
             .put(
                 this.path,

@@ -100,6 +100,7 @@ import org.eclipse.winery.model.tosca.RelationshipSourceOrTarget;
 import org.eclipse.winery.model.tosca.TArtifactReference;
 import org.eclipse.winery.model.tosca.TArtifactTemplate;
 import org.eclipse.winery.model.tosca.TArtifactType;
+import org.eclipse.winery.model.tosca.TBoundaryDefinitions;
 import org.eclipse.winery.model.tosca.TCapability;
 import org.eclipse.winery.model.tosca.TCapabilityType;
 import org.eclipse.winery.model.tosca.TComplianceRule;
@@ -121,6 +122,7 @@ import org.eclipse.winery.model.tosca.TPlan;
 import org.eclipse.winery.model.tosca.TPlans;
 import org.eclipse.winery.model.tosca.TPolicyTemplate;
 import org.eclipse.winery.model.tosca.TPolicyType;
+import org.eclipse.winery.model.tosca.TPropertyMapping;
 import org.eclipse.winery.model.tosca.TRelationshipTemplate;
 import org.eclipse.winery.model.tosca.TRelationshipType;
 import org.eclipse.winery.model.tosca.TRelationshipTypeImplementation;
@@ -304,7 +306,7 @@ public class BackendUtils {
     }
 
     /**
-     * Do <em>not</em> use this for creating URLs. Use  {@link Utils#getURLforPathInsideRepo(java.lang.String)} or
+     * Do <em>not</em> use this for creating URLs. Use  {@link Utils.getURLforPathInsideRepo(java.lang.String)} or
      * {@link Utils#getAbsoluteURL(org.eclipse.winery.common.ids.GenericId) instead.
      *
      * @return the path starting from the root element to the current element. Separated by "/", URLencoded, but
@@ -664,17 +666,32 @@ public class BackendUtils {
     /**
      * Properties need to be initialized in the case of K/V Properties
      *
-     * @param repository     The repository to work on
-     * @param entityTemplate the entity template to update
+     * @param repository The repository to work on
+     * @param extEl      The entity template or service template to update
      */
-    public static void initializeProperties(IRepository repository, TEntityTemplate entityTemplate) {
+    public static void initializeProperties(IRepository repository, TExtensibleElements extEl) {
         Objects.requireNonNull(repository);
-        Objects.requireNonNull(entityTemplate);
+        Objects.requireNonNull(extEl);
 
-        Objects.requireNonNull(entityTemplate.getType());
+        if (extEl instanceof TEntityTemplate) {
+            Objects.requireNonNull(((TEntityTemplate) extEl).getType());
+        }
 
-        final TEntityType entityType = repository.getTypeForTemplate(entityTemplate);
-        final WinerysPropertiesDefinition winerysPropertiesDefinition = entityType.getWinerysPropertiesDefinition();
+        WinerysPropertiesDefinition winerysPropertiesDefinition;
+        Map<String, String> existingKVProperties = null;
+        List<String> addedPropertyNames = new ArrayList<>();
+        if (extEl instanceof TEntityTemplate) {
+            final TEntityType entityType = repository.getTypeForTemplate(((TEntityTemplate) extEl));
+            winerysPropertiesDefinition = entityType.getWinerysPropertiesDefinition();
+        } else {
+            // serviceTemplate allows direct access to WinerysPropertiesDefinition
+            winerysPropertiesDefinition = extEl.getWinerysPropertiesDefinition();
+            TServiceTemplate st = ((TServiceTemplate) extEl);
+            if (Objects.nonNull(st.getBoundaryDefinitions()) && Objects.nonNull(st.getBoundaryDefinitions().getProperties())) {
+                existingKVProperties = st.getBoundaryDefinitions().getProperties().getKVProperties();
+            }
+        }
+
         if (winerysPropertiesDefinition == null) {
             return;
         }
@@ -694,12 +711,46 @@ public class BackendUtils {
         for (PropertyDefinitionKV propertyDefinitionKV : winerysPropertiesDefinition.getPropertyDefinitionKVList()) {
             // we always write the element tag as the XSD forces that
             final Element valueElement = document.createElementNS(namespace, propertyDefinitionKV.getKey());
+
+            if (Objects.nonNull(existingKVProperties)) {
+                if (existingKVProperties.containsKey(propertyDefinitionKV.getKey())) {
+                    valueElement.setTextContent(existingKVProperties.get(propertyDefinitionKV.getKey()));
+                }
+            }
             wrapperElement.appendChild(valueElement);
+            addedPropertyNames.add(propertyDefinitionKV.getKey());
         }
 
-        TEntityTemplate.Properties properties = new TEntityTemplate.Properties();
-        properties.setAny(document.getDocumentElement());
-        entityTemplate.setProperties(properties);
+        if (extEl instanceof TEntityTemplate) {
+            TEntityTemplate.Properties properties = new TEntityTemplate.Properties();
+            properties.setAny(document.getDocumentElement());
+            ((TEntityTemplate) extEl).setProperties(properties);
+        } else {
+            TServiceTemplate st = ((TServiceTemplate) extEl);
+            TBoundaryDefinitions bd = st.getBoundaryDefinitions();
+
+            TBoundaryDefinitions.Properties properties = new TBoundaryDefinitions.Properties();
+            properties.setAny(document.getDocumentElement());
+
+            if (Objects.nonNull(bd) && Objects.nonNull(bd.getProperties())
+                && Objects.nonNull(bd.getProperties().getPropertyMappings())) {
+
+                TBoundaryDefinitions.Properties.PropertyMappings propertyMappings = new TBoundaryDefinitions.Properties.PropertyMappings();
+                for (TPropertyMapping mapping : bd.getProperties().getPropertyMappings().getPropertyMapping()) {
+                    if (addedPropertyNames.contains(mapping.getServiceTemplatePropertyRef())) {
+                        propertyMappings.getPropertyMapping().add(mapping);
+                    }
+                }
+                properties.setPropertyMappings(propertyMappings);
+            }
+
+            if (Objects.nonNull(bd)) {
+                st.getBoundaryDefinitions().setProperties(properties);
+            } else {
+                st.setBoundaryDefinitions(new TBoundaryDefinitions());
+                st.getBoundaryDefinitions().setProperties(properties);
+            }
+        }
     }
 
     /**
@@ -850,72 +901,83 @@ public class BackendUtils {
      * @param ci     the entity type to try to modify the WPDs
      * @param errors the list to add errors to
      */
-    public static void deriveWPD(TEntityType ci, List<String> errors) {
+    public static void deriveWPD(TExtensibleElements ci, List<String> errors) {
         BackendUtils.LOGGER.trace("deriveWPD");
-        PropertiesDefinition propertiesDefinition = ci.getPropertiesDefinition();
-        QName element = propertiesDefinition.getElement();
-        if (element == null) {
-            BackendUtils.LOGGER.debug("only works for an element definition, not for types");
-        } else {
-            BackendUtils.LOGGER.debug("Looking for the definition of {" + element.getNamespaceURI() + "}" + element.getLocalPart());
-            // fetch the XSD defining the element
-            final XsdImportManager xsdImportManager = RepositoryFactory.getRepository().getXsdImportManager();
-            Map<String, RepositoryFileReference> mapFromLocalNameToXSD = xsdImportManager.getMapFromLocalNameToXSD(new Namespace(element.getNamespaceURI(), false), false);
-            RepositoryFileReference ref = mapFromLocalNameToXSD.get(element.getLocalPart());
-            if (ref == null) {
-                String msg = "XSD not found for " + element.getNamespaceURI() + " / " + element.getLocalPart();
-                BackendUtils.LOGGER.debug(msg);
-                errors.add(msg);
-                return;
+        if (ci instanceof TEntityType || ci instanceof TServiceTemplate) {
+            PropertiesDefinition propertiesDefinition;
+            if (ci instanceof TEntityType) {
+                propertiesDefinition = ((TEntityType) ci).getPropertiesDefinition();
+            } else {
+                propertiesDefinition = ((TServiceTemplate) ci).getPropertiesDefinition();
             }
 
-            final Optional<XSModel> xsModelOptional = BackendUtils.getXSModel(ref);
-            if (!xsModelOptional.isPresent()) {
-                LOGGER.error("no XSModel found");
-            }
-            XSModel xsModel = xsModelOptional.get();
-            XSElementDeclaration elementDeclaration = xsModel.getElementDeclaration(element.getLocalPart(), element.getNamespaceURI());
-            if (elementDeclaration == null) {
-                String msg = "XSD model claimed to contain declaration for {" + element.getNamespaceURI() + "}" + element.getLocalPart() + ", but it did not.";
-                BackendUtils.LOGGER.debug(msg);
-                errors.add(msg);
-                return;
-            }
+            QName element = propertiesDefinition.getElement();
+            if (element == null) {
+                BackendUtils.LOGGER.debug("only works for an element definition, not for types");
+            } else {
+                BackendUtils.LOGGER.debug("Looking for the definition of {" + element.getNamespaceURI() + "}" + element.getLocalPart());
+                // fetch the XSD defining the element
+                final XsdImportManager xsdImportManager = RepositoryFactory.getRepository().getXsdImportManager();
+                Map<String, RepositoryFileReference> mapFromLocalNameToXSD = xsdImportManager.getMapFromLocalNameToXSD(new Namespace(element.getNamespaceURI(), false), false);
+                RepositoryFileReference ref = mapFromLocalNameToXSD.get(element.getLocalPart());
+                if (ref == null) {
+                    String msg = "XSD not found for " + element.getNamespaceURI() + " / " + element.getLocalPart();
+                    BackendUtils.LOGGER.debug(msg);
+                    errors.add(msg);
+                    return;
+                }
 
-            // go through the XSD definition and
-            XSTypeDefinition typeDefinition = elementDeclaration.getTypeDefinition();
-            if (typeDefinition instanceof XSComplexTypeDefinition) {
-                XSComplexTypeDefinition cTypeDefinition = (XSComplexTypeDefinition) typeDefinition;
-                XSParticle particle = cTypeDefinition.getParticle();
-                if (particle == null) {
-                    BackendUtils.LOGGER.debug("XSD does not follow the requirements put by winery: Complex type does not contain particles");
-                } else {
-                    XSTerm term = particle.getTerm();
-                    if (term instanceof XSModelGroup) {
-                        XSModelGroup modelGroup = (XSModelGroup) term;
-                        if (modelGroup.getCompositor() == XSModelGroup.COMPOSITOR_SEQUENCE) {
-                            XSObjectList particles = modelGroup.getParticles();
-                            int len = particles.getLength();
-                            boolean everyThingIsASimpleType = true;
-                            PropertyDefinitionKVList list = new PropertyDefinitionKVList();
-                            if (len != 0) {
-                                for (int i = 0; i < len; i++) {
-                                    XSParticle innerParticle = (XSParticle) particles.item(i);
-                                    XSTerm innerTerm = innerParticle.getTerm();
-                                    if (innerTerm instanceof XSElementDeclaration) {
-                                        XSElementDeclaration innerElementDeclaration = (XSElementDeclaration) innerTerm;
-                                        String name = innerElementDeclaration.getName();
-                                        XSTypeDefinition innerTypeDefinition = innerElementDeclaration.getTypeDefinition();
-                                        if (innerTypeDefinition instanceof XSSimpleType) {
-                                            XSSimpleType xsSimpleType = (XSSimpleType) innerTypeDefinition;
-                                            String typeNS = xsSimpleType.getNamespace();
-                                            String typeName = xsSimpleType.getName();
-                                            if (typeNS.equals(XMLConstants.W3C_XML_SCHEMA_NS_URI)) {
-                                                PropertyDefinitionKV def = new PropertyDefinitionKV();
-                                                def.setKey(name);
-                                                // convention at WPD: use "xsd" as prefix for XML Schema Definition
-                                                def.setType("xsd:" + typeName);
-                                                list.add(def);
+                final Optional<XSModel> xsModelOptional = BackendUtils.getXSModel(ref);
+                if (!xsModelOptional.isPresent()) {
+                    LOGGER.error("no XSModel found");
+                }
+                XSModel xsModel = xsModelOptional.get();
+                XSElementDeclaration elementDeclaration = xsModel.getElementDeclaration(element.getLocalPart(), element.getNamespaceURI());
+                if (elementDeclaration == null) {
+                    String msg = "XSD model claimed to contain declaration for {" + element.getNamespaceURI() + "}" + element.getLocalPart() + ", but it did not.";
+                    BackendUtils.LOGGER.debug(msg);
+                    errors.add(msg);
+                    return;
+                }
+
+                // go through the XSD definition and
+                XSTypeDefinition typeDefinition = elementDeclaration.getTypeDefinition();
+                if (typeDefinition instanceof XSComplexTypeDefinition) {
+                    XSComplexTypeDefinition cTypeDefinition = (XSComplexTypeDefinition) typeDefinition;
+                    XSParticle particle = cTypeDefinition.getParticle();
+                    if (particle == null) {
+                        BackendUtils.LOGGER.debug("XSD does not follow the requirements put by winery: Complex type does not contain particles");
+                    } else {
+                        XSTerm term = particle.getTerm();
+                        if (term instanceof XSModelGroup) {
+                            XSModelGroup modelGroup = (XSModelGroup) term;
+                            if (modelGroup.getCompositor() == XSModelGroup.COMPOSITOR_SEQUENCE) {
+                                XSObjectList particles = modelGroup.getParticles();
+                                int len = particles.getLength();
+                                boolean everyThingIsASimpleType = true;
+                                PropertyDefinitionKVList list = new PropertyDefinitionKVList();
+                                if (len != 0) {
+                                    for (int i = 0; i < len; i++) {
+                                        XSParticle innerParticle = (XSParticle) particles.item(i);
+                                        XSTerm innerTerm = innerParticle.getTerm();
+                                        if (innerTerm instanceof XSElementDeclaration) {
+                                            XSElementDeclaration innerElementDeclaration = (XSElementDeclaration) innerTerm;
+                                            String name = innerElementDeclaration.getName();
+                                            XSTypeDefinition innerTypeDefinition = innerElementDeclaration.getTypeDefinition();
+                                            if (innerTypeDefinition instanceof XSSimpleType) {
+                                                XSSimpleType xsSimpleType = (XSSimpleType) innerTypeDefinition;
+                                                String typeNS = xsSimpleType.getNamespace();
+                                                String typeName = xsSimpleType.getName();
+                                                if (typeNS.equals(XMLConstants.W3C_XML_SCHEMA_NS_URI)) {
+                                                    PropertyDefinitionKV def = new PropertyDefinitionKV();
+                                                    def.setKey(name);
+                                                    // convention at WPD: use "xsd" as prefix for XML Schema Definition
+                                                    def.setType("xsd:" + typeName);
+                                                    list.add(def);
+                                                } else {
+                                                    everyThingIsASimpleType = false;
+                                                    break;
+                                                }
                                             } else {
                                                 everyThingIsASimpleType = false;
                                                 break;
@@ -924,33 +986,30 @@ public class BackendUtils {
                                             everyThingIsASimpleType = false;
                                             break;
                                         }
-                                    } else {
-                                        everyThingIsASimpleType = false;
-                                        break;
                                     }
                                 }
-                            }
-                            if (everyThingIsASimpleType) {
-                                // everything went allright, we can add a WPD
-                                WinerysPropertiesDefinition wpd = new WinerysPropertiesDefinition();
-                                wpd.setIsDerivedFromXSD(Boolean.TRUE);
-                                wpd.setElementName(element.getLocalPart());
-                                wpd.setNamespace(element.getNamespaceURI());
-                                wpd.setPropertyDefinitionKVList(list);
-                                ModelUtilities.replaceWinerysPropertiesDefinition(ci, wpd);
-                                BackendUtils.LOGGER.debug("Successfully generated WPD");
+                                if (everyThingIsASimpleType) {
+                                    // everything went allright, we can add a WPD
+                                    WinerysPropertiesDefinition wpd = new WinerysPropertiesDefinition();
+                                    wpd.setIsDerivedFromXSD(Boolean.TRUE);
+                                    wpd.setElementName(element.getLocalPart());
+                                    wpd.setNamespace(element.getNamespaceURI());
+                                    wpd.setPropertyDefinitionKVList(list);
+                                    ModelUtilities.replaceWinerysPropertiesDefinition(ci, wpd);
+                                    BackendUtils.LOGGER.debug("Successfully generated WPD");
+                                } else {
+                                    BackendUtils.LOGGER.debug("XSD does not follow the requirements put by winery: Not all types in the sequence are simple types");
+                                }
                             } else {
-                                BackendUtils.LOGGER.debug("XSD does not follow the requirements put by winery: Not all types in the sequence are simple types");
+                                BackendUtils.LOGGER.debug("XSD does not follow the requirements put by winery: Model group is not a sequence");
                             }
                         } else {
-                            BackendUtils.LOGGER.debug("XSD does not follow the requirements put by winery: Model group is not a sequence");
+                            BackendUtils.LOGGER.debug("XSD does not follow the requirements put by winery: Not a model group");
                         }
-                    } else {
-                        BackendUtils.LOGGER.debug("XSD does not follow the requirements put by winery: Not a model group");
                     }
+                } else {
+                    BackendUtils.LOGGER.debug("XSD does not follow the requirements put by winery: No Complex Type Definition");
                 }
-            } else {
-                BackendUtils.LOGGER.debug("XSD does not follow the requirements put by winery: No Complex Type Definition");
             }
         }
     }

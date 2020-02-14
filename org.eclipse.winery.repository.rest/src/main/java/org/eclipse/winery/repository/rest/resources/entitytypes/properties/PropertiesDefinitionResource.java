@@ -56,20 +56,23 @@ import org.slf4j.LoggerFactory;
  * {@link TEntityType.PropertiesDefinition}
  */
 public class PropertiesDefinitionResource {
-
     private static final Logger LOGGER = LoggerFactory.getLogger(PropertiesDefinitionResource.class);
+
+    // we assume that this class is created at each request
+    // therefore, we can have "wpd" final
+    protected final WinerysPropertiesDefinition wpd;
 
     // We hold a copy of super.res as we work on the type EntityTypeResource instead of AbstractComponentInstanceResource
     private final EntityTypeResource parentRes;
 
-    // we assume that this class is created at each request
-    // therefore, we can have "wpd" final
-    private final WinerysPropertiesDefinition wpd;
-
-
     public PropertiesDefinitionResource(EntityTypeResource res) {
         this.parentRes = res;
-        this.wpd = ModelUtilities.getWinerysPropertiesDefinition(res.getEntityType());
+        this.wpd = res.getEntityType().getWinerysPropertiesDefinition();
+    }
+
+    protected PropertiesDefinitionResource() {
+        wpd = null;
+        parentRes = null;
     }
 
     @GET

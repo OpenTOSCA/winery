@@ -27,11 +27,14 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAnyAttribute;
 import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.namespace.QName;
 
+import org.eclipse.winery.model.tosca.kvproperties.WinerysPropertiesDefinition;
 import org.eclipse.winery.model.tosca.visitor.Visitor;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.github.adr.embedded.ADR;
 import org.eclipse.jdt.annotation.NonNull;
@@ -62,6 +65,8 @@ import org.eclipse.jdt.annotation.NonNull;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public abstract class TExtensibleElements implements Serializable {
 
+    public static final String NS_SUFFIX_PROPERTIESDEFINITION_WINERY = "propertiesdefinition/winery";
+
     protected List<TDocumentation> documentation;
 
     @XmlAnyElement(lax = true)
@@ -69,7 +74,7 @@ public abstract class TExtensibleElements implements Serializable {
 
     @XmlAnyAttribute
     @NonNull
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
+    private Map<QName, String> otherAttributes = new HashMap<>();
 
     public TExtensibleElements() {
     }
@@ -102,7 +107,7 @@ public abstract class TExtensibleElements implements Serializable {
     @NonNull
     public List<TDocumentation> getDocumentation() {
         if (documentation == null) {
-            documentation = new ArrayList<TDocumentation>();
+            documentation = new ArrayList<>();
         }
         return this.documentation;
     }
@@ -110,9 +115,58 @@ public abstract class TExtensibleElements implements Serializable {
     @NonNull
     public List<Object> getAny() {
         if (any == null) {
-            any = new ArrayList<Object>();
+            any = new ArrayList<>();
         }
         return this.any;
+    }
+
+    /**
+     * This is a special method for Winery. Winery allows to define a property definition by specifying name/type
+     * values. Instead of parsing the extensible elements returned TDefinitions, this method is a convenience method to
+     * access this information
+     *
+     * @return a WinerysPropertiesDefinition object, which includes a map of name/type-pairs denoting the associated
+     * property definitions. A default element name and namespace is added if it is not defined in the underlying XML.
+     * null if no Winery specific KV properties are defined for the given entity type
+     */
+    @XmlTransient
+    @JsonIgnore
+    public WinerysPropertiesDefinition getWinerysPropertiesDefinition() {
+        // similar implementation as org.eclipse.winery.repository.resources.entitytypes.properties.PropertiesDefinitionResource.getListFromEntityType(TEntityType)
+        WinerysPropertiesDefinition res = null;
+        for (Object o : this.getAny()) {
+            if (o instanceof WinerysPropertiesDefinition) {
+                res = (WinerysPropertiesDefinition) o;
+            }
+        }
+
+        if (res != null) {
+            // we put defaults if elementname and namespace have not been set
+            setWPDElement(res);
+            setWPDNamespace(res);
+        }
+
+        return res;
+    }
+
+    private void setWPDElement(WinerysPropertiesDefinition res) {
+        if (res.getElementName() == null) {
+            res.setElementName("Properties");
+        }
+    }
+
+    private void setWPDNamespace(WinerysPropertiesDefinition res) {
+        if (Objects.isNull(res.getNamespace())) {
+            if (this instanceof HasTargetNamespace) {
+                // we use the targetnamespace of the original element
+                String ns = ((HasTargetNamespace) this).getTargetNamespace();
+                if (!ns.endsWith("/")) {
+                    ns += "/";
+                }
+                ns += NS_SUFFIX_PROPERTIESDEFINITION_WINERY;
+                res.setNamespace(ns);
+            }
+        }
     }
 
     @NonNull

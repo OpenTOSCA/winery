@@ -181,7 +181,7 @@ public class ModelUtilities {
      * Removes an existing Winery's Properties definition. If no such definition exists, the TEntityType is not
      * modified
      */
-    public static void removeWinerysPropertiesDefinition(TEntityType et) {
+    public static void removeWinerysPropertiesDefinition(TExtensibleElements et) {
         for (Iterator<Object> iterator = et.getAny().iterator(); iterator.hasNext(); ) {
             Object o = iterator.next();
             if (o instanceof WinerysPropertiesDefinition) {
@@ -191,7 +191,7 @@ public class ModelUtilities {
         }
     }
 
-    public static void replaceWinerysPropertiesDefinition(TEntityType et, WinerysPropertiesDefinition wpd) {
+    public static void replaceWinerysPropertiesDefinition(TExtensibleElements et, WinerysPropertiesDefinition wpd) {
         ModelUtilities.removeWinerysPropertiesDefinition(et);
         et.getAny().add(wpd);
     }

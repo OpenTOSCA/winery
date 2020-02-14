@@ -32,7 +32,15 @@
                 <div class="form-group">
                     <span>Service Template Property</span>
                     <br>
-                    <div>
+                    <ng-select #serviceTemplateProperty
+                               *ngIf="propertiesAreKeyValuePairs"
+                               [items]="propertiesList"
+                               (selected)="onPropertySelected($event)"
+                               required
+                               placeholder="no property specified">
+                    </ng-select>
+
+                    <div *ngIf="!propertiesAreKeyValuePairs">
                         <label for="serviceTemplatePropertyRef">Property Name</label>
                         <input #serviceTemplateProp="ngModel"
                                name="serviceTemplatePropertyRef"
@@ -41,13 +49,13 @@
                                type="text"
                                required
                                [(ngModel)]="currentSelectedItem.serviceTemplatePropertyRef"/>
-                    </div>
 
-                    <div style="clear:both"
-                         *ngIf="serviceTemplateProp.errors && (serviceTemplateProp.dirty || serviceTemplateProp.touched)"
-                         class="alert alert-danger">
-                        <div [hidden]="!serviceTemplateProp.errors.required">
-                            Property name is required!
+                        <div style="clear:both"
+                             *ngIf="serviceTemplateProp.errors && (serviceTemplateProp.dirty || serviceTemplateProp.touched)"
+                             class="alert alert-danger">
+                            <div [hidden]="!serviceTemplateProp.errors.required">
+                                Property name is required!
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -145,8 +153,9 @@
     <winery-modal-footer
         (onOk)="addPropertyMapping()"
         [okButtonLabel]="addOrUpdate"
-        [disableOkButton]="!(propertyMappingForm?.form.valid && currentSelectedItem.targetObjectRef && currentSelectedItem.targetObjectRef.length > 0
-                           && currentSelectedItem.targetPropertyRef && currentSelectedItem.targetPropertyRef.length > 0)">
+        [disableOkButton]="!(propertyMappingForm?.form.valid && currentSelectedItem.serviceTemplatePropertyRef && currentSelectedItem.serviceTemplatePropertyRef.length > 0
+                    && currentSelectedItem.targetObjectRef && currentSelectedItem.targetObjectRef.length > 0
+                    && currentSelectedItem.targetPropertyRef && currentSelectedItem.targetPropertyRef.length > 0)">
     </winery-modal-footer>
 </winery-modal>
 
@@ -164,7 +173,7 @@
     </winery-modal-body>
     <winery-modal-footer
         (onOk)="removeConfirmed();"
-        [okButtonLabel]="'Yes'">
+        [okButtonLabel]="'Delete'">
     </winery-modal-footer>
 </winery-modal>
 

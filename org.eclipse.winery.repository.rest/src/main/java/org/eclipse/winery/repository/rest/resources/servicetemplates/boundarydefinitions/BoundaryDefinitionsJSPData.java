@@ -23,7 +23,6 @@ import javax.xml.namespace.QName;
 
 import org.eclipse.winery.common.ids.definitions.PolicyTypeId;
 import org.eclipse.winery.model.tosca.TBoundaryDefinitions;
-import org.eclipse.winery.model.tosca.TBoundaryDefinitions.Properties;
 import org.eclipse.winery.model.tosca.TPlan;
 import org.eclipse.winery.model.tosca.TPlans;
 import org.eclipse.winery.model.tosca.TServiceTemplate;
@@ -54,7 +53,7 @@ public class BoundaryDefinitionsJSPData {
     }
 
     private String getDefinedProperties() {
-        Properties p = ModelUtilities.getProperties(this.defs);
+        TBoundaryDefinitions.Properties p = ModelUtilities.getProperties(this.defs);
         Object o = p.getAny();
         if (o == null) {
             // nothing stored -> return empty string
