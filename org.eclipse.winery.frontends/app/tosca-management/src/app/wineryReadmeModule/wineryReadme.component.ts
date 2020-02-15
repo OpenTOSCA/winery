@@ -11,12 +11,12 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR Apache-2.0
  *******************************************************************************/
-import {Component, OnInit} from '@angular/core';
-import {ReadmeService} from './wineryReadme.service';
-import {WineryNotificationService} from '../wineryNotificationModule/wineryNotification.service';
-import {InstanceService} from '../instance/instance.service';
-import {ToscaTypes} from '../model/enums';
-import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
+import { Component, OnInit } from '@angular/core';
+import { ReadmeService } from './wineryReadme.service';
+import { WineryNotificationService } from '../wineryNotificationModule/wineryNotification.service';
+import { InstanceService } from '../instance/instance.service';
+import { ToscaTypes } from '../model/enums';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
     templateUrl: 'wineryReadme.component.html',
@@ -36,7 +36,15 @@ export class WineryReadmeComponent implements OnInit {
 
     constructor(private service: ReadmeService, private notify: WineryNotificationService, public sharedData: InstanceService) {
         this.toscaType = this.sharedData.toscaComponent.toscaType;
+        console.log(sharedData.toscaComponent.backendPath);
 
+        // TODO: Move this into init and add field here for the description String.
+        this.sharedData.getDescription().subscribe(
+            data => {
+                console.log(data);
+            },
+            (error: Response) => console.log(error.status)
+        );
     }
 
     ngOnInit() {

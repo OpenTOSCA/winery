@@ -18,7 +18,7 @@ import { WineryInstance, WineryTopologyTemplate } from '../model/wineryComponent
 import { ToscaComponent } from '../model/toscaComponent';
 import { ToscaTypes } from '../model/enums';
 import { WineryVersion } from '../model/wineryVersion';
-import { HttpClient, HttpResponse } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
 import { WineryRepositoryConfigurationService } from '../wineryFeatureToggleModule/WineryRepositoryConfiguration.service';
 import { SubMenuItem, SubMenuItems } from '../model/subMenuItem';
 
@@ -194,5 +194,12 @@ export class InstanceService {
 
     public getVersions(): Observable<WineryVersion[]> {
         return this.http.get<WineryVersion[]>(backendBaseURL + this.path + '/?versions');
+    }
+
+    public getDescription(): Observable<any> {
+        const headers = new HttpHeaders({ 'Accept': 'text/plain' });
+        console.log(backendBaseURL + this.path + '/description/');
+        return this.http.get<String>(backendBaseURL + this.path + '/description/',
+            { headers: headers, responseType: 'text' });
     }
 }

@@ -89,4 +89,15 @@ public abstract class EntityTypeResource extends AbstractComponentInstanceResour
         Response res = Response.status(Status.INTERNAL_SERVER_ERROR).entity("not yet implemented").build();
         throw new WebApplicationException(res);
     }
+
+    @Path("description/")
+    @GET
+    @Produces(MediaType.TEXT_PLAIN)
+    public String getDescription() {
+        // TODO: Problem an dieser Stelle: Wir benötigen den YAML TEntityType nicht den XML TEntityType
+        //  Frage ist nun: Ist das die falsche Stelle, oder benötigen wir den X2Y Converter? Wenn ja,
+        //  welche methode?
+        return this.getEntityType().getName();
+        // Eigentlich: return this.getEntityType().getDesciption();
+    }
 }
