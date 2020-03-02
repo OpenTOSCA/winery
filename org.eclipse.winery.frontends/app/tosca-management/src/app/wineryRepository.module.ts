@@ -48,6 +48,7 @@ import { PatternRefinementModelModule } from './wineryMainModules/patternRefinem
 import { TestRefinementModelModule } from './wineryMainModules/testRefinementModels/testRefinementModel.module';
 import { WineryRepositoryConfigurationService } from './wineryFeatureToggleModule/WineryRepositoryConfiguration.service';
 import { WineryFeatureToggleModule } from './wineryFeatureToggleModule/winery-feature-toggle.module';
+import { DataTypeModule } from './wineryMainModules/dataTypes/dataType.module';
 
 @NgModule({
     imports: [
@@ -65,6 +66,7 @@ import { WineryFeatureToggleModule } from './wineryFeatureToggleModule/winery-fe
         NodeTypeModule,
         RelationshipTypeModule,
         ArtifactTypeModule,
+        DataTypeModule,
         AdminModule,
         PolicyTypeModule,
         RequirementTypeModule,
