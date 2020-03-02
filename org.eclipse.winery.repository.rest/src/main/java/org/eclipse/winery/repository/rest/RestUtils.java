@@ -409,6 +409,9 @@ public class RestUtils {
             location = "patternrefinementmodels";
         } else if (type.contains("TestRefinementModel")) {
             location = "testrefinementmodels";
+        } else if (type.contains("DataType")) {
+            // FIXME Intermediate location, may be subject to change!
+            location = "yaml";
         } else {
             if (type.contains("TypeImplementation")) {
                 location = "entitytypeimplementations";
