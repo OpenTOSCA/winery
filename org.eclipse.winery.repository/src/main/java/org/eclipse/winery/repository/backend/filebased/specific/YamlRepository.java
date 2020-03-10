@@ -670,7 +670,7 @@ public class YamlRepository extends AbstractFileBasedRepository {
                     serviceTemplate = converter.convert(definitions);
                     if (exists(ref)) {
                         TServiceTemplate oldServiceTemplate = readServiceTemplate(ref);
-                        serviceTemplate = replaceOldRelationshipTypeithNewData(serviceTemplate, oldServiceTemplate);
+                        serviceTemplate = replaceOldRelationshipTypeWithNewData(serviceTemplate, oldServiceTemplate);
                     }
                 } else if (ref.getParent() instanceof ArtifactTemplateId) {
                     ArtifactTemplateId id = (ArtifactTemplateId) ref.getParent();
@@ -876,7 +876,7 @@ public class YamlRepository extends AbstractFileBasedRepository {
      * @param oldData already saved relationship type
      * @return edited yaml service template
      **/
-    private TServiceTemplate replaceOldRelationshipTypeithNewData(TServiceTemplate newData, TServiceTemplate oldData) {
+    private TServiceTemplate replaceOldRelationshipTypeWithNewData(TServiceTemplate newData, TServiceTemplate oldData) {
         TRelationshipType oldRelationshipType = oldData.getRelationshipTypes().entrySet().iterator().next().getValue();
         TRelationshipType newRelationshipType = newData.getRelationshipTypes().entrySet().iterator().next().getValue();
         oldRelationshipType.setMetadata(newRelationshipType.getMetadata());
