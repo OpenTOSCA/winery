@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2012-2018 Contributors to the Eclipse Foundation
+ * Copyright (c) 2012-2020 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -16,7 +16,9 @@ package org.eclipse.winery.repository.rest.resources.entitytypes;
 import java.util.Collection;
 import java.util.SortedSet;
 
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
@@ -24,6 +26,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import org.eclipse.winery.common.configuration.Environments;
+import org.eclipse.winery.common.configuration.RepositoryConfigurationObject;
 import org.eclipse.winery.common.ids.definitions.DefinitionsChildId;
 import org.eclipse.winery.model.tosca.TEntityType;
 import org.eclipse.winery.repository.backend.BackendUtils;
@@ -88,5 +92,27 @@ public abstract class EntityTypeResource extends AbstractComponentInstanceResour
     public SortedSet<Select2OptGroup> getListOfAllInstances() {
         Response res = Response.status(Status.INTERNAL_SERVER_ERROR).entity("not yet implemented").build();
         throw new WebApplicationException(res);
+    }
+
+    @Path("description/")
+    @GET
+    @Produces(MediaType.TEXT_PLAIN)
+    public String getDescription() {
+        // TODO: This should be getEntityType().getDescription.
+        //  Here or higher up in the hierarchy?
+        if (Environments.getInstance().getRepositoryConfig().getProvider() == (RepositoryConfigurationObject.RepositoryProvider.YAML)) {
+            return this.getEntityType().getName();
+        } else {
+            return null;
+        }
+    }
+
+    @Path("description/")
+    @PUT
+    @Consumes(MediaType.TEXT_PLAIN)
+    @Produces(MediaType.TEXT_PLAIN)
+    public Response setDescription(String description) {
+        // TODO: Implement the saving
+        return Response.ok(description).build();
     }
 }

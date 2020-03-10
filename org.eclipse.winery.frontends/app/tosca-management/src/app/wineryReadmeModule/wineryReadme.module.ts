@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017 Contributors to the Eclipse Foundation
+ * Copyright (c) 2017-2020 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -19,6 +19,7 @@ import { WineryLoaderModule } from '../wineryLoader/wineryLoader.module';
 import { TabsModule } from 'ngx-bootstrap';
 import { WineryPipesModule } from '../wineryPipes/wineryPipes.module';
 import { WineryMarkdownModule } from '../wineryMarkdownComponent/wineryMarkdown.module';
+import { WineryFeatureToggleModule } from '../wineryFeatureToggleModule/winery-feature-toggle.module';
 
 @NgModule({
     imports: [
@@ -27,7 +28,8 @@ import { WineryMarkdownModule } from '../wineryMarkdownComponent/wineryMarkdown.
         FormsModule,
         WineryMarkdownModule,
         TabsModule,
-        WineryPipesModule
+        WineryPipesModule,
+        WineryFeatureToggleModule
     ],
     exports: [
         WineryReadmeComponent

@@ -1,5 +1,5 @@
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ~ Copyright (c) 2017-2018 Contributors to the Eclipse Foundation
+  ~ Copyright (c) 2017-2020 Contributors to the Eclipse Foundation
   ~
   ~ See the NOTICE file(s) distributed with this work for additional
   ~ information regarding copyright ownership.
@@ -11,6 +11,37 @@
   ~
   ~ SPDX-License-Identifier: EPL-2.0 OR Apache-2.0
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<div class="right">
+    <button class="btn fa fa-pencil" aria-hidden="true" name="edit"
+            [disabled]="!sharedData?.currentVersion?.editable"
+            (click)="isEditable = true"></button>
+</div>
+<div *wineryRepositoryFeatureToggle="configEnum.Yaml">
+    <h5><b>Description:</b></h5>
+    <div *ngIf="!descriptionAvailable">
+        There is no description available.
+    </div>
+    <div *ngIf="descriptionAvailable && !isEditable">
+        {{description}}
+    </div>
+    <br/>
+    <div *ngIf="isEditable">
+        <div class="right">
+            <button class="btn fa fa-floppy-o" aria-hidden="true" name="save" (click)="saveDescription()"> Save</button>
+            <button class="btn fa fa-ban" name="cancel" aria-hidden="true" (click)="cancelEdit()"> Cancel</button>
+        </div>
+        <br/>
+        <br/>
+        <div>
+            <form>
+                        <textarea name="descriptionEdit" class="form-control pad-6px"
+                                  style="min-height: -webkit-fill-available; font-family: monospace"
+                                  [(ngModel)]="description"></textarea>
+            </form>
+        </div>
+    </div>
+</div>
+<h5><b>Readme:</b></h5>
 <div *ngIf="!readmeAvailable">
     <div class="flash">
         Help people interested in this {{ toscaType | toscaTypeToReadableName }} understand this {{ toscaType |
@@ -23,11 +54,6 @@
 </div>
 
 <div *ngIf="!isEditable && readmeAvailable">
-    <div class="right">
-        <button class="btn fa fa-pencil" aria-hidden="true" name="edit"
-                [disabled]="!sharedData?.currentVersion?.editable"
-                (click)="isEditable = true;"></button>
-    </div>
     <winery-markdown [markdownContent]="readmeContent"></winery-markdown>
 
 </div>
@@ -43,7 +69,7 @@
             <tab heading="Edit File" active="true">
                 <div>
                     <form>
-                        <textarea name="readmeEdit" id="textbox" class="form-control pad-6px"
+                        <textarea name="readmeEdit" class="form-control pad-6px"
                                   style="min-height: -webkit-fill-available; font-family: monospace"
                                   [(ngModel)]="readmeContent"></textarea>
                     </form>
@@ -80,9 +106,6 @@
             </tab>
         </tabset>
     </div>
-
-    <textarea style="width: 95%; height: 500px; resize: none; font-family: monospace"
-              [(ngModel)]="readmeContent"></textarea>
 </div>
 
 

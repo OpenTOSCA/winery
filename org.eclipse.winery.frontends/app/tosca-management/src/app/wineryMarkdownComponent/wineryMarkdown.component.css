@@ -4,11 +4,6 @@
 * Taken from: https://github.com/dimpu/angular2-markdown/blob/1c36831d2c9f48ddd7183db33e886ed9ab0a3345/demo/src/app/home/home.component.ts#L11
 */
 
-#textbox {
-    width: 100%;
-    height: 100vh;
-}
-
 table.table2 {
     font-size: 14px;
     color: #212121;
