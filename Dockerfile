@@ -12,8 +12,7 @@ COPY . /tmp/winery
 WORKDIR /tmp/winery
 RUN mvn package -DskipTests
 
-
-FROM tomcat:8.5.31
+FROM tomcat:8.5.51
 LABEL maintainer = "Oliver Kopp <kopp.dev@gmail.com>, Michael Wurster <miwurster@gmail.com>, Lukas Harzenetter <lharzenetter@gmx.de>"
 
 ARG DOCKERIZE_VERSION=v0.3.0
@@ -54,7 +53,7 @@ RUN rm /dev/random && ln -s /dev/urandom /dev/random \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
     && rm -rf ${CATALINA_HOME}/webapps/* \
-    && sed -ie "s/securerandom.source=file:\/dev\/random/securerandom.source=file:\/dev\/.\/urandom/g" /usr/lib/jvm/java-8-openjdk-amd64/jre/lib/security/java.security \
+    && sed -ie "s/securerandom.source=file:\/dev\/random/securerandom.source=file:\/dev\/.\/urandom/g" /usr/local/openjdk-8/jre/lib/security/java.security \
     && wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
     && tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
     && rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
@@ -64,16 +63,38 @@ COPY --from=builder /tmp/winery/org.eclipse.winery.frontends/target/tosca-manage
 COPY --from=builder /tmp/winery/org.eclipse.winery.frontends/target/topologymodeler.war ${CATALINA_HOME}/webapps/winery-topologymodeler.war
 COPY --from=builder /tmp/winery/org.eclipse.winery.frontends/target/workflowmodeler.war ${CATALINA_HOME}/webapps/winery-workflowmodeler.war
 
-ADD docker/winery.yml.tpl /root/.winery/winery.yml.tpl
+ENV WINERY_USER_HOME /opt/winery
+
+ARG USER_ID=999
+
+# create winery user and home dir
+RUN mkdir ${WINERY_USER_HOME}
+RUN groupadd -g ${USER_ID} winery
+RUN useradd -s /bin/nologin -u ${USER_ID} -g winery -d ${WINERY_USER_HOME} --system winery
+RUN chown winery: ${WINERY_USER_HOME}
+
+# create repository dir and change ownership
+RUN mkdir /var/repository
+RUN chmod a+rwx /var/repository
+RUN chown winery: /var/repository
+
+# workaround because catalina has to be able to write files in the catalina_home dir
+RUN chmod -R a+w ${CATALINA_HOME}
+
+# install git lfs and set git config
+RUN git config --global core.fscache true
+RUN git lfs install
+
+# copy config
+COPY --chown=winery:winery docker/winery.yml.tpl ${WINERY_USER_HOME}/winery.yml.tpl
+
+# configure entrypoint
+COPY --chown=winery:winery docker/docker-entrypoint.sh /docker-entrypoint.sh
+RUN chmod +x /docker-entrypoint.sh
+
+USER winery
+WORKDIR ${WINERY_USER_HOME}
 
 EXPOSE 8080
 
-CMD dockerize -template /root/.winery/winery.yml.tpl:/root/.winery/winery.yml \
-    && if [ -d "${WINERY_REPOSITORY_PATH}" ] && [ "$(ls -A ${WINERY_REPOSITORY_PATH})" ]; then echo "Repository at ${WINERY_REPOSITORY_PATH} is already initialized!"; else if [ ! "x${WINERY_REPOSITORY_URL}" = "x" ]; then git clone ${WINERY_REPOSITORY_URL} ${WINERY_REPOSITORY_PATH}; else git init $WINERY_REPOSITORY_PATH; fi fi \
-    && cd ${WINERY_REPOSITORY_PATH} \
-    && git config --global core.fscache true \
-    && git lfs install \
-    && echo 'export CATALINA_OPTS="-Djava.security.egd=file:/dev/./urandom -Xms512m -Xmx${WINERY_HEAP_MAX} -XX:MaxPermSize=256m"' > ${CATALINA_HOME}/bin/setenv.sh \
-    && if [ ! "x${WINERY_JMX_ENABLED}" = "x" ]; then echo 'export CATALINA_OPTS="${CATALINA_OPTS} -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.local.only=false -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.port=9010 -Dcom.sun.management.jmxremote.rmi.port=9010 -Djava.rmi.server.hostname=0.0.0.0 -Dcom.sun.management.jmxremote.ssl=false"' >> ${CATALINA_HOME}/bin/setenv.sh; fi \
-    && chmod a+x ${CATALINA_HOME}/bin/setenv.sh \
-    && ${CATALINA_HOME}/bin/catalina.sh run
+CMD ["/docker-entrypoint.sh"]

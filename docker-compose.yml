@@ -1,7 +1,10 @@
 version: '3'
 services:
   winery:
-    build: .
+    build: 
+      context: .
+      #args:
+        #USER_ID: 1000
     image: opentosca/radon-modeling-tool
     environment:
       WINERY_HOSTNAME: ${PUBLIC_HOSTNAME}
@@ -12,6 +15,6 @@ services:
       WINERY_REPOSITORY_PROVIDER: "yaml"
       WINERY_REPOSITORY_URL: "https://github.com/radon-h2020/radon-particles"
     #volumes:
-    #  - <absolute_path_on_host>:/var/repository
+      #  - <absolute_path_on_host>:/var/repository
     ports:
       - '8080:8080'
