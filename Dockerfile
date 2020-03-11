@@ -1,22 +1,15 @@
 FROM maven:3-jdk-8 as builder
-
-RUN rm /dev/random && ln -s /dev/urandom /dev/random \
-    && apt-get update -qq && apt-get install -qqy \
-        unzip \
-        git \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/* \
-    && echo '{ "allow_root": true }' > /root/.bowerrc
-
 COPY . /tmp/winery
 WORKDIR /tmp/winery
 RUN mvn package -DskipTests
 
-FROM tomcat:8.5.51
+FROM tomcat:9-jdk8
 LABEL maintainer = "Oliver Kopp <kopp.dev@gmail.com>, Michael Wurster <miwurster@gmail.com>, Lukas Harzenetter <lharzenetter@gmx.de>"
 
 ARG DOCKERIZE_VERSION=v0.3.0
+ARG USER_ID=999
 
+ENV WINERY_USER_HOME /opt/winery
 ENV WINERY_REPOSITORY_URL ""
 ENV WINERY_HEAP_MAX 2048m
 ENV WINERY_JMX_ENABLED ""
@@ -63,11 +56,7 @@ COPY --from=builder /tmp/winery/org.eclipse.winery.frontends/target/tosca-manage
 COPY --from=builder /tmp/winery/org.eclipse.winery.frontends/target/topologymodeler.war ${CATALINA_HOME}/webapps/winery-topologymodeler.war
 COPY --from=builder /tmp/winery/org.eclipse.winery.frontends/target/workflowmodeler.war ${CATALINA_HOME}/webapps/winery-workflowmodeler.war
 
-ENV WINERY_USER_HOME /opt/winery
-
-ARG USER_ID=999
-
-# create winery user and home dir
+# create Winery user and home dir
 RUN mkdir ${WINERY_USER_HOME}
 RUN groupadd -g ${USER_ID} winery
 RUN useradd -s /bin/nologin -u ${USER_ID} -g winery -d ${WINERY_USER_HOME} --system winery
