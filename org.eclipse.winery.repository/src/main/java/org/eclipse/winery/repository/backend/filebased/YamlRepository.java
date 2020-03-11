@@ -654,14 +654,12 @@ public class YamlRepository extends AbstractFileBasedRepository {
      * @return yaml service template input stream
      **/
     private InputStream convertToServiceTemplate(RepositoryFileReference ref, InputStream inputStream, MediaType mediaType) {
-
         //ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         if (mediaType.equals(MediaTypes.MEDIATYPE_TOSCA_DEFINITIONS)) {
             try {
                 //IOUtils.copy(inputStream, outputStream);
                 //Definitions definitions = readInputStream(new ByteArrayInputStream(outputStream.toByteArray()));
                 Definitions definitions = (Definitions) JAXBSupport.createUnmarshaller().unmarshal(inputStream);
-
                 X2YConverter converter = new X2YConverter(this);
                 TServiceTemplate serviceTemplate;
                 if (ref.getParent() instanceof NodeTypeImplementationId) {
