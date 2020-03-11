@@ -18,7 +18,7 @@
 </div>
 <div *wineryRepositoryFeatureToggle="configEnum.Yaml">
     <h5><b>Description:</b></h5>
-    <div *ngIf="!descriptionAvailable">
+    <div *ngIf="!descriptionAvailable && !isEditable">
         There is no description available.
     </div>
     <div *ngIf="descriptionAvailable && !isEditable">

@@ -41,17 +41,16 @@ export class ReadmeService {
     }
 
     save(readmeFile: String): Observable<HttpResponse<string>> {
-        return this.http.put<string>(
+        return this.http.put(
             backendBaseURL + this.sharedData.path + '/README.md',
             readmeFile,
-            { observe: 'response' });
+            { observe: 'response', responseType: 'text' });
     }
 
     saveDescription(description: String): Observable<HttpResponse<string>> {
-        return this.http.put<string>(
+        return this.http.put(
             backendBaseURL + this.sharedData.path + '/description',
             description,
-            { observe: 'response' });
+            { observe: 'response', responseType: 'text' });
     }
-
 }

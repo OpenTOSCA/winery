@@ -54,6 +54,9 @@ export class WineryReadmeComponent implements OnInit {
         this.service.getDescription().subscribe(
             data => {
                 this.description = data;
+                if (this.description === null) {
+                    this.descriptionAvailable = false;
+                }
                 this.initialDescription = data;
                 this.loading = false;
             },
@@ -70,7 +73,7 @@ export class WineryReadmeComponent implements OnInit {
 
     saveDescription() {
         this.service.saveDescription(this.description).subscribe(
-            (response) => {
+            () => {
                 this.handleDescriptionSave();
             },
             error => this.handleError(error)
@@ -94,7 +97,7 @@ export class WineryReadmeComponent implements OnInit {
 
     private handleMissingDescription() {
         this.loading = false;
-        this.readmeAvailable = false;
+        this.descriptionAvailable = false;
     }
 
     private handleSave() {
