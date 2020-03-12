@@ -324,7 +324,6 @@ public class YamlWriter extends AbstractVisitor<YamlPrinter, YamlWriter.Paramete
 
     public YamlPrinter visit(TRelationshipDefinition node, Parameter parameter) {
         return new YamlPrinter(parameter.getIndent())
-            .printKeyValue("type", node.getType())
             .print(printMap("interfaces", node.getInterfaces(), parameter));
     }
 
@@ -488,7 +487,6 @@ public class YamlWriter extends AbstractVisitor<YamlPrinter, YamlWriter.Paramete
 
     public YamlPrinter visit(TRelationshipAssignment node, Parameter parameter) {
         return new YamlPrinter(parameter.getIndent())
-            .printKeyValue("type", node.getType())
             .print(printMap("properties", node.getProperties(), parameter))
             .print(printMap("interfaces", node.getInterfaces(), parameter));
     }
@@ -505,6 +503,9 @@ public class YamlWriter extends AbstractVisitor<YamlPrinter, YamlWriter.Paramete
                 printer.print(node.accept(this,
                     new Parameter(parameter.getIndent()).addContext(parameter.getKey())
                 ));
+            } else if (node instanceof TRelationshipDefinition || node instanceof TRelationshipAssignment) {
+                printer.print(parameter.getKey() + ": ").printQName(((TRelationshipAssignment) node).getType())
+                    .print(node.accept(this, new Parameter(parameter.getIndent() + INDENT_SIZE)));
             } else {
                 printer.printKey(parameter.getKey())
                     .print(node.accept(this, new Parameter(parameter.getIndent() + INDENT_SIZE)));

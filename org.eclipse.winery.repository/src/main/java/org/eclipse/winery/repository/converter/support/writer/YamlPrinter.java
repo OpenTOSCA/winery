@@ -81,6 +81,12 @@ public class YamlPrinter extends AbstractResult<YamlPrinter> {
         return this;
     }
 
+    public YamlPrinter printQName(QName value) {
+        this.stringBuilder.append(qNameToString(value));
+        this.printNewLine();
+        return this;
+    }
+
     public YamlPrinter print(YamlPrinter printer) {
         if (Objects.isNull(printer) || printer.isEmpty()) return this;
         if (endsWithNewLine()) {
@@ -101,7 +107,6 @@ public class YamlPrinter extends AbstractResult<YamlPrinter> {
         if (printer.indent > this.indent && printer.endsWithNewLine()) {
             printer.stringBuilder.setLength(printer.stringBuilder.length() + this.indent - printer.indent);
         }
-
         print(printer.toString());
         return this;
     }
