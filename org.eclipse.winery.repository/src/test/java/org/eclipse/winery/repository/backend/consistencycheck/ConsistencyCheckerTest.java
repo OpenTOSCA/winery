@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2017-2018 Contributors to the Eclipse Foundation
+ * Copyright (c) 2017-2020 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -148,7 +148,7 @@ public class ConsistencyCheckerTest extends TestWithGitBackedRepository {
         elementErrorList.addError("propertiesKV of node template NodeTypeWithTwoKVProperties is null");
         elementErrorList.addError("propertiesKV of node template NodeTypeWithTwoKVProperties_2 is null");
         elementErrorList.addError("propertiesKV of node template NodeTypeWithTwoKVProperties_2 is null");
-        elementErrorList.addError("Corrupt: Component instance RelationshipType RelationshlpTypeWithValidSourceAndTarget_w1-wip1 in namespace  does not exist.");
+        elementErrorList.addError("java.lang.NullPointerException");
         expected.put(new QName("http://plain.winery.opentosca.org/servicetemplates", "ServiceTemplateWithTwoNodeTemplates_w1-wip4"), elementErrorList);
 
         elementErrorList = new ElementErrorList("ServiceTemplate");
