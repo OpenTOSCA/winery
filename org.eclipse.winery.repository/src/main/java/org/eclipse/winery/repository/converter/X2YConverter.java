@@ -145,11 +145,10 @@ public class X2YConverter {
      */
     @NonNull
     public TServiceTemplate convert(Definitions node, boolean convertImports) {
-
         LOGGER.debug("Convert TServiceTemplate: {}", node.getIdFromIdOrNameField());
 
         TServiceTemplate.Builder builder = new TServiceTemplate.Builder(Defaults.TOSCA_DEFINITIONS_VERSION)
-            .setDescription(convertDocumentation(node.getDocumentation()))
+            .setDescription(convertDocumentation(node.getElement().getDocumentation()))
             .setArtifactTypes(convert(node.getArtifactTypes()))
             .setCapabilityTypes(convert(node.getCapabilityTypes()))
             .setRelationshipTypes(convert(node.getRelationshipTypes()))
@@ -196,7 +195,7 @@ public class X2YConverter {
                 new LinkedHashMap.SimpleEntry<>(
                     String.valueOf(entry.getKey()),
                     new TPropertyAssignment.Builder()
-                        .setValue("\"" + ValueConverter.INSTANCE.convert(entry.getValue()) + "\"")
+                        .setValue(ValueConverter.INSTANCE.convert(entry.getValue()))
                         .build()
                 )
             )
@@ -272,14 +271,15 @@ public class X2YConverter {
     }
 
     public <T extends org.eclipse.winery.model.tosca.yaml.TEntityType.Builder<T>> T convert(TEntityType node, T builder, Class<? extends TEntityType> clazz) {
-        return builder.setDescription(convertDocumentation(node.getDocumentation()))
+        return builder
             .setDerivedFrom(convert(node.getDerivedFrom(), clazz))
             .setMetadata(convert(node.getTags()))
             .addMetadata("targetNamespace", node.getTargetNamespace())
             .addMetadata("abstract", node.getAbstract().value())
             .addMetadata("final", node.getFinal().value())
             .setProperties(convert(node, node.getPropertiesDefinition()))
-            .setAttributes(convert(node, node.getAttributeDefinitions()));
+            .setAttributes(convert(node, node.getAttributeDefinitions()))
+            .setDescription(convertDocumentation(node.getDocumentation()));
     }
 
     public Map<String, TPropertyDefinition> convert(TEntityType type, TEntityType.PropertiesDefinition node) {

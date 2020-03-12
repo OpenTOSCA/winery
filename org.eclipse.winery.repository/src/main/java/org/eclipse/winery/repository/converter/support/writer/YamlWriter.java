@@ -77,7 +77,6 @@ import org.eclipse.winery.model.tosca.yaml.tosca.datatypes.Credential;
 import org.eclipse.winery.model.tosca.yaml.visitor.AbstractParameter;
 import org.eclipse.winery.model.tosca.yaml.visitor.AbstractVisitor;
 import org.eclipse.winery.model.tosca.yaml.visitor.VisitorNode;
-import org.eclipse.winery.repository.converter.support.Namespaces;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -168,7 +167,7 @@ public class YamlWriter extends AbstractVisitor<YamlPrinter, YamlWriter.Paramete
         if (!node.isEmpty()) {
             printer.printKey("metadata")
                 .indent(INDENT_SIZE);
-            node.forEach(printer::printKeyValue);
+            node.forEach((key, value) -> printer.printKeyValue(key, value, true));
             printer.indent(-INDENT_SIZE);
         }
         return printer;
@@ -196,7 +195,8 @@ public class YamlWriter extends AbstractVisitor<YamlPrinter, YamlWriter.Paramete
         return new YamlPrinter(parameter.getIndent())
             .printKeyValue("- file", node.getFile())
             .printKeyValue("  repository", node.getRepository())
-            .printKeyValue("  namespace_uri", node.getNamespaceUri(), !node.getNamespaceUri().equals(Namespaces.DEFAULT_NS))
+            .printKeyValue("  namespace_uri", node.getNamespaceUri())
+            // .printKeyValue("  namespace_uri", node.getNamespaceUri(), !node.getNamespaceUri().equals(Namespaces.DEFAULT_NS))
             .printKeyValue("  namespace_prefix", node.getNamespacePrefix());
     }
 
