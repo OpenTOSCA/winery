@@ -195,7 +195,7 @@ public class X2YConverter {
                 new LinkedHashMap.SimpleEntry<>(
                     String.valueOf(entry.getKey()),
                     new TPropertyAssignment.Builder()
-                        .setValue("\"" + ValueConverter.INSTANCE.convert(entry.getValue()) + "\"")
+                        .setValue(ValueConverter.INSTANCE.convert(entry.getValue()))
                         .build()
                 )
             )
