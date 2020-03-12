@@ -180,6 +180,27 @@ public class YamlPrinter extends AbstractResult<YamlPrinter> {
         return printKeyValue(key, qNameToString(value));
     }
 
+    public YamlPrinter printMetadataKeyValue(String key, String value) {
+        if (Objects.isNull(value) || value.isEmpty()) return this;
+        if (value.contains("\n")) {
+            return print(key)
+                .print(": >")
+                .printNewLine()
+                .indent(2)
+                .print("\"")
+                .print(value.trim().replaceAll("\n", "\n\n" + getIndentString()))
+                .indent(-2)
+                .print("\"")
+                .printCheckNewLine();
+        }
+        return print(key)
+            .print(": ")
+            .print("\"")
+            .print(value)
+            .print("\"")
+            .printNewLine();
+    }
+
     public YamlPrinter printKey(String key) {
         return print(key)
             .print(":")

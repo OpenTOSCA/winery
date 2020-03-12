@@ -168,7 +168,7 @@ public class YamlWriter extends AbstractVisitor<YamlPrinter, YamlWriter.Paramete
         if (!node.isEmpty()) {
             printer.printKey("metadata")
                 .indent(INDENT_SIZE);
-            node.forEach(printer::printKeyValue);
+            node.forEach(printer::printMetadataKeyValue);
             printer.indent(-INDENT_SIZE);
         }
         return printer;

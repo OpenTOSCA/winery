@@ -44,7 +44,7 @@ export class InstanceService {
         switch (this.toscaComponent.toscaType) {
             case ToscaTypes.NodeType:
                 if (this.configurationService.isYaml()) {
-                    subMenu = [SubMenuItems.readme, SubMenuItems.license, SubMenuItems.appearance, SubMenuItems.inheritance,
+                    subMenu = [SubMenuItems.readme, SubMenuItems.documentation, SubMenuItems.license, SubMenuItems.appearance, SubMenuItems.inheritance,
                         SubMenuItems.artifacts, SubMenuItems.interfacedefinitions, SubMenuItems.requirementDefinitionsYaml, SubMenuItems.capabilityDefinitions,
                         SubMenuItems.propertiesDefinition, SubMenuItems.attributes];
                 } else {
@@ -54,22 +54,23 @@ export class InstanceService {
                 }
                 break;
             case ToscaTypes.ServiceTemplate:
-                subMenu = [SubMenuItems.readme, SubMenuItems.license, SubMenuItems.topologyTemplate];
+                subMenu = [SubMenuItems.readme, SubMenuItems.documentation, SubMenuItems.license, SubMenuItems.topologyTemplate];
                 if (this.configurationService.isYaml()) {
                     subMenu.push(SubMenuItems.parameters);
                 }
                 if (!this.configurationService.isYaml()) {
                     subMenu.push(SubMenuItems.plans, SubMenuItems.selfServicePortal,
                         SubMenuItems.boundaryDefinitions, SubMenuItems.tags, SubMenuItems.constraintChecking,
-                        SubMenuItems.documentation, SubMenuItems.xml);
+                        SubMenuItems.xml);
                     if (this.configurationService.configuration.features.nfv) {
                         subMenu.push(SubMenuItems.threatModeling);
                     }
                 }
                 break;
             case ToscaTypes.RelationshipType:
-                subMenu = [SubMenuItems.readme, SubMenuItems.license, SubMenuItems.appearance, SubMenuItems.instanceStates, SubMenuItems.sourceInterfaces,
-                    SubMenuItems.interfaces, SubMenuItems.targetInterfaces, SubMenuItems.validSourcesAndTargets, SubMenuItems.implementations,
+                subMenu = [SubMenuItems.readme, SubMenuItems.documentation, SubMenuItems.license, SubMenuItems.appearance, SubMenuItems.instanceStates,
+                    SubMenuItems.sourceInterfaces, SubMenuItems.interfaces, SubMenuItems.targetInterfaces, SubMenuItems.validSourcesAndTargets,
+                    SubMenuItems.implementations,
                     SubMenuItems.propertiesDefinition, SubMenuItems.inheritance, SubMenuItems.documentation, SubMenuItems.xml];
                 break;
             case ToscaTypes.ArtifactType:
@@ -151,7 +152,7 @@ export class InstanceService {
         }
 
         if (this.configurationService.isYaml()) {
-            subMenu = subMenu.filter(item => item !== SubMenuItems.xml && item !== SubMenuItems.documentation);
+            // subMenu = subMenu.filter(item => item !== SubMenuItems.xml && item !== SubMenuItems.documentation);
         }
 
         return subMenu;
