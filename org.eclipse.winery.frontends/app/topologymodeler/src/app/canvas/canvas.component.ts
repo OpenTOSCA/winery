@@ -1546,10 +1546,10 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
     hideSidebar() {
         this.ngRedux.dispatch(this.actions.openSidebar({
             sidebarContents: {
-                sidebarVisible: false,
+                visible: false,
                 nodeClicked: false,
                 id: '',
-                nameTextFieldValue: '',
+                name: '',
                 type: '',
                 properties: '',
                 source: '',
@@ -1992,12 +1992,13 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
         this.newJsPlumbInstance.select().removeType('marked');
         const currentRel = this.allRelationshipTemplates.find(con => con.id === rel.id);
         if (currentRel) {
+            console.log('opening sidebar');
             this.ngRedux.dispatch(this.actions.openSidebar({
                 sidebarContents: {
-                    sidebarVisible: true,
+                    visible: true,
                     nodeClicked: false,
                     id: currentRel.id,
-                    nameTextFieldValue: currentRel.name,
+                    name: currentRel.name,
                     type: currentRel.type,
                     properties: currentRel.properties,
                     source: currentRel.sourceElement.ref,
