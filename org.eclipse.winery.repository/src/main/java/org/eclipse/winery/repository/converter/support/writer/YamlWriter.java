@@ -324,6 +324,7 @@ public class YamlWriter extends AbstractVisitor<YamlPrinter, YamlWriter.Paramete
 
     public YamlPrinter visit(TRelationshipDefinition node, Parameter parameter) {
         return new YamlPrinter(parameter.getIndent())
+            .printKeyValue("type", node.getType())
             .print(printMap("interfaces", node.getInterfaces(), parameter));
     }
 
@@ -505,9 +506,6 @@ public class YamlWriter extends AbstractVisitor<YamlPrinter, YamlWriter.Paramete
                 ));
             } else if (node instanceof TRelationshipAssignment) {
                 printer.print(parameter.getKey() + ": ").printQName(((TRelationshipAssignment) node).getType())
-                    .print(node.accept(this, new Parameter(parameter.getIndent() + INDENT_SIZE)));
-            } else if (node instanceof TRelationshipDefinition) {
-                printer.print(parameter.getKey() + ": ").printQName(((TRelationshipDefinition) node).getType())
                     .print(node.accept(this, new Parameter(parameter.getIndent() + INDENT_SIZE)));
             } else {
                 printer.printKey(parameter.getKey())
