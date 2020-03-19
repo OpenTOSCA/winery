@@ -506,6 +506,10 @@ public class YamlWriter extends AbstractVisitor<YamlPrinter, YamlWriter.Paramete
             } else if (node instanceof TRelationshipAssignment) {
                 printer.print(parameter.getKey() + ": ").printQName(((TRelationshipAssignment) node).getType())
                     .print(node.accept(this, new Parameter(parameter.getIndent() + INDENT_SIZE)));
+            } else if (node instanceof TRelationshipDefinition) {
+                System.out.println("This is the case.");
+                printer.print(parameter.getKey() + ": ").printQName(((TRelationshipDefinition) node).getType())
+                    .print(node.accept(this, new Parameter(parameter.getIndent() + INDENT_SIZE)));
             } else {
                 printer.printKey(parameter.getKey())
                     .print(node.accept(this, new Parameter(parameter.getIndent() + INDENT_SIZE)));
