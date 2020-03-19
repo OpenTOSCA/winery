@@ -100,9 +100,8 @@ export class TopologyTemplateUtil {
                 node.requirements = { requirement: [] };
             }
             reqDefs.forEach(reqDef => {
-                let req = RequirementModel.fromRequirementDefinition(reqDef);
-                let find = node.requirements.requirement.find(r => r.name === req.name);
-                if (!find) {
+                const req = RequirementModel.fromRequirementDefinition(reqDef);
+                if (!node.requirements.requirement.find(r => r.name === req.name)) {
                     node.requirements.requirement.push(req);
                 }
             });

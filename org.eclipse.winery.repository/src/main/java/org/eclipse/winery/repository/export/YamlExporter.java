@@ -74,7 +74,7 @@ import static org.eclipse.winery.model.csar.toscametafile.TOSCAMetaFileAttribute
 public class YamlExporter extends CsarExporter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(YamlExporter.class);
-    private static final String DEFINITONS_PATH_PREFIX = "_definitions/";
+    private static final String DEFINITIONS_PATH_PREFIX = "_definitions/";
 
     private final IRepository repository;
 
@@ -150,7 +150,7 @@ public class YamlExporter extends CsarExporter {
     }
 
     public static String getDefinitionsPathInsideCSAR(IRepository repository, DefinitionsChildId id) {
-        return DEFINITONS_PATH_PREFIX
+        return DEFINITIONS_PATH_PREFIX
             .concat(getDefinitionsName(repository, id))
             .concat(Constants.SUFFIX_TOSCA_DEFINITIONS);
     }

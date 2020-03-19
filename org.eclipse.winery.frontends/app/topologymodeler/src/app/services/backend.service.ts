@@ -71,6 +71,7 @@ export class BackendService {
                     params.elementPath,
                     params.topologyProDecURL
                 );
+
                 const url = this.configuration.parentPath + '/'
                     + encodeURIComponent(encodeURIComponent(this.configuration.ns)) + '/'
                     + this.configuration.id;
