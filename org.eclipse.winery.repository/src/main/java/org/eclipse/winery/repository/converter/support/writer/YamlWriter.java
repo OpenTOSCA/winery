@@ -503,7 +503,7 @@ public class YamlWriter extends AbstractVisitor<YamlPrinter, YamlWriter.Paramete
                 printer.print(node.accept(this,
                     new Parameter(parameter.getIndent()).addContext(parameter.getKey())
                 ));
-            } else if (node instanceof TRelationshipDefinition || node instanceof TRelationshipAssignment) {
+            } else if (node instanceof TRelationshipAssignment) {
                 printer.print(parameter.getKey() + ": ").printQName(((TRelationshipAssignment) node).getType())
                     .print(node.accept(this, new Parameter(parameter.getIndent() + INDENT_SIZE)));
             } else {
