@@ -34,6 +34,7 @@ import { VersionElement } from './models/versionElement';
 import { TopologyRendererActions } from './redux/actions/topologyRenderer.actions';
 import { WineryRepositoryConfigurationService } from '../../../tosca-management/src/app/wineryFeatureToggleModule/WineryRepositoryConfiguration.service';
 import { TPolicy } from './models/policiesModalData';
+import { WineryActions } from './redux/actions/winery.actions';
 
 /**
  * This is the root component of the topology modeler.
@@ -74,6 +75,7 @@ export class WineryComponent implements OnInit, AfterViewInit {
                 public backendService: BackendService,
                 private ngRedux: NgRedux<IWineryState>,
                 private actions: TopologyRendererActions,
+                private uiActions: WineryActions,
                 private alert: ToastrService,
                 private activatedRoute: ActivatedRoute,
                 private configurationService: WineryRepositoryConfigurationService) {
@@ -282,6 +284,24 @@ export class WineryComponent implements OnInit, AfterViewInit {
         this.initTopologyTemplateForRendering(nodeTemplateArray, relationshipTemplateArray);
         this.loaded = { loadedData: true, generatedReduxState: false };
         this.appReadyEvent.trigger();
+    }
+
+    close(key: string): void {
+        console.log('closing sidebar through event handler');
+        this.ngRedux.dispatch(this.uiActions.openSidebar({
+            sidebarContents: {
+                visible: false,
+                nodeClicked: '',
+                id: '',
+                name: '',
+                type: '',
+                minInstances: -1,
+                maxInstances: -1,
+                properties: {},
+                source: '',
+                target: '',
+            }
+        }));
     }
 
     initTopologyTemplateForRendering(nodeTemplateArray: Array<TNodeTemplate>, relationshipTemplateArray: Array<TRelationshipTemplate>) {
