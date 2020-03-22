@@ -13,7 +13,7 @@
  *******************************************************************************/
 
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
-import { Component, EventEmitter, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { NgRedux } from '@angular-redux/store';
 import { IWineryState } from '../../redux/store/winery.store';
 import { WineryActions } from '../../redux/actions/winery.actions';
@@ -24,7 +24,7 @@ import { PropertyDefinitionType, urlElement } from '../../models/enums';
 import { BackendService } from '../../services/backend.service';
 import { isNullOrUndefined } from 'util';
 import { NodeDetailsSidebarState } from './node-details-sidebar';
-import { Sidebar } from 'ng-sidebar';
+import { WineryRepositoryConfigurationService } from '../../../../../tosca-management/src/app/wineryFeatureToggleModule/WineryRepositoryConfiguration.service';
 
 /**
  * This is the right sidebar, where attributes of nodes and relationships get displayed.
@@ -39,9 +39,10 @@ export class NodeDetailsSidebarComponent implements OnInit, OnDestroy {
     sidebarSubscription;
     sidebarState: NodeDetailsSidebarState;
     maxInputEnabled = true;
-    propertyDefinitionType: string;
 
+    @Input() readonly: boolean;
     @Output() sidebarDeleteButtonClicked: EventEmitter<any> = new EventEmitter<any>();
+
     public nodeNameKeyUp: Subject<string> = new Subject<string>();
     public nodeMinInstancesKeyUp: Subject<string> = new Subject<string>();
     public nodeMaxInstancesKeyUp: Subject<string> = new Subject<string>();
@@ -49,7 +50,8 @@ export class NodeDetailsSidebarComponent implements OnInit, OnDestroy {
 
     constructor(private $ngRedux: NgRedux<IWineryState>,
                 private actions: WineryActions,
-                private backendService: BackendService) {
+                private backendService: BackendService,
+                private repoConfiguration: WineryRepositoryConfigurationService) {
     }
 
     deleteButtonSidebarClicked($event) {
@@ -87,17 +89,19 @@ export class NodeDetailsSidebarComponent implements OnInit, OnDestroy {
     findOutPropertyDefinitionTypeForProperties(): string {
         // if PropertiesDefinition doesn't exist then it must be of type NONE
         if (isNullOrUndefined(this.sidebarState.properties)) {
-            this.propertyDefinitionType = PropertyDefinitionType.NONE;
-        } else {
-            // if no XML element inside PropertiesDefinition then it must be of type Key Value
-            if (!this.sidebarState.properties.element) {
-                this.propertyDefinitionType = PropertyDefinitionType.KV;
-            } else {
-                // else we have XML
-                this.propertyDefinitionType = PropertyDefinitionType.XML;
-            }
+            return PropertyDefinitionType.NONE;
         }
-        return this.propertyDefinitionType;
+        // All properties are of type YAML if the repo is a YAML repo
+        if (this.repoConfiguration.isYaml()) {
+            return PropertyDefinitionType.YAML;
+        }
+        // if no XML element inside PropertiesDefinition then it must be of type Key Value
+        if (!this.sidebarState.properties.element) {
+            return PropertyDefinitionType.KV;
+        } else {
+            // else we have XML
+            return PropertyDefinitionType.XML;
+        }
     }
 
     /**
@@ -219,18 +223,6 @@ export class NodeDetailsSidebarComponent implements OnInit, OnDestroy {
      * @param $event
      */
     minInstancesChanged($event) {
-        // don't deal with infinity?
-        if (this.sidebarState.minInstances === '\u221E') {
-            // this.$ngRedux.dispatch(this.actions.changeMinInstances({
-            //     minInstances: {
-            //         id: this.sidebarState.id,
-            //         count: 0
-            //     }
-            // }));
-            // this.sidebarState.minInstances = 0;
-            // this.minInputEnabled = true;
-            return;
-        }
         if ($event === 'inc') {
             this.$ngRedux.dispatch(this.actions.incMinInstances({
                 minInstances: {
