@@ -42,6 +42,7 @@ import org.slf4j.LoggerFactory;
 
 public class YamlToscaExportUtil extends ToscaExportUtil {
 
+    private static final boolean EXPORT_NORMATIVE_TYPES = false;
     private static final Logger LOGGER = LoggerFactory.getLogger(YamlToscaExportUtil.class);
 
     @Override
@@ -58,16 +59,21 @@ public class YamlToscaExportUtil extends ToscaExportUtil {
 
         Collection<DefinitionsChildId> referencedDefinitionsChildIds = repository.getReferencedDefinitionsChildIds(tcId);
 
-        // adjust imports: add imports of definitions to it
+        if (!EXPORT_NORMATIVE_TYPES) {
+            referencedDefinitionsChildIds.removeIf(id -> id.getQName().getNamespaceURI().startsWith("tosca"));
+        }
+
+        // adjust imports: add imports of definitions
         Collection<TImport> imports = new ArrayList<>();
         for (DefinitionsChildId id : referencedDefinitionsChildIds) {
             this.addToImports(repository, id, imports);
         }
+
         entryDefinitions.getImport().addAll(imports);
 
         // END: Definitions modification
 
-        this.referencesToPathInCSARMap.put(definitionsFileProperties, new YAMLDefinitionsBasedCsarEntry(entryDefinitions));
+        this.referencesToPathInCSARMap.put(definitionsFileProperties, new YAMLDefinitionsBasedCsarEntry(entryDefinitions, EXPORT_NORMATIVE_TYPES));
 
         return referencedDefinitionsChildIds;
     }

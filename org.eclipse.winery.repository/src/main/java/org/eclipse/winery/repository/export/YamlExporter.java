@@ -75,7 +75,6 @@ public class YamlExporter extends CsarExporter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(YamlExporter.class);
     private static final String DEFINITIONS_PATH_PREFIX = "_definitions/";
-    private static final boolean EXPORT_NORMATIVE_TYPES = false;
 
     private final IRepository repository;
 
@@ -119,15 +118,12 @@ public class YamlExporter extends CsarExporter {
             String definitionsPathInsideCSAR = getDefinitionsPathInsideCSAR(repository, currentId);
             CsarContentProperties definitionsFileProperties = new CsarContentProperties(definitionsPathInsideCSAR);
             if (!YamlRepository.ROOT_TYPE_QNAME.equals(currentId.getQName())) {
-                // ignore TOSCA normative types if flag is set to false
-                if (!(currentId.getQName().getNamespaceURI().startsWith("tosca.") && !EXPORT_NORMATIVE_TYPES)) {
-                    referencedIds = exporter.processTOSCA(repository, currentId, definitionsFileProperties, refMap, exportConfiguration);
-                    // for each entryId add license and readme files (if they exist) to the refMap
-                    addLicenseAndReadmeFiles(repository, currentId, refMap);
+                referencedIds = exporter.processTOSCA(repository, currentId, definitionsFileProperties, refMap, exportConfiguration);
+                // for each entryId add license and readme files (if they exist) to the refMap
+                addLicenseAndReadmeFiles(repository, currentId, refMap);
 
-                    exportedState.flagAsExported(currentId);
-                    exportedState.flagAsExportRequired(referencedIds);
-                }
+                exportedState.flagAsExported(currentId);
+                exportedState.flagAsExportRequired(referencedIds);
             }
 
             currentId = exportedState.pop();
