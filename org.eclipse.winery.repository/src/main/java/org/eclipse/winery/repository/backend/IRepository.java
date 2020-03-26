@@ -890,7 +890,7 @@ public interface IRepository extends IWineryRepositoryCommon {
     default void getReferencedRequirementTypeIds(Collection<DefinitionsChildId> ids, TNodeTemplate n) {
         // crawl through reqs/caps
         TNodeTemplate.Requirements requirements = n.getRequirements();
-        if (requirements != null) {
+        if (requirements != null && Environments.getInstance().getRepositoryConfig().getProvider() == RepositoryConfigurationObject.RepositoryProvider.FILE) {
             for (TRequirement req : requirements.getRequirement()) {
                 QName type = req.getType();
                 RequirementTypeId rtId = new RequirementTypeId(type);
