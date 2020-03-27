@@ -329,9 +329,9 @@ public class X2YConverter {
         TArtifactType.Builder builder = new TArtifactType.Builder()
             .setMimeType(node.getMimeType())
             .setFileExt(node.getFileExtensions());
-
+        String nodeFullName = this.getFullName(node);
         return Collections.singletonMap(
-            node.getIdFromIdOrNameField(),
+            nodeFullName,
             convert(node, builder, org.eclipse.winery.model.tosca.TArtifactType.class).build()
         );
     }
@@ -340,10 +340,7 @@ public class X2YConverter {
         if (Objects.isNull(node)) return null;
         // TNodeTypeImplementation impl = getNodeTypeImplementation(new QName(node.getTargetNamespace(), node.getName()));
 
-        String nodeFullName = node.getIdFromIdOrNameField();
-        if (node.getTargetNamespace() != null) {
-            nodeFullName = node.getTargetNamespace().concat(".").concat(node.getIdFromIdOrNameField());
-        }
+        String nodeFullName = this.getFullName(node);
 
         return Collections.singletonMap(
             nodeFullName,
@@ -382,8 +379,9 @@ public class X2YConverter {
 
     public Map<String, TRelationshipType> convert(org.eclipse.winery.model.tosca.TRelationshipType node) {
         if (Objects.isNull(node)) return null;
+        String nodeFullName = this.getFullName(node);
         return Collections.singletonMap(
-            node.getIdFromIdOrNameField(),
+            nodeFullName,
             convert(node, new TRelationshipType.Builder(), org.eclipse.winery.model.tosca.TRelationshipType.class)
                 .addInterfaces(convert(node.getInterfaces()))
                 .addInterfaces(convert(node.getSourceInterfaces(), "SourceInterfaces"))
@@ -422,8 +420,9 @@ public class X2YConverter {
     @NonNull
     public Map<String, TCapabilityType> convert(org.eclipse.winery.model.tosca.TCapabilityType node) {
         if (Objects.isNull(node)) return new LinkedHashMap<>();
+        String nodeFullName = this.getFullName(node);
         return Collections.singletonMap(
-            node.getName(),
+            nodeFullName,
             convert(node, new TCapabilityType.Builder(), org.eclipse.winery.model.tosca.TCapabilityType.class)
                 .addValidSourceTypes(node.getValidNodeTypes())
                 .build()
@@ -443,8 +442,9 @@ public class X2YConverter {
                 .map(TAppliesTo.NodeTypeReference::getTypeRef)
                 .collect(Collectors.toList()));
         }
+        String nodeFullName = this.getFullName(node);
         return Collections.singletonMap(
-            node.getName(),
+            nodeFullName,
             convert(node, builder, org.eclipse.winery.model.tosca.TPolicyType.class)
                 .build()
         );
@@ -1116,5 +1116,13 @@ public class X2YConverter {
             .map(repository::getElement)
             .filter(entry -> entry.getRelationshipType().equals(relationshipType))
             .findAny().orElse(new TRelationshipTypeImplementation());
+    }
+
+    private String getFullName(org.eclipse.winery.model.tosca.TEntityType node) {
+        String nodeFullName = node.getIdFromIdOrNameField();
+        if (node.getTargetNamespace() != null) {
+            nodeFullName = node.getTargetNamespace().concat(".").concat(node.getIdFromIdOrNameField());
+        }
+        return nodeFullName;
     }
 }
