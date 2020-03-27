@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2018-2019 Contributors to the Eclipse Foundation
+ * Copyright (c) 2018-2020 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -162,7 +162,11 @@ public class JsonBasedNamespaceManager extends AbstractNamespaceManager {
 
     @Override
     public void addAllPermanent(Collection<NamespaceProperties> properties) {
-        properties.forEach(prop -> this.namespaceProperties.put(prop.getNamespace(), prop));
+        properties.forEach(prop -> {
+            if (!this.namespaceProperties.containsKey(prop.getNamespace())) {
+                this.namespaceProperties.put(prop.getNamespace(), prop);
+            }
+        });
         this.save();
     }
 

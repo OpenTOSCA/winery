@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2019 Contributors to the Eclipse Foundation
+ * Copyright (c) 2019-2020 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -39,6 +39,7 @@ import org.eclipse.winery.common.RepositoryFileReference;
 import org.eclipse.winery.common.configuration.Environments;
 import org.eclipse.winery.common.configuration.FileBasedRepositoryConfiguration;
 import org.eclipse.winery.common.configuration.GitBasedRepositoryConfiguration;
+import org.eclipse.winery.common.configuration.RepositoryConfigurationObject;
 import org.eclipse.winery.common.ids.GenericId;
 import org.eclipse.winery.common.ids.Namespace;
 import org.eclipse.winery.common.ids.admin.EdmmMappingsId;
@@ -147,8 +148,12 @@ public class MultiRepository implements IRepository {
 
             String pns;
             try {
-                pns = namespace.getEncoded().substring(0, namespace.getEncoded()
-                    .lastIndexOf(RepositoryUtils.getUrlSeparatorEncoded()));
+                if (Environments.getInstance().getRepositoryConfig().getProvider() == RepositoryConfigurationObject.RepositoryProvider.FILE) {
+                    pns = namespace.getEncoded().substring(0, namespace.getEncoded()
+                        .lastIndexOf(RepositoryUtils.getUrlSeparatorEncoded()));
+                } else {
+                    pns = namespace.getEncoded();
+                }
             } catch (UnsupportedEncodingException ex) {
                 LOGGER.error("Error when generating the namespace", ex);
                 return;
@@ -336,11 +341,21 @@ public class MultiRepository implements IRepository {
                     loadConfiguration(configurationFile);
                     loadRepositoriesByList();
                 }
+                fixNamespaces(newSubRepository, url);
             } catch (IOException | GitAPIException e) {
                 LOGGER.error("Error while creating the repository structure");
                 e.printStackTrace();
             }
         }
+    }
+
+    private void fixNamespaces(IRepository repository, String url) {
+        SortedSet<DefinitionsChildId> defChilds = repository.getAllDefinitionsChildIds();
+        Collection<NamespaceProperties> namespaceProperties = new ArrayList<>();
+        for (DefinitionsChildId value : defChilds) {
+            namespaceProperties.add(new NamespaceProperties(value.getNamespace().getDecoded(), value.getNamespace().getDecoded().replace(".", ""), "", url, false));
+        }
+        repository.getNamespaceManager().addAllPermanent(namespaceProperties);
     }
 
     @Override
