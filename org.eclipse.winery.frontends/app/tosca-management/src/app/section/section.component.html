@@ -25,14 +25,14 @@
     </div>
     <div class="sectionsComponentContainer" id="sectionsComponentContainer">
         <winery-entity-container
-                *ngFor="let item of componentData
+            *ngFor="let item of componentData
                 | filterSections: { showNamespaces: showNamespace, filterString: filterString }
                 | paginate: { itemsPerPage: itemsPerPage, currentPage: currentPage }"
-                [toscaType]="toscaType"
-                [xsdSchemaType]="importXsdSchemaType"
-                [data]="item"
-                (deleted)="getSectionsData()"
-                class="winery-entity-container">
+            [toscaType]="toscaType"
+            [xsdSchemaType]="importXsdSchemaType"
+            [data]="item"
+            (deleted)="getSectionsData()"
+            class="winery-entity-container">
         </winery-entity-container>
     </div>
     <div class="sectionSidebar" id="sectionSidebar">
@@ -47,9 +47,8 @@
                 (click)="addYamlModal.show();" *wineryRepositoryHideOnFeature="'yaml'">
             Import YAML
         </button>
-        <div *wineryRepositoryHideOnFeature="'yaml'">
+        <div *wineryRepositoryHideOnFeature="'yaml'" class="sectionBtn">
             <winery-xaas-packager *ngIf="toscaType === toscaTypes.ServiceTemplate"
-                                  class="sectionBtn"
                                   id="sectionCreateFromArtifactBtn"></winery-xaas-packager>
             <div *wineryRepositoryFeatureToggle="configEnum.Placement"
                  class="sectionBtn">
@@ -127,7 +126,7 @@
                         <li *ngFor="let item of fileProvenance[file.key]">
                             Author: <b>{{ item.authorName }}</b> ({{ item.authorAddress }})<br>
                             Is authorized: <span
-                                [class]="getAuthorizedClass(item.authorized)">{{ item.authorized }}</span><br>
+                            [class]="getAuthorizedClass(item.authorized)">{{ item.authorized }}</span><br>
                             Transaction Id: {{ item.transactionHash }}<br>
                             <span *ngIf="item.fileHash">
                                 File hash: {{ item.fileHash }}<br>
@@ -161,10 +160,10 @@
 
     <div class="modal-body">
         <winery-file-comparison
-                [selectedServiceTemplate]="importMetadata.entryServiceTemplate.qname"
-                [fileProvenance]="selectedFileProvenance"
-                [selectedFileProvenanceElement]="selectedFile"
-                [accountabilityService]="accountability"
+            [selectedServiceTemplate]="importMetadata.entryServiceTemplate.qname"
+            [fileProvenance]="selectedFileProvenance"
+            [selectedFileProvenanceElement]="selectedFile"
+            [accountabilityService]="accountability"
         ></winery-file-comparison>
     </div>
 </ng-template>

@@ -41,11 +41,15 @@
 }
 
 .sectionSidebar {
-    display: grid;
     grid-template-columns: auto 200px auto;
     grid-column: 3 / span 1;
     grid-row: 1 / span 3;
     align-self: start;
+}
+
+.sectionSidebar button,
+.sectionSidebar div {
+    width: 90%;
 }
 
 .sectionBtn {
