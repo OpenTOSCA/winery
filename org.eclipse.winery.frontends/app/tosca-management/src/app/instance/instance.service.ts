@@ -71,7 +71,7 @@ export class InstanceService {
                 subMenu = [SubMenuItems.readme, SubMenuItems.documentation, SubMenuItems.license, SubMenuItems.appearance, SubMenuItems.instanceStates,
                     SubMenuItems.sourceInterfaces, SubMenuItems.interfaces, SubMenuItems.targetInterfaces, SubMenuItems.validSourcesAndTargets,
                     SubMenuItems.implementations,
-                    SubMenuItems.propertiesDefinition, SubMenuItems.inheritance, SubMenuItems.documentation, SubMenuItems.xml];
+                    SubMenuItems.propertiesDefinition, SubMenuItems.inheritance, SubMenuItems.xml];
                 break;
             case ToscaTypes.ArtifactType:
                 if (this.configurationService.isYaml()) {
