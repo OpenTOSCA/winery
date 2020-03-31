@@ -27,7 +27,7 @@ import org.eclipse.winery.model.ids.definitions.DefinitionsChildId;
 import org.eclipse.winery.model.ids.definitions.NodeTypeId;
 import org.eclipse.winery.model.ids.definitions.RelationshipTypeId;
 import org.eclipse.winery.model.ids.definitions.ServiceTemplateId;
-import org.eclipse.winery.model.tosca.Definitions;
+import org.eclipse.winery.model.tosca.TDefinitions;
 import org.eclipse.winery.model.tosca.TArtifacts;
 import org.eclipse.winery.model.tosca.TImport;
 import org.eclipse.winery.model.tosca.TNodeTemplate;
@@ -59,7 +59,7 @@ public class YamlToscaExportUtil extends ToscaExportUtil {
             throw new RepositoryCorruptException(error);
         }
 
-        Definitions entryDefinitions = repository.getDefinitions(tcId);
+        TDefinitions entryDefinitions = repository.getDefinitions(tcId);
         this.getPrepareForExport(repository, tcId, entryDefinitions);
 
         Collection<DefinitionsChildId> referencedDefinitionsChildIds = repository.getReferencedDefinitionsChildIds(tcId);
@@ -95,7 +95,7 @@ public class YamlToscaExportUtil extends ToscaExportUtil {
     /**
      * Prepares the given id for export. Mostly, the contained files are added to the CSAR.
      */
-    private void getPrepareForExport(IRepository repository, DefinitionsChildId id, Definitions entryDefinitions) throws IOException {
+    private void getPrepareForExport(IRepository repository, DefinitionsChildId id, TDefinitions entryDefinitions) throws IOException {
         if (id instanceof ServiceTemplateId) {
             this.prepareServiceTemplateForExport(repository, (ServiceTemplateId) id, entryDefinitions);
         } else if (id instanceof RelationshipTypeId) {
@@ -106,8 +106,7 @@ public class YamlToscaExportUtil extends ToscaExportUtil {
         }
     }
 
-    private void prepareNodeTypeForExport(IRepository repository, NodeTypeId id, Definitions entryDefinitions) {
-
+    private void prepareNodeTypeForExport(IRepository repository, NodeTypeId id, TDefinitions entryDefinitions) {
         TNodeType node = repository.getElement(id);
         TArtifacts artifacts = node.getArtifacts();
         if (Objects.nonNull(artifacts)) {
@@ -187,7 +186,7 @@ public class YamlToscaExportUtil extends ToscaExportUtil {
     /**
      * Prepares artifacts in Service Template
      */
-    private void prepareServiceTemplateForExport(IRepository repository, ServiceTemplateId id, Definitions entryDefinitions) throws IOException {
+    private void prepareServiceTemplateForExport(IRepository repository, ServiceTemplateId id, TDefinitions entryDefinitions) throws IOException {
         BackendUtils.synchronizeReferences(id, repository);
         TServiceTemplate st = repository.getElement(id);
 

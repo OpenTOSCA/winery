@@ -36,6 +36,7 @@ import java.util.stream.Collectors;
 import javax.xml.namespace.QName;
 
 import org.eclipse.winery.common.Constants;
+import org.eclipse.winery.model.tosca.TDefinitions;
 import org.eclipse.winery.repository.common.RepositoryFileReference;
 import org.eclipse.winery.common.configuration.GitBasedRepositoryConfiguration;
 import org.eclipse.winery.model.ids.GenericId;
@@ -59,7 +60,6 @@ import org.eclipse.winery.model.ids.definitions.ServiceTemplateId;
 import org.eclipse.winery.model.ids.definitions.TestRefinementModelId;
 import org.eclipse.winery.model.ids.definitions.imports.GenericImportId;
 import org.eclipse.winery.model.ids.elements.ToscaElementId;
-import org.eclipse.winery.model.tosca.Definitions;
 import org.eclipse.winery.model.tosca.TArtifactTemplate;
 import org.eclipse.winery.model.tosca.TArtifactType;
 import org.eclipse.winery.model.tosca.TCapabilityType;
@@ -423,7 +423,7 @@ public class GitBasedRepository extends AbstractFileBasedRepository {
     }
 
     @Override
-    public Definitions definitionsFromRef(RepositoryFileReference ref) throws IOException {
+    public TDefinitions definitionsFromRef(RepositoryFileReference ref) throws IOException {
         return repository.definitionsFromRef(ref);
     }
 
@@ -683,7 +683,7 @@ public class GitBasedRepository extends AbstractFileBasedRepository {
     }
 
     @Override
-    public Definitions getDefinitions(DefinitionsChildId id) {
+    public TDefinitions getDefinitions(DefinitionsChildId id) {
         return repository.getDefinitions(id);
     }
 

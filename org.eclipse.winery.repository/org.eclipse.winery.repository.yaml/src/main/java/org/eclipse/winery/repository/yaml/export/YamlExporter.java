@@ -41,9 +41,10 @@ import org.eclipse.winery.common.constants.MimeTypes;
 import org.eclipse.winery.model.csar.toscametafile.TOSCAMetaFile;
 import org.eclipse.winery.model.csar.toscametafile.TOSCAMetaFileParser;
 import org.eclipse.winery.model.ids.definitions.DefinitionsChildId;
-import org.eclipse.winery.model.tosca.Definitions;
+import org.eclipse.winery.model.tosca.TDefinitions;
 import org.eclipse.winery.model.tosca.yaml.TServiceTemplate;
 import org.eclipse.winery.repository.backend.IRepository;
+import org.eclipse.winery.repository.converter.writer.YamlWriter;
 import org.eclipse.winery.repository.export.CsarContentProperties;
 import org.eclipse.winery.repository.export.CsarExporter;
 import org.eclipse.winery.repository.export.ExportedState;
@@ -58,6 +59,7 @@ import org.eclipse.winery.repository.export.entries.CsarEntry;
 import org.eclipse.winery.repository.export.entries.DocumentBasedCsarEntry;
 import org.eclipse.winery.repository.export.entries.RepositoryRefBasedCsarEntry;
 import org.eclipse.winery.repository.export.entries.XMLDefinitionsBasedCsarEntry;
+import org.eclipse.winery.repository.yaml.converter.FromCanonical;
 import org.eclipse.winery.repository.yaml.export.entries.YAMLDefinitionsBasedCsarEntry;
 import org.eclipse.winery.repository.yaml.converter.ToCanonical;
 
@@ -171,7 +173,7 @@ public class YamlExporter extends CsarExporter {
         }
     }
 
-    public Definitions convertY2X(TServiceTemplate serviceTemplate, String name, String namespace, Path path, Path outPath) {
+    public TDefinitions convertY2X(TServiceTemplate serviceTemplate, String name, String namespace, Path path, Path outPath) {
         return new ToCanonical(repository).convert(serviceTemplate, name, namespace/* TODO, path, outPath*/);
     }
 
@@ -219,7 +221,7 @@ public class YamlExporter extends CsarExporter {
             XmlReader reader = new XmlReader();
             try {
                 String fileName = metaFile.getEntryDefinitions();
-                Definitions definitions = reader.parse(filePath, Paths.get(fileName));
+                TDefinitions definitions = reader.parse(filePath, Paths.get(fileName));
                 this.convertX2Y(definitions, fileOutPath);
             } catch (MultiException e) {
                 LOGGER.error("Convert TOSCA XML to TOSCA YAML error", e);
@@ -266,8 +268,12 @@ public class YamlExporter extends CsarExporter {
         }
     }
 
-    public void convertX2Y(Definitions definitions, Path outPath) throws MultiException {
+    public void convertX2Y(TDefinitions definitions, Path outPath) throws MultiException {
         // new X2YConverter(this.repository).convert(definitions/*, outPath*/);
+        // FIXME check this implementation
+        // we're assuming that the repository for this exporter is a yaml repo
+        TServiceTemplate yaml = new FromCanonical((YamlRepository)repository).convert(definitions);
+        new YamlWriter().write(yaml, outPath);
     }
 
     private String addManifest(IRepository repository, DefinitionsChildId id, Map<CsarContentProperties, CsarEntry> refMap,
