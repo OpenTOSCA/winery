@@ -1,5 +1,5 @@
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ~ Copyright (c) 2017-2018 Contributors to the Eclipse Foundation
+  ~ Copyright (c) 2017-2020 Contributors to the Eclipse Foundation
   ~
   ~ See the NOTICE file(s) distributed with this work for additional
   ~ information regarding copyright ownership.
@@ -112,7 +112,7 @@
                 </div>
             </fieldset>
             <winery-qname-selector
-                *ngIf="selectedRadioButton === 'createArtifactTemplate' || selectedRadioButton === 'skipArtifactTemplate' "
+                *ngIf="selectedRadioButton === 'skipArtifactTemplate' "
                 [title]="'Artifact Type'"
                 [displayList]="artifactTypesList"
                 [width]="'none'"
@@ -123,13 +123,20 @@
                 *ngIf="selectedRadioButton === 'linkArtifactTemplate'"
                 [title]="'Artifact Template'"
                 [displayList]="artifactTemplatesList"
+                [width]="'none'"
                 (selectedValueChanged)="onSelectedArtifactTemplateChanged($event.value)">
             </winery-qname-selector>
-            <winery-component-exists
-                *ngIf="selectedRadioButton === 'createArtifactTemplate'"
-                [generateData]=artifact
-                [modalRef]="addArtifactModal">
-            </winery-component-exists>
+            <div class="form-group-grouping typeimplementation">
+                <winery-add-component-data-component *ngIf="selectedRadioButton === 'createArtifactTemplate'"
+                                                     [toscaType]="toscaType"
+                                                     [types]="types"
+                                                     [typeRequired]="typeRequired"
+                                                     [newComponentName]="artifact.name"
+                                                     (typeChanged)="onSelectedArtifactTypeChanged($event)"
+                                                     (newComponentNameEvent)="setNewArtifactName($event)"
+                                                     (newComponentNamespaceEvent)="setNewArtifactNamespace($event)">
+                </winery-add-component-data-component>
+            </div>
         </form>
     </winery-modal-body>
     <winery-modal-footer [showDefaultButtons]="false">
@@ -164,7 +171,8 @@
                                                  title="{{file.name}}"><img src="{{file.thumbnailUrl}}"></a></span>
                     </td>
                     <td>
-                        <p class="name"><a href="{{baseUrl + file.url}}" download="{{file.name}}" title="{{file.name}}">{{file.name}}</a>
+                        <p class="name"><a href="{{baseUrl + file.url}}" download="{{file.name}}"
+                                           title="{{file.name}}">{{file.name}}</a>
                         </p>
                     </td>
                     <td>
