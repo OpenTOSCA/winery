@@ -18,11 +18,10 @@ import {
     PropertiesDefinition, PropertiesDefinitionEnum, PropertiesDefinitionKVElement, PropertiesDefinitionsResourceApiData, WinerysPropertiesDefinition
 } from './propertiesDefinitionsResourceApiData';
 import { SelectData } from '../../../model/selectData';
-import { isNullOrUndefined } from 'util';
 import { WineryNotificationService } from '../../../wineryNotificationModule/wineryNotification.service';
 import { WineryValidatorObject } from '../../../wineryValidators/wineryDuplicateValidator.directive';
 import { WineryRowData, WineryTableColumn } from '../../../wineryTableModule/wineryTable.component';
-import { ModalDirective } from 'ngx-bootstrap';
+import { BsModalRef, BsModalService, ModalDirective } from 'ngx-bootstrap';
 import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
 import { WineryRepositoryConfigurationService } from '../../../wineryFeatureToggleModule/WineryRepositoryConfiguration.service';
 import { FeatureEnum } from '../../../wineryFeatureToggleModule/wineryRepository.feature.direct';
@@ -68,10 +67,15 @@ export class PropertiesDefinitionComponent implements OnInit {
 
     validatorObject: WineryValidatorObject;
     @ViewChild('confirmDeleteModal') confirmDeleteModal: ModalDirective;
+    confirmDeleteModalRef: BsModalRef;
+
     @ViewChild('addModal') addModal: ModalDirective;
+    addModalRef: BsModalRef;
+
     @ViewChild('nameInputForm') nameInputForm: ElementRef;
 
     constructor(public sharedData: InstanceService, private service: PropertiesDefinitionService,
+                private modalService: BsModalService,
                 private notify: WineryNotificationService, private configurationService: WineryRepositoryConfigurationService) {
     }
 
@@ -125,7 +129,7 @@ export class PropertiesDefinitionComponent implements OnInit {
     onXmlElementSelected(): void {
         this.resourceApiData.selectedValue = PropertiesDefinitionEnum.Element;
 
-        if (isNullOrUndefined(this.resourceApiData.propertiesDefinition)) {
+        if (!this.resourceApiData.propertiesDefinition) {
             this.resourceApiData.propertiesDefinition = new PropertiesDefinition();
         }
 
@@ -146,7 +150,7 @@ export class PropertiesDefinitionComponent implements OnInit {
     onXmlTypeSelected(): void {
         this.resourceApiData.selectedValue = PropertiesDefinitionEnum.Type;
 
-        if (isNullOrUndefined(this.resourceApiData.propertiesDefinition)) {
+        if (!this.resourceApiData.propertiesDefinition) {
             this.resourceApiData.propertiesDefinition = new PropertiesDefinition();
         }
 
@@ -167,30 +171,30 @@ export class PropertiesDefinitionComponent implements OnInit {
     onCustomKeyValuePairSelected(): void {
         this.resourceApiData.selectedValue = PropertiesDefinitionEnum.Custom;
 
-        if (isNullOrUndefined(this.resourceApiData.propertiesDefinition)) {
+        if (!this.resourceApiData.propertiesDefinition) {
             this.resourceApiData.propertiesDefinition = new PropertiesDefinition();
         }
         this.resourceApiData.propertiesDefinition.element = null;
         this.resourceApiData.propertiesDefinition.type = null;
 
-        if (isNullOrUndefined(this.resourceApiData.propertiesDefinition)) {
+        if (this.resourceApiData.propertiesDefinition) {
             this.resourceApiData.propertiesDefinition = new PropertiesDefinition();
         }
         this.resourceApiData.propertiesDefinition.element = null;
         this.resourceApiData.propertiesDefinition.type = null;
 
-        if (isNullOrUndefined(this.resourceApiData.winerysPropertiesDefinition)) {
+        if (!this.resourceApiData.winerysPropertiesDefinition) {
             this.resourceApiData.winerysPropertiesDefinition = new WinerysPropertiesDefinition();
         }
         // The key/value pair list may be null
-        if (isNullOrUndefined(this.resourceApiData.winerysPropertiesDefinition.propertyDefinitionKVList)) {
+        if (!this.resourceApiData.winerysPropertiesDefinition.propertyDefinitionKVList) {
             this.resourceApiData.winerysPropertiesDefinition.propertyDefinitionKVList = [];
         }
 
-        if (isNullOrUndefined(this.resourceApiData.winerysPropertiesDefinition.namespace)) {
+        if (!this.resourceApiData.winerysPropertiesDefinition.namespace) {
             this.resourceApiData.winerysPropertiesDefinition.namespace = this.sharedData.toscaComponent.namespace + '/propertiesdefinition/winery';
         }
-        if (isNullOrUndefined(this.resourceApiData.winerysPropertiesDefinition.elementName)) {
+        if (!this.resourceApiData.winerysPropertiesDefinition.elementName) {
             this.resourceApiData.winerysPropertiesDefinition.elementName = 'properties';
         }
 
@@ -223,11 +227,9 @@ export class PropertiesDefinitionComponent implements OnInit {
      * @param data
      */
     onRemoveClick(data: PropertiesDefinitionKVElement) {
-        if (isNullOrUndefined(data)) {
-            return;
-        } else {
+        if (data) {
             this.elementToRemove = data;
-            this.confirmDeleteModal.show();
+            this.confirmDeleteModalRef = this.modalService.show(this.confirmDeleteModal);
         }
     }
 
@@ -237,7 +239,7 @@ export class PropertiesDefinitionComponent implements OnInit {
     onAddClick() {
         this.newProperty = new PropertiesDefinitionKVElement();
         this.validatorObject = new WineryValidatorObject(this.resourceApiData.winerysPropertiesDefinition.propertyDefinitionKVList, 'key');
-        this.addModal.show();
+        this.addModalRef = this.modalService.show(this.addModal);
     }
 
     // endregion
@@ -255,9 +257,7 @@ export class PropertiesDefinitionComponent implements OnInit {
     }
 
     onCellSelected(data: WineryRowData) {
-        if (isNullOrUndefined(data)) {
-            this.selectedCell = data;
-        }
+        this.selectedCell = data;
     }
 
     // endregion
@@ -280,7 +280,7 @@ export class PropertiesDefinitionComponent implements OnInit {
             description: description,
             constraints: this.newProperty.constraints.slice(),
         });
-        this.addModal.hide();
+        this.addModalRef.hide();
         this.copyToTable();
         this.save();
     }
@@ -295,15 +295,11 @@ export class PropertiesDefinitionComponent implements OnInit {
     }
 
     removeConfirmed() {
-        this.confirmDeleteModal.hide();
+        this.confirmDeleteModalRef.hide();
         this.deleteItemFromPropertyDefinitionKvList(this.elementToRemove);
         this.elementToRemove = null;
         this.copyToTable();
         this.save();
-    }
-
-    onAddModalShown() {
-        this.nameInputForm.nativeElement.focus();
     }
 
     // endregion
@@ -328,10 +324,10 @@ export class PropertiesDefinitionComponent implements OnInit {
                 }
                 return item.id === this.resourceApiData.propertiesDefinition.element;
             });
-            return !isNullOrUndefined(this.activeElement);
+            return !!this.activeElement;
         });
 
-        if (isNullOrUndefined(this.activeElement)) {
+        if (!this.activeElement) {
             this.activeElement = new SelectData();
         }
     }
@@ -371,7 +367,7 @@ export class PropertiesDefinitionComponent implements OnInit {
         this.resourceApiData = data;
 
         // because the selectedValue doesn't get set correctly do it here
-        switch (isNullOrUndefined(this.resourceApiData.selectedValue) ? '' : this.resourceApiData.selectedValue.toString()) {
+        switch (!this.resourceApiData.selectedValue ? '' : this.resourceApiData.selectedValue.toString()) {
             case PropertiesDefinitionEnum.Element:
                 this.onXmlElementSelected();
                 break;
