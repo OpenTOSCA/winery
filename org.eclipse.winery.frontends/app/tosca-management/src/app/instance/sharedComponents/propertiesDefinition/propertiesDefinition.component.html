@@ -11,17 +11,17 @@
   ~
   ~ SPDX-License-Identifier: EPL-2.0 OR Apache-2.0
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-<div class="localLoader" [class.hidden]="!loading"
->
+<div class="localLoader" [class.hidden]="!loading">
     <winery-loader></winery-loader>
 </div>
+
 <div *ngIf="!loading">
     <div class="radioWrapper" *wineryRepositoryHideOnFeature="configEnum.Yaml">
         <div class="left">
             <input id="nopropdef" type="radio" name="kind" (click)="onNoneSelected()"
                    [disabled]="!sharedData?.currentVersion?.editable"
                    [checked]="resourceApiData.selectedValue === propertiesEnum.None">
-            <label for="nopropdef" class="cursorpointer" name="nopropdef">(none)</label>
+            <label for="nopropdef" class="cursorpointer">(none)</label>
             <br>
             <input id="xsdelementradio" type="radio" name="kind" (click)="onXmlElementSelected()"
                    [disabled]="!sharedData?.currentVersion?.editable"
@@ -91,9 +91,8 @@
     </div>
 </div>
 
-<winery-modal bsModal #addModal="bs-modal" [modalRef]="addModal"
-              (onShown)="onAddModalShown();" (onHide)="addPropertyFrom.reset();">
-    <winery-modal-header [title]="'Add Property'">
+<ng-template #addModal>
+    <winery-modal-header [modalRef]="addModalRef" [title]="'Add a Property Definition'">
     </winery-modal-header>
     <winery-modal-body>
         <form #addPropertyFrom="ngForm" id="addPropertyForm">
@@ -173,21 +172,23 @@
                 </div>
                 <input #constraintValue id="constraintVal" class="form-control" type="text"/>
                 <button type="button" class="btn btn-default"
-                        (click)="addConstraint(selectedConstraintKey.value, constraintValue.value)">Add Constraint
+                        (click)="addConstraint(selectedConstraintKey.value, constraintValue.value)">
+                    Add Constraint
                 </button>
             </div>
         </form>
     </winery-modal-body>
     <winery-modal-footer
-        (onOk)="addProperty(selectProperty.value, propName.value, propertyIsRequired.checked, propertyDefaultValue.value, propertyDescription.value); addPropertyFrom.reset();"
+        (onOk)="addProperty(selectProperty.value, propName.value, propertyIsRequired.checked, propertyDefaultValue.value, propertyDescription.value)"
         [closeButtonLabel]="'Cancel'"
         [okButtonLabel]="'Add'"
+        [modalRef]="addModalRef"
         [disableOkButton]="!addPropertyFrom?.form.valid">
     </winery-modal-footer>
-</winery-modal>
+</ng-template>
 
-<winery-modal bsModal #confirmDeleteModal="bs-modal" [modalRef]="confirmDeleteModal">
-    <winery-modal-header [title]="'Delete Property'">
+<ng-template #confirmDeleteModal>
+    <winery-modal-header [title]="'Delete Property Definition'" [modalRef]="confirmDeleteModalRef">
     </winery-modal-header>
     <winery-modal-body>
         <p *ngIf="elementToRemove != null" id="diagyesnomsg">
@@ -195,7 +196,8 @@
         </p>
     </winery-modal-body>
     <winery-modal-footer (onOk)="removeConfirmed();"
+                         [modalRef]="confirmDeleteModalRef"
                          [closeButtonLabel]="'Cancel'"
                          [okButtonLabel]="'Delete'">
     </winery-modal-footer>
-</winery-modal>
+</ng-template>

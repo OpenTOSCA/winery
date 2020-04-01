@@ -12,8 +12,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR Apache-2.0
  *******************************************************************************/
 import { Component, TemplateRef, ViewChild } from '@angular/core';
-import { BsModalRef, BsModalService, ModalDirective } from 'ngx-bootstrap';
-import { AccountabilityParticipant } from '../AccountabilityParticipant';
+import { BsModalRef, BsModalService } from 'ngx-bootstrap';
 import { AccountabilityService } from '../accountability.service';
 import { WineryNotificationService } from '../../../../wineryNotificationModule/wineryNotification.service';
 import { AuthorizationElement } from '../../../../model/provenance';
