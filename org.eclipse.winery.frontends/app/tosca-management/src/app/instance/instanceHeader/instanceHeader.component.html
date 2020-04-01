@@ -22,7 +22,7 @@
                                 [multipleVersionsAvailable]="versions?.length > 0"></winery-property-rename>
     </div>
     <div class="managementButtons row" *ngIf="showManagementButtons">
-        <button class="btn btn-danger col-lg-4" (click)="confirmDeleteModal.show()">Delete</button>
+        <button class="btn btn-danger col-lg-4" (click)="openDeleteConfirmationModel()">Delete</button>
         <div *ngIf="!this.configurationService.isYaml(); then xmlExport else yamlExport"></div>
         <ng-template #xmlExport>
             <div class="btn-group col-lg-4" dropdown>
