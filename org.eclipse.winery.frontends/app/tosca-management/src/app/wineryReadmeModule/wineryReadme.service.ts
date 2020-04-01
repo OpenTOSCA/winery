@@ -32,7 +32,7 @@ export class ReadmeService {
     }
 
     save(readmeFile: String): Observable<HttpResponse<string>> {
-        return this.http.put<string>(
+        return this.http.put(
             this.sharedData.path + '/README.md',
             readmeFile,
             { observe: 'response', responseType: 'text' });
