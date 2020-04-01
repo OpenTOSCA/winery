@@ -47,14 +47,11 @@
                 (click)="addYamlModal.show();" *wineryRepositoryHideOnFeature="'yaml'">
             Import YAML
         </button>
-        <div *wineryRepositoryHideOnFeature="'yaml'" class="sectionBtn">
-            <winery-xaas-packager *ngIf="toscaType === toscaTypes.ServiceTemplate"
+        <div *ngIf="toscaType === toscaTypes.ServiceTemplate" class="sectionBtn">
+            <winery-xaas-packager *wineryRepositoryHideOnFeature="'yaml'"
                                   id="sectionCreateFromArtifactBtn"></winery-xaas-packager>
-            <div *wineryRepositoryFeatureToggle="configEnum.Placement"
-                 class="sectionBtn">
-                <winery-placement *ngIf="toscaType === toscaTypes.ServiceTemplate"
-                                  id="sectionCreateFromDataFlowBtn"></winery-placement>
-            </div>
+            <winery-placement *wineryRepositoryFeatureToggle="configEnum.Placement"
+                              id="sectionCreateFromDataFlowBtn"></winery-placement>
         </div>
         <button class="btn btn-default sidebar-btn sectionBtn" id="sectionsGroupBtn" (click)="onChangeView()"
                 [disabled]="showSpecificNamespaceOnly()">
