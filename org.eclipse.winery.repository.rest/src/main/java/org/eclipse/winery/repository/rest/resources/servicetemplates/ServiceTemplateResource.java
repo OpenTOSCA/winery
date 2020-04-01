@@ -60,6 +60,7 @@ import org.eclipse.winery.repository.backend.BackendUtils;
 import org.eclipse.winery.repository.backend.YamlArtifactsSynchronizer;
 import org.eclipse.winery.repository.driverspecificationandinjection.DASpecification;
 import org.eclipse.winery.repository.driverspecificationandinjection.DriverInjection;
+import org.eclipse.winery.repository.export.EdmmUtils;
 import org.eclipse.winery.repository.rest.RestUtils;
 import org.eclipse.winery.repository.rest.resources._support.AbstractComponentInstanceResourceContainingATopology;
 import org.eclipse.winery.repository.rest.resources._support.IHasName;
@@ -407,5 +408,12 @@ public class ServiceTemplateResource extends AbstractComponentInstanceResourceCo
             this.getServiceTemplate().setTopologyTemplate(new TTopologyTemplate());
         }
         return new ParameterResource(this, this.getServiceTemplate().getTopologyTemplate());
+    }
+
+    @Path("toscalight")
+    @Produces(MediaType.APPLICATION_JSON)
+    @GET
+    public Map<String, Object> getToscaLightCompatibility() {
+        return EdmmUtils.checkToscaLightCompatibility(this.getServiceTemplate());
     }
 }

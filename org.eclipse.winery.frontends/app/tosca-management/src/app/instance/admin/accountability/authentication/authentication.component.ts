@@ -22,6 +22,7 @@ import { AccountabilityParentComponent } from '../accountabilityParent.component
     templateUrl: 'authentication.component.html'
 })
 export class AuthenticationComponent extends AccountabilityParentComponent {
+
     authenticationData: AuthorizationElement[];
     participant: AuthorizationElement = { identity: '', address: '', transactionHash: '', unixTimestamp: 0 };
     modalRef: BsModalRef;
