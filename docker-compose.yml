@@ -5,7 +5,7 @@ services:
       context: .
       # args:
       #   USER_ID: 1000
-    image: opentosca/radon-modeling-tool
+    image: radonconsortium/radon-gmt
     environment:
       WINERY_HOSTNAME: ${PUBLIC_HOSTNAME}
       WORKFLOWMODELER_HOSTNAME: ${PUBLIC_HOSTNAME}
