@@ -93,7 +93,6 @@ public class YamlToscaExportUtil extends ToscaExportUtil {
     }
 
     private void prepareNodeTypeForExport(IRepository repository, NodeTypeId id, Definitions entryDefinitions) {
-        // ensure that the plans stored locally are the same ones as stored in the definitions
         TNodeType node = repository.getElement(id);
         if (Objects.nonNull(node.getArtifacts())) {
             node.getArtifacts().getArtifact().forEach(a -> {
