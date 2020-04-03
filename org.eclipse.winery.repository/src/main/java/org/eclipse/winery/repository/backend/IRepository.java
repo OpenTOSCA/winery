@@ -809,6 +809,16 @@ public interface IRepository extends IWineryRepositoryCommon {
         }
 
         if (serviceTemplate.getTopologyTemplate() != null) {
+
+            serviceTemplate.getTopologyTemplate()
+                .getPolicies()
+                .getPolicy()
+                .forEach(p -> {
+                    QName type = p.getPolicyType();
+                    PolicyTypeId policyTypeIdId = new PolicyTypeId(type);
+                    ids.add(policyTypeIdId);
+                });
+
             for (TEntityTemplate entityTemplate : serviceTemplate.getTopologyTemplate().getNodeTemplateOrRelationshipTemplate()) {
                 QName qname = entityTemplate.getType();
                 if (entityTemplate instanceof TNodeTemplate) {
@@ -1201,7 +1211,7 @@ public interface IRepository extends IWineryRepositoryCommon {
     NamespaceManager getNamespaceManager();
 
     EdmmManager getEdmmManager();
-    
+
     default XsdImportManager getXsdImportManager() {
         return new RepositoryBasedXsdImportManager();
     }
