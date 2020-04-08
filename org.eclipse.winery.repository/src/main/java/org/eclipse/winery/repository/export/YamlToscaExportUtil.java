@@ -72,8 +72,17 @@ public class YamlToscaExportUtil extends ToscaExportUtil {
         entryDefinitions.getImport().addAll(imports);
 
         // END: Definitions modification
+        
+        YAMLDefinitionsBasedCsarEntry entry = new YAMLDefinitionsBasedCsarEntry(entryDefinitions);
 
-        this.referencesToPathInCSARMap.put(definitionsFileProperties, new YAMLDefinitionsBasedCsarEntry(entryDefinitions, EXPORT_NORMATIVE_TYPES));
+        // Custom Adjustments for Service Templates
+        YamlExportAdjustmentsBuilder adjustmentsBuilder = new YamlExportAdjustmentsBuilder(entry);
+        if (!EXPORT_NORMATIVE_TYPES) {
+            adjustmentsBuilder.removeNormativeTypeImports();
+        }
+        entry = adjustmentsBuilder.setKeysToDisplayName().build();
+
+        this.referencesToPathInCSARMap.put(definitionsFileProperties, entry);
 
         return referencedDefinitionsChildIds;
     }
