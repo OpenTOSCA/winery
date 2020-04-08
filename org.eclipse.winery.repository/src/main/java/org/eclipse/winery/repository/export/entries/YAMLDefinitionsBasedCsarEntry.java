@@ -23,7 +23,6 @@ import javax.xml.bind.JAXBException;
 
 import org.eclipse.winery.model.tosca.Definitions;
 import org.eclipse.winery.model.tosca.yaml.TServiceTemplate;
-import org.eclipse.winery.model.tosca.yaml.support.TMapImportDefinition;
 import org.eclipse.winery.repository.JAXBSupport;
 import org.eclipse.winery.repository.backend.IRepository;
 import org.eclipse.winery.repository.backend.RepositoryFactory;
@@ -35,15 +34,6 @@ import org.eclipse.winery.repository.exceptions.WineryRepositoryException;
 
 public class YAMLDefinitionsBasedCsarEntry implements CsarEntry {
     private TServiceTemplate definitions;
-
-    public YAMLDefinitionsBasedCsarEntry(Definitions definitions, boolean exportNormativeTypes) {
-        this(definitions);
-        if (!exportNormativeTypes) {
-            for (TMapImportDefinition map : this.definitions.getImports()) {
-                map.values().removeIf(val -> val.getNamespaceUri().startsWith("tosca"));
-            }
-        }
-    }
 
     public YAMLDefinitionsBasedCsarEntry(Definitions definitions) {
         assert (definitions != null);
@@ -82,5 +72,13 @@ public class YAMLDefinitionsBasedCsarEntry implements CsarEntry {
         } catch (JAXBException e) {
             throw new IOException(e);
         }
+    }
+
+    public TServiceTemplate getDefinitions() {
+        return definitions;
+    }
+
+    public void setDefinitions(TServiceTemplate definitions) {
+        this.definitions = definitions;
     }
 }
