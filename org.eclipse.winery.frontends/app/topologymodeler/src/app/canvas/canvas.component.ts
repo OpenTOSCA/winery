@@ -1538,10 +1538,12 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
             sidebarContents: {
                 visible: false,
                 nodeClicked: false,
-                id: '',
-                name: '',
-                type: '',
-                properties: '',
+                nodeTemplate: {
+                    id: '',
+                    name: '',
+                    type: '',
+                    properties: '',
+                },
                 source: '',
                 target: ''
             }
@@ -1968,10 +1970,12 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
                 sidebarContents: {
                     visible: true,
                     nodeClicked: false,
-                    id: currentRel.id,
-                    name: currentRel.name,
-                    type: currentRel.type,
-                    properties: currentRel.properties,
+                    nodeTemplate: {
+                        id: currentRel.id,
+                        name: currentRel.name,
+                        type: currentRel.type,
+                        properties: currentRel.properties,
+                    },
                     source: currentRel.sourceElement.ref,
                     target: currentRel.targetElement.ref
                 }
