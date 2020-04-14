@@ -60,7 +60,7 @@ export class TNodeTemplate extends AbstractTTemplate {
     /**
      * needed for the winery redux reducer,
      * updates a specific attribute and returns a whole new node template
-     * @param indexOfUpdatedAttribute: index of the to be updated attribute in the constructor
+     * @param updatedAttribute: index of the to be updated attribute in the constructor
      * @param updatedValue: the new value
      *
      * @return nodeTemplate: a new node template with the updated value
@@ -170,6 +170,20 @@ export class TPolicyType extends EntityType {
                 properties: any,
                 public full: any,
                 public targets?: string[]) {
+        super(id, qName, name, namespace, properties, full);
+    }
+}
+
+export class TDataType extends EntityType {
+    constructor(id: string,
+                qName: string,
+                name: string,
+                namespace: string,
+                properties: any,
+                public full: any,
+                public constraints: any,
+                public keySchema: any,
+                public entrySchema: any) {
         super(id, qName, name, namespace, properties, full);
     }
 }
