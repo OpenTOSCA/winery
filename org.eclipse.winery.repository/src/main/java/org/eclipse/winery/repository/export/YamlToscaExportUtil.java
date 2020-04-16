@@ -92,17 +92,16 @@ public class YamlToscaExportUtil extends ToscaExportUtil {
      */
     private void getPrepareForExport(IRepository repository, DefinitionsChildId id, Definitions entryDefinitions) throws IOException {
         if (id instanceof ServiceTemplateId) {
-            this.prepareForExport(repository, (ServiceTemplateId) id, entryDefinitions);
+            this.prepareServiceTemplateForExport(repository, (ServiceTemplateId) id, entryDefinitions);
         } else if (id instanceof RelationshipTypeId) {
             this.addVisualAppearanceToCSAR(repository, (RelationshipTypeId) id);
         } else if (id instanceof NodeTypeId) {
             this.addVisualAppearanceToCSAR(repository, (NodeTypeId) id);
-            this.prepareForExport(repository, (NodeTypeId) id, entryDefinitions);
+            this.prepareNodeTypeForExport(repository, (NodeTypeId) id, entryDefinitions);
         }
     }
 
-    private void prepareForExport(IRepository repository, NodeTypeId id, Definitions entryDefinitions) {
-        // ensure that the plans stored locally are the same ones as stored in the definitions
+    private void prepareNodeTypeForExport(IRepository repository, NodeTypeId id, Definitions entryDefinitions) {
         TNodeType node = repository.getElement(id);
         if (Objects.nonNull(node.getArtifacts())) {
             node.getArtifacts().getArtifact().forEach(a -> {
@@ -127,8 +126,7 @@ public class YamlToscaExportUtil extends ToscaExportUtil {
     /**
      * Prepares artifacts in Service Template
      */
-    private void prepareForExport(IRepository repository, ServiceTemplateId id, Definitions entryDefinitions) throws IOException {
-        // ensure that the plans stored locally are the same ones as stored in the definitions
+    private void prepareServiceTemplateForExport(IRepository repository, ServiceTemplateId id, Definitions entryDefinitions) throws IOException {
         BackendUtils.synchronizeReferences(id);
         TServiceTemplate st = repository.getElement(id);
 
