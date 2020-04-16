@@ -407,7 +407,8 @@ public class YamlWriter extends AbstractVisitor<YamlPrinter, YamlWriter.Paramete
 
     public YamlPrinter visit(TPropertyAssignment node, Parameter parameter) {
         return new YamlPrinter(parameter.getIndent())
-            .printKeyObject(parameter.getKey(), node.getValue());
+            // .printKeyObject(parameter.getKey(), node.getValue());
+            .printKeyValue(parameter.getKey(), String.valueOf(node.getValue()), true, true);
     }
 
     public YamlPrinter visit(TAttributeAssignment node, Parameter parameter) {

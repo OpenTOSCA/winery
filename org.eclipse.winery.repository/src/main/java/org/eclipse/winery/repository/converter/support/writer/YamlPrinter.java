@@ -117,11 +117,15 @@ public class YamlPrinter extends AbstractResult<YamlPrinter> {
     }
 
     public YamlPrinter printKeyValue(String key, String value) {
-        return printKeyValue(key, value, false);
+        return printKeyValue(key, value, false, false);
     }
 
-    public YamlPrinter printKeyValue(String key, String value, boolean quote) {
-        if (Objects.isNull(value) || value.isEmpty()) return this;
+    public YamlPrinter printKeyValue(String key, String value, boolean printQuotes) {
+        return printKeyValue(key, value, printQuotes, false);
+    }
+
+    public YamlPrinter printKeyValue(String key, String value, boolean printQuotes, boolean printEmptyValues) {
+        if (Objects.isNull(value) || (!printEmptyValues && value.isEmpty())) return this;
         if (value.contains("\n")) {
             return print(key)
                 .print(": >")
@@ -132,7 +136,7 @@ public class YamlPrinter extends AbstractResult<YamlPrinter> {
                 .printCheckNewLine();
         }
         YamlPrinter printer = print(key).print(": ");
-        if (quote) {
+        if (printQuotes) {
             printer.print("\"")
                 .print(value)
                 .print("\"");
