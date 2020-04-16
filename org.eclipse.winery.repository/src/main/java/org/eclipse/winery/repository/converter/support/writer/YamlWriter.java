@@ -324,6 +324,8 @@ public class YamlWriter extends AbstractVisitor<YamlPrinter, YamlWriter.Paramete
 
     public YamlPrinter visit(TRelationshipDefinition node, Parameter parameter) {
         return new YamlPrinter(parameter.getIndent())
+            // Removed to support short notations
+            // .printKeyValue("type", node.getType())
             .print(printMap("interfaces", node.getInterfaces(), parameter));
     }
 
@@ -487,6 +489,8 @@ public class YamlWriter extends AbstractVisitor<YamlPrinter, YamlWriter.Paramete
 
     public YamlPrinter visit(TRelationshipAssignment node, Parameter parameter) {
         return new YamlPrinter(parameter.getIndent())
+            // Removed to support short notations
+            // .printKeyValue("type", node.getType())
             .print(printMap("properties", node.getProperties(), parameter))
             .print(printMap("interfaces", node.getInterfaces(), parameter));
     }
