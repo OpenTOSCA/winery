@@ -788,7 +788,6 @@ public interface IRepository extends IWineryRepositoryCommon {
         // We have to use a HashSet to ensure that no duplicate ids are added<
         // E.g., there may be multiple relationship templates having the same type
         Collection<DefinitionsChildId> ids = new HashSet<>();
-
         TServiceTemplate serviceTemplate = this.getElement(id);
 
         // add included things to export queue
@@ -809,6 +808,20 @@ public interface IRepository extends IWineryRepositoryCommon {
         }
 
         if (serviceTemplate.getTopologyTemplate() != null) {
+
+            if (Objects.nonNull(serviceTemplate.getTopologyTemplate().getPolicies()) &&
+                Environments.getInstance().getUiConfig().getFeatures().get(RepositoryConfigurationObject.RepositoryProvider.YAML.toString())) {
+                serviceTemplate.getTopologyTemplate()
+                    .getPolicies()
+                    .getPolicy()
+                    .stream().filter(Objects::nonNull)
+                    .forEach(p -> {
+                        QName type = p.getPolicyType();
+                        PolicyTypeId policyTypeIdId = new PolicyTypeId(type);
+                        ids.add(policyTypeIdId);
+                    });
+            }
+
             for (TEntityTemplate entityTemplate : serviceTemplate.getTopologyTemplate().getNodeTemplateOrRelationshipTemplate()) {
                 QName qname = entityTemplate.getType();
                 if (entityTemplate instanceof TNodeTemplate) {
@@ -1201,7 +1214,7 @@ public interface IRepository extends IWineryRepositoryCommon {
     NamespaceManager getNamespaceManager();
 
     EdmmManager getEdmmManager();
-    
+
     default XsdImportManager getXsdImportManager() {
         return new RepositoryBasedXsdImportManager();
     }
