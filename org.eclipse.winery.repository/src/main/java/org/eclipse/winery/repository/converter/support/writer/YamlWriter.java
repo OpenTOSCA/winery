@@ -136,7 +136,7 @@ public class YamlWriter extends AbstractVisitor<YamlPrinter, YamlWriter.Paramete
             .print(printList("imports",
                 node.getImports().stream().map(m -> m.getMap().values()).flatMap(Collection::stream).collect(Collectors.toList()),
                 parameter))
-            .printKeyValue("description", node.getDescription())
+            // .printKeyValue("description", node.getDescription())
             .print(printMapObject("dsl_definitions", node.getDslDefinitions(), parameter))
             .print(printMap("repositories", node.getRepositories(), parameter))
             .print(printMap("artifact_types", node.getArtifactTypes(), parameter))
@@ -211,9 +211,9 @@ public class YamlWriter extends AbstractVisitor<YamlPrinter, YamlWriter.Paramete
             .printKeyValue("description", node.getDescription())
             .printKeyValue("version", node.getVersion())
             .printKeyValue("derived_from", node.getDerivedFrom())
-            .print(printMap("properties", node.getProperties(), parameter))
+            .print(node.getMetadata().accept(this, parameter))
             .print(printMap("attributes", node.getAttributes(), parameter))
-            .print(node.getMetadata().accept(this, parameter));
+            .print(printMap("properties", node.getProperties(), parameter));
     }
 
     public YamlPrinter visit(TPropertyDefinition node, Parameter parameter) {
