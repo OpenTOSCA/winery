@@ -56,14 +56,14 @@ public final class CapabilityTypeResource extends EntityTypeResource {
         return new TCapabilityType();
     }
 
-    @Path("constraints")
     @GET
+    @Path("constraints/")
     public ValidSourceTypesApiData getValidSourceTypes() {
         return new ValidSourceTypesApiData(getCapabilityType().getValidNodeTypes());
     }
 
-    @Path("constraints")
     @PUT
+    @Path("constraints/")
     public Response saveValidSourceTypes(ValidSourceTypesApiData newValidSourceTypes) {
         TCapabilityType t = this.getCapabilityType();
         t.setValidNodeTypes(newValidSourceTypes
