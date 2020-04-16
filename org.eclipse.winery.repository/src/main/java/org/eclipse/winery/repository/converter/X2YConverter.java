@@ -271,12 +271,14 @@ public class X2YConverter {
     }
 
     public <T extends org.eclipse.winery.model.tosca.yaml.TEntityType.Builder<T>> T convert(TEntityType node, T builder, Class<? extends TEntityType> clazz) {
+        TBoolean isFinal = node.getFinal();
+        TBoolean isAbstract = node.getAbstract();
         return builder
             .setDerivedFrom(convert(node.getDerivedFrom(), clazz))
             .setMetadata(convert(node.getTags()))
             .addMetadata("targetNamespace", node.getTargetNamespace())
-            .addMetadata("abstract", node.getAbstract().value())
-            .addMetadata("final", node.getFinal().value())
+            .addMetadata("abstract", isAbstract.equals(TBoolean.YES) ? "true" : "false")
+            .addMetadata("final", isFinal.equals(TBoolean.YES) ? "true" : "false")
             .setProperties(convert(node, node.getPropertiesDefinition()))
             .setAttributes(convert(node, node.getAttributeDefinitions()))
             .setDescription(convertDocumentation(node.getDocumentation()));

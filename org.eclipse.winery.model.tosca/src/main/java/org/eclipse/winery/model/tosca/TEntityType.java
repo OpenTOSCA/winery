@@ -403,10 +403,6 @@ public abstract class TEntityType extends TExtensibleElements implements HasName
         }
 
         public T setAbstract(Boolean abstractValue) {
-            if (this.abstractValue == null) {
-                return self();
-            }
-
             return setAbstract(abstractValue ? TBoolean.YES : TBoolean.NO);
         }
 
@@ -416,10 +412,6 @@ public abstract class TEntityType extends TExtensibleElements implements HasName
         }
 
         public T setFinal(Boolean finalValue) {
-            if (this.finalValue == null) {
-                return self();
-            }
-
             return setFinal(finalValue ? TBoolean.YES : TBoolean.NO);
         }
 
