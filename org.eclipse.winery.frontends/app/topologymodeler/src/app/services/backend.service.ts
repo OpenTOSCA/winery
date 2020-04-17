@@ -34,6 +34,7 @@ import { WineryRepositoryConfigurationService } from '../../../../tosca-manageme
 import { takeLast } from 'rxjs/operators';
 import { TPolicy } from '../models/policiesModalData';
 import { EntityTypesModel } from '../models/entityTypesModel';
+import { ToscaUtils } from '../models/toscaUtils';
 
 /**
  * Responsible for interchanging data between the app and the server.
@@ -326,6 +327,7 @@ export class BackendService {
             case 'dataTypes': {
                 this.storedModel.dataTypes = [];
                 entityTypeJSON.forEach((dType: EntityType) => {
+                    const definition = ToscaUtils.getDefinition(dType);
                     this.storedModel.dataTypes
                         .push(new TDataType(
                             dType.id,
@@ -334,10 +336,9 @@ export class BackendService {
                             dType.namespace,
                             dType.properties,
                             dType.full,
-                            // FIXME: *~deep sigh* YAML deserialization is currently a mess and needs to be fixed!
-                            dType.full.serviceTemplateOrNodeTypeOrNodeTypeImplementation[1].constraints,
-                            dType.full.serviceTemplateOrNodeTypeOrNodeTypeImplementation[1].keySchema,
-                            dType.full.serviceTemplateOrNodeTypeOrNodeTypeImplementation[1].entrySchema)
+                            definition.constraints,
+                            definition.keySchema,
+                            definition.entrySchema)
                         );
                 });
                 break;
