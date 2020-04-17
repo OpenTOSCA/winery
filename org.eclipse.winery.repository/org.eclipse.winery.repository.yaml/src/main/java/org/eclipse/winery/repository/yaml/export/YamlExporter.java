@@ -174,7 +174,7 @@ public class YamlExporter extends CsarExporter {
     }
 
     public TDefinitions convertY2X(TServiceTemplate serviceTemplate, String name, String namespace, Path path, Path outPath) {
-        return new ToCanonical(repository).convert(serviceTemplate, name, namespace/* TODO, path, outPath*/);
+        return new ToCanonical(repository).convert(serviceTemplate, name, namespace, true/* TODO, path, outPath*/);
     }
 
     public void convertY2X(InputStream zip) throws MultiException {
