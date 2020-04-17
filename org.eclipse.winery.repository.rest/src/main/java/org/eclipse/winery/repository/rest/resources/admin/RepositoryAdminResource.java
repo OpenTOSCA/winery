@@ -15,6 +15,10 @@ package org.eclipse.winery.repository.rest.resources.admin;
 
 import java.io.InputStream;
 import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -26,6 +30,17 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
 
+import org.eclipse.winery.common.ids.definitions.ArtifactTypeId;
+import org.eclipse.winery.common.ids.definitions.CapabilityTypeId;
+import org.eclipse.winery.common.ids.definitions.DefinitionsChildId;
+import org.eclipse.winery.common.ids.definitions.NodeTypeId;
+import org.eclipse.winery.common.ids.definitions.PolicyTypeId;
+import org.eclipse.winery.common.ids.definitions.RelationshipTypeId;
+import org.eclipse.winery.common.ids.definitions.RequirementTypeId;
+import org.eclipse.winery.common.ids.definitions.ServiceTemplateId;
+import org.eclipse.winery.model.tosca.Definitions;
+import org.eclipse.winery.repository.backend.BackendUtils;
+import org.eclipse.winery.repository.backend.IRepository;
 import org.eclipse.winery.repository.backend.RepositoryFactory;
 import org.eclipse.winery.repository.backend.filebased.MultiRepositoryManager;
 import org.eclipse.winery.repository.backend.filebased.RepositoryProperties;
@@ -91,6 +106,26 @@ public class RepositoryAdminResource {
         }
         MultiRepositoryManager multiRepositoryManager = new MultiRepositoryManager();
         multiRepositoryManager.addRepositoryToFile(repositoriesList);
+        return Response.ok().build();
+    }
+
+    @POST
+    @Path("touch")
+    public Response touchAllDefinitions() {
+        IRepository repository = RepositoryFactory.getRepository();
+        SortedSet<DefinitionsChildId> definitionIds = Stream.of(ArtifactTypeId.class, CapabilityTypeId.class,
+            NodeTypeId.class, PolicyTypeId.class, RelationshipTypeId.class, RequirementTypeId.class, ServiceTemplateId.class)
+            .flatMap(id -> repository.getAllDefinitionsChildIds(id).stream())
+            .collect(Collectors.toCollection(TreeSet::new));
+        for (DefinitionsChildId id : definitionIds) {
+            try {
+                Definitions definitions = repository.getDefinitions(id);
+                BackendUtils.persist(id, definitions);
+            } catch (Exception e) {
+                LOGGER.error("Could not persist definition: {}", id);
+                return Response.serverError().build();
+            }
+        }
         return Response.ok().build();
     }
 }
