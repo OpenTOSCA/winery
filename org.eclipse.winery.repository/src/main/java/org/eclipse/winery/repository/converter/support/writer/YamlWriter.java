@@ -221,7 +221,7 @@ public class YamlWriter extends AbstractVisitor<YamlPrinter, YamlWriter.Paramete
             .printKeyValue("type", node.getType())
             .printKeyValue("description", node.getDescription())
             .printKeyValue("required", node.getRequired())
-            .printKeyObject("default", node.getDefault())
+            .printYamlValue("default", node.getDefault())
             .printKeyValue("status", node.getStatus())
             .print(printList("constraints", node.getConstraints(), parameter))
             .print(printVisitorNode(node.getEntrySchema(), parameter));
@@ -238,7 +238,7 @@ public class YamlWriter extends AbstractVisitor<YamlPrinter, YamlWriter.Paramete
         return new YamlPrinter(parameter.getIndent())
             .printKeyValue("description", node.getDescription())
             .printKeyValue("type", node.getType())
-            .printKeyObject("default", node.getDefault())
+            .printYamlValue("default", node.getDefault())
             .printKeyValue("status", node.getStatus())
             .print(printVisitorNode(node.getEntrySchema(), parameter.addContext("entry_schema")));
     }
@@ -407,14 +407,13 @@ public class YamlWriter extends AbstractVisitor<YamlPrinter, YamlWriter.Paramete
 
     public YamlPrinter visit(TPropertyAssignment node, Parameter parameter) {
         return new YamlPrinter(parameter.getIndent())
-            // .printKeyObject(parameter.getKey(), node.getValue());
-            .printKeyValue(parameter.getKey(), String.valueOf(node.getValue()), true, true);
+            .printYamlValue(parameter.getKey(), node.getValue(), true);
     }
 
     public YamlPrinter visit(TAttributeAssignment node, Parameter parameter) {
         return new YamlPrinter(parameter.getIndent())
             .printKeyValue("description", node.getDescription())
-            .printKeyObject("value", node.getValue());
+            .printYamlValue(parameter.getKey(), node.getValue(), true);
     }
 
     public YamlPrinter visit(TInterfaceAssignment node, Parameter parameter) {
@@ -426,11 +425,11 @@ public class YamlWriter extends AbstractVisitor<YamlPrinter, YamlWriter.Paramete
             .printKeyValue("type", node.getType())
             .printKeyValue("description", node.getDescription())
             .printKeyValue("required", node.getRequired())
-            .printKeyObject("default", node.getDefault())
+            .printYamlValue("default", node.getDefault())
             .printKeyValue("status", node.getStatus())
             .print(printList("constraints", node.getConstraints(), parameter))
             .print(printVisitorNode(node.getEntrySchema(), parameter))
-            .printKeyObject("value", node.getValue());
+            .printYamlValue("value", node.getValue());
     }
 
     public YamlPrinter visit(TConstraintClause node, Parameter parameter) {
