@@ -273,6 +273,13 @@ public class X2YConverter {
     public <T extends org.eclipse.winery.model.tosca.yaml.TEntityType.Builder<T>> T convert(TEntityType node, T builder, Class<? extends TEntityType> clazz) {
         TBoolean isFinal = node.getFinal();
         TBoolean isAbstract = node.getAbstract();
+
+        // ensure that the targetNamespace is always set
+        if (Objects.isNull(node.getTargetNamespace()) || node.getTargetNamespace().isEmpty()) {
+            String id = node.getIdFromIdOrNameField();
+            node.setTargetNamespace(id.substring(0, id.lastIndexOf(".")));
+        }
+
         return builder
             .setDerivedFrom(convert(node.getDerivedFrom(), clazz))
             .setMetadata(convert(node.getTags()))
@@ -1122,7 +1129,7 @@ public class X2YConverter {
 
     private String getFullName(org.eclipse.winery.model.tosca.TEntityType node) {
         String nodeFullName = node.getIdFromIdOrNameField();
-        if (node.getTargetNamespace() != null) {
+        if (node.getTargetNamespace() != null && !nodeFullName.contains(node.getTargetNamespace())) {
             nodeFullName = node.getTargetNamespace().concat(".").concat(node.getIdFromIdOrNameField());
         }
         return nodeFullName;
