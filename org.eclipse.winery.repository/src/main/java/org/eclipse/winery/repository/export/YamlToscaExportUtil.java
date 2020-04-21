@@ -72,7 +72,7 @@ public class YamlToscaExportUtil extends ToscaExportUtil {
         entryDefinitions.getImport().addAll(imports);
 
         // END: Definitions modification
-        
+
         YAMLDefinitionsBasedCsarEntry entry = new YAMLDefinitionsBasedCsarEntry(entryDefinitions);
 
         // Custom Adjustments for Service Templates
@@ -80,7 +80,7 @@ public class YamlToscaExportUtil extends ToscaExportUtil {
         if (!EXPORT_NORMATIVE_TYPES) {
             adjustmentsBuilder.removeNormativeTypeImports();
         }
-        entry = adjustmentsBuilder.setKeysToDisplayName().build();
+        entry = adjustmentsBuilder.build();
 
         this.referencesToPathInCSARMap.put(definitionsFileProperties, entry);
 
