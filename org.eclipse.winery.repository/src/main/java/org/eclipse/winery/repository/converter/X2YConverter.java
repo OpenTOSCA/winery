@@ -105,7 +105,6 @@ import org.eclipse.winery.model.tosca.yaml.TTopologyTemplateDefinition;
 import org.eclipse.winery.model.tosca.yaml.support.Defaults;
 import org.eclipse.winery.model.tosca.yaml.support.Metadata;
 import org.eclipse.winery.model.tosca.yaml.support.TMapImportDefinition;
-import org.eclipse.winery.model.tosca.yaml.support.TMapPolicyDefinition;
 import org.eclipse.winery.model.tosca.yaml.support.TMapRequirementAssignment;
 import org.eclipse.winery.model.tosca.yaml.support.TMapRequirementDefinition;
 import org.eclipse.winery.repository.backend.filebased.YamlRepository;
@@ -467,19 +466,15 @@ public class X2YConverter {
     }
 
     @NonNull
-    public TMapPolicyDefinition convert(TPolicy node) {
-        if (Objects.isNull(node)) return new TMapPolicyDefinition();
-        return new TMapPolicyDefinition(Collections.singletonMap(
+    public Map<String, TPolicyDefinition> convert(TPolicy node) {
+        if (Objects.isNull(node)) return new LinkedHashMap<>();
+        return Collections.singletonMap(
             node.getName(),
-            new TPolicyDefinition.Builder(
-                convert(
-                    node.getPolicyType(),
-                    new PolicyTypeId(node.getPolicyType())
-                ))
+            new TPolicyDefinition.Builder(convert(node.getPolicyType(), new PolicyTypeId(node.getPolicyType())))
                 .setProperties(convert(node.getProperties()))
                 .setTargets(node.getTargets())
                 .build()
-        ));
+        );
     }
 
     /**
@@ -994,12 +989,13 @@ public class X2YConverter {
         ));
     }
 
-    private List<TMapPolicyDefinition> convert(TPolicies node) {
+    private Map<String, TPolicyDefinition> convert(TPolicies node) {
         if (Objects.isNull(node)) return null;
         return node.getPolicy().stream()
             .filter(Objects::nonNull)
             .map(this::convert)
-            .collect(Collectors.toList());
+            .flatMap(map -> map.entrySet().stream())
+            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
     private <T, K> Map<String, K> convert(List<T> nodes) {
