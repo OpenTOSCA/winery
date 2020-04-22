@@ -148,14 +148,14 @@ public class PatternRefinement extends AbstractRefinement {
             propertyMappings.stream()
                 .filter(mapping -> mapping.getDetectorNode().getId().equals(detectorNodeId))
                 .forEach(mapping -> {
-                    Map<String, String> sourceProperties = matchingEntity.getProperties().getKVProperties();
+                    Map<String, Object> sourceProperties = matchingEntity.getProperties().getKVProperties();
                     TEntityTemplate.Properties properties = topology.getNodeTemplateOrRelationshipTemplate()
                         .stream()
                         .filter(element -> element.getId().equals(idMapping.get(mapping.getRefinementNode().getId())))
                         .findFirst()
                         .get()
                         .getProperties();
-                    Map<String, String> targetProperties = properties.getKVProperties();
+                    Map<String, Object> targetProperties = properties.getKVProperties();
 
                     if (Objects.nonNull(matchingEntity.getProperties()) && Objects.nonNull(sourceProperties) && !sourceProperties.isEmpty()
                         && Objects.nonNull(targetProperties)) {
@@ -163,7 +163,7 @@ public class PatternRefinement extends AbstractRefinement {
                             sourceProperties.forEach(targetProperties::replace);
                         } else {
                             // TPrmPropertyMappingType.SELECTIVE
-                            String sourceValue = sourceProperties.get(mapping.getDetectorProperty());
+                            Object sourceValue = sourceProperties.get(mapping.getDetectorProperty());
                             targetProperties.put(mapping.getRefinementProperty(), sourceValue);
                         }
                         // because of the dynamical generation of the KV properties, we must set them again to persist them...

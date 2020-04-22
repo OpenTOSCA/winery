@@ -531,7 +531,7 @@ class PatternRefinementTest {
         // region *** setup the PRM ***
         TNodeTemplate nt13 = candidate.getRefinementModel().getRefinementTopology().getNodeTemplate("13");
         TEntityTemplate.Properties nt13Props = new TEntityTemplate.Properties();
-        HashMap<String, String> nt13PropsMap = new HashMap<>();
+        HashMap<String, Object> nt13PropsMap = new HashMap<>();
         nt13PropsMap.put("a", null);
         nt13PropsMap.put("b", null);
         nt13PropsMap.put("c", "0");
@@ -540,14 +540,14 @@ class PatternRefinementTest {
 
         TNodeTemplate nt12 = candidate.getRefinementModel().getRefinementTopology().getNodeTemplate("12");
         TEntityTemplate.Properties nt12Props = new TEntityTemplate.Properties();
-        HashMap<String, String> nt12PropsMap = new HashMap<>();
+        HashMap<String, Object> nt12PropsMap = new HashMap<>();
         nt12PropsMap.put("j", null);
         nt12Props.setKVProperties(nt12PropsMap);
         nt12.setProperties(nt12Props);
 
         TNodeTemplate nt11 = candidate.getRefinementModel().getRefinementTopology().getNodeTemplate("11");
         TEntityTemplate.Properties nt11Props = new TEntityTemplate.Properties();
-        HashMap<String, String> nt11PropsMap = new HashMap<>();
+        HashMap<String, Object> nt11PropsMap = new HashMap<>();
         nt11PropsMap.put("k", null);
         nt11Props.setKVProperties(nt11PropsMap);
         nt11.setProperties(nt11Props);
@@ -582,7 +582,7 @@ class PatternRefinementTest {
         // region *** setup the topology ***
         TNodeTemplate nt2 = topology.getNodeTemplate("2");
         TEntityTemplate.Properties nt2Props = new TEntityTemplate.Properties();
-        HashMap<String, String> nt2PropsMap = new HashMap<>();
+        HashMap<String, Object> nt2PropsMap = new HashMap<>();
         nt2PropsMap.put("p", "1");
         nt2PropsMap.put("x", "2");
         nt2Props.setKVProperties(nt2PropsMap);
@@ -590,7 +590,7 @@ class PatternRefinementTest {
 
         TNodeTemplate nt4 = topology.getNodeTemplate("4");
         TEntityTemplate.Properties nt4Props = new TEntityTemplate.Properties();
-        HashMap<String, String> nt4PropsMap = new HashMap<>();
+        HashMap<String, Object> nt4PropsMap = new HashMap<>();
         nt4PropsMap.put("a", "3");
         nt4PropsMap.put("b", "4");
         nt4Props.setKVProperties(nt4PropsMap);
