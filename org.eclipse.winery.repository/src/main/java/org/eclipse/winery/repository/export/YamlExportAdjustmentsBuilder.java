@@ -45,6 +45,9 @@ public class YamlExportAdjustmentsBuilder {
 
     /**
      * changes key values in yaml to the display name
+     *
+     * FIXME: All node template references need to be updated with the display; atm not the case for relationship
+     * references in requirements definitions
      */
     public YamlExportAdjustmentsBuilder setKeysToDisplayName() {
         if (this.definitions.getTopologyTemplate() != null) {
