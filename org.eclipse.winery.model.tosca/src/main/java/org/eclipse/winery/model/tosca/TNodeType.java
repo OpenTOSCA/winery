@@ -119,7 +119,6 @@ public class TNodeType extends TEntityType {
 
     @Nullable
     public List<TInterfaceDefinition> getInterfaceDefinitions() {
-        System.out.println(interfaceDefinitions);
         return interfaceDefinitions;
     }
 
