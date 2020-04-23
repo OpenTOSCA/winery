@@ -1,15 +1,12 @@
 version: '3'
 services:
   winery:
-    build: 
-      context: .
+    build:
+      context: ../..
       # args:
       #   USER_ID: 1000
-    image: radonconsortium/radon-gmt
+    image: opentosca/radon-gmt
     environment:
-      WINERY_HOSTNAME: ${PUBLIC_HOSTNAME}
-      WORKFLOWMODELER_HOSTNAME: ${PUBLIC_HOSTNAME}
-      TOPOLOGYMODELER_HOSTNAME: ${PUBLIC_HOSTNAME}
       WINERY_FEATURE_RADON: "true"
       WINERY_REPOSITORY_PROVIDER: "yaml"
       WINERY_REPOSITORY_URL: "https://github.com/radon-h2020/radon-particles"
