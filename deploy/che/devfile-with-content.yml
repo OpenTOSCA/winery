@@ -1,6 +1,7 @@
 apiVersion: 1.0.0
 metadata:
-  generateName: radon-workspace-
+  name: radon-workspace
+  # generateName: radon-workspace-
 projects:
   - name: radon-particles
     source:
