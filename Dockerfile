@@ -60,6 +60,7 @@ COPY --from=builder /tmp/winery/org.eclipse.winery.frontends/target/workflowmode
 RUN mkdir ${WINERY_USER_HOME}
 RUN groupadd -g ${USER_ID} winery
 RUN useradd -s /bin/nologin -u ${USER_ID} -g winery -d ${WINERY_USER_HOME} --system winery
+RUN chmod a+rwx ${WINERY_USER_HOME}
 RUN chown winery: ${WINERY_USER_HOME}
 
 # create repository dir and change ownership

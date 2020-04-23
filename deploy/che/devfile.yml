@@ -12,4 +12,5 @@ components:
     id: eclipse/che-theia/next
   - alias: radon-gmt
     type: kubernetes
-    reference: winery.yaml
+    mountSources: true
+    reference: https://raw.githubusercontent.com/OpenTOSCA/winery/project/radon/deploy/che/winery.yaml
