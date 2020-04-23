@@ -1,5 +1,4 @@
 #!/bin/bash
-su - winery
 mkdir -p .winery
 dockerize -template winery.yml.tpl:.winery/winery.yml 
 if [ -d "${WINERY_REPOSITORY_PATH}" ] && [ "$(ls -A ${WINERY_REPOSITORY_PATH})" ]; then 

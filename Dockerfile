@@ -7,7 +7,7 @@ FROM tomcat:9-jdk8
 LABEL maintainer = "Oliver Kopp <kopp.dev@gmail.com>, Michael Wurster <miwurster@gmail.com>, Lukas Harzenetter <lharzenetter@gmx.de>"
 
 ARG DOCKERIZE_VERSION=v0.3.0
-ARG USER_ID=999
+ARG USER_ID=1724
 
 ENV WINERY_USER_HOME /opt/winery
 ENV WINERY_REPOSITORY_URL ""
@@ -59,8 +59,7 @@ COPY --from=builder /tmp/winery/org.eclipse.winery.frontends/target/workflowmode
 # create Winery user and home dir
 RUN mkdir ${WINERY_USER_HOME}
 RUN groupadd -g ${USER_ID} winery
-RUN useradd -s /bin/bash -u ${USER_ID} -g winery -d ${WINERY_USER_HOME} --system winery
-RUN chmod a+rwx ${WINERY_USER_HOME}
+RUN useradd -s /bin/nologin -u ${USER_ID} -g winery -d ${WINERY_USER_HOME} --system winery
 RUN chown winery: ${WINERY_USER_HOME}
 
 # create repository dir and change ownership
