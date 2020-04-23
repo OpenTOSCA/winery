@@ -116,12 +116,57 @@ public class YamlPrinter extends AbstractResult<YamlPrinter> {
         return this;
     }
 
-    public YamlPrinter printKeyValue(String key, String value) {
-        return printKeyValue(key, value, false);
+    public YamlPrinter printYamlValue(String key, Object value) {
+        return printYamlValue(key, value, false);
     }
 
-    public YamlPrinter printKeyValue(String key, String value, boolean quote) {
-        if (Objects.isNull(value) || value.isEmpty()) return this;
+    public YamlPrinter printYamlValue(String key, Object value, boolean printEmptyValues) {
+        String stringValue = String.valueOf(value);
+        Class<?> clazz = determineClazz(stringValue);
+        if (Void.class == clazz && printEmptyValues) {
+            print(key).print(": ").print("null").printNewLine();
+        } else if (Boolean.class == clazz || Float.class == clazz || Integer.class == clazz) {
+            print(key).print(": ").print(stringValue).printNewLine();
+        } else if (String.class == clazz) {
+            print(key).print(": ").print("\"").print(stringValue).print("\"").printNewLine();
+        }
+        return this;
+    }
+
+    private Class<?> determineClazz(String value) {
+        if (Objects.isNull(value) || value.isEmpty() || value.equalsIgnoreCase("null")) {
+            return Void.class;
+        }
+        if (value.equalsIgnoreCase("true") || value.equalsIgnoreCase("false")) {
+            return Boolean.class;
+        }
+        if (value.contains(".")) {
+            try {
+                Float.parseFloat(value);
+                return Float.class;
+            } catch (Exception e) {
+                // do nothing
+            }
+        }
+        try {
+            Integer.parseInt(value);
+            return Integer.class;
+        } catch (Exception e) {
+            // do nothing
+        }
+        return String.class;
+    }
+
+    public YamlPrinter printKeyValue(String key, String value) {
+        return printKeyValue(key, value, false, false);
+    }
+
+    public YamlPrinter printKeyValue(String key, String value, boolean printQuotes) {
+        return printKeyValue(key, value, printQuotes, false);
+    }
+
+    public YamlPrinter printKeyValue(String key, String value, boolean printQuotes, boolean printEmptyValues) {
+        if (Objects.isNull(value) || (!printEmptyValues && value.isEmpty())) return this;
         if (value.contains("\n")) {
             return print(key)
                 .print(": >")
@@ -132,7 +177,7 @@ public class YamlPrinter extends AbstractResult<YamlPrinter> {
                 .printCheckNewLine();
         }
         YamlPrinter printer = print(key).print(": ");
-        if (quote) {
+        if (printQuotes) {
             printer.print("\"")
                 .print(value)
                 .print("\"");

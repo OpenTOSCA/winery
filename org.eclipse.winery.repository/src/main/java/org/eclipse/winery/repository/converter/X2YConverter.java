@@ -105,7 +105,6 @@ import org.eclipse.winery.model.tosca.yaml.TTopologyTemplateDefinition;
 import org.eclipse.winery.model.tosca.yaml.support.Defaults;
 import org.eclipse.winery.model.tosca.yaml.support.Metadata;
 import org.eclipse.winery.model.tosca.yaml.support.TMapImportDefinition;
-import org.eclipse.winery.model.tosca.yaml.support.TMapPolicyDefinition;
 import org.eclipse.winery.model.tosca.yaml.support.TMapRequirementAssignment;
 import org.eclipse.winery.model.tosca.yaml.support.TMapRequirementDefinition;
 import org.eclipse.winery.repository.backend.filebased.YamlRepository;
@@ -271,12 +270,21 @@ public class X2YConverter {
     }
 
     public <T extends org.eclipse.winery.model.tosca.yaml.TEntityType.Builder<T>> T convert(TEntityType node, T builder, Class<? extends TEntityType> clazz) {
+        TBoolean isFinal = node.getFinal();
+        TBoolean isAbstract = node.getAbstract();
+
+        // ensure that the targetNamespace is always set
+        if (Objects.isNull(node.getTargetNamespace()) || node.getTargetNamespace().isEmpty()) {
+            String id = node.getIdFromIdOrNameField();
+            node.setTargetNamespace(id.substring(0, id.lastIndexOf(".")));
+        }
+
         return builder
             .setDerivedFrom(convert(node.getDerivedFrom(), clazz))
             .setMetadata(convert(node.getTags()))
             .addMetadata("targetNamespace", node.getTargetNamespace())
-            .addMetadata("abstract", node.getAbstract().value())
-            .addMetadata("final", node.getFinal().value())
+            .addMetadata("abstract", isAbstract.equals(TBoolean.YES) ? "true" : "false")
+            .addMetadata("final", isFinal.equals(TBoolean.YES) ? "true" : "false")
             .setProperties(convert(node, node.getPropertiesDefinition()))
             .setAttributes(convert(node, node.getAttributeDefinitions()))
             .setDescription(convertDocumentation(node.getDocumentation()));
@@ -458,19 +466,15 @@ public class X2YConverter {
     }
 
     @NonNull
-    public TMapPolicyDefinition convert(TPolicy node) {
-        if (Objects.isNull(node)) return new TMapPolicyDefinition();
-        return new TMapPolicyDefinition(Collections.singletonMap(
+    public Map<String, TPolicyDefinition> convert(TPolicy node) {
+        if (Objects.isNull(node)) return new LinkedHashMap<>();
+        return Collections.singletonMap(
             node.getName(),
-            new TPolicyDefinition.Builder(
-                convert(
-                    node.getPolicyType(),
-                    new PolicyTypeId(node.getPolicyType())
-                ))
+            new TPolicyDefinition.Builder(convert(node.getPolicyType(), new PolicyTypeId(node.getPolicyType())))
                 .setProperties(convert(node.getProperties()))
                 .setTargets(node.getTargets())
                 .build()
-        ));
+        );
     }
 
     /**
@@ -985,12 +989,13 @@ public class X2YConverter {
         ));
     }
 
-    private List<TMapPolicyDefinition> convert(TPolicies node) {
+    private Map<String, TPolicyDefinition> convert(TPolicies node) {
         if (Objects.isNull(node)) return null;
         return node.getPolicy().stream()
             .filter(Objects::nonNull)
             .map(this::convert)
-            .collect(Collectors.toList());
+            .flatMap(map -> map.entrySet().stream())
+            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
     private <T, K> Map<String, K> convert(List<T> nodes) {
@@ -1120,7 +1125,7 @@ public class X2YConverter {
 
     private String getFullName(org.eclipse.winery.model.tosca.TEntityType node) {
         String nodeFullName = node.getIdFromIdOrNameField();
-        if (node.getTargetNamespace() != null) {
+        if (node.getTargetNamespace() != null && !nodeFullName.contains(node.getTargetNamespace())) {
             nodeFullName = node.getTargetNamespace().concat(".").concat(node.getIdFromIdOrNameField());
         }
         return nodeFullName;

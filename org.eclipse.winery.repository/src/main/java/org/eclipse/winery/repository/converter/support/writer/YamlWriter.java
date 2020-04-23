@@ -69,7 +69,6 @@ import org.eclipse.winery.model.tosca.yaml.TVersion;
 import org.eclipse.winery.model.tosca.yaml.support.Metadata;
 import org.eclipse.winery.model.tosca.yaml.support.TListString;
 import org.eclipse.winery.model.tosca.yaml.support.TMapObject;
-import org.eclipse.winery.model.tosca.yaml.support.TMapPolicyDefinition;
 import org.eclipse.winery.model.tosca.yaml.support.TMapPropertyFilterDefinition;
 import org.eclipse.winery.model.tosca.yaml.support.TMapRequirementAssignment;
 import org.eclipse.winery.model.tosca.yaml.support.TMapRequirementDefinition;
@@ -136,7 +135,7 @@ public class YamlWriter extends AbstractVisitor<YamlPrinter, YamlWriter.Paramete
             .print(printList("imports",
                 node.getImports().stream().map(m -> m.getMap().values()).flatMap(Collection::stream).collect(Collectors.toList()),
                 parameter))
-            .printKeyValue("description", node.getDescription())
+            // .printKeyValue("description", node.getDescription())
             .print(printMapObject("dsl_definitions", node.getDslDefinitions(), parameter))
             .print(printMap("repositories", node.getRepositories(), parameter))
             .print(printMap("artifact_types", node.getArtifactTypes(), parameter))
@@ -157,7 +156,7 @@ public class YamlWriter extends AbstractVisitor<YamlPrinter, YamlWriter.Paramete
             .print(printMap("node_templates", node.getNodeTemplates(), parameter))
             .print(printMap("relationship_templates", node.getRelationshipTemplates(), parameter))
             .print(printMap("groups", node.getGroups(), parameter))
-            .print(printListMap("policies", node.getPolicies().stream().map(TMapPolicyDefinition::getMap).collect(Collectors.toList()), parameter))
+            .print(printMap("policies", node.getPolicies(), parameter))
             .print(printMap("outputs", node.getOutputs(), parameter))
             .print(printVisitorNode(node.getSubstitutionMappings(), new Parameter(parameter.getIndent()).addContext("substitution_mappings")));
     }
@@ -211,9 +210,9 @@ public class YamlWriter extends AbstractVisitor<YamlPrinter, YamlWriter.Paramete
             .printKeyValue("description", node.getDescription())
             .printKeyValue("version", node.getVersion())
             .printKeyValue("derived_from", node.getDerivedFrom())
-            .print(printMap("properties", node.getProperties(), parameter))
+            .print(node.getMetadata().accept(this, parameter))
             .print(printMap("attributes", node.getAttributes(), parameter))
-            .print(node.getMetadata().accept(this, parameter));
+            .print(printMap("properties", node.getProperties(), parameter));
     }
 
     public YamlPrinter visit(TPropertyDefinition node, Parameter parameter) {
@@ -221,7 +220,7 @@ public class YamlWriter extends AbstractVisitor<YamlPrinter, YamlWriter.Paramete
             .printKeyValue("type", node.getType())
             .printKeyValue("description", node.getDescription())
             .printKeyValue("required", node.getRequired())
-            .printKeyObject("default", node.getDefault())
+            .printYamlValue("default", node.getDefault())
             .printKeyValue("status", node.getStatus())
             .print(printList("constraints", node.getConstraints(), parameter))
             .print(printVisitorNode(node.getEntrySchema(), parameter));
@@ -238,7 +237,7 @@ public class YamlWriter extends AbstractVisitor<YamlPrinter, YamlWriter.Paramete
         return new YamlPrinter(parameter.getIndent())
             .printKeyValue("description", node.getDescription())
             .printKeyValue("type", node.getType())
-            .printKeyObject("default", node.getDefault())
+            .printYamlValue("default", node.getDefault())
             .printKeyValue("status", node.getStatus())
             .print(printVisitorNode(node.getEntrySchema(), parameter.addContext("entry_schema")));
     }
@@ -324,7 +323,8 @@ public class YamlWriter extends AbstractVisitor<YamlPrinter, YamlWriter.Paramete
 
     public YamlPrinter visit(TRelationshipDefinition node, Parameter parameter) {
         return new YamlPrinter(parameter.getIndent())
-            .printKeyValue("type", node.getType())
+            // Removed to support short notations
+            // .printKeyValue("type", node.getType())
             .print(printMap("interfaces", node.getInterfaces(), parameter));
     }
 
@@ -406,13 +406,13 @@ public class YamlWriter extends AbstractVisitor<YamlPrinter, YamlWriter.Paramete
 
     public YamlPrinter visit(TPropertyAssignment node, Parameter parameter) {
         return new YamlPrinter(parameter.getIndent())
-            .printKeyObject(parameter.getKey(), node.getValue());
+            .printYamlValue(parameter.getKey(), node.getValue(), true);
     }
 
     public YamlPrinter visit(TAttributeAssignment node, Parameter parameter) {
         return new YamlPrinter(parameter.getIndent())
             .printKeyValue("description", node.getDescription())
-            .printKeyObject("value", node.getValue());
+            .printYamlValue(parameter.getKey(), node.getValue(), true);
     }
 
     public YamlPrinter visit(TInterfaceAssignment node, Parameter parameter) {
@@ -424,11 +424,11 @@ public class YamlWriter extends AbstractVisitor<YamlPrinter, YamlWriter.Paramete
             .printKeyValue("type", node.getType())
             .printKeyValue("description", node.getDescription())
             .printKeyValue("required", node.getRequired())
-            .printKeyObject("default", node.getDefault())
+            .printYamlValue("default", node.getDefault())
             .printKeyValue("status", node.getStatus())
             .print(printList("constraints", node.getConstraints(), parameter))
             .print(printVisitorNode(node.getEntrySchema(), parameter))
-            .printKeyObject("value", node.getValue());
+            .printYamlValue("value", node.getValue());
     }
 
     public YamlPrinter visit(TConstraintClause node, Parameter parameter) {
@@ -488,6 +488,8 @@ public class YamlWriter extends AbstractVisitor<YamlPrinter, YamlWriter.Paramete
 
     public YamlPrinter visit(TRelationshipAssignment node, Parameter parameter) {
         return new YamlPrinter(parameter.getIndent())
+            // Removed to support short notations
+            // .printKeyValue("type", node.getType())
             .print(printMap("properties", node.getProperties(), parameter))
             .print(printMap("interfaces", node.getInterfaces(), parameter));
     }
@@ -506,6 +508,9 @@ public class YamlWriter extends AbstractVisitor<YamlPrinter, YamlWriter.Paramete
                 ));
             } else if (node instanceof TRelationshipAssignment) {
                 printer.print(parameter.getKey() + ": ").printQName(((TRelationshipAssignment) node).getType())
+                    .print(node.accept(this, new Parameter(parameter.getIndent() + INDENT_SIZE)));
+            } else if (node instanceof TRelationshipDefinition) {
+                printer.print(parameter.getKey() + ": ").printQName(((TRelationshipDefinition) node).getType())
                     .print(node.accept(this, new Parameter(parameter.getIndent() + INDENT_SIZE)));
             } else {
                 printer.printKey(parameter.getKey())

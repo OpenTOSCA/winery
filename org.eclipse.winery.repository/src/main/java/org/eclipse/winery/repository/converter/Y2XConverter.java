@@ -241,18 +241,23 @@ public class Y2XConverter {
             .setDerivedFrom(node.getDerivedFrom())
             .addTags(convertMetadata(node.getMetadata()))
             .setTargetNamespace(node.getMetadata().get("targetNamespace"))
+            .setAbstract(Boolean.valueOf(node.getMetadata().get("abstract")))
+            .setFinal(Boolean.valueOf(node.getMetadata().get("final")))
             .setAttributeDefinitions(new AttributeDefinitionList(convert(node.getAttributes())));
 
         if (node.getVersion() != null) {
-            TTag tag = new TTag();
-            tag.setName("version");
-            tag.setValue(node.getVersion().getVersion());
-            builder.addTags(tag);
+            String version = node.getVersion().getVersion();
+            if (version != null) {
+                TTag tag = new TTag();
+                tag.setName("version");
+                tag.setValue(version);
+                builder.addTags(tag);
+            }
         }
 
-//        if (!node.getProperties().isEmpty()) {
-//            builder.setPropertiesDefinition(convertPropertyDefinition(builder.build().getIdFromIdOrNameField() + "_Properties"));
-//        }
+        // if (!node.getProperties().isEmpty()) {
+        //    builder.setPropertiesDefinition(convertPropertyDefinition(builder.build().getIdFromIdOrNameField() + "_Properties"));
+        // }
 
         if (!node.getProperties().isEmpty()) {
             builder.addAny(convertWineryPropertiesDefinition(node.getProperties(), builder.build().getTargetNamespace(), builder.build().getIdFromIdOrNameField()));

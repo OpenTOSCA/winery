@@ -13,10 +13,8 @@
  *******************************************************************************/
 package org.eclipse.winery.model.tosca.yaml;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -25,7 +23,6 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
 
-import org.eclipse.winery.model.tosca.yaml.support.TMapPolicyDefinition;
 import org.eclipse.winery.model.tosca.yaml.visitor.AbstractParameter;
 import org.eclipse.winery.model.tosca.yaml.visitor.AbstractResult;
 import org.eclipse.winery.model.tosca.yaml.visitor.IVisitor;
@@ -53,7 +50,7 @@ public class TTopologyTemplateDefinition implements VisitorNode {
     @XmlAttribute(name = "relationship_templates")
     private Map<String, TRelationshipTemplate> relationshipTemplates;
     private Map<String, TGroupDefinition> groups;
-    private List<TMapPolicyDefinition> policies;
+    private Map<String, TPolicyDefinition> policies;
     private Map<String, TParameterDefinition> outputs;
     @XmlAttribute(name = "substitution_mappings")
     private TSubstitutionMappings substitutionMappings;
@@ -168,15 +165,15 @@ public class TTopologyTemplateDefinition implements VisitorNode {
     }
 
     @NonNull
-    public List<TMapPolicyDefinition> getPolicies() {
+    public Map<String, TPolicyDefinition> getPolicies() {
         if (this.policies == null) {
-            this.policies = new ArrayList<>();
+            this.policies = new LinkedHashMap<>();
         }
 
         return policies;
     }
 
-    public void setPolicies(List<TMapPolicyDefinition> policies) {
+    public void setPolicies(Map<String, TPolicyDefinition> policies) {
         this.policies = policies;
     }
 
@@ -212,7 +209,7 @@ public class TTopologyTemplateDefinition implements VisitorNode {
         private Map<String, TNodeTemplate> nodeTemplates;
         private Map<String, TRelationshipTemplate> relationshipTemplates;
         private Map<String, TGroupDefinition> groups;
-        private List<TMapPolicyDefinition> policies;
+        private Map<String, TPolicyDefinition> policies;
         private Map<String, TParameterDefinition> outputs;
         private TSubstitutionMappings substitutionMappings;
 
@@ -241,7 +238,7 @@ public class TTopologyTemplateDefinition implements VisitorNode {
             return this;
         }
 
-        public Builder setPolicies(List<TMapPolicyDefinition> policies) {
+        public Builder setPolicies(Map<String, TPolicyDefinition> policies) {
             this.policies = policies;
             return this;
         }
