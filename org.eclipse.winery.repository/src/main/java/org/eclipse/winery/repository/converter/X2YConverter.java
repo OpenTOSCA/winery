@@ -391,9 +391,7 @@ public class X2YConverter {
         return Collections.singletonMap(
             nodeFullName,
             convert(node, new TRelationshipType.Builder(), org.eclipse.winery.model.tosca.TRelationshipType.class)
-                .addInterfaces(convert(node.getInterfaces()))
-                .addInterfaces(convert(node.getSourceInterfaces(), "SourceInterfaces"))
-                .addInterfaces(convert(node.getTargetInterfaces(), "TargetInterfaces"))
+                .addInterfaces(convert(node.getInterfaceDefinitions()))
                 .addValidTargetTypes(convertTargets(node.getValidSource(), node.getValidTarget()))
                 .build()
         );
