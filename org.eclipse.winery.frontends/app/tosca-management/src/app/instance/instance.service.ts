@@ -73,10 +73,17 @@ export class InstanceService {
                 }
                 break;
             case ToscaTypes.RelationshipType:
-                subMenu = [SubMenuItems.readme, SubMenuItems.documentation, SubMenuItems.license, SubMenuItems.appearance, SubMenuItems.instanceStates,
-                    SubMenuItems.sourceInterfaces, SubMenuItems.interfaces, SubMenuItems.targetInterfaces, SubMenuItems.validSourcesAndTargets,
-                    SubMenuItems.implementations,
-                    SubMenuItems.propertiesDefinition, SubMenuItems.inheritance, SubMenuItems.xml];
+                if (this.configurationService.isYaml()) {
+                    subMenu = [SubMenuItems.readme, SubMenuItems.documentation, SubMenuItems.license, SubMenuItems.appearance, SubMenuItems.instanceStates,
+                        SubMenuItems.interfacedefinitions, SubMenuItems.validSourcesAndTargets,
+                        SubMenuItems.implementations,
+                        SubMenuItems.propertiesDefinition, SubMenuItems.inheritance, SubMenuItems.xml];
+                } else {
+                    subMenu = [SubMenuItems.readme, SubMenuItems.documentation, SubMenuItems.license, SubMenuItems.appearance, SubMenuItems.instanceStates,
+                        SubMenuItems.sourceInterfaces, SubMenuItems.interfaces, SubMenuItems.targetInterfaces, SubMenuItems.validSourcesAndTargets,
+                        SubMenuItems.implementations,
+                        SubMenuItems.propertiesDefinition, SubMenuItems.inheritance, SubMenuItems.xml];
+                }
                 break;
             case ToscaTypes.ArtifactType:
                 if (this.configurationService.isYaml()) {

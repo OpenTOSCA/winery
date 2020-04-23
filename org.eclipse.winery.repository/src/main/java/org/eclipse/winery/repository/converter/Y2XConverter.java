@@ -837,6 +837,7 @@ public class Y2XConverter {
             .addSourceInterfaces(convert(node.getInterfaces(), "SourceInterfaces"))
             .addInterfaces(convert(node.getInterfaces(), null))
             .addTargetInterfaces(convert(node.getInterfaces(), "TargetInterfaces"))
+            .setInterfaceDefinitions(convert(node.getInterfaces()))
             .setValidSource(convertValidTargetSource(node.getValidTargetTypes(), true))
             .setValidTarget(convertValidTargetSource(node.getValidTargetTypes(), false))
             .build();

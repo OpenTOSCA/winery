@@ -81,4 +81,5 @@ export class SubMenuItems {
     static readonly xml: SubMenuItem = { displayName: 'XML', urlFragment: 'xml' };
     static readonly attributes: SubMenuItem = { displayName: 'Attribute Definitions', urlFragment: 'attributes' };
     static readonly interfacedefinitions: SubMenuItem = { displayName: 'Interfaces', urlFragment: 'interfacedefinitions' };
+
 }
