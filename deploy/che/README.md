@@ -6,7 +6,7 @@ Prerequisites: `kubectl`, `helm`, `minikube`, and `chectl` installed.
 Start a cluster:
 
 ```
-minikube start --memory 6144 --vm-driver=hyperv --docker-opt userland-proxy=false --addons=ingress
+minikube start --memory 4096 --vm-driver=hyperv --docker-opt userland-proxy=false --addons=ingress
 ```
 
 Determine IP Address:
