@@ -24,8 +24,10 @@ import javax.ws.rs.HeaderParam;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 import javax.xml.namespace.QName;
 
 import org.eclipse.winery.common.RepositoryFileReference;
@@ -78,6 +80,12 @@ public abstract class GenericVisualAppearanceResource {
         return URI.create(uri);
     }
 
+    public URI getAbsoluteURL(UriInfo uriInfo) {
+        String uri = uriInfo.getBaseUri().toString();
+        uri = uri + Util.getUrlPath(this.id);
+        return URI.create(uri);
+    }
+
     public ToscaElementId getId() {
         return this.id;
     }
@@ -104,7 +112,7 @@ public abstract class GenericVisualAppearanceResource {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public abstract VisualsApiData getJsonData();
+    public abstract VisualsApiData getJsonData(@Context UriInfo uriInfo);
 
     @GET
     @Path("16x16")

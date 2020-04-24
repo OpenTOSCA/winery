@@ -17,9 +17,11 @@ import java.util.Map;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.PUT;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.UriInfo;
 import javax.xml.namespace.QName;
 
 import org.eclipse.winery.common.constants.Defaults;
@@ -49,7 +51,8 @@ public class VisualAppearanceResource extends GenericVisualAppearanceResource {
         super(res, map, new VisualAppearanceId(parentId));
     }
 
-    public RelationshipTypesVisualsApiData getJsonData() {
+    @Override
+    public RelationshipTypesVisualsApiData getJsonData(@Context UriInfo uriInfo) {
         return new RelationshipTypesVisualsApiData(this);
     }
 

@@ -18,7 +18,9 @@ import java.util.Map;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriInfo;
 import javax.xml.namespace.QName;
 
 import org.eclipse.winery.common.ids.definitions.DefinitionsChildId;
@@ -42,7 +44,7 @@ public class VisualAppearanceResource extends GenericVisualAppearanceResource {
     @Override
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public VisualsApiData getJsonData() {
+    public VisualsApiData getJsonData(@Context UriInfo uriInfo) {
         return new VisualsApiData(this);
     }
 }
