@@ -211,4 +211,9 @@ export class InstanceService {
     public getToscaLightCompatibility(): Observable<ToscaLightCompatibilityData> {
         return this.http.get<ToscaLightCompatibilityData>(this.path + '/toscalight');
     }
+
+    public exportToFilesystem(): Observable<HttpResponse<string>> {
+        return this.http.post(this.path + '/exportToFilesystem', {},
+            { observe: 'response', responseType: 'text' });
+    }
 }
