@@ -45,7 +45,9 @@ spec:
               value: "true"
             - name: WINERY_REPOSITORY_PROVIDER
               value: "yaml"
-            - name: WINERY_REPOSITORY_PATH
-              value: "/projects/radon-particles"
             - name: WINERY_REPOSITORY_URL
               value: "https://github.com/radon-h2020/radon-particles"
+            - name: WINERY_REPOSITORY_PATH
+              value: "/projects/radon-particles"
+            - name: WINERY_CSAR_OUTPUT_PATH
+              value: "/projects/radon-csars"
