@@ -22,6 +22,7 @@ ui:
 repository:
   provider: {{ .Env.WINERY_REPOSITORY_PROVIDER }}
   repositoryRoot: {{ .Env.WINERY_REPOSITORY_PATH }}
+  csarOutputPath: {{ .Env.WINERY_CSAR_OUTPUT_PATH }}
   git:
     clientSecret: secret
     password: default

@@ -64,3 +64,5 @@ components:
                     value: "yaml"
                   - name: WINERY_REPOSITORY_PATH
                     value: "/projects/radon-particles"
+                  - name: WINERY_REPOSITORY_URL
+                    value: "https://github.com/radon-h2020/radon-particles"

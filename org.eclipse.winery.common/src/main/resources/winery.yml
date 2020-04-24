@@ -23,6 +23,7 @@ ui:
 repository:
   provider: file
   repositoryRoot: ""
+  # csarOutputPath: "" # default: $repositoryRoot/csars
   git:
     clientSecret: secret
     password: default

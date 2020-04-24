@@ -22,8 +22,11 @@ public class RepositoryConfigurationObject extends AbstractConfigurationObject {
 
     private static final String key = "repository.";
     private GitConfigurationObject gitConfiguration;
-    private String repositoryRoot;
+
     private RepositoryProvider provider;
+    private String repositoryRoot;
+    private String csarOutputPath;
+
     private YAMLConfiguration configuration;
 
     public enum RepositoryProvider {
@@ -46,7 +49,7 @@ public class RepositoryConfigurationObject extends AbstractConfigurationObject {
         this.setGitConfiguration(gitConfigurationObject);
         this.update(configuration);
     }
-    
+
     public static String getProviderConfigurationKey() {
         return key + "provider";
     }
@@ -55,6 +58,7 @@ public class RepositoryConfigurationObject extends AbstractConfigurationObject {
     void save() {
         configuration.setProperty(key + "provider", this.getProvider().toString());
         configuration.setProperty(key + "repositoryRoot", this.repositoryRoot);
+        configuration.setProperty(key + "csarOutputPath", this.csarOutputPath);
         this.getGitConfiguration().save();
         Environment.getInstance().save();
     }
@@ -63,6 +67,7 @@ public class RepositoryConfigurationObject extends AbstractConfigurationObject {
     void update(YAMLConfiguration updatedConfiguration) {
         this.configuration = updatedConfiguration;
         this.repositoryRoot = configuration.getString(key + "repositoryRoot");
+        this.csarOutputPath = configuration.getString(key + "csarOutputPath");
         String provider = Environment.getInstance().getConfiguration().getString(getProviderConfigurationKey());
         if (provider.equalsIgnoreCase(RepositoryProvider.YAML.name())) {
             this.setProvider(RepositoryProvider.YAML);
@@ -74,6 +79,14 @@ public class RepositoryConfigurationObject extends AbstractConfigurationObject {
     @Override
     void initialize() {
 
+    }
+
+    public RepositoryConfigurationObject.RepositoryProvider getProvider() {
+        return provider;
+    }
+
+    public void setProvider(RepositoryProvider provider) {
+        this.provider = provider;
     }
 
     /**
@@ -97,19 +110,19 @@ public class RepositoryConfigurationObject extends AbstractConfigurationObject {
         this.save();
     }
 
+    public String getCsarOutputPath() {
+        return csarOutputPath;
+    }
+
+    public void setCsarOutputPath(String csarOutputPath) {
+        this.csarOutputPath = csarOutputPath;
+    }
+
     public GitConfigurationObject getGitConfiguration() {
         return gitConfiguration;
     }
 
     public void setGitConfiguration(GitConfigurationObject gitConfiguration) {
         this.gitConfiguration = gitConfiguration;
-    }
-
-    public RepositoryConfigurationObject.RepositoryProvider getProvider() {
-        return provider;
-    }
-
-    public void setProvider(RepositoryProvider provider) {
-        this.provider = provider;
     }
 }
