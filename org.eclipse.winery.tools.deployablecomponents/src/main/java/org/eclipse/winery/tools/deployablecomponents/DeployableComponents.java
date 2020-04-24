@@ -34,11 +34,9 @@ public class DeployableComponents {
 
     private final Crawler crawler;
     private final Fileanalyzer analyzer;
-
     private final Map<Component, List<Pair<Component, Integer>>> foundComponents = new HashMap<>();
-
-    private boolean crawlStatus = false;
     private final int CRAWL_AT_ONCE = 1;
+    private boolean crawlStatus = false;
 
     public DeployableComponents(CrawlerType type, String serviceName, String serviceToken, String localCopyPath) {
         crawler = new Crawler(type, serviceName, serviceToken, localCopyPath);

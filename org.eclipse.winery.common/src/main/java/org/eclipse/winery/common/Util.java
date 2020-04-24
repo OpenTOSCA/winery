@@ -476,10 +476,9 @@ public class Util {
         JAXBContext context;
         try {
             // For winery classes, eventually the package+jaxb.index method could be better. See http://stackoverflow.com/a/3628525/873282
-            // @formatter:off
             context = JAXBContext.newInstance(
-                TEntityType.class);
-            // @formatter:on
+                TEntityType.class
+            );
         } catch (JAXBException e) {
             throw new IllegalStateException(e);
         }

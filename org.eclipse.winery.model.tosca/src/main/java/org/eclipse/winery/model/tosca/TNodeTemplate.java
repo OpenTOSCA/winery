@@ -31,7 +31,6 @@ import javax.xml.namespace.QName;
 import org.eclipse.winery.model.tosca.constants.Namespaces;
 import org.eclipse.winery.model.tosca.visitor.Visitor;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
@@ -44,7 +43,6 @@ import org.eclipse.jdt.annotation.Nullable;
     "deploymentArtifacts",
     "artifacts"
 })
-@JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonTypeInfo(
     defaultImpl = TNodeTemplate.class,
     use = JsonTypeInfo.Id.NAME,

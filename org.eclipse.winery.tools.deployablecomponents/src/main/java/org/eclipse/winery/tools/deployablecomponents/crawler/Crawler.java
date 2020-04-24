@@ -29,11 +29,11 @@ import org.slf4j.LoggerFactory;
 public class Crawler {
 
     public final static Logger LOGGER = LoggerFactory.getLogger(Crawler.class);
-
-    private ICrawlerImplementation crawlerInstance;
     // contains dockerfile, which are crawled but not yet retrieved
     private final Deque<Dockerfile> crawledDockerfiles = new ConcurrentLinkedDeque<>();
+
     private final String localCopyPath;
+    private ICrawlerImplementation crawlerInstance;
 
     public Crawler(CrawlerType type, String serviceName, String serviceToken, String localCopyPath) {
         switch (type) {

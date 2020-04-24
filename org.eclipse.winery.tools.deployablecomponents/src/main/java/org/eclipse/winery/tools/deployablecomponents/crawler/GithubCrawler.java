@@ -42,7 +42,6 @@ public class GithubCrawler implements ICrawlerImplementation {
     private URL baseUrl;
     private String authEncoded;
     private boolean authenticated;
-
     private int rateLimitRemaining = 5000;
     private Instant rateLimitReset;
     private int rateLimitRemainingSearch = 30;
