@@ -14,6 +14,8 @@
 
 package org.eclipse.winery.common.configuration;
 
+import java.io.File;
+
 import org.eclipse.winery.common.Util;
 
 import org.apache.commons.configuration2.YAMLConfiguration;
@@ -98,11 +100,9 @@ public class RepositoryConfigurationObject extends AbstractConfigurationObject {
         String repositoryRoot = this.repositoryRoot;
         if (repositoryRoot == null || repositoryRoot.isEmpty()) {
             repositoryRoot = Util.determineAndCreateRepositoryPath().toString();
-            setRepositoryRoot(repositoryRoot);
-            return repositoryRoot;
-        } else {
-            return repositoryRoot;
         }
+        setRepositoryRoot(repositoryRoot);
+        return repositoryRoot;
     }
 
     public void setRepositoryRoot(String changedRepositoryRoot) {
@@ -113,9 +113,9 @@ public class RepositoryConfigurationObject extends AbstractConfigurationObject {
     public String getCsarOutputPath() {
         String csarOutputPath = this.csarOutputPath;
         if (csarOutputPath == null || csarOutputPath.isEmpty()) {
-            csarOutputPath = getRepositoryRoot() + "/csars";
-            setCsarOutputPath(csarOutputPath);
+            csarOutputPath = getRepositoryRoot() + File.separator + "csars";
         }
+        setCsarOutputPath(csarOutputPath);
         Util.createCsarOutputPath(csarOutputPath);
         return csarOutputPath;
     }
