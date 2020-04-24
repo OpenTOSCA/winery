@@ -148,7 +148,7 @@ public class ConsistencyCheckerTest extends TestWithGitBackedRepository {
         elementErrorList.addError("propertiesKV of node template NodeTypeWithTwoKVProperties is null");
         elementErrorList.addError("propertiesKV of node template NodeTypeWithTwoKVProperties_2 is null");
         elementErrorList.addError("propertiesKV of node template NodeTypeWithTwoKVProperties_2 is null");
-        elementErrorList.addError("Corrupt: Component instance RelationshipType RelationshlpTypeWithValidSourceAndTarget_w1-wip1 in namespace  does not exist.");
+        elementErrorList.addError("java.lang.NullPointerException");
         expected.put(new QName("http://plain.winery.opentosca.org/servicetemplates", "ServiceTemplateWithTwoNodeTemplates_w1-wip4"), elementErrorList);
 
         elementErrorList = new ElementErrorList("ServiceTemplate");
