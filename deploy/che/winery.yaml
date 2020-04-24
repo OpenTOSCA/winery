@@ -1,20 +1,4 @@
 ---
-apiVersion: v1
-kind: Service
-metadata:
-  name: winery
-  labels:
-    app: winery
-    tier: frontend
-spec:
-  type: NodePort
-  ports:
-    - port: 8080
-      targetPort: 8080
-  selector:
-    app: winery
-    tier: frontend
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -51,27 +35,3 @@ spec:
               value: "/projects/radon-particles"
             - name: WINERY_CSAR_OUTPUT_PATH
               value: "/projects/radon-csars"
----
-apiVersion: networking.k8s.io/v1beta1
-kind: Ingress
-metadata:
-  name: winery-ingress
-  labels:
-    app: winery
-    tier: frontend
-spec:
-  rules:
-  - http:
-      paths:
-      - path: /
-        backend:
-          serviceName: winery
-          servicePort: 8080
-      - path: /winery
-        backend:
-          serviceName: winery
-          servicePort: 8080
-      - path: /winery-topologymodeler
-        backend:
-          serviceName: winery
-          servicePort: 8080

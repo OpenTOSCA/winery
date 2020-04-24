@@ -1,6 +1,6 @@
 apiVersion: 1.0.0
 metadata:
-  name: radon-workspace
+  name: radon-workspace-dev
   # generateName: radon-workspace-
 projects:
   - name: radon-particles
@@ -13,24 +13,16 @@ components:
     id: eclipse/che-theia/next
   - alias: radon-gmt
     type: kubernetes
+    endpoints:
+      - name: radon-gmt
+        port: 8080
+        attributes:
+          protocol: http
+          secure: "false"
+          discoverable: "true"
+          public: "true"
     mountSources: true
     referenceContent: |
-      ---
-      apiVersion: v1
-      kind: Service
-      metadata:
-        name: winery
-        labels:
-          app: winery
-          tier: frontend
-      spec:
-        type: NodePort
-        ports:
-          - port: 8080
-            targetPort: 8080
-        selector:
-          app: winery
-          tier: frontend
       ---
       apiVersion: apps/v1
       kind: Deployment
@@ -68,27 +60,3 @@ components:
                     value: "/projects/radon-particles"
                   - name: WINERY_CSAR_OUTPUT_PATH
                     value: "/projects/radon-csars"
-      ---
-      apiVersion: networking.k8s.io/v1beta1
-      kind: Ingress
-      metadata:
-        name: winery-ingress
-        labels:
-          app: winery
-          tier: frontend
-      spec:
-        rules:
-        - http:
-            paths:
-            - path: /
-              backend:
-                serviceName: winery
-                servicePort: 8080
-            - path: /winery
-              backend:
-                serviceName: winery
-                servicePort: 8080
-            - path: /winery-topologymodeler
-              backend:
-                serviceName: winery
-                servicePort: 8080
