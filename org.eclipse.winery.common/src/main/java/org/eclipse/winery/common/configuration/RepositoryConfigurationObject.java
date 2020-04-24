@@ -98,7 +98,7 @@ public class RepositoryConfigurationObject extends AbstractConfigurationObject {
         String repositoryRoot = this.repositoryRoot;
         if (repositoryRoot == null || repositoryRoot.isEmpty()) {
             repositoryRoot = Util.determineAndCreateRepositoryPath().toString();
-            Environments.getInstance().getRepositoryConfig().setRepositoryRoot(repositoryRoot);
+            setRepositoryRoot(repositoryRoot);
             return repositoryRoot;
         } else {
             return repositoryRoot;
@@ -111,11 +111,18 @@ public class RepositoryConfigurationObject extends AbstractConfigurationObject {
     }
 
     public String getCsarOutputPath() {
+        String csarOutputPath = this.csarOutputPath;
+        if (csarOutputPath == null || csarOutputPath.isEmpty()) {
+            csarOutputPath = getRepositoryRoot() + "/csars";
+            setCsarOutputPath(csarOutputPath);
+        }
+        Util.createCsarOutputPath(csarOutputPath);
         return csarOutputPath;
     }
 
     public void setCsarOutputPath(String csarOutputPath) {
         this.csarOutputPath = csarOutputPath;
+        this.save();
     }
 
     public GitConfigurationObject getGitConfiguration() {

@@ -733,4 +733,17 @@ public class Util {
 
         return repositoryPath;
     }
+
+    public static void createCsarOutputPath(String csarOutputPath) {
+        File outputPath = new File(csarOutputPath);
+        if (outputPath.exists() && outputPath.isDirectory()) {
+            return;
+        }
+        try {
+            org.apache.commons.io.FileUtils.forceMkdir(outputPath);
+        } catch (IOException e) {
+            LOGGER.error("Error while creating directory: {}", e.getMessage(), e);
+            throw new IllegalStateException(e);
+        }
+    }
 }

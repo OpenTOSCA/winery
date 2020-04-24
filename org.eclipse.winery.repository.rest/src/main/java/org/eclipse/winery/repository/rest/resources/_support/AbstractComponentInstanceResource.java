@@ -307,7 +307,7 @@ public abstract class AbstractComponentInstanceResource implements Comparable<Ab
             Map<String, Object> exportConfiguration = new HashMap<>();
             String filename = getXmlId().getEncoded() + Constants.SUFFIX_CSAR;
             File file = new File(Environments.getInstance().getRepositoryConfig().getCsarOutputPath(), filename);
-            try (FileOutputStream fos = new FileOutputStream(file)) {
+            try (FileOutputStream fos = new FileOutputStream(file, false)) {
                 exporter.writeCsar(RepositoryFactory.getRepository(), getId(), fos, exportConfiguration);
                 LOGGER.debug("CSAR export to filesystem lasted {}", Duration.between(LocalDateTime.now(), start).toString());
             } catch (Exception e) {
