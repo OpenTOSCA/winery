@@ -41,8 +41,8 @@ public class VisualAppearanceResource extends GenericVisualAppearanceResource {
         return null;
     }
 
-    @Override
     @GET
+    @Override
     @Produces(MediaType.APPLICATION_JSON)
     public VisualsApiData getJsonData(@Context UriInfo uriInfo) {
         return new VisualsApiData(this);

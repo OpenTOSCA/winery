@@ -16,7 +16,9 @@ package org.eclipse.winery.repository.rest.resources.entitytypes.relationshiptyp
 import java.util.Map;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -51,7 +53,9 @@ public class VisualAppearanceResource extends GenericVisualAppearanceResource {
         super(res, map, new VisualAppearanceId(parentId));
     }
 
+    @GET
     @Override
+    @Produces(MediaType.APPLICATION_JSON)
     public RelationshipTypesVisualsApiData getJsonData(@Context UriInfo uriInfo) {
         return new RelationshipTypesVisualsApiData(this);
     }

@@ -82,7 +82,7 @@ public class EnvironmentsTest {
     @Test
     public void testGetRepositoryConfig() {
         RepositoryConfigurationObject repositoryConfig = Environments.getInstance().getRepositoryConfig();
-        assertEquals("file", repositoryConfig.getProvider());
+        assertEquals("file", repositoryConfig.getProvider().toString());
         assertEquals("thisisatestroot", repositoryConfig.getRepositoryRoot());
     }
 
