@@ -142,7 +142,6 @@ import org.eclipse.winery.model.tosca.utils.ModelUtilities;
 import org.eclipse.winery.repository.GitInfo;
 import org.eclipse.winery.repository.JAXBSupport;
 import org.eclipse.winery.repository.backend.constants.Filename;
-import org.eclipse.winery.repository.backend.constants.MediaTypes;
 import org.eclipse.winery.repository.backend.filebased.GitBasedRepository;
 import org.eclipse.winery.repository.datatypes.ids.elements.ArtifactTemplateFilesDirectoryId;
 import org.eclipse.winery.repository.datatypes.ids.elements.DirectoryId;
@@ -327,6 +326,14 @@ public class BackendUtils {
         } else {
             return ref.getFileName();
         }
+    }
+
+    public static DefinitionsChildId getIdForRef(RepositoryFileReference ref) {
+        GenericId stored = ref.getParent();
+        if (stored instanceof DefinitionsChildId) {
+            return (DefinitionsChildId) stored;
+        }
+        return null;
     }
 
     /**
@@ -715,9 +722,11 @@ public class BackendUtils {
     // todo this should not depend on JAXB !
 
     /**
+     * @deprecated Instead use {@link IRepository#putDefinition(DefinitionsChildId, TDefinitions)} or {@link IRepository#putContentToFile(RepositoryFileReference, InputStream, MediaType)}
      * @throws IOException           if content could not be updated in the repository
      * @throws IllegalStateException if an JAXBException occurred. This should never happen.
      */
+    @Deprecated
     public static void persist(Object o, RepositoryFileReference ref, MediaType mediaType, IRepository repo) throws IOException {
         // We assume that the object is not too large
         // Otherwise, http://io-tools.googlecode.com/svn/www/easystream/apidocs/index.html should be used
