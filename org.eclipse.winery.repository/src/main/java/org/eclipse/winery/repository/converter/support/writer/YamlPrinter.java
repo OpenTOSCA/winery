@@ -125,7 +125,7 @@ public class YamlPrinter extends AbstractResult<YamlPrinter> {
         Class<?> clazz = determineClazz(stringValue);
         if (Void.class == clazz && printEmptyValues) {
             print(key).print(": ").print("null").printNewLine();
-        } else if (Boolean.class == clazz || Float.class == clazz || Integer.class == clazz) {
+        } else if (Boolean.class == clazz || Float.class == clazz || Integer.class == clazz || Map.class == clazz) {
             print(key).print(": ").print(stringValue).printNewLine();
         } else if (String.class == clazz) {
             print(key).print(": ").print("\"").print(stringValue).print("\"").printNewLine();
@@ -147,6 +147,14 @@ public class YamlPrinter extends AbstractResult<YamlPrinter> {
             } catch (Exception e) {
                 // do nothing
             }
+        }
+        // checks if a yaml map is the value which is saved as a string 
+        // because the map is not represented in the data model yet
+        // e.g. intrinsic functions
+        // !!! this might trigger false positives !!!
+        String tmp = value.trim();
+        if (tmp.startsWith("{") && tmp.endsWith("}")) {
+            return Map.class;
         }
         try {
             Integer.parseInt(value);
