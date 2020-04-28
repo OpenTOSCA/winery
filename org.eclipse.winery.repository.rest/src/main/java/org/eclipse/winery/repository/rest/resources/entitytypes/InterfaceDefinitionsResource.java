@@ -24,7 +24,10 @@ import javax.ws.rs.core.Response;
 
 import org.eclipse.winery.model.tosca.TInterfaceDefinition;
 import org.eclipse.winery.model.tosca.TNodeType;
+import org.eclipse.winery.model.tosca.TRelationshipType;
 import org.eclipse.winery.repository.rest.RestUtils;
+import org.eclipse.winery.repository.rest.resources.entitytypes.nodetypes.NodeTypeResource;
+import org.eclipse.winery.repository.rest.resources.entitytypes.relationshiptypes.RelationshipTypeResource;
 
 public class InterfaceDefinitionsResource {
 
@@ -37,17 +40,31 @@ public class InterfaceDefinitionsResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public List<TInterfaceDefinition> get() {
-        return getNodeType().getInterfaceDefinitions();
+        if (this.parent instanceof NodeTypeResource) {
+            return this.getNodeType().getInterfaceDefinitions();
+        } else if (this.parent instanceof RelationshipTypeResource) {
+            return this.getRelationshipType().getInterfaceDefinitions();
+        } else {
+            return null;
+        }
     }
 
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
     public Response put(List<TInterfaceDefinition> defs) {
-        this.getNodeType().setInterfaceDefinitions(defs);
+        if (this.parent instanceof NodeTypeResource) {
+            this.getNodeType().setInterfaceDefinitions(defs);
+        } else if (this.parent instanceof RelationshipTypeResource) {
+            this.getRelationshipType().setInterfaceDefinitions(defs);
+        }
         return RestUtils.persist(this.parent);
     }
 
     private TNodeType getNodeType() {
         return ((TNodeType) this.parent.getElement());
+    }
+
+    private TRelationshipType getRelationshipType() {
+        return ((TRelationshipType) this.parent.getElement());
     }
 }

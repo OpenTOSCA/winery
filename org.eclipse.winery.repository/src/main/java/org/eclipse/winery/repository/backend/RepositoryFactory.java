@@ -65,7 +65,7 @@ public class RepositoryFactory {
         RepositoryFactory.gitBasedRepositoryConfiguration = gitBasedRepositoryConfiguration;
         RepositoryFactory.fileBasedRepositoryConfiguration = null;
         AbstractFileBasedRepository compositeRepository = null;
-        //If a repository root is specified by the configuration use it instead of the root specified in the Configuration
+        // if a repository root is specified, use it instead of the root specified in the config
         if (gitBasedRepositoryConfiguration.getRepositoryPath().isPresent()) {
             compositeRepository = createXmlOrYamlRepository(gitBasedRepositoryConfiguration, gitBasedRepositoryConfiguration.getRepositoryPath().get());
         } else {

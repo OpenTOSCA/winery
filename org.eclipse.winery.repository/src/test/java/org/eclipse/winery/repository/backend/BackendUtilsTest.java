@@ -26,6 +26,7 @@ import javax.xml.namespace.QName;
 
 import org.eclipse.winery.common.RepositoryFileReference;
 import org.eclipse.winery.common.ids.definitions.ArtifactTemplateId;
+import org.eclipse.winery.common.json.JacksonProvider;
 import org.eclipse.winery.model.tosca.TArtifactReference;
 import org.eclipse.winery.model.tosca.TArtifactTemplate;
 import org.eclipse.winery.model.tosca.TEntityTemplate;
@@ -115,7 +116,7 @@ public class BackendUtilsTest {
 
         JSONAssert.assertEquals(
             minimalTopologyTemplateAsJsonString,
-            BackendUtils.Object2JSON(minimalTopologyTemplate),
+            JacksonProvider.mapper.writeValueAsString(minimalTopologyTemplate),
             true);
     }
 

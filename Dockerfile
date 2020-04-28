@@ -1,13 +1,13 @@
 FROM maven:3-jdk-8 as builder
 COPY . /tmp/winery
 WORKDIR /tmp/winery
-RUN mvn package -DskipTests
+RUN mvn package -DskipTests=true -Dmaven.javadoc.skip=true -B
 
 FROM tomcat:9-jdk8
 LABEL maintainer = "Oliver Kopp <kopp.dev@gmail.com>, Michael Wurster <miwurster@gmail.com>, Lukas Harzenetter <lharzenetter@gmx.de>"
 
 ARG DOCKERIZE_VERSION=v0.3.0
-ARG USER_ID=999
+ARG USER_ID=1724
 
 ENV WINERY_USER_HOME /opt/winery
 ENV WINERY_REPOSITORY_URL ""
@@ -21,6 +21,7 @@ ENV TOPOLOGYMODELER_HOSTNAME localhost
 ENV TOPOLOGYMODELER_PORT 8080
 ENV WINERY_REPOSITORY_PROVIDER "file"
 ENV WINERY_REPOSITORY_PATH "/var/repository"
+ENV WINERY_CSAR_OUTPUT_PATH "/var/repository/csars"
 ENV WINERY_HOSTNAME localhost
 ENV WINERY_PORT 8080
 ENV EDMM_TRANSFORMATION_HOSTNAME localhost

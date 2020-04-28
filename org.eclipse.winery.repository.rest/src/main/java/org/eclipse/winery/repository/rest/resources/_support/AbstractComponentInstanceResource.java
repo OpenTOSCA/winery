@@ -13,15 +13,22 @@
  ********************************************************************************/
 package org.eclipse.winery.repository.rest.resources._support;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.NotFoundException;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -37,6 +44,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.parsers.DocumentBuilder;
 
+import org.eclipse.winery.common.Constants;
 import org.eclipse.winery.common.RepositoryFileReference;
 import org.eclipse.winery.common.ToscaDocumentBuilderFactory;
 import org.eclipse.winery.common.Util;
@@ -62,7 +70,9 @@ import org.eclipse.winery.repository.backend.BackendUtils;
 import org.eclipse.winery.repository.backend.IRepository;
 import org.eclipse.winery.repository.backend.RepositoryFactory;
 import org.eclipse.winery.repository.backend.constants.MediaTypes;
+import org.eclipse.winery.repository.backend.filebased.RepositoryUtils;
 import org.eclipse.winery.repository.export.CsarExportOptions;
+import org.eclipse.winery.repository.export.YamlExporter;
 import org.eclipse.winery.repository.rest.RestUtils;
 import org.eclipse.winery.repository.rest.resources.apiData.NewVersionApiData;
 import org.eclipse.winery.repository.rest.resources.apiData.QNameWithTypeApiData;
@@ -76,7 +86,6 @@ import org.eclipse.winery.repository.rest.resources.imports.genericimports.Gener
 import org.eclipse.winery.repository.rest.resources.servicetemplates.ServiceTemplateResource;
 import org.eclipse.winery.repository.rest.resources.tags.TagsResource;
 
-import com.sun.jersey.api.NotFoundException;
 import io.swagger.annotations.ApiParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -289,6 +298,28 @@ public abstract class AbstractComponentInstanceResource implements Comparable<Ab
         }
     }
 
+    @POST
+    @Path("exportToFilesystem")
+    public Response exportToFilesystem() {
+        if (RepositoryUtils.isYamlRepository()) {
+            LocalDateTime start = LocalDateTime.now();
+            YamlExporter exporter = new YamlExporter();
+            Map<String, Object> exportConfiguration = new HashMap<>();
+            String filename = getXmlId().getEncoded() + Constants.SUFFIX_CSAR;
+            File file = new File(Environments.getInstance().getRepositoryConfig().getCsarOutputPath(), filename);
+            try (FileOutputStream fos = new FileOutputStream(file, false)) {
+                exporter.writeCsar(RepositoryFactory.getRepository(), getId(), fos, exportConfiguration);
+                LOGGER.debug("CSAR export to filesystem lasted {}", Duration.between(LocalDateTime.now(), start).toString());
+            } catch (Exception e) {
+                LOGGER.error("Error exporting CSAR to filesystem", e);
+                return Response.serverError().build();
+            }
+        } else {
+            throw new UnsupportedOperationException();
+        }
+        return Response.noContent().build();
+    }
+
     @GET
     @Produces(MediaType.TEXT_HTML)
     public Response redirectToAngularUi(
@@ -365,11 +396,11 @@ public abstract class AbstractComponentInstanceResource implements Comparable<Ab
         try {
             this.element = this.definitions.getElement();
         } catch (IndexOutOfBoundsException e) {
-                // everything allright:
-                // ImportResource is a quick hack using 99% of the functionality offered here
-                // As only 1% has to be "quick hacked", we do that instead of a clean design
-                // Clean design: Introduce a class between this and AbstractComponentInstanceResource, where this class and ImportResource inhertis from
-                // A clean design introducing a super class AbstractDefinitionsBackedResource does not work, as we currently also support PropertiesBackedResources and such a super class would required multi-inheritance
+            // everything allright:
+            // ImportResource is a quick hack using 99% of the functionality offered here
+            // As only 1% has to be "quick hacked", we do that instead of a clean design
+            // Clean design: Introduce a class between this and AbstractComponentInstanceResource, where this class and ImportResource inhertis from
+            // A clean design introducing a super class AbstractDefinitionsBackedResource does not work, as we currently also support PropertiesBackedResources and such a super class would required multi-inheritance
             if (!(this instanceof GenericImportResource)) {
                 throw new IllegalStateException("Wrong storage format: No ServiceTemplateOrNodeTypeOrNodeTypeImplementation found.");
             }

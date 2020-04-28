@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2019 Contributors to the Eclipse Foundation
+ * Copyright (c) 2019-2020 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -30,6 +30,8 @@ import java.util.Optional;
 
 import org.eclipse.winery.common.Constants;
 import org.eclipse.winery.common.RepositoryFileReference;
+import org.eclipse.winery.common.configuration.Environments;
+import org.eclipse.winery.common.configuration.RepositoryConfigurationObject;
 import org.eclipse.winery.common.ids.GenericId;
 import org.eclipse.winery.common.ids.Namespace;
 import org.eclipse.winery.common.ids.definitions.DefinitionsChildId;
@@ -38,7 +40,9 @@ import org.eclipse.winery.repository.backend.IRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class RepositoryUtils {
+import static org.eclipse.winery.common.configuration.RepositoryConfigurationObject.RepositoryProvider.YAML;
+
+public class RepositoryUtils {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RepositoryUtils.class);
 
@@ -198,5 +202,10 @@ class RepositoryUtils {
 
     protected static Optional<List<IRepository>> getRepositoriesByRef(RepositoryFileReference ref, MultiRepository multiRepository) {
         return getRepositoriesById(ref.getParent(), multiRepository);
+    }
+
+    public static boolean isYamlRepository() {
+        RepositoryConfigurationObject config = Environments.getInstance().getRepositoryConfig();
+        return YAML == config.getProvider();
     }
 }

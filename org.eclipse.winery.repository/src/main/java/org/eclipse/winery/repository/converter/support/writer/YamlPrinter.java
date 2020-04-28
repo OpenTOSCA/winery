@@ -134,7 +134,7 @@ public class YamlPrinter extends AbstractResult<YamlPrinter> {
     }
 
     private Class<?> determineClazz(String value) {
-        if (Objects.isNull(value) || value.isEmpty()) {
+        if (Objects.isNull(value) || value.isEmpty() || value.equalsIgnoreCase("null")) {
             return Void.class;
         }
         if (value.equalsIgnoreCase("true") || value.equalsIgnoreCase("false")) {

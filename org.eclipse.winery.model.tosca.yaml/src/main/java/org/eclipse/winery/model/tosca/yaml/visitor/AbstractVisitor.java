@@ -329,7 +329,7 @@ public abstract class AbstractVisitor<R extends AbstractResult<R>, P extends Abs
             visitElement(node.getNodeTemplates(), parameter, "node_templates"),
             visitElement(node.getRelationshipTemplates(), parameter, "relationship_templates"),
             visitElement(node.getGroups(), parameter, "groups"),
-            visitMapElement(node.getPolicies(), parameter, "policies"),
+            visitElement(node.getPolicies(), parameter, "policies"),
             visitElement(node.getOutputs(), parameter, "outputs"),
             visitElement(node.getSubstitutionMappings(), parameter, "substitution_mappings")
         ));

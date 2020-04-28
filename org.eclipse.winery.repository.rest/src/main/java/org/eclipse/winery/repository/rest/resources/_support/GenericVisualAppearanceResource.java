@@ -23,9 +23,10 @@ import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 import javax.xml.namespace.QName;
 
 import org.eclipse.winery.common.RepositoryFileReference;
@@ -36,8 +37,8 @@ import org.eclipse.winery.repository.backend.constants.Filename;
 import org.eclipse.winery.repository.rest.RestUtils;
 import org.eclipse.winery.repository.rest.resources.apiData.VisualsApiData;
 
-import com.sun.jersey.multipart.FormDataBodyPart;
-import com.sun.jersey.multipart.FormDataParam;
+import org.glassfish.jersey.media.multipart.FormDataBodyPart;
+import org.glassfish.jersey.media.multipart.FormDataParam;
 
 //import com.fasterxml.jackson.annotation.JsonIgnore; // currently not required
 
@@ -78,6 +79,12 @@ public abstract class GenericVisualAppearanceResource {
         return URI.create(uri);
     }
 
+    public URI getAbsoluteURL(UriInfo uriInfo) {
+        String uri = uriInfo.getBaseUri().toString();
+        uri = uri + Util.getUrlPath(this.id);
+        return URI.create(uri);
+    }
+
     public ToscaElementId getId() {
         return this.id;
     }
@@ -102,9 +109,7 @@ public abstract class GenericVisualAppearanceResource {
         return RestUtils.putContentToFile(target, uploadedInputStream, mediaType);
     }
 
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    public abstract VisualsApiData getJsonData();
+    public abstract VisualsApiData getJsonData(@Context UriInfo uriInfo);
 
     @GET
     @Path("16x16")

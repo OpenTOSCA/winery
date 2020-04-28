@@ -58,13 +58,18 @@
             </div>
         </ng-template>
         <ng-template #yamlExport>
-            <div class="btn-group col-lg-4">
-                <a target="_blank" href="{{ toscaComponent.yamlCsarPath }}">
-                    <button dropdownToggle type="button" class="btn btn-info">
-                        Export
-                        <span class="fa fa-download"></span>
-                    </button>
-                </a>
+            <div class="btn-group col-lg-4" dropdown>
+                <button dropdownToggle type="button" class="btn btn-info dropdown-toggle dropdown-toggle-split">
+                    Export <span class="caret"></span>
+                </button>
+                <ul *dropdownMenu class="dropdown-menu dropdown-menu-right" role="menu">
+                    <li>
+                        <a target="_blank" href="{{ toscaComponent.yamlCsarPath }}">Download</a>
+                    </li>
+                    <li>
+                        <a (click)="exportToFilesystem()">Export to Filesystem</a>
+                    </li>
+                </ul>
             </div>
         </ng-template>
         <winery-version class="col-lg-4" [versions]="versions"></winery-version>

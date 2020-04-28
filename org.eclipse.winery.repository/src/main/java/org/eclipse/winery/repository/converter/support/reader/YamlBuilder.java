@@ -201,7 +201,7 @@ public class YamlBuilder {
             .setNodeTemplates(buildMap(map, "node_templates", this::buildNodeTemplate, parameter))
             .setRelationshipTemplates(buildMap(map, "relationship_templates", this::buildRelationshipTemplate, parameter))
             .setGroups(buildMap(map, "groups", this::buildGroupDefinition, parameter))
-            .setPolicies(buildList(map, "policies", this::buildMapPolicyDefinition, parameter))
+            .setPolicies(buildMap(map, "policies", this::buildPolicyDefinition, parameter))
             .setOutputs(buildMap(map, "outputs", this::buildParameterDefinition, parameter))
             .setSubstitutionMappings(buildSubstitutionMappings(map.get("substitution_mappings"),
                 parameter.copy().addContext("substitution_mappings")

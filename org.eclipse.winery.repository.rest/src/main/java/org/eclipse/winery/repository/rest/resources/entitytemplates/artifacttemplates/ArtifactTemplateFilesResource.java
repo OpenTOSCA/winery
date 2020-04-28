@@ -39,10 +39,10 @@ import org.eclipse.winery.repository.rest.resources._support.GenericFileResource
 import org.eclipse.winery.repository.rest.resources.apiData.ArtifactResourceApiData;
 import org.eclipse.winery.repository.rest.resources.apiData.ArtifactResourcesApiData;
 
-import com.sun.jersey.core.header.FormDataContentDisposition;
-import com.sun.jersey.multipart.FormDataBodyPart;
 import io.swagger.annotations.ApiParam;
 import org.apache.commons.lang3.StringUtils;
+import org.glassfish.jersey.media.multipart.FormDataBodyPart;
+import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,7 +73,7 @@ public class ArtifactTemplateFilesResource extends GenericFileResource {
 
         return response;
     }
-    
+
     @POST
     @Path("/{fileName}")
     @Consumes(MediaType.APPLICATION_JSON)

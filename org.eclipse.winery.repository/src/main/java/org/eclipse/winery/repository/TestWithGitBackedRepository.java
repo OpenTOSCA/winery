@@ -85,6 +85,7 @@ public abstract class TestWithGitBackedRepository {
 
             // inject the current path to the repository factory
             FileBasedRepositoryConfiguration fileBasedRepositoryConfiguration = new FileBasedRepositoryConfiguration(repositoryPath);
+            // force xml repository provider
             fileBasedRepositoryConfiguration.setRepositoryProvider(RepositoryConfigurationObject.RepositoryProvider.FILE);
             GitBasedRepositoryConfiguration gitBasedRepositoryConfiguration = new GitBasedRepositoryConfiguration(false, fileBasedRepositoryConfiguration);
             RepositoryFactory.reconfigure(gitBasedRepositoryConfiguration);

@@ -476,10 +476,9 @@ public class Util {
         JAXBContext context;
         try {
             // For winery classes, eventually the package+jaxb.index method could be better. See http://stackoverflow.com/a/3628525/873282
-            // @formatter:off
             context = JAXBContext.newInstance(
-                TEntityType.class);
-            // @formatter:on
+                TEntityType.class
+            );
         } catch (JAXBException e) {
             throw new IllegalStateException(e);
         }
@@ -732,5 +731,18 @@ public class Util {
         }
 
         return repositoryPath;
+    }
+
+    public static void createCsarOutputPath(String csarOutputPath) {
+        File outputPath = new File(csarOutputPath);
+        if (outputPath.exists() && outputPath.isDirectory()) {
+            return;
+        }
+        try {
+            org.apache.commons.io.FileUtils.forceMkdir(outputPath);
+        } catch (IOException e) {
+            LOGGER.error("Error while creating directory: {}", e.getMessage(), e);
+            throw new IllegalStateException(e);
+        }
     }
 }
