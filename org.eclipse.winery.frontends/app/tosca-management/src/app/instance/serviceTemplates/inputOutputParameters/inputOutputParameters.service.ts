@@ -25,19 +25,19 @@ export class InputOutputParametersService {
     }
 
     public getInputParameters(): Observable<Parameter[]> {
-        return this.getJson(backendBaseURL + this.route.url + '/' + '/inputs');
+        return this.getJson(backendBaseURL + this.route.url + '/inputs');
     }
 
     public updateInputParameters(data: Parameter[]): Observable<HttpResponse<string>> {
-        return this.putJson(backendBaseURL + this.route.url + '/' + '/inputs', data);
+        return this.putJson(backendBaseURL + this.route.url + '/inputs', data);
     }
 
     public getOutputParameters(): Observable<Parameter[]> {
-        return this.getJson(backendBaseURL + this.route.url + '/' + '/outputs');
+        return this.getJson(backendBaseURL + this.route.url + '/outputs');
     }
 
     public updateOutputParameters(data: Parameter[]): Observable<HttpResponse<string>> {
-        return this.putJson(backendBaseURL + this.route.url + '/' + '/outputs', data);
+        return this.putJson(backendBaseURL + this.route.url + '/outputs', data);
     }
 
     private getJson<T>(path: string): Observable<T> {
