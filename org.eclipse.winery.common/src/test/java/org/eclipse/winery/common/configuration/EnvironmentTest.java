@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019 Contributors to the Eclipse Foundation
+ * Copyright (c) 2019-2020 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -94,7 +94,8 @@ public class EnvironmentTest {
     /**
      * Tests whenever a change in the configuration file is detected.
      */
-    // @Test
+    @Test
+    @Disabled("This test seems to fail transiently on test infrastructure")
     public void testReload() {
         YAMLConfiguration configuration = Environment.getInstance().getConfiguration();
         assertFalse(Environment.getInstance().checkConfigurationForUpdate());
