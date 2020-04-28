@@ -128,7 +128,11 @@ public class YamlPrinter extends AbstractResult<YamlPrinter> {
         } else if (Boolean.class == clazz || Float.class == clazz || Integer.class == clazz || Map.class == clazz) {
             print(key).print(": ").print(stringValue).printNewLine();
         } else if (String.class == clazz) {
-            print(key).print(": ").print("\"").print(stringValue).print("\"").printNewLine();
+            if (isQuoted(stringValue)) {
+                print(key).print(": ").print(stringValue).printNewLine();
+            } else {
+                print(key).print(": ").print("\"").print(stringValue).print("\"").printNewLine();
+            }
         }
         return this;
     }
@@ -163,6 +167,10 @@ public class YamlPrinter extends AbstractResult<YamlPrinter> {
             // do nothing
         }
         return String.class;
+    }
+
+    private boolean isQuoted(String value) {
+        return value.startsWith("\"") && value.endsWith("\"");
     }
 
     public YamlPrinter printKeyValue(String key, String value) {

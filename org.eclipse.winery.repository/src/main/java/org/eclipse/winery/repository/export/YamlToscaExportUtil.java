@@ -37,6 +37,7 @@ import org.eclipse.winery.repository.backend.IRepository;
 import org.eclipse.winery.repository.exceptions.RepositoryCorruptException;
 import org.eclipse.winery.repository.export.entries.YAMLDefinitionsBasedCsarEntry;
 
+import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -80,7 +81,7 @@ public class YamlToscaExportUtil extends ToscaExportUtil {
         if (!EXPORT_NORMATIVE_TYPES) {
             adjustmentsBuilder.removeNormativeTypeImports();
         }
-        entry = adjustmentsBuilder.build();
+        entry = adjustmentsBuilder.setMetadataName(tcId).build();
 
         this.referencesToPathInCSARMap.put(definitionsFileProperties, entry);
 
@@ -102,22 +103,53 @@ public class YamlToscaExportUtil extends ToscaExportUtil {
     }
 
     private void prepareNodeTypeForExport(IRepository repository, NodeTypeId id, Definitions entryDefinitions) {
+
         TNodeType node = repository.getElement(id);
-        if (Objects.nonNull(node.getArtifacts())) {
-            node.getArtifacts().getArtifact().forEach(a -> {
-                Path p = Paths.get("files", a.getId());
-                RepositoryFileReference ref = new RepositoryFileReference(id, p, a.getFile());
-                // update file paths in the exported service template
+        TArtifacts artifacts = node.getArtifacts();
+        if (Objects.nonNull(artifacts)) {
+
+            artifacts.getArtifact().forEach(artifact -> {
+                Path p = Paths.get("files", artifact.getId());
+                RepositoryFileReference ref = new RepositoryFileReference(id, p, artifact.getFile());
                 if (repository.exists(ref)) {
                     putRefAsReferencedItemInCsar(ref);
+
+                    // update file paths in "artifacts" the exported service template
                     entryDefinitions.getNodeTypes()
                         .stream()
                         .filter(nt -> nt.getQName().equals(node.getQName()))
-                        .forEach(nt -> nt.getArtifacts()
-                            .getArtifact()
-                            .stream()
-                            .filter(art -> art.getFile().equals(a.getFile()))
-                            .forEach(art -> art.setFile(BackendUtils.getPathInsideRepo(ref))));
+                        .forEach(nt -> {
+                            if (nt.getArtifacts() != null) {
+                                nt.getArtifacts().getArtifact().stream()
+                                    .filter(art -> art.getFile().equals(artifact.getFile()))
+                                    .forEach(art -> {
+                                        String pathInsideRepo = BackendUtils.getPathInsideRepo(ref);
+                                        art.setFile("/" + FilenameUtils.separatorsToUnix(pathInsideRepo));
+                                    });
+                            }
+                        });
+
+                    // update "primary" field in the exported service template
+                    entryDefinitions.getNodeTypes()
+                        .stream()
+                        .filter(nt -> nt.getQName().equals(node.getQName()))
+                        .forEach(nt -> {
+                            if (nt.getInterfaceDefinitions() != null) {
+                                nt.getInterfaceDefinitions().forEach(interfaceDefinition -> {
+                                    if (interfaceDefinition.getOperations() != null) {
+                                        interfaceDefinition.getOperations().forEach(op -> {
+                                            if (op.getImplementation() != null) {
+                                                String artifactName = op.getImplementation().getPrimary();
+                                                if (artifactName.equalsIgnoreCase(artifact.getName())) {
+                                                    String pathInsideRepo = BackendUtils.getPathInsideRepo(ref);
+                                                    op.getImplementation().setPrimary("/" + FilenameUtils.separatorsToUnix(pathInsideRepo));
+                                                }
+                                            }
+                                        });
+                                    }
+                                });
+                            }
+                        });
                 }
             });
         }
@@ -133,12 +165,12 @@ public class YamlToscaExportUtil extends ToscaExportUtil {
         if (Objects.nonNull(st.getTopologyTemplate())) {
             for (TNodeTemplate n : st.getTopologyTemplate().getNodeTemplates()) {
                 TArtifacts artifacts = n.getArtifacts();
-
                 if (Objects.nonNull(artifacts)) {
+
+                    // update file paths in the exported service template
                     artifacts.getArtifact().forEach(a -> {
                         Path p = Paths.get("files", n.getId(), a.getId());
                         RepositoryFileReference ref = new RepositoryFileReference(id, p, a.getFile());
-                        // update file paths in the exported service template
                         if (repository.exists(ref)) {
                             putRefAsReferencedItemInCsar(ref);
                             entryDefinitions.getServiceTemplates()
@@ -154,11 +186,16 @@ public class YamlToscaExportUtil extends ToscaExportUtil {
                                                 .getArtifact()
                                                 .stream()
                                                 .filter(art -> art.getFile().equals(a.getFile()))
-                                                .forEach(art -> art.setFile(BackendUtils.getPathInsideRepo(ref))));
+                                                .forEach(art -> {
+                                                    String pathInsideRepo = BackendUtils.getPathInsideRepo(ref);
+                                                    art.setFile("/" + FilenameUtils.separatorsToUnix(pathInsideRepo));
+                                                }));
                                     }
                                 });
                         }
                     });
+
+                    // TODO: update "primary" field in the exported service template
                 }
             }
         }

@@ -17,6 +17,8 @@ package org.eclipse.winery.repository.export;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.winery.common.ids.definitions.DefinitionsChildId;
+import org.eclipse.winery.common.ids.definitions.ServiceTemplateId;
 import org.eclipse.winery.model.tosca.yaml.TNodeTemplate;
 import org.eclipse.winery.model.tosca.yaml.TServiceTemplate;
 import org.eclipse.winery.model.tosca.yaml.support.TMapImportDefinition;
@@ -57,6 +59,13 @@ public class YamlExportAdjustmentsBuilder {
                 newMap.put(oldMap.get(key).getMetadata().get("displayName"), oldMap.get(key));
             }
             this.definitions.getTopologyTemplate().setNodeTemplates(newMap);
+        }
+        return this;
+    }
+
+    public YamlExportAdjustmentsBuilder setMetadataName(DefinitionsChildId id) {
+        if (id instanceof ServiceTemplateId) {
+            definitions.getMetadata().add("name", id.getQName().getLocalPart());
         }
         return this;
     }
