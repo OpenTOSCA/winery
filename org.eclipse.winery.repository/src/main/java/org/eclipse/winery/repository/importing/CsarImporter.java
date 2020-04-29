@@ -573,108 +573,111 @@ public class CsarImporter {
      *                be referenced from the given definitions
      * @param options the set of options applicable while importing a CSAR
      */
-    public Optional<ServiceTemplateId> importDefinitions(TOSCAMetaFile tmf, Path entryDefinitionsPath, final List<String> errors,
+    public Optional<ServiceTemplateId> importDefinitions(TOSCAMetaFile tmf, Path definitionsPath, final List<String> errors,
                                                          CsarImportOptions options) throws IOException {
-        if (entryDefinitionsPath == null) {
+        if (definitionsPath == null) {
             throw new IllegalStateException("path to definitions must not be null");
         }
-        if (!Files.exists(entryDefinitionsPath)) {
-            errors.add(String.format("Definitions %1$s does not exist", entryDefinitionsPath.getFileName()));
+        if (!Files.exists(definitionsPath)) {
+            errors.add(String.format("Definitions %1$s does not exist", definitionsPath.getFileName()));
             return Optional.empty();
         }
 
-        Optional<TDefinitions> result = parseDefinitionsElement(entryDefinitionsPath, errors);
+        Optional<TDefinitions> parsingResult = parseDefinitionsElement(definitionsPath, errors);
 
-        if (result.isPresent()) {
-            TDefinitions defs = result.get();
-
-            List<TImport> imports = defs.getImport();
-            this.importImports(entryDefinitionsPath.getParent(), tmf, imports, errors, options);
-            // imports has been modified to contain necessary imports only
-
-            // this method adds new imports to defs which may not be imported using "importImports".
-            // Therefore, "importTypes" has to be called *after* importImports
-            this.importTypes(defs, errors);
-
-            Optional<ServiceTemplateId> entryServiceTemplate = Optional.empty();
-
-            String defaultNamespace = defs.getTargetNamespace();
-            List<TExtensibleElements> componentInstanceList = defs.getServiceTemplateOrNodeTypeOrNodeTypeImplementation();
-            for (final TExtensibleElements ci : componentInstanceList) {
-                // Determine namespace
-                String namespace = this.getNamespace(ci, defaultNamespace);
-                // Ensure that element has the namespace
-                this.setNamespace(ci, namespace);
-
-                // Determine id
-                String id = ModelUtilities.getId(ci);
-
-                // Determine WineryId
-                Class<? extends DefinitionsChildId> widClass = Util.getComponentIdClassForTExtensibleElements(ci.getClass());
-                final DefinitionsChildId wid = BackendUtils.getDefinitionsChildId(widClass, namespace, id, false);
-
-                if (RepositoryFactory.getRepository().exists(wid)) {
-                    if (options.isOverwrite()) {
-                        RepositoryFactory.getRepository().forceDelete(wid);
-                        String msg = String.format("Deleted %1$s %2$s to enable replacement", ci.getClass().getName(), wid.getQName().toString());
-                        CsarImporter.LOGGER.debug(msg);
-                    } else {
-                        String msg = String.format("Skipped %1$s %2$s, because it already exists", ci.getClass().getName(), wid.getQName().toString());
-                        CsarImporter.LOGGER.debug(msg);
-                        // this is not displayed in the UI as we currently do not distinguish between pre-existing types and types created during the import.
-                        continue;
-                    }
-                }
-
-                // Create a fresh definitions object without the other data.
-                final Definitions newDefs = BackendUtils.createWrapperDefinitions(wid);
-
-                // copy over the inputs determined by this.importImports
-                newDefs.getImport().addAll(imports);
-
-                // add the current TExtensibleElements as the only content to it
-                newDefs.getServiceTemplateOrNodeTypeOrNodeTypeImplementation().add(ci);
-
-                if (ci instanceof TArtifactTemplate) {
-                    // convention: Definitions are stored in the "Definitions" directory, therefore going to levels up (Definitions dir -> root dir) resolves to the root dir
-                    // COS01, line 2663 states that the path has to be resolved from the *root* of the CSAR
-                    this.adjustArtifactTemplate(entryDefinitionsPath.getParent().getParent(), tmf, (ArtifactTemplateId) wid, (TArtifactTemplate) ci, errors);
-                } else if (ci instanceof TNodeType) {
-                    this.adjustNodeType(entryDefinitionsPath.getParent().getParent(), (TNodeType) ci, (NodeTypeId) wid, tmf, errors);
-                } else if (ci instanceof TRelationshipType) {
-                    this.adjustRelationshipType(entryDefinitionsPath.getParent().getParent(), (TRelationshipType) ci, (RelationshipTypeId) wid, tmf, errors);
-                } else if (ci instanceof TServiceTemplate) {
-                    this.adjustServiceTemplate(entryDefinitionsPath.getParent().getParent(), tmf, (ServiceTemplateId) wid, (TServiceTemplate) ci, errors);
-                    entryServiceTemplate = Optional.of((ServiceTemplateId) wid);
-                }
-
-                // import license and readme files
-                importLicenseAndReadme(entryDefinitionsPath.getParent().getParent(), wid, tmf, errors);
-
-                // node types and relationship types are subclasses of TEntityType
-                // Therefore, we check the entity type separately here
-                if (ci instanceof TEntityType) {
-                    if (options.isAsyncWPDParsing()) {
-                        // Adjusting takes a long time
-                        // Therefore, we first save the type as is and convert to Winery-Property-Definitions in the background
-                        CsarImporter.storeDefinitions(wid, newDefs);
-                        CsarImporter.entityTypeAdjestmentService.submit(() -> {
-                            CsarImporter.adjustEntityType((TEntityType) ci, (EntityTypeId) wid, newDefs, errors);
-                            CsarImporter.storeDefinitions(wid, newDefs);
-                        });
-                    } else {
-                        CsarImporter.adjustEntityType((TEntityType) ci, (EntityTypeId) wid, newDefs, errors);
-                        CsarImporter.storeDefinitions(wid, newDefs);
-                    }
-                } else {
-                    CsarImporter.storeDefinitions(wid, newDefs);
-                }
-            }
-
-            return entryServiceTemplate;
+        if (parsingResult.isPresent()) {
+            TDefinitions defs = parsingResult.get();
+            return processDefinitionsImport(defs, tmf, definitionsPath, errors, options);
         }
 
         return Optional.empty();
+    }
+
+    protected Optional<ServiceTemplateId> processDefinitionsImport(TDefinitions defs, TOSCAMetaFile tmf, Path definitionsPath, List<String> errors, CsarImportOptions options) throws IOException {
+        List<TImport> imports = defs.getImport();
+        this.importImports(definitionsPath.getParent(), tmf, imports, errors, options);
+        // imports has been modified to contain necessary imports only
+
+        // this method adds new imports to defs which may not be imported using "importImports".
+        // Therefore, "importTypes" has to be called *after* importImports
+        this.importTypes(defs, errors);
+
+        Optional<ServiceTemplateId> entryServiceTemplate = Optional.empty();
+
+        String defaultNamespace = defs.getTargetNamespace();
+        List<TExtensibleElements> componentInstanceList = defs.getServiceTemplateOrNodeTypeOrNodeTypeImplementation();
+        for (final TExtensibleElements ci : componentInstanceList) {
+            // Determine namespace
+            String namespace = this.getNamespace(ci, defaultNamespace);
+            // Ensure that element has the namespace
+            this.setNamespace(ci, namespace);
+
+            // Determine id
+            String id = ModelUtilities.getId(ci);
+
+            // Determine WineryId
+            Class<? extends DefinitionsChildId> widClass = Util.getComponentIdClassForTExtensibleElements(ci.getClass());
+            final DefinitionsChildId wid = BackendUtils.getDefinitionsChildId(widClass, namespace, id, false);
+
+            if (RepositoryFactory.getRepository().exists(wid)) {
+                if (options.isOverwrite()) {
+                    RepositoryFactory.getRepository().forceDelete(wid);
+                    String msg = String.format("Deleted %1$s %2$s to enable replacement", ci.getClass().getName(), wid.getQName().toString());
+                    CsarImporter.LOGGER.debug(msg);
+                } else {
+                    String msg = String.format("Skipped %1$s %2$s, because it already exists", ci.getClass().getName(), wid.getQName().toString());
+                    CsarImporter.LOGGER.debug(msg);
+                    // this is not displayed in the UI as we currently do not distinguish between pre-existing types and types created during the import.
+                    continue;
+                }
+            }
+
+            // Create a fresh definitions object without the other data.
+            final Definitions newDefs = BackendUtils.createWrapperDefinitions(wid);
+
+            // copy over the inputs determined by this.importImports
+            newDefs.getImport().addAll(imports);
+
+            // add the current TExtensibleElements as the only content to it
+            newDefs.getServiceTemplateOrNodeTypeOrNodeTypeImplementation().add(ci);
+
+            if (ci instanceof TArtifactTemplate) {
+                // convention: Definitions are stored in the "Definitions" directory, therefore going to levels up (Definitions dir -> root dir) resolves to the root dir
+                // COS01, line 2663 states that the path has to be resolved from the *root* of the CSAR
+                this.adjustArtifactTemplate(definitionsPath.getParent().getParent(), tmf, (ArtifactTemplateId) wid, (TArtifactTemplate) ci, errors);
+            } else if (ci instanceof TNodeType) {
+                this.adjustNodeType(definitionsPath.getParent().getParent(), (TNodeType) ci, (NodeTypeId) wid, tmf, errors);
+            } else if (ci instanceof TRelationshipType) {
+                this.adjustRelationshipType(definitionsPath.getParent().getParent(), (TRelationshipType) ci, (RelationshipTypeId) wid, tmf, errors);
+            } else if (ci instanceof TServiceTemplate) {
+                this.adjustServiceTemplate(definitionsPath.getParent().getParent(), tmf, (ServiceTemplateId) wid, (TServiceTemplate) ci, errors);
+                entryServiceTemplate = Optional.of((ServiceTemplateId) wid);
+            }
+
+            // import license and readme files
+            importLicenseAndReadme(definitionsPath.getParent().getParent(), wid, tmf, errors);
+
+            // node types and relationship types are subclasses of TEntityType
+            // Therefore, we check the entity type separately here
+            if (ci instanceof TEntityType) {
+                if (options.isAsyncWPDParsing()) {
+                    // Adjusting takes a long time
+                    // Therefore, we first save the type as is and convert to Winery-Property-Definitions in the background
+                    CsarImporter.storeDefinitions(wid, newDefs);
+                    CsarImporter.entityTypeAdjestmentService.submit(() -> {
+                        CsarImporter.adjustEntityType((TEntityType) ci, (EntityTypeId) wid, newDefs, errors);
+                        CsarImporter.storeDefinitions(wid, newDefs);
+                    });
+                } else {
+                    CsarImporter.adjustEntityType((TEntityType) ci, (EntityTypeId) wid, newDefs, errors);
+                    CsarImporter.storeDefinitions(wid, newDefs);
+                }
+            } else {
+                CsarImporter.storeDefinitions(wid, newDefs);
+            }
+        }
+
+        return entryServiceTemplate;
     }
 
     protected Optional<TDefinitions> parseDefinitionsElement(Path entryDefinitionsPath, final List<String> errors) {
@@ -849,7 +852,7 @@ public class CsarImporter {
         }
     }
 
-    private void importLicenseAndReadme(Path rootPath, DefinitionsChildId wid, TOSCAMetaFile tmf, final List<String> errors) {
+    protected void importLicenseAndReadme(Path rootPath, DefinitionsChildId wid, TOSCAMetaFile tmf, final List<String> errors) {
         String pathInsideRepo = Util.getPathInsideRepo(wid);
         Path defPath = rootPath.resolve(pathInsideRepo);
         Path readmeFile = defPath.resolve(Constants.README_FILE_NAME);

@@ -335,7 +335,8 @@ public class Y2XConverter {
      */
     private TArtifactType convert(org.eclipse.winery.model.tosca.yaml.TArtifactType node, String id) {
         if (node == null) return null;
-        TArtifactType.Builder builder = new TArtifactType.Builder(id);
+        String typeName = fixNamespaceDuplication(id, node.getMetadata().get("targetNamespace"));
+        TArtifactType.Builder builder = new TArtifactType.Builder(typeName);
         convert(node, builder);
         builder.setFileExtensions(node.getFileExt());
         if (node.getMimeType() != null) {
@@ -392,8 +393,9 @@ public class Y2XConverter {
     private org.eclipse.winery.model.tosca.TInterfaceType convertToTInterfaceType(TInterfaceType node, String type) {
         Map<String, org.eclipse.winery.model.tosca.TOperationDefinition> ops = new HashMap<>();
         node.getOperations().forEach((key, value) -> ops.put(key, convert(value, key)));
-
-        return new org.eclipse.winery.model.tosca.TInterfaceType.Builder(type)
+        String typeName = fixNamespaceDuplication(type, node.getMetadata().get("targetNamespace"));
+        
+        return new org.eclipse.winery.model.tosca.TInterfaceType.Builder(typeName)
             .setDerivedFrom(node.getDerivedFrom())
             .setDescription(node.getDescription())
             .setOperations(ops)
@@ -608,12 +610,20 @@ public class Y2XConverter {
      */
     private TNodeType convert(org.eclipse.winery.model.tosca.yaml.TNodeType node, String id) {
         if (Objects.isNull(node)) return null;
-        TNodeType.Builder builder = convert(node, new TNodeType.Builder(id))
+        String typeName = fixNamespaceDuplication(id, node.getMetadata().get("targetNamespace"));
+        TNodeType.Builder builder = convert(node, new TNodeType.Builder(typeName))
             .addRequirementDefinitions(convert(node.getRequirements()))
             .addCapabilityDefinitions(convert(node.getCapabilities()))
             .setInterfaceDefinitions(convert(node.getInterfaces()))
             .addArtifacts(convert(node.getArtifacts()));
         return builder.build();
+    }
+
+    private String fixNamespaceDuplication(String id, String ns) {
+        if (id.contains(ns)) {
+            return id.replace(ns + ".", "");
+        }
+        return id;
     }
 
     /**
@@ -770,7 +780,8 @@ public class Y2XConverter {
      */
     private TCapabilityType convert(org.eclipse.winery.model.tosca.yaml.TCapabilityType node, String id) {
         if (Objects.isNull(node)) return null;
-        return convert(node, new TCapabilityType.Builder(id))
+        String typeName = fixNamespaceDuplication(id, node.getMetadata().get("targetNamespace"));
+        return convert(node, new TCapabilityType.Builder(typeName))
             .setValidSourceTypes(node.getValidSourceTypes())
             .build();
     }
@@ -838,7 +849,8 @@ public class Y2XConverter {
      */
     private TRelationshipType convert(org.eclipse.winery.model.tosca.yaml.TRelationshipType node, String id) {
         if (Objects.isNull(node)) return null;
-        TRelationshipType output = convert(node, new TRelationshipType.Builder(id))
+        String typeName = fixNamespaceDuplication(id, node.getMetadata().get("targetNamespace"));
+        TRelationshipType output = convert(node, new TRelationshipType.Builder(typeName))
             .addSourceInterfaces(convert(node.getInterfaces(), "SourceInterfaces"))
             .addInterfaces(convert(node.getInterfaces(), null))
             .addTargetInterfaces(convert(node.getInterfaces(), "TargetInterfaces"))
@@ -913,8 +925,8 @@ public class Y2XConverter {
         if (node == null) {
             return null;
         }
-
-        TPolicyType.Builder builder = new TPolicyType.Builder(id);
+        String typeName = fixNamespaceDuplication(id, node.getMetadata().get("targetNamespace"));
+        TPolicyType.Builder builder = new TPolicyType.Builder(typeName);
         convert(node, builder);
         builder.setAppliesTo(convertTargets(node.getTargets()));
 
@@ -991,21 +1003,33 @@ public class Y2XConverter {
      * Converts TOSCA YAML TImportDefinitions and returns list of TOSCA XML TImports
      */
     private TImport convert(TImportDefinition node, String name) {
-//        Reader reader = Reader.getReader();
-//        String namespace = node.getNamespaceUri() == null ? this.namespace : node.getNamespaceUri();
-//        try {
-//            org.eclipse.winery.model.tosca.yaml.TServiceTemplate serviceTemplate = reader.readImportDefinition(node, path, namespace);
-//            Converter converter = new Converter(this.repository);
-//            Definitions definitions = converter.convertY2X(serviceTemplate, getFileNameFromFile(node.getFile()), namespace, path, outPath);
-//            WriterUtils.saveDefinitions(definitions, outPath, namespace, name);
-//            TImport.Builder builder = new TImport.Builder(Namespaces.XML_NS);
-//            builder.setLocation(WriterUtils.getDefinitionsLocation(namespace, name));
-//            builder.setNamespace(namespace);
-//            return builder.build();
-//        } catch (MultiException e) {
-//            e.printStackTrace();
-//        }
-        return null;
+        String importType;
+        if (node.getFile().endsWith(".tosca")) {
+            importType = Namespaces.TOSCA_NS;
+        } else {
+            importType = name;
+        }
+
+        TImport.Builder builder = new TImport.Builder(importType)
+            .setNamespace(node.getNamespaceUri())
+            .setLocation(node.getFile());
+        
+        /*Reader reader = Reader.getReader();
+        String namespace = node.getNamespaceUri() == null ? this.namespace : node.getNamespaceUri();
+        try {
+            org.eclipse.winery.model.tosca.yaml.TServiceTemplate serviceTemplate = reader.readImportDefinition(node, path, namespace);
+            Converter converter = new Converter(this.repository);
+            Definitions definitions = converter.convertY2X(serviceTemplate, getFileNameFromFile(node.getFile()), namespace, path, outPath);
+            WriterUtils.saveDefinitions(definitions, outPath, namespace, name);
+            TImport.Builder builder = new TImport.Builder(Namespaces.XML_NS);
+            builder.setLocation(WriterUtils.getDefinitionsLocation(namespace, name));
+            builder.setNamespace(namespace);
+            return builder.build();
+        } catch (MultiException e) {
+            e.printStackTrace();
+        }*/
+
+        return builder.build();
     }
 
     private String getFileNameFromFile(String filename) {
@@ -1182,7 +1206,7 @@ public class Y2XConverter {
         return node.stream()
             .flatMap(map -> map.entrySet().stream())
             .map((Map.Entry<String, V> entry) -> {
-                if (entry.getValue() instanceof TImportDefinition) {
+                if (entry.getValue() instanceof TImportDefinition && "file".equals(entry.getKey())) {
                     return (T) convert((TImportDefinition) entry.getValue(), entry.getKey());
                 } else if (entry.getValue() instanceof org.eclipse.winery.model.tosca.yaml.TRequirementDefinition) {
                     return (T) convert((org.eclipse.winery.model.tosca.yaml.TRequirementDefinition) entry.getValue(), entry.getKey());
