@@ -611,13 +611,10 @@ public class CsarImporter {
             String namespace = this.getNamespace(ci, defaultNamespace);
             // Ensure that element has the namespace
             this.setNamespace(ci, namespace);
-
             // Determine id
             String id = ModelUtilities.getId(ci);
 
-            // Determine WineryId
-            Class<? extends DefinitionsChildId> widClass = Util.getComponentIdClassForTExtensibleElements(ci.getClass());
-            final DefinitionsChildId wid = BackendUtils.getDefinitionsChildId(widClass, namespace, id, false);
+            final DefinitionsChildId wid = determineWineryId(ci, namespace, id);
 
             if (RepositoryFactory.getRepository().exists(wid)) {
                 if (options.isOverwrite()) {
@@ -692,6 +689,11 @@ public class CsarImporter {
             errors.add("Definitions " + entryDefinitionsPath.getFileName() + " is not a TDefinitions " + e.getMessage());
             return Optional.empty();
         }
+    }
+    
+    protected DefinitionsChildId determineWineryId(TExtensibleElements ci, String namespace, String id) {
+        Class<? extends DefinitionsChildId> widClass = Util.getComponentIdClassForTExtensibleElements(ci.getClass());
+        return BackendUtils.getDefinitionsChildId(widClass, namespace, id, false);
     }
 
     /**
@@ -828,12 +830,12 @@ public class CsarImporter {
     /**
      * Adds a color to the given relationship type
      */
-    private void adjustRelationshipType(Path rootPath, TRelationshipType ci, RelationshipTypeId wid, TOSCAMetaFile tmf, final List<String> errors) {
+    protected void adjustRelationshipType(Path rootPath, TRelationshipType ci, RelationshipTypeId wid, TOSCAMetaFile tmf, final List<String> errors) {
         VisualAppearanceId visId = new VisualAppearanceId(wid);
         this.importIcons(rootPath, visId, tmf, errors);
     }
 
-    private void adjustNodeType(Path rootPath, TNodeType ci, NodeTypeId wid, TOSCAMetaFile tmf, final List<String> errors) {
+    protected void adjustNodeType(Path rootPath, TNodeType ci, NodeTypeId wid, TOSCAMetaFile tmf, final List<String> errors) {
         VisualAppearanceId visId = new VisualAppearanceId(wid);
         this.importIcons(rootPath, visId, tmf, errors);
     }
@@ -955,7 +957,7 @@ public class CsarImporter {
      * @param tmf         the TOSCAMetaFile object used to determine the mimetype. Must not be null.
      * @param errors      list where import errors should be stored to
      */
-    private void importAllFiles(Path rootPath, Collection<Path> files, DirectoryId directoryId, TOSCAMetaFile tmf, final List<String> errors) {
+    protected void importAllFiles(Path rootPath, Collection<Path> files, DirectoryId directoryId, TOSCAMetaFile tmf, final List<String> errors) {
         // remove the filePathInsideRepo to correctly store the files in the files folder inside an artifact template
         // otherwise, the files are saved in the sub directory of the artifact template
         // this is required, to enable the cycle CSAR export, clean , import CSAR

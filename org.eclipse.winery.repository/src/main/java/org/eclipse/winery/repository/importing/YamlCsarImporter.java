@@ -20,15 +20,19 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 
 import org.eclipse.winery.common.RepositoryFileReference;
-import org.eclipse.winery.common.Util;
+import org.eclipse.winery.common.ids.IdNames;
 import org.eclipse.winery.common.ids.definitions.DefinitionsChildId;
+import org.eclipse.winery.common.ids.definitions.NodeTypeId;
+import org.eclipse.winery.common.ids.definitions.RelationshipTypeId;
 import org.eclipse.winery.common.ids.definitions.ServiceTemplateId;
 import org.eclipse.winery.model.csar.toscametafile.TOSCAMetaFile;
 import org.eclipse.winery.model.csar.toscametafile.YamlTOSCAMetaFileParser;
@@ -36,6 +40,8 @@ import org.eclipse.winery.model.tosca.Definitions;
 import org.eclipse.winery.model.tosca.TDefinitions;
 import org.eclipse.winery.model.tosca.TExtensibleElements;
 import org.eclipse.winery.model.tosca.TImport;
+import org.eclipse.winery.model.tosca.TNodeType;
+import org.eclipse.winery.model.tosca.TRelationshipType;
 import org.eclipse.winery.model.tosca.utils.ModelUtilities;
 import org.eclipse.winery.model.tosca.yaml.TServiceTemplate;
 import org.eclipse.winery.repository.backend.BackendUtils;
@@ -49,6 +55,8 @@ import org.eclipse.winery.repository.converter.support.Namespaces;
 import org.eclipse.winery.repository.converter.support.exception.MultiException;
 import org.eclipse.winery.repository.converter.support.reader.YamlReader;
 import org.eclipse.winery.repository.converter.support.writer.YamlWriter;
+import org.eclipse.winery.repository.datatypes.ids.elements.DirectoryId;
+import org.eclipse.winery.repository.datatypes.ids.elements.GenericDirectoryId;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -112,23 +120,18 @@ public class YamlCsarImporter extends CsarImporter {
         List<TExtensibleElements> componentInstanceList = defs.getServiceTemplateOrNodeTypeOrNodeTypeImplementation();
 
         for (final TExtensibleElements ci : componentInstanceList) {
-            if (ci instanceof org.eclipse.winery.model.tosca.TServiceTemplate && 
+            if (ci instanceof org.eclipse.winery.model.tosca.TServiceTemplate &&
                 Objects.isNull(((org.eclipse.winery.model.tosca.TServiceTemplate) ci).getTopologyTemplate())
             ) {
                 continue;
             }
 
-            // Determine namespace
+            // Determine & ensure that element has the namespace
             String namespace = this.getNamespace(ci, defaultNamespace);
-            // Ensure that element has the namespace
             this.setNamespace(ci, namespace);
-
-            // Determine id
             String id = ModelUtilities.getId(ci);
 
-            // Determine WineryId
-            Class<? extends DefinitionsChildId> widClass = Util.getComponentIdClassForTExtensibleElements(ci.getClass());
-            final DefinitionsChildId wid = BackendUtils.getDefinitionsChildId(widClass, namespace, id, false);
+            final DefinitionsChildId wid = determineWineryId(ci, namespace, id);
 
             if (RepositoryFactory.getRepository().exists(wid)) {
                 if (options.isOverwrite()) {
@@ -145,12 +148,17 @@ public class YamlCsarImporter extends CsarImporter {
 
             // Create a fresh definitions object without the other data.
             final Definitions newDefs = BackendUtils.createWrapperDefinitions(wid);
-
             // add the current TExtensibleElements as the only content to it
             newDefs.getServiceTemplateOrNodeTypeOrNodeTypeImplementation().add(ci);
-
             // import license and readme files
             importLicenseAndReadme(definitionsPath.getParent().getParent(), wid, tmf, errors);
+            importArtifacts(definitionsPath.getParent().getParent(), ci, wid, tmf, errors);
+
+            if (ci instanceof TNodeType) {
+                this.adjustNodeType(definitionsPath.getParent().getParent(), (TNodeType) ci, (NodeTypeId) wid, tmf, errors);
+            } else if (ci instanceof TRelationshipType) {
+                this.adjustRelationshipType(definitionsPath.getParent().getParent(), (TRelationshipType) ci, (RelationshipTypeId) wid, tmf, errors);
+            }
 
             storeDefs(wid, newDefs);
         }
@@ -159,6 +167,61 @@ public class YamlCsarImporter extends CsarImporter {
         this.importImports(definitionsPath.getParent(), tmf, imports, errors, options);
 
         return entryServiceTemplate;
+    }
+
+    private void importArtifacts(Path rootPath, TExtensibleElements ci, DefinitionsChildId wid, TOSCAMetaFile tmf, final List<String> errors) {
+        if (ci instanceof org.eclipse.winery.model.tosca.TServiceTemplate) {
+            org.eclipse.winery.model.tosca.TServiceTemplate st = (org.eclipse.winery.model.tosca.TServiceTemplate) ci;
+            st.getTopologyTemplate()
+                .getNodeTemplates()
+                .forEach(node -> node.getArtifacts().getArtifact().forEach(a -> {
+                        Path path = rootPath.resolve(a.getFile());
+                        if (!Files.exists(path)) {
+                            errors.add(String.format("Reference %1$s not found", a.getFile()));
+                            return;
+                        }
+                        Set<Path> allFiles;
+                        if (Files.isRegularFile(path)) {
+                            allFiles = new HashSet<>();
+                            allFiles.add(path);
+
+                            // Path p = Paths.get("files", node.getId(), a.getId());
+                            // RepositoryFileReference ref = new RepositoryFileReference(wid, p, a.getFile());
+                            DirectoryId serviceTemplateYamlArtifactsDir =
+                                new GenericDirectoryId(wid, IdNames.FILES_DIRECTORY);
+                            DirectoryId nodeTemplateYamlArtifactsDir =
+                                new GenericDirectoryId(serviceTemplateYamlArtifactsDir, node.getId());
+                            DirectoryId yamlArtifactFilesDirectoryId =
+                                new GenericDirectoryId(nodeTemplateYamlArtifactsDir, a.getName());
+
+                            this.importAllFiles(rootPath, allFiles, yamlArtifactFilesDirectoryId, tmf, errors);
+                        }
+                    }
+                ));
+        } else if (ci instanceof TNodeType) {
+            TNodeType nt = (TNodeType) ci;
+            if (Objects.nonNull(nt.getArtifacts())) {
+                nt.getArtifacts().getArtifact().forEach(a -> {
+                    Path path = rootPath.resolve(a.getFile());
+                    if (!Files.exists(path)) {
+                        errors.add(String.format("Reference %1$s not found", a.getFile()));
+                        return;
+                    }
+                    Set<Path> allFiles;
+                    if (Files.isRegularFile(path)) {
+                        allFiles = new HashSet<>();
+                        allFiles.add(path);
+
+                        DirectoryId nodeTypeArtifactsDir =
+                            new GenericDirectoryId(wid, IdNames.FILES_DIRECTORY);
+                        DirectoryId yamlArtifactFilesDirectoryId =
+                            new GenericDirectoryId(nodeTypeArtifactsDir, a.getName());
+
+                        this.importAllFiles(rootPath, allFiles, yamlArtifactFilesDirectoryId, tmf, errors);
+                    }
+                });
+            }
+        }
     }
 
     /**
