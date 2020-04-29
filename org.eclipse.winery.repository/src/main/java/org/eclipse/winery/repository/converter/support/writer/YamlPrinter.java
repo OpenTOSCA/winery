@@ -125,10 +125,14 @@ public class YamlPrinter extends AbstractResult<YamlPrinter> {
         Class<?> clazz = determineClazz(stringValue);
         if (Void.class == clazz && printEmptyValues) {
             print(key).print(": ").print("null").printNewLine();
-        } else if (Boolean.class == clazz || Float.class == clazz || Integer.class == clazz) {
+        } else if (Boolean.class == clazz || Float.class == clazz || Integer.class == clazz || Map.class == clazz) {
             print(key).print(": ").print(stringValue).printNewLine();
         } else if (String.class == clazz) {
-            print(key).print(": ").print("\"").print(stringValue).print("\"").printNewLine();
+            if (isQuoted(stringValue)) {
+                print(key).print(": ").print(stringValue).printNewLine();
+            } else {
+                print(key).print(": ").print("\"").print(stringValue).print("\"").printNewLine();
+            }
         }
         return this;
     }
@@ -148,6 +152,14 @@ public class YamlPrinter extends AbstractResult<YamlPrinter> {
                 // do nothing
             }
         }
+        // checks if a yaml map is the value which is saved as a string 
+        // because the map is not represented in the data model yet
+        // e.g. intrinsic functions
+        // !!! this might trigger false positives !!!
+        String tmp = value.trim();
+        if (tmp.startsWith("{") && tmp.endsWith("}")) {
+            return Map.class;
+        }
         try {
             Integer.parseInt(value);
             return Integer.class;
@@ -155,6 +167,10 @@ public class YamlPrinter extends AbstractResult<YamlPrinter> {
             // do nothing
         }
         return String.class;
+    }
+
+    private boolean isQuoted(String value) {
+        return value.startsWith("\"") && value.endsWith("\"");
     }
 
     public YamlPrinter printKeyValue(String key, String value) {

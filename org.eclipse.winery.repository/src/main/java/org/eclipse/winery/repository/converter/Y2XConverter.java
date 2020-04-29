@@ -964,7 +964,7 @@ public class Y2XConverter {
             .stream()
             .collect(Collectors.toMap(
                 Map.Entry::getKey,
-                entry -> Objects.requireNonNull(entry.getValue().getValue()).toString()));
+                entry -> Objects.requireNonNull(ValueHelper.toString(entry.getValue().getValue()))));
         TEntityTemplate.Properties toscaProperties = new TEntityTemplate.Properties();
         toscaProperties.setKVProperties(properties);
         return toscaProperties;
