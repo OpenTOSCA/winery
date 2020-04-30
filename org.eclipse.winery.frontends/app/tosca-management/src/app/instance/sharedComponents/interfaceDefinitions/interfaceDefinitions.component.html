@@ -83,6 +83,9 @@
             <winery-parameters [tableTitle]="'Output Parameters'" [modalTitle]="'Output Parameter'"
                                [parameters]="selectedOperation.outputs" [columns]="columnsOutputParameters">
             </winery-parameters>
+            <winery-dependencies [dependencies]="selectedOperation.implementation.dependencies"
+                                 [selectableArtifacts]="selectableArtifacts">
+            </winery-dependencies>
         </div>
     </div>
 </div>

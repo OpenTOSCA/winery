@@ -32,7 +32,7 @@ export class Operation {
 export class OperationImplementation {
     primary: string;
     dependencies: string[];
-    operationHost: string;
+    // operationHost: string;
     timeout: number;
 }
 

@@ -143,12 +143,13 @@ export class InterfaceDefinitionsComponent implements OnInit {
     onOperationSelected(selectedOperation: Operation) {
         this.selectedArtifact = [];
         this.selectedOperation = selectedOperation;
-        console.log(this.selectedOperation);
         if (this.selectedOperation.implementation) {
             const id = this.selectedOperation.implementation.primary;
             const artifact = this.selectableArtifacts.find(item => item.name === id);
-            console.log(artifact);
             this.selectedArtifact.push(artifact);
+            if (!this.selectedOperation.implementation.dependencies) {
+                this.selectedOperation.implementation.dependencies = [];
+            }
         }
     }
 
