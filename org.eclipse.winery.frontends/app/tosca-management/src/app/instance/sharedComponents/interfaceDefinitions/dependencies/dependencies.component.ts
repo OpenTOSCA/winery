@@ -18,7 +18,6 @@ import { InstanceService } from '../../../instance.service';
 import { ModalDirective } from 'ngx-bootstrap';
 import { Artifact } from '../../../../model/artifact';
 import { SelectData } from '../../../../model/selectData';
-import { Interface } from '../../../../model/interfaces';
 
 export class DependencyTableModel {
     name: string;
@@ -28,7 +27,7 @@ export class DependencyTableModel {
     selector: 'winery-dependencies',
     templateUrl: 'dependencies.component.html',
 })
-export class DependenciesComponent implements OnInit{
+export class DependenciesComponent implements OnInit {
 
     /* tslint:disable no-bitwise */
     uuid: string = (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
