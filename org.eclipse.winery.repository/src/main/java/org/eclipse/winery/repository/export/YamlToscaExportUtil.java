@@ -19,7 +19,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.eclipse.winery.common.RepositoryFileReference;
 import org.eclipse.winery.common.ids.definitions.DefinitionsChildId;
@@ -144,6 +146,31 @@ public class YamlToscaExportUtil extends ToscaExportUtil {
                                                     String pathInsideRepo = BackendUtils.getPathInsideRepo(ref);
                                                     op.getImplementation().setPrimary("/" + FilenameUtils.separatorsToUnix(pathInsideRepo));
                                                 }
+                                            }
+                                        });
+                                    }
+                                });
+                            }
+                        });
+
+                    // update "dependencies" field in the exported service template
+                    entryDefinitions.getNodeTypes()
+                        .stream()
+                        .filter(nt -> nt.getQName().equals(node.getQName()))
+                        .forEach(nt -> {
+                            if (nt.getInterfaceDefinitions() != null) {
+                                nt.getInterfaceDefinitions().forEach(interfaceDefinition -> {
+                                    if (interfaceDefinition.getOperations() != null) {
+                                        interfaceDefinition.getOperations().forEach(op -> {
+                                            if (op.getImplementation() != null && op.getImplementation().getDependencies() != null) {
+                                                List<String> dependencies = op.getImplementation().getDependencies().stream().map(artifactName -> {
+                                                    if (artifactName.equalsIgnoreCase(artifact.getName())) {
+                                                        String pathInsideRepo = BackendUtils.getPathInsideRepo(ref);
+                                                        return "/" + FilenameUtils.separatorsToUnix(pathInsideRepo);
+                                                    }
+                                                    return artifactName;
+                                                }).collect(Collectors.toList());
+                                                op.getImplementation().setDependencies(dependencies);
                                             }
                                         });
                                     }

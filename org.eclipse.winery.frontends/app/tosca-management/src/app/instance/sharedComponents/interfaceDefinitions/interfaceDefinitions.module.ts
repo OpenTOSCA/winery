@@ -25,6 +25,7 @@ import { ParametersModule } from '../parameters/parameters.module';
 import { InterfaceDefinitionsService } from './interfaceDefinitions.service';
 import { SelectModule } from 'ng2-select';
 import { ArtifactsModule } from '../artifacts/artifacts.module';
+import { DependenciesComponent } from './dependencies/dependencies.component';
 
 @NgModule({
     imports: [
@@ -45,6 +46,7 @@ import { ArtifactsModule } from '../artifacts/artifacts.module';
     ],
     declarations: [
         InterfaceDefinitionsComponent,
+        DependenciesComponent,
     ],
     providers: [
         InterfaceDefinitionsService,
