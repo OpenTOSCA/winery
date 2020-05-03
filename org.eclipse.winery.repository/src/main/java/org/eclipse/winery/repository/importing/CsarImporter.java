@@ -226,14 +226,13 @@ public class CsarImporter {
      * @param rootPath                used to make the path p relative in order to determine the mime type
      * @param errors                  list where import errors should be stored to
      */
-    private static void importFile(Path p, RepositoryFileReference repositoryFileReference, TOSCAMetaFile tmf, Path rootPath, final List<String> errors) {
+    protected static void importFile(Path p, RepositoryFileReference repositoryFileReference, TOSCAMetaFile tmf, Path rootPath, final List<String> errors) {
         Objects.requireNonNull(p);
         Objects.requireNonNull(repositoryFileReference);
         Objects.requireNonNull(tmf);
         Objects.requireNonNull(rootPath);
         Objects.requireNonNull(errors);
-        try (InputStream is = Files.newInputStream(p);
-             BufferedInputStream bis = new BufferedInputStream(is)) {
+        try (InputStream is = Files.newInputStream(p); BufferedInputStream bis = new BufferedInputStream(is)) {
             MediaType mediaType = MediaType.parse(tmf.getMimeType(p.relativize(rootPath).toString()));
             if (mediaType == null) {
                 // Manually find out mime type
@@ -690,7 +689,7 @@ public class CsarImporter {
             return Optional.empty();
         }
     }
-    
+
     protected DefinitionsChildId determineWineryId(TExtensibleElements ci, String namespace, String id) {
         Class<? extends DefinitionsChildId> widClass = Util.getComponentIdClassForTExtensibleElements(ci.getClass());
         return BackendUtils.getDefinitionsChildId(widClass, namespace, id, false);
@@ -830,23 +829,23 @@ public class CsarImporter {
     /**
      * Adds a color to the given relationship type
      */
-    protected void adjustRelationshipType(Path rootPath, TRelationshipType ci, RelationshipTypeId wid, TOSCAMetaFile tmf, final List<String> errors) {
+    void adjustRelationshipType(Path rootPath, TRelationshipType ci, RelationshipTypeId wid, TOSCAMetaFile tmf, final List<String> errors) {
         VisualAppearanceId visId = new VisualAppearanceId(wid);
         this.importIcons(rootPath, visId, tmf, errors);
     }
 
-    protected void adjustNodeType(Path rootPath, TNodeType ci, NodeTypeId wid, TOSCAMetaFile tmf, final List<String> errors) {
+    void adjustNodeType(Path rootPath, TNodeType ci, NodeTypeId wid, TOSCAMetaFile tmf, final List<String> errors) {
         VisualAppearanceId visId = new VisualAppearanceId(wid);
         this.importIcons(rootPath, visId, tmf, errors);
     }
 
-    private void importIcons(Path rootPath, VisualAppearanceId visId, TOSCAMetaFile tmf, final List<String> errors) {
+    protected void importIcons(Path rootPath, VisualAppearanceId visId, TOSCAMetaFile tmf, final List<String> errors) {
         String pathInsideRepo = Util.getPathInsideRepo(visId);
         Path visPath = rootPath.resolve(pathInsideRepo);
         this.importIcon(visId, visPath, Filename.FILENAME_BIG_ICON, tmf, rootPath, errors);
     }
 
-    private void importIcon(VisualAppearanceId visId, Path visPath, String fileName, TOSCAMetaFile tmf, Path rootPath, final List<String> errors) {
+    void importIcon(VisualAppearanceId visId, Path visPath, String fileName, TOSCAMetaFile tmf, Path rootPath, final List<String> errors) {
         Path file = visPath.resolve(fileName);
         if (Files.exists(file)) {
             RepositoryFileReference ref = new RepositoryFileReference(visId, fileName);
@@ -854,7 +853,7 @@ public class CsarImporter {
         }
     }
 
-    protected void importLicenseAndReadme(Path rootPath, DefinitionsChildId wid, TOSCAMetaFile tmf, final List<String> errors) {
+    void importLicenseAndReadme(Path rootPath, DefinitionsChildId wid, TOSCAMetaFile tmf, final List<String> errors) {
         String pathInsideRepo = Util.getPathInsideRepo(wid);
         Path defPath = rootPath.resolve(pathInsideRepo);
         Path readmeFile = defPath.resolve(Constants.README_FILE_NAME);

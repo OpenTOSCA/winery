@@ -20,15 +20,15 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.eclipse.winery.common.RepositoryFileReference;
+import org.eclipse.winery.common.Util;
 import org.eclipse.winery.common.ids.IdNames;
 import org.eclipse.winery.common.ids.definitions.DefinitionsChildId;
 import org.eclipse.winery.common.ids.definitions.NodeTypeId;
@@ -37,6 +37,7 @@ import org.eclipse.winery.common.ids.definitions.ServiceTemplateId;
 import org.eclipse.winery.model.csar.toscametafile.TOSCAMetaFile;
 import org.eclipse.winery.model.csar.toscametafile.YamlTOSCAMetaFileParser;
 import org.eclipse.winery.model.tosca.Definitions;
+import org.eclipse.winery.model.tosca.TArtifact;
 import org.eclipse.winery.model.tosca.TDefinitions;
 import org.eclipse.winery.model.tosca.TExtensibleElements;
 import org.eclipse.winery.model.tosca.TImport;
@@ -47,6 +48,7 @@ import org.eclipse.winery.model.tosca.yaml.TServiceTemplate;
 import org.eclipse.winery.repository.backend.BackendUtils;
 import org.eclipse.winery.repository.backend.IRepository;
 import org.eclipse.winery.repository.backend.RepositoryFactory;
+import org.eclipse.winery.repository.backend.constants.Filename;
 import org.eclipse.winery.repository.backend.filebased.GitBasedRepository;
 import org.eclipse.winery.repository.backend.filebased.YamlRepository;
 import org.eclipse.winery.repository.converter.X2YConverter;
@@ -57,6 +59,7 @@ import org.eclipse.winery.repository.converter.support.reader.YamlReader;
 import org.eclipse.winery.repository.converter.support.writer.YamlWriter;
 import org.eclipse.winery.repository.datatypes.ids.elements.DirectoryId;
 import org.eclipse.winery.repository.datatypes.ids.elements.GenericDirectoryId;
+import org.eclipse.winery.repository.datatypes.ids.elements.VisualAppearanceId;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -150,6 +153,7 @@ public class YamlCsarImporter extends CsarImporter {
             final Definitions newDefs = BackendUtils.createWrapperDefinitions(wid);
             // add the current TExtensibleElements as the only content to it
             newDefs.getServiceTemplateOrNodeTypeOrNodeTypeImplementation().add(ci);
+
             // import license and readme files
             importLicenseAndReadme(definitionsPath.getParent().getParent(), wid, tmf, errors);
             importArtifacts(definitionsPath.getParent().getParent(), ci, wid, tmf, errors);
@@ -174,54 +178,106 @@ public class YamlCsarImporter extends CsarImporter {
             org.eclipse.winery.model.tosca.TServiceTemplate st = (org.eclipse.winery.model.tosca.TServiceTemplate) ci;
             st.getTopologyTemplate()
                 .getNodeTemplates()
-                .forEach(node -> node.getArtifacts().getArtifact().forEach(a -> {
-                        Path path = rootPath.resolve(a.getFile());
-                        if (!Files.exists(path)) {
-                            errors.add(String.format("Reference %1$s not found", a.getFile()));
-                            return;
-                        }
-                        Set<Path> allFiles;
-                        if (Files.isRegularFile(path)) {
-                            allFiles = new HashSet<>();
-                            allFiles.add(path);
-
-                            // Path p = Paths.get("files", node.getId(), a.getId());
-                            // RepositoryFileReference ref = new RepositoryFileReference(wid, p, a.getFile());
-                            DirectoryId serviceTemplateYamlArtifactsDir =
-                                new GenericDirectoryId(wid, IdNames.FILES_DIRECTORY);
-                            DirectoryId nodeTemplateYamlArtifactsDir =
-                                new GenericDirectoryId(serviceTemplateYamlArtifactsDir, node.getId());
-                            DirectoryId yamlArtifactFilesDirectoryId =
-                                new GenericDirectoryId(nodeTemplateYamlArtifactsDir, a.getName());
-
-                            this.importAllFiles(rootPath, allFiles, yamlArtifactFilesDirectoryId, tmf, errors);
-                        }
-                    }
-                ));
-        } else if (ci instanceof TNodeType) {
-            TNodeType nt = (TNodeType) ci;
-            if (Objects.nonNull(nt.getArtifacts())) {
-                nt.getArtifacts().getArtifact().forEach(a -> {
-                    Path path = rootPath.resolve(a.getFile());
-                    if (!Files.exists(path)) {
-                        errors.add(String.format("Reference %1$s not found", a.getFile()));
-                        return;
-                    }
-                    Set<Path> allFiles;
-                    if (Files.isRegularFile(path)) {
-                        allFiles = new HashSet<>();
-                        allFiles.add(path);
-
-                        DirectoryId nodeTypeArtifactsDir =
-                            new GenericDirectoryId(wid, IdNames.FILES_DIRECTORY);
-                        DirectoryId yamlArtifactFilesDirectoryId =
-                            new GenericDirectoryId(nodeTypeArtifactsDir, a.getName());
-
-                        this.importAllFiles(rootPath, allFiles, yamlArtifactFilesDirectoryId, tmf, errors);
+                .forEach(node -> {
+                    if (Objects.nonNull(node.getArtifacts()) && !node.getArtifacts().getArtifact().isEmpty()) {
+                        node.getArtifacts()
+                            .getArtifact()
+                            .stream()
+                            .map(this::fixForwardSlash)
+                            .filter(a -> this.isImportable(rootPath, a, errors))
+                            .forEach(a -> {
+                                DirectoryId stFilesDir = new GenericDirectoryId(wid, IdNames.FILES_DIRECTORY);
+                                DirectoryId ntFilesDir = new GenericDirectoryId(stFilesDir, node.getId());
+                                DirectoryId artifactDir = new GenericDirectoryId(ntFilesDir, a.getName());
+                                importArtifact(rootPath, a, artifactDir, tmf, errors);
+                                fixArtifactRefName(rootPath, a);
+                            });
                     }
                 });
+        } else if (ci instanceof TNodeType) {
+            TNodeType nt = (TNodeType) ci;
+
+            fixOperationImplFileRef(nt);
+
+            if (Objects.nonNull(nt.getArtifacts()) && !nt.getArtifacts().getArtifact().isEmpty()) {
+                nt.getArtifacts()
+                    .getArtifact()
+                    .stream()
+                    .map(this::fixForwardSlash)
+                    .filter(a -> this.isImportable(rootPath, a, errors))
+                    .forEach(a -> {
+                        DirectoryId typeFilesDir = new GenericDirectoryId(wid, IdNames.FILES_DIRECTORY);
+                        DirectoryId artifactDir = new GenericDirectoryId(typeFilesDir, a.getName());
+                        importArtifact(rootPath, a, artifactDir, tmf, errors);
+                        fixArtifactRefName(rootPath, a);
+                    });
             }
         }
+    }
+
+    private TArtifact fixForwardSlash(TArtifact a) {
+        a.setFile(fixForwardSlash(a.getFile()));
+        return a;
+    }
+
+    private String fixForwardSlash(String filePath) {
+        if (filePath.startsWith("/")) {
+            return filePath.replaceFirst("/", "");
+        }
+
+        return filePath;
+    }
+
+    private void fixArtifactRefName(Path rootPath, TArtifact a) {
+        // store only the file name in the definitions (current Winery's file referencing style)
+        String fileRef = rootPath.resolve(a.getFile()).getFileName().toString();
+        a.setFile(fileRef);
+    }
+
+    private void fixOperationImplFileRef(TNodeType nt) {
+        // current assumption: primary field in operation's implementation stores file reference
+        if (Objects.nonNull(nt.getArtifacts()) && Objects.nonNull(nt.getInterfaceDefinitions())) {
+            nt.getArtifacts().getArtifact().forEach(a -> {
+                nt.getInterfaceDefinitions().forEach(iDef -> {
+                    if (Objects.nonNull(iDef.getOperations())) {
+                        iDef.getOperations().forEach(op -> {
+                            if (op.getImplementation().getPrimary().equals(a.getFile())) {
+                                op.getImplementation().setPrimary(a.getName());
+                            }
+
+                            if (Objects.nonNull(op.getImplementation().getDependencies())) {
+                                List<String> updatedDependencies = op.getImplementation()
+                                    .getDependencies()
+                                    .stream()
+                                    .map(dep -> {
+                                        if (a.getFile().equals(dep)) {
+                                            return a.getName();
+                                        }
+                                        return dep;
+                                    }).collect(Collectors.toList());
+                                op.getImplementation().setDependencies(updatedDependencies);
+                            }
+                        });
+                    }
+                });
+            });
+        }
+    }
+
+    private boolean isImportable(Path rootPath, TArtifact a, List<String> errors) {
+        Path path = rootPath.resolve(a.getFile());
+        if (!Files.exists(path)) {
+            errors.add(String.format("Reference %1$s not found", a.getFile()));
+            return false;
+        }
+
+        return Files.isRegularFile(path);
+    }
+
+    private void importArtifact(Path rootPath, TArtifact a, DirectoryId artifactDir, TOSCAMetaFile tmf, final List<String> errors) {
+        String fileName = rootPath.resolve(a.getFile()).getFileName().toString();
+        RepositoryFileReference fref = new RepositoryFileReference(artifactDir, fileName);
+        importFile(rootPath.resolve(a.getFile()), fref, tmf, rootPath, errors);
     }
 
     /**
@@ -265,5 +321,13 @@ public class YamlCsarImporter extends CsarImporter {
             YamlWriter writer = new YamlWriter();
             writer.write(converter.convert((Definitions) defs), repo.ref2AbsolutePath(ref));
         }
+    }
+
+    @Override
+    protected void importIcons(Path rootPath, VisualAppearanceId visId, TOSCAMetaFile tmf, final List<String> errors) {
+        String pathInsideRepo = Util.getPathInsideRepo(visId);
+        Path visPath = rootPath.resolve(pathInsideRepo);
+        this.importIcon(visId, visPath, Filename.FILENAME_BIG_ICON, tmf, rootPath, errors);
+        this.importIcon(visId, visPath, Filename.FILENAME_SMALL_ICON, tmf, rootPath, errors);
     }
 }
