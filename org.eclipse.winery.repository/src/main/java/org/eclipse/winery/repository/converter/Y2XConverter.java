@@ -394,7 +394,7 @@ public class Y2XConverter {
         Map<String, org.eclipse.winery.model.tosca.TOperationDefinition> ops = new HashMap<>();
         node.getOperations().forEach((key, value) -> ops.put(key, convert(value, key)));
         String typeName = fixNamespaceDuplication(type, node.getMetadata().get("targetNamespace"));
-        
+
         return new org.eclipse.winery.model.tosca.TInterfaceType.Builder(typeName)
             .setDerivedFrom(node.getDerivedFrom())
             .setDescription(node.getDescription())
@@ -1013,21 +1013,6 @@ public class Y2XConverter {
         TImport.Builder builder = new TImport.Builder(importType)
             .setNamespace(node.getNamespaceUri())
             .setLocation(node.getFile());
-        
-        /*Reader reader = Reader.getReader();
-        String namespace = node.getNamespaceUri() == null ? this.namespace : node.getNamespaceUri();
-        try {
-            org.eclipse.winery.model.tosca.yaml.TServiceTemplate serviceTemplate = reader.readImportDefinition(node, path, namespace);
-            Converter converter = new Converter(this.repository);
-            Definitions definitions = converter.convertY2X(serviceTemplate, getFileNameFromFile(node.getFile()), namespace, path, outPath);
-            WriterUtils.saveDefinitions(definitions, outPath, namespace, name);
-            TImport.Builder builder = new TImport.Builder(Namespaces.XML_NS);
-            builder.setLocation(WriterUtils.getDefinitionsLocation(namespace, name));
-            builder.setNamespace(namespace);
-            return builder.build();
-        } catch (MultiException e) {
-            e.printStackTrace();
-        }*/
 
         return builder.build();
     }
