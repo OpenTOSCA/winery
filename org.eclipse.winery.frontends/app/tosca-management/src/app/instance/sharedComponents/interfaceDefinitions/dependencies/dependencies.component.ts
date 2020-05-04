@@ -51,7 +51,9 @@ export class DependenciesComponent implements OnInit {
 
     ngOnInit() {
         this.dependenciesTableModel = [];
-        this.dependencies.forEach(item => this.dependenciesTableModel.push({ name: item }));
+        if (this.dependencies) {
+            this.dependencies.forEach(item => this.dependenciesTableModel.push({ name: item }));
+        }
     }
 
     openModal() {
