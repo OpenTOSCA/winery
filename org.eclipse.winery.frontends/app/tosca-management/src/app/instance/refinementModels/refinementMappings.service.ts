@@ -84,7 +84,7 @@ export class RefinementMappingsService {
 
     public getTypeProperties(type: string, nodeTemplate: boolean): Observable<PropertiesDefinitionsResourceApiData> {
         const qName = Utils.getNamespaceAndLocalNameFromQName(type);
-        const toscaType = nodeTemplate ? '/nodetypes/' : '/relationshiptypes/';
+        const toscaType = nodeTemplate ? 'nodetypes' : 'relationshiptypes';
         const url = backendBaseURL + `/${toscaType}/${encodeURIComponent(encodeURIComponent(qName.namespace))}/${qName.localName}/propertiesdefinition/`;
         return this.http.get<PropertiesDefinitionsResourceApiData>(url);
     }
