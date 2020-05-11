@@ -1,12 +1,3 @@
-import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
-import { Router } from '@angular/router';
-import { NameAndQNameApiData } from '../../../wineryQNameSelector/wineryNameAndQNameApiData';
-import { concat, Observable } from 'rxjs';
-import { backendBaseURL } from '../../../configuration';
-import { Artifact } from '../../../model/artifact';
-import { takeLast } from 'rxjs/operators';
-
 /*******************************************************************************
  * Copyright (c) 2020 Contributors to the Eclipse Foundation
  *
@@ -20,6 +11,14 @@ import { takeLast } from 'rxjs/operators';
  *
  * SPDX-License-Identifier: EPL-2.0 OR Apache-2.0
  *******************************************************************************/
+import { Injectable } from '@angular/core';
+import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
+import { Router } from '@angular/router';
+import { NameAndQNameApiData } from '../../../wineryQNameSelector/wineryNameAndQNameApiData';
+import { concat, Observable } from 'rxjs';
+import { backendBaseURL } from '../../../configuration';
+import { Artifact } from '../../../model/artifact';
+import { takeLast } from 'rxjs/operators';
 
 @Injectable()
 export class ArtifactsService {

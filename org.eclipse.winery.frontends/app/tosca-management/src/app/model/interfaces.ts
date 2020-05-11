@@ -1,5 +1,3 @@
-import { Parameter } from './parameters';
-
 /*******************************************************************************
  * Copyright (c) 2020 Contributors to the Eclipse Foundation
  *
@@ -13,6 +11,7 @@ import { Parameter } from './parameters';
  *
  * SPDX-License-Identifier: EPL-2.0 OR Apache-2.0
  *******************************************************************************/
+import { Parameter } from './parameters';
 
 export class Interface {
     name: string;
