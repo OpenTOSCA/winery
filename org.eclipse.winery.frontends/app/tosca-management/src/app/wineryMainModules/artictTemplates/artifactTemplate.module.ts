@@ -13,7 +13,7 @@
  *******************************************************************************/
 import {NgModule} from '@angular/core';
 import {ArtifactTemplateRouterModule} from './artifactTemplateRouter.module';
-import {FilesComponent} from '../../instance/artifactTemplates/filesTag/files.component';
+import {FilesComponent} from '../../instance/sharedComponents/filesTag/files.component';
 import {PropertiesComponent} from '../../instance/sharedComponents/properties/properties.component';
 import {WineryModalModule} from '../../wineryModalModule/winery.modal.module';
 import {WineryTableModule} from '../../wineryTableModule/wineryTable.module';

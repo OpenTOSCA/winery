@@ -21,7 +21,7 @@ import { EditXMLComponent } from '../../instance/sharedComponents/editXML/editXM
 import { DocumentationComponent } from '../../instance/sharedComponents/documentation/documentation.component';
 import { ToscaTypes } from '../../model/enums';
 import { PropertiesComponent } from '../../instance/sharedComponents/properties/properties.component';
-import { FilesComponent } from '../../instance/artifactTemplates/filesTag/files.component';
+import { FilesComponent } from '../../instance/sharedComponents/filesTag/files.component';
 import { SourceComponent } from '../../instance/sharedComponents/artifactSource/source.component';
 import { WineryReadmeComponent } from '../../wineryReadmeModule/wineryReadme.component';
 import { WineryLicenseComponent } from '../../wineryLicenseModule/wineryLicense.component';

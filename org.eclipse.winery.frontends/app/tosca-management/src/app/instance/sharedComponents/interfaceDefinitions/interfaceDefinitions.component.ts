@@ -23,6 +23,7 @@ import { SelectData } from '../../../model/selectData';
 import { WineryTableColumn } from '../../../wineryTableModule/wineryTable.component';
 import { ArtifactsService } from '../artifacts/artifacts.service';
 import { Artifact } from '../../../model/artifact';
+import { FilesService } from '../filesTag/files.service';
 
 @Component({
     selector: 'winery-interfaces',
@@ -69,7 +70,7 @@ export class InterfaceDefinitionsComponent implements OnInit {
     selectedArtifact: Artifact[];
 
     constructor(private interfaceService: InterfaceDefinitionsService, public instanceService: InstanceService,
-                private artifactsService: ArtifactsService) {
+                private filesService: FilesService, private artifactsService: ArtifactsService) {
     }
 
     ngOnInit() {
@@ -86,6 +87,7 @@ export class InterfaceDefinitionsComponent implements OnInit {
         this.artifactsService.getArtifacts().subscribe(data => {
             data.forEach(item => this.selectableArtifacts.push({ ...item, ...{ id: item.name, text: `${item.name} / ${item.type}` } }));
         });
+        this.fetchFiles();
     }
 
     private handleError(error: HttpErrorResponse) {
@@ -146,7 +148,9 @@ export class InterfaceDefinitionsComponent implements OnInit {
         if (this.selectedOperation.implementation) {
             const id = this.selectedOperation.implementation.primary;
             const artifact = this.selectableArtifacts.find(item => item.name === id);
-            this.selectedArtifact.push(artifact);
+            if (artifact) {
+                this.selectedArtifact.push(artifact);
+            }
             if (!this.selectedOperation.implementation.dependencies) {
                 this.selectedOperation.implementation.dependencies = [];
             }
@@ -183,5 +187,32 @@ export class InterfaceDefinitionsComponent implements OnInit {
         }
         this.selectedOperation.implementation = new OperationImplementation();
         this.selectedOperation.implementation.primary = data.id;
+    }
+
+    addNewDependency($event: Artifact) {
+        if (!this.selectedOperation.implementation) {
+            this.selectedOperation.implementation = new OperationImplementation();
+        }
+        if (!this.selectedOperation.implementation.dependencies) {
+            this.selectedOperation.implementation.dependencies = [];
+        }
+        this.selectedOperation.implementation.dependencies.push($event.name);
+    }
+
+    /**
+     * looks for files in <currentURL>/files
+     * and adds them to possible dependencies
+     */
+    private fetchFiles() {
+        this.filesService.getLocalFiles().subscribe(
+            (obs) => {
+                // related to https://github.com/valor-software/ng2-select/issues/896
+                const tmp: Artifact[] = [];
+                obs.files.forEach((f) => {
+                    const a: Artifact = { name: f.name, type: 'file', description: '', deployPath: '', file: f.url };
+                    tmp.push({ ...a, ...{ id: f.name, text: `${f.name}` } });
+                });
+                this.selectableArtifacts = tmp.concat(this.selectableArtifacts);
+            });
     }
 }

@@ -84,6 +84,7 @@
                                [parameters]="selectedOperation.outputs" [columns]="columnsOutputParameters">
             </winery-parameters>
             <winery-dependencies [dependencies]="selectedOperation.implementation?.dependencies"
+                                 (newDependencyAdded)="addNewDependency($event)"
                                  [selectableArtifacts]="selectableArtifacts">
             </winery-dependencies>
         </div>

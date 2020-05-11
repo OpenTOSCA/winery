@@ -12,7 +12,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR Apache-2.0
  *******************************************************************************/
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { FilesApiData, FilesService } from './files.service.';
+import { FilesApiData, FilesService } from './files.service';
 import { WineryNotificationService } from '../../../wineryNotificationModule/wineryNotification.service';
 import { InstanceService } from '../../instance.service';
 import { HttpErrorResponse } from '@angular/common/http';

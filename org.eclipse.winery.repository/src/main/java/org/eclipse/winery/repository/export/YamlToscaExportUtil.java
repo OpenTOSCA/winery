@@ -33,6 +33,7 @@ import org.eclipse.winery.model.tosca.TArtifacts;
 import org.eclipse.winery.model.tosca.TImport;
 import org.eclipse.winery.model.tosca.TNodeTemplate;
 import org.eclipse.winery.model.tosca.TNodeType;
+import org.eclipse.winery.model.tosca.TRelationshipType;
 import org.eclipse.winery.model.tosca.TServiceTemplate;
 import org.eclipse.winery.repository.backend.BackendUtils;
 import org.eclipse.winery.repository.backend.IRepository;
@@ -98,10 +99,60 @@ public class YamlToscaExportUtil extends ToscaExportUtil {
             this.prepareServiceTemplateForExport(repository, (ServiceTemplateId) id, entryDefinitions);
         } else if (id instanceof RelationshipTypeId) {
             this.addVisualAppearanceToCSAR(repository, (RelationshipTypeId) id);
+            this.prepareRelationshipTypeForExport(repository, (RelationshipTypeId) id, entryDefinitions);
         } else if (id instanceof NodeTypeId) {
             this.addVisualAppearanceToCSAR(repository, (NodeTypeId) id);
             this.prepareNodeTypeForExport(repository, (NodeTypeId) id, entryDefinitions);
         }
+    }
+
+    private void prepareRelationshipTypeForExport(IRepository repository, RelationshipTypeId id, Definitions entryDefinitions) throws IOException {
+        TRelationshipType node = repository.getElement(id);
+
+        // convert locations of files in dependencies
+        Path p = Paths.get("files");
+        entryDefinitions.getRelationshipTypes()
+            .stream()
+            .filter(nt -> nt.getQName().equals(node.getQName()))
+            .forEach(nt -> {
+                if (nt.getInterfaceDefinitions() != null) {
+                    nt.getInterfaceDefinitions().forEach(interfaceDefinition -> {
+                        if (interfaceDefinition.getOperations() != null) {
+                            interfaceDefinition.getOperations().forEach(op -> {
+                                if (op.getImplementation() != null && op.getImplementation().getDependencies() != null) {
+                                    List<String> dependencies = op.getImplementation().getDependencies().stream().map(artifactName -> {
+                                        RepositoryFileReference ref = new RepositoryFileReference(id, p, artifactName);
+                                        putRefAsReferencedItemInCsar(ref);
+                                        String pathInsideRepo = BackendUtils.getPathInsideRepo(ref);
+                                        return "/" + FilenameUtils.separatorsToUnix(pathInsideRepo);
+                                    }).collect(Collectors.toList());
+                                    op.getImplementation().setDependencies(dependencies);
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+        entryDefinitions.getRelationshipTypes()
+            .stream()
+            .filter(nt -> nt.getQName().equals(node.getQName()))
+            .forEach(nt -> {
+                if (nt.getInterfaceDefinitions() != null) {
+                    nt.getInterfaceDefinitions().forEach(interfaceDefinition -> {
+                        if (interfaceDefinition.getOperations() != null) {
+                            interfaceDefinition.getOperations().forEach(op -> {
+                                if (op.getImplementation() != null) {
+                                    String artifactName = op.getImplementation().getPrimary();
+                                    RepositoryFileReference ref = new RepositoryFileReference(id, p, artifactName);
+                                    String pathInsideRepo = BackendUtils.getPathInsideRepo(ref);
+                                    putRefAsReferencedItemInCsar(ref);
+                                    op.getImplementation().setPrimary("/" + FilenameUtils.separatorsToUnix(pathInsideRepo));
+                                }
+                            });
+                        }
+                    });
+                }
+            });
     }
 
     private void prepareNodeTypeForExport(IRepository repository, NodeTypeId id, Definitions entryDefinitions) {
