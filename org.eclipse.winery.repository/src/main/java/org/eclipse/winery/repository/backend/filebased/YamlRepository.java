@@ -678,7 +678,7 @@ public class YamlRepository extends AbstractFileBasedRepository {
                     serviceTemplate = converter.convert(definitions);
                     if (exists(ref)) {
                         TServiceTemplate oldServiceTemplate = readServiceTemplate(ref);
-                        serviceTemplate = replaceOldRelationshipTypeithNewData(serviceTemplate, oldServiceTemplate);
+                        serviceTemplate = replaceOldRelationshipTypeWithNewData(serviceTemplate, oldServiceTemplate);
                     }
                 } else if (ref.getParent() instanceof ArtifactTemplateId) {
                     ArtifactTemplateId id = (ArtifactTemplateId) ref.getParent();
@@ -884,45 +884,16 @@ public class YamlRepository extends AbstractFileBasedRepository {
      * @param oldData already saved relationship type
      * @return edited yaml service template
      **/
-    private TServiceTemplate replaceOldRelationshipTypeithNewData(TServiceTemplate newData, TServiceTemplate oldData) {
+    private TServiceTemplate replaceOldRelationshipTypeWithNewData(TServiceTemplate newData, TServiceTemplate oldData) {
         TRelationshipType oldRelationshipType = oldData.getRelationshipTypes().entrySet().iterator().next().getValue();
         TRelationshipType newRelationshipType = newData.getRelationshipTypes().entrySet().iterator().next().getValue();
         oldRelationshipType.setMetadata(newRelationshipType.getMetadata());
         oldRelationshipType.setProperties(newRelationshipType.getProperties());
         oldRelationshipType.setDerivedFrom(newRelationshipType.getDerivedFrom());
         oldRelationshipType.setDescription(newRelationshipType.getDescription());
-        oldRelationshipType.setInterfaces(replaceInterfaceDefinitions(oldRelationshipType.getInterfaces(), newRelationshipType.getInterfaces()));
+        oldRelationshipType.setInterfaces(newRelationshipType.getInterfaces());
         oldData.getRelationshipTypes().entrySet().iterator().next().setValue(oldRelationshipType);
         return oldData;
-    }
-
-    /**
-     * Saves already defined interface implementations to be deleted by transmitting them to the new interfaces
-     *
-     * @param oldInterfaces existing interfaces
-     * @param newInterfaces new interfaces
-     * @return edited yaml service template
-     **/
-    private Map<String, TInterfaceDefinition> replaceInterfaceDefinitions(Map<String, TInterfaceDefinition> oldInterfaces, Map<String, TInterfaceDefinition> newInterfaces) {
-        for (Map.Entry<String, TInterfaceDefinition> oldInterface : oldInterfaces.entrySet()) {
-            TInterfaceDefinition newInterfaceDefinition = newInterfaces.get(oldInterface.getKey());
-            if (newInterfaceDefinition != null) {
-                Map<String, TOperationDefinition> oldOperationDefinitions = oldInterface.getValue().getOperations();
-                Map<String, TOperationDefinition> newOperationDefinitions = newInterfaceDefinition.getOperations();
-                for (Map.Entry<String, TOperationDefinition> oldOperationDefinition : oldOperationDefinitions.entrySet()) {
-                    TOperationDefinition newOperationDefinition = newOperationDefinitions.get(oldOperationDefinition.getKey());
-                    if (newOperationDefinition != null) {
-                        newOperationDefinition.setImplementation(oldOperationDefinition.getValue().getImplementation());
-                        newOperationDefinitions.remove(oldOperationDefinition.getKey());
-                        newOperationDefinitions.put(oldOperationDefinition.getKey(), newOperationDefinition);
-                    }
-                }
-                newInterfaceDefinition.setOperations(newOperationDefinitions);
-            }
-            newInterfaces.remove(oldInterface.getKey());
-            newInterfaces.put(oldInterface.getKey(), newInterfaceDefinition);
-        }
-        return newInterfaces;
     }
 
     /**
