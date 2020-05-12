@@ -63,6 +63,7 @@ import org.eclipse.winery.model.tosca.yaml.TNodeType;
 import org.eclipse.winery.model.tosca.yaml.TOperationDefinition;
 import org.eclipse.winery.model.tosca.yaml.TRelationshipType;
 import org.eclipse.winery.model.tosca.yaml.TServiceTemplate;
+import org.eclipse.winery.model.tosca.yaml.TTopologyTemplateDefinition;
 import org.eclipse.winery.model.tosca.yaml.support.Defaults;
 import org.eclipse.winery.model.tosca.yaml.support.TMapImportDefinition;
 import org.eclipse.winery.repository.JAXBSupport;
@@ -711,6 +712,10 @@ public class YamlRepository extends AbstractFileBasedRepository {
                     }
                 } else {
                     serviceTemplate = converter.convert(definitions);
+                    if (exists(ref)) {
+                        TServiceTemplate existingServiceTemplate = readServiceTemplate(ref);
+                        serviceTemplate = replaceTopologyTemplate(serviceTemplate, existingServiceTemplate);
+                    }
                 }
                 YamlWriter writer = new YamlWriter();
                 return writer.writeToInputStream(serviceTemplate);
@@ -721,6 +726,18 @@ public class YamlRepository extends AbstractFileBasedRepository {
         } else {
             return inputStream;
         }
+    }
+
+    private TServiceTemplate replaceTopologyTemplate(TServiceTemplate newServiceTemplate, TServiceTemplate existingServiceTemplate) {
+        if (newServiceTemplate.getTopologyTemplate() != null
+            && existingServiceTemplate.getTopologyTemplate() != null) {
+            TTopologyTemplateDefinition newTopologyTemplate = newServiceTemplate.getTopologyTemplate();
+            TTopologyTemplateDefinition existingTopologyTemplate = existingServiceTemplate.getTopologyTemplate();
+            existingTopologyTemplate.setPolicies(newTopologyTemplate.getPolicies());
+            existingTopologyTemplate.setNodeTemplates(newTopologyTemplate.getNodeTemplates());
+            existingTopologyTemplate.setRelationshipTemplates(newTopologyTemplate.getRelationshipTemplates());
+        }
+        return existingServiceTemplate;
     }
 
     /**
