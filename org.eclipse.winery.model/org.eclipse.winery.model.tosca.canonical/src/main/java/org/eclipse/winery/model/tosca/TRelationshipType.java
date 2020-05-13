@@ -37,6 +37,7 @@ import org.eclipse.jdt.annotation.Nullable;
     "interfaces",
     "sourceInterfaces",
     "targetInterfaces",
+    "interfaceDefinitions",
     "validSource",
     "validTarget"
 })
@@ -50,6 +51,8 @@ public class TRelationshipType extends TEntityType {
     protected TInterfaces sourceInterfaces;
     @XmlElement(name = "TargetInterfaces")
     protected TInterfaces targetInterfaces;
+    @XmlElement(name = "InterfaceDefinitions")
+    protected List<TInterfaceDefinition> interfaceDefinitions;
     @XmlElement(name = "ValidSource")
     protected TRelationshipType.ValidSource validSource;
     @XmlElement(name = "ValidTarget")
@@ -66,6 +69,7 @@ public class TRelationshipType extends TEntityType {
         this.targetInterfaces = builder.targetInterfaces;
         this.validSource = builder.validSource;
         this.validTarget = builder.validTarget;
+        this.interfaceDefinitions = builder.interfaceDefinitions;
     }
 
     @Override
@@ -78,6 +82,7 @@ public class TRelationshipType extends TEntityType {
             Objects.equals(interfaces, that.interfaces) &&
             Objects.equals(sourceInterfaces, that.sourceInterfaces) &&
             Objects.equals(targetInterfaces, that.targetInterfaces) &&
+            Objects.equals(interfaceDefinitions, that.interfaceDefinitions) &&
             Objects.equals(validSource, that.validSource) &&
             Objects.equals(validTarget, that.validTarget);
     }
@@ -119,6 +124,15 @@ public class TRelationshipType extends TEntityType {
 
     public void setTargetInterfaces(@Nullable TInterfaces value) {
         this.targetInterfaces = value;
+    }
+
+    @Nullable
+    public List<TInterfaceDefinition> getInterfaceDefinitions() {
+        return interfaceDefinitions;
+    }
+
+    public void setInterfaceDefinitions(List<TInterfaceDefinition> interfaceDefinitions) {
+        this.interfaceDefinitions = interfaceDefinitions;
     }
 
     public TRelationshipType.@Nullable ValidSource getValidSource() {
@@ -209,6 +223,7 @@ public class TRelationshipType extends TEntityType {
         private TInterfaces interfaces;
         private TInterfaces sourceInterfaces;
         private TInterfaces targetInterfaces;
+        private List<TInterfaceDefinition> interfaceDefinitions;
         private ValidSource validSource;
         private ValidTarget validTarget;
 
@@ -363,7 +378,12 @@ public class TRelationshipType extends TEntityType {
             tmp.getInterface().add(targetInterfaces);
             return addTargetInterfaces(tmp);
         }
-
+        
+        public Builder setInterfaceDefinitions(List<TInterfaceDefinition> interfaceDefinitions) {
+            this.interfaceDefinitions = interfaceDefinitions;
+            return self();
+        }
+        
         @Override
         public Builder self() {
             return this;

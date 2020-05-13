@@ -80,7 +80,6 @@ import org.eclipse.winery.model.tosca.TRequirementType;
 import org.eclipse.winery.model.tosca.TServiceTemplate;
 import org.eclipse.winery.model.tosca.TTestRefinementModel;
 import org.eclipse.winery.repository.backend.BackendUtils;
-import org.eclipse.winery.repository.backend.EdmmManager;
 import org.eclipse.winery.repository.backend.NamespaceManager;
 import org.eclipse.winery.repository.backend.xsd.XsdImportManager;
 import org.eclipse.winery.repository.exceptions.RepositoryCorruptException;
@@ -663,11 +662,6 @@ public class GitBasedRepository extends AbstractFileBasedRepository {
     @Override
     public NamespaceManager getNamespaceManager() {
         return repository.getNamespaceManager();
-    }
-
-    @Override
-    public EdmmManager getEdmmManager() {
-        return repository.getEdmmManager();
     }
 
     @Override
