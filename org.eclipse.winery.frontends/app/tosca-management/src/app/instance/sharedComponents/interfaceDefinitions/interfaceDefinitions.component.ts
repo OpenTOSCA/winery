@@ -74,6 +74,11 @@ export class InterfaceDefinitionsComponent implements OnInit {
     }
 
     ngOnInit() {
+        this.loadInterfaces();
+        this.fetchFiles();
+    }
+
+    private loadInterfaces() {
         this.loading = true;
         this.interfaceService.getInterfaces()
             .subscribe(
@@ -87,7 +92,12 @@ export class InterfaceDefinitionsComponent implements OnInit {
         this.artifactsService.getArtifacts().subscribe(data => {
             data.forEach(item => this.selectableArtifacts.push({ ...item, ...{ id: item.name, text: `${item.name} / ${item.type}` } }));
         });
-        this.fetchFiles();
+        if (this.selectedInterface) {
+            this.onInterfaceSelected(this.selectedInterface);
+        }
+        if (this.selectedOperation) {
+            this.onOperationSelected(this.selectedOperation);
+        }
     }
 
     private handleError(error: HttpErrorResponse) {
@@ -96,10 +106,20 @@ export class InterfaceDefinitionsComponent implements OnInit {
     }
 
     save() {
+        // cleanup empty operation implementations
+        for (const i of this.interfaces) {
+            for (const o of i.operations) {
+                if (o.implementation) {
+                    if (!o.implementation.primary && (!o.implementation.dependencies || o.implementation.dependencies.length === 0)) {
+                        o.implementation = undefined;
+                    }
+                }
+            }
+        }
         this.loading = true;
         this.interfaceService.updateInterfaces(this.interfaces)
             .subscribe(
-                () => this.loading = false,
+                () => this.loadInterfaces(),
                 error => this.handleError(error)
             );
     }
@@ -185,8 +205,17 @@ export class InterfaceDefinitionsComponent implements OnInit {
         if (!this.selectedOperation) {
             return;
         }
-        this.selectedOperation.implementation = new OperationImplementation();
+        if (!this.selectedOperation.implementation) {
+            this.selectedOperation.implementation = new OperationImplementation();
+        }
         this.selectedOperation.implementation.primary = data.id;
+    }
+
+    onArtifactRemoved($event: any) {
+        if (!this.selectedOperation) {
+            return;
+        }
+        this.selectedOperation.implementation.primary = undefined;
     }
 
     addNewDependency($event: Artifact) {

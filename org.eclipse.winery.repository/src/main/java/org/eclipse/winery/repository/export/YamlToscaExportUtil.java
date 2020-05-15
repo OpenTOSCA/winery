@@ -133,6 +133,7 @@ public class YamlToscaExportUtil extends ToscaExportUtil {
                     });
                 }
             });
+        // convert locations of artifacts
         entryDefinitions.getRelationshipTypes()
             .stream()
             .filter(nt -> nt.getQName().equals(node.getQName()))
@@ -141,7 +142,7 @@ public class YamlToscaExportUtil extends ToscaExportUtil {
                     nt.getInterfaceDefinitions().forEach(interfaceDefinition -> {
                         if (interfaceDefinition.getOperations() != null) {
                             interfaceDefinition.getOperations().forEach(op -> {
-                                if (op.getImplementation() != null) {
+                                if (op.getImplementation() != null && op.getImplementation().getPrimary() != null) {
                                     String artifactName = op.getImplementation().getPrimary();
                                     RepositoryFileReference ref = new RepositoryFileReference(id, p, artifactName);
                                     String pathInsideRepo = BackendUtils.getPathInsideRepo(ref);
