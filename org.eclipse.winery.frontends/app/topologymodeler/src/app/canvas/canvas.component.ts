@@ -1523,7 +1523,7 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
             sidebarContents: {
                 visible: false,
                 nodeClicked: false,
-                nodeTemplate: {
+                template: {
                     id: '',
                     name: '',
                     type: '',
@@ -1953,7 +1953,7 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
                 sidebarContents: {
                     visible: true,
                     nodeClicked: false,
-                    nodeTemplate: {
+                    template: {
                         id: currentRel.id,
                         name: currentRel.name,
                         type: currentRel.type,

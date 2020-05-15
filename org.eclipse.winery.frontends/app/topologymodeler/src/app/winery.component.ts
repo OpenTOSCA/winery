@@ -149,7 +149,7 @@ export class WineryComponent implements OnInit, AfterViewInit {
             sidebarContents: {
                 visible: false,
                 nodeClicked: '',
-                nodeTemplate: {
+                template: {
                     id: '',
                     name: '',
                     type: '',

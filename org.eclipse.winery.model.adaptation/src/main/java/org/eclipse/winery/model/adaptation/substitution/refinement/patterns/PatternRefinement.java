@@ -15,6 +15,7 @@ package org.eclipse.winery.model.adaptation.substitution.refinement.patterns;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -148,14 +149,13 @@ public class PatternRefinement extends AbstractRefinement {
             propertyMappings.stream()
                 .filter(mapping -> mapping.getDetectorNode().getId().equals(detectorNodeId))
                 .forEach(mapping -> {
-                    Map<String, Object> sourceProperties = matchingEntity.getProperties().getKVProperties();
-                    TEntityTemplate.Properties properties = topology.getNodeTemplateOrRelationshipTemplate()
+                    Map<String, String> sourceProperties = ModelUtilities.getPropertiesKV(matchingEntity);
+                    TEntityTemplate target =  topology.getNodeTemplateOrRelationshipTemplate()
                         .stream()
                         .filter(element -> element.getId().equals(idMapping.get(mapping.getRefinementNode().getId())))
                         .findFirst()
-                        .get()
-                        .getProperties();
-                    Map<String, Object> targetProperties = properties.getKVProperties();
+                        .get();
+                    LinkedHashMap<String, String> targetProperties = ModelUtilities.getPropertiesKV(target);
 
                     if (Objects.nonNull(matchingEntity.getProperties()) && Objects.nonNull(sourceProperties) && !sourceProperties.isEmpty()
                         && Objects.nonNull(targetProperties)) {
@@ -163,11 +163,11 @@ public class PatternRefinement extends AbstractRefinement {
                             sourceProperties.forEach(targetProperties::replace);
                         } else {
                             // TPrmPropertyMappingType.SELECTIVE
-                            Object sourceValue = sourceProperties.get(mapping.getDetectorProperty());
+                            String sourceValue = sourceProperties.get(mapping.getDetectorProperty());
                             targetProperties.put(mapping.getRefinementProperty(), sourceValue);
                         }
                         // because of the dynamical generation of the KV properties, we must set them again to persist them...
-                        properties.setKVProperties(targetProperties);
+                        ModelUtilities.setPropertiesKV(target, targetProperties);
                     }
                 });
         }
