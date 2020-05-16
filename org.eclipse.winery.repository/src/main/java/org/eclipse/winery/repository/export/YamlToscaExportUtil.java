@@ -129,48 +129,30 @@ public class YamlToscaExportUtil extends ToscaExportUtil {
                                         art.setFile("/" + FilenameUtils.separatorsToUnix(pathInsideRepo));
                                     });
                             }
-                        });
 
-                    // update "primary" field in the exported service template
-                    entryDefinitions.getNodeTypes()
-                        .stream()
-                        .filter(nt -> nt.getQName().equals(node.getQName()))
-                        .forEach(nt -> {
                             if (nt.getInterfaceDefinitions() != null) {
                                 nt.getInterfaceDefinitions().forEach(interfaceDefinition -> {
                                     if (interfaceDefinition.getOperations() != null) {
                                         interfaceDefinition.getOperations().forEach(op -> {
                                             if (op.getImplementation() != null) {
+                                                // update "primary" field in the exported service template
                                                 String artifactName = op.getImplementation().getPrimary();
                                                 if (artifactName.equalsIgnoreCase(artifact.getName())) {
                                                     String pathInsideRepo = BackendUtils.getPathInsideRepo(ref);
                                                     op.getImplementation().setPrimary("/" + FilenameUtils.separatorsToUnix(pathInsideRepo));
                                                 }
-                                            }
-                                        });
-                                    }
-                                });
-                            }
-                        });
 
-                    // update "dependencies" field in the exported service template
-                    entryDefinitions.getNodeTypes()
-                        .stream()
-                        .filter(nt -> nt.getQName().equals(node.getQName()))
-                        .forEach(nt -> {
-                            if (nt.getInterfaceDefinitions() != null) {
-                                nt.getInterfaceDefinitions().forEach(interfaceDefinition -> {
-                                    if (interfaceDefinition.getOperations() != null) {
-                                        interfaceDefinition.getOperations().forEach(op -> {
-                                            if (op.getImplementation() != null && op.getImplementation().getDependencies() != null) {
-                                                List<String> dependencies = op.getImplementation().getDependencies().stream().map(artifactName -> {
-                                                    if (artifactName.equalsIgnoreCase(artifact.getName())) {
-                                                        String pathInsideRepo = BackendUtils.getPathInsideRepo(ref);
-                                                        return "/" + FilenameUtils.separatorsToUnix(pathInsideRepo);
-                                                    }
-                                                    return artifactName;
-                                                }).collect(Collectors.toList());
-                                                op.getImplementation().setDependencies(dependencies);
+                                                // update "dependencies" field in the exported service template
+                                                if (op.getImplementation().getDependencies() != null) {
+                                                    List<String> dependencies = op.getImplementation().getDependencies().stream().map(aName -> {
+                                                        if (aName.equalsIgnoreCase(artifact.getName())) {
+                                                            String pathInsideRepo = BackendUtils.getPathInsideRepo(ref);
+                                                            return "/" + FilenameUtils.separatorsToUnix(pathInsideRepo);
+                                                        }
+                                                        return aName;
+                                                    }).collect(Collectors.toList());
+                                                    op.getImplementation().setDependencies(dependencies);
+                                                }
                                             }
                                         });
                                     }
