@@ -729,13 +729,23 @@ public class YamlRepository extends AbstractFileBasedRepository {
     }
 
     private TServiceTemplate replaceTopologyTemplate(TServiceTemplate newServiceTemplate, TServiceTemplate existingServiceTemplate) {
-        if (newServiceTemplate.getTopologyTemplate() != null
-            && existingServiceTemplate.getTopologyTemplate() != null) {
+        if (newServiceTemplate.getTopologyTemplate() != null) {
+            if (existingServiceTemplate.getTopologyTemplate() == null) {
+                existingServiceTemplate.setTopologyTemplate(new TTopologyTemplateDefinition());
+            }
             TTopologyTemplateDefinition newTopologyTemplate = newServiceTemplate.getTopologyTemplate();
             TTopologyTemplateDefinition existingTopologyTemplate = existingServiceTemplate.getTopologyTemplate();
             existingTopologyTemplate.setPolicies(newTopologyTemplate.getPolicies());
             existingTopologyTemplate.setNodeTemplates(newTopologyTemplate.getNodeTemplates());
             existingTopologyTemplate.setRelationshipTemplates(newTopologyTemplate.getRelationshipTemplates());
+            if (newTopologyTemplate.getInputs() != null) {
+                existingTopologyTemplate.setInputs(newTopologyTemplate.getInputs());
+            }
+            if (newTopologyTemplate.getOutputs() != null) {
+                existingTopologyTemplate.setOutputs(newTopologyTemplate.getOutputs());
+            }
+            existingTopologyTemplate.setDescription(newTopologyTemplate.getDescription());
+            existingTopologyTemplate.setGroups(newTopologyTemplate.getGroups());
         }
         return existingServiceTemplate;
     }

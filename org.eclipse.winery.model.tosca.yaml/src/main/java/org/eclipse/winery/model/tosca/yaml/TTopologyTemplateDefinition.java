@@ -112,12 +112,7 @@ public class TTopologyTemplateDefinition implements VisitorNode {
         this.description = description;
     }
 
-    @NonNull
     public Map<String, TParameterDefinition> getInputs() {
-        if (this.inputs == null) {
-            this.inputs = new LinkedHashMap<>();
-        }
-
         return inputs;
     }
 
@@ -177,12 +172,7 @@ public class TTopologyTemplateDefinition implements VisitorNode {
         this.policies = policies;
     }
 
-    @NonNull
     public Map<String, TParameterDefinition> getOutputs() {
-        if (this.outputs == null) {
-            this.outputs = new LinkedHashMap<>();
-        }
-
         return outputs;
     }
 
