@@ -19,10 +19,15 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import javax.xml.namespace.QName;
+
+import org.eclipse.winery.common.Constants;
 import org.eclipse.winery.common.RepositoryFileReference;
 import org.eclipse.winery.common.ids.definitions.DefinitionsChildId;
 import org.eclipse.winery.common.ids.definitions.NodeTypeId;
@@ -68,11 +73,16 @@ public class YamlToscaExportUtil extends ToscaExportUtil {
 
         // adjust imports: add imports of definitions
         Collection<TImport> imports = new ArrayList<>();
+        Map<String, QName> importDefinitions = new HashMap<>();
         for (DefinitionsChildId id : referencedDefinitionsChildIds) {
             this.addToImports(repository, id, imports);
+
+            String defName = YamlExporter.getDefinitionsName(repository, id).concat(Constants.SUFFIX_TOSCA_DEFINITIONS);
+            importDefinitions.put(defName, id.getQName());
         }
 
         entryDefinitions.getImport().addAll(imports);
+        entryDefinitions.setImportDefinitions(importDefinitions);
 
         // END: Definitions modification
 

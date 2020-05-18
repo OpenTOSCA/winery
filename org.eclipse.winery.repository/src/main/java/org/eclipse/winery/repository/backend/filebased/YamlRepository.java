@@ -630,7 +630,7 @@ public class YamlRepository extends AbstractFileBasedRepository {
     }
 
     /**
-     * Converts incoming xml input stream to yaml service tempalte and writes it to file
+     * Converts incoming xml input stream to yaml service template and writes it to file
      *
      * @param ref         repository file reference
      * @param inputStream input stream to write to file
