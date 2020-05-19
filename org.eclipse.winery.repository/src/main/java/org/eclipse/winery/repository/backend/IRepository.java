@@ -605,8 +605,8 @@ public interface IRepository extends IWineryRepositoryCommon {
 
         final TNodeType nodeType = this.getElement(id);
 
-        // add all referenced requirement types, but only in XML mode. YAML does not have requirement types
-
+        // Add all referenced requirement types, but only in XML mode. 
+        // For YAML mode add referenced RelationshipType and CapabilityType, if present
         TNodeType.RequirementDefinitions reqDefsContainer = nodeType.getRequirementDefinitions();
         if (reqDefsContainer != null) {
             List<TRequirementDefinition> reqDefs = reqDefsContainer.getRequirementDefinition();
@@ -617,6 +617,9 @@ public interface IRepository extends IWineryRepositoryCommon {
                 } else {
                     if (Objects.nonNull(reqDef.getRelationship())) {
                         ids.add(new RelationshipTypeId(reqDef.getRelationship()));
+                    }
+                    if (Objects.nonNull(reqDef.getCapability())) {
+                        ids.add(new CapabilityTypeId(reqDef.getCapability()));
                     }
                 }
             }
@@ -629,6 +632,12 @@ public interface IRepository extends IWineryRepositoryCommon {
             for (TCapabilityDefinition capDef : capDefs) {
                 CapabilityTypeId capTypeId = new CapabilityTypeId(capDef.getCapabilityType());
                 ids.add(capTypeId);
+
+                // Add all types referenced in valid source types
+                if (Objects.nonNull(capDef.getValidSourceTypes())) {
+                    capDef.getValidSourceTypes()
+                        .forEach(sourceType -> ids.add(new NodeTypeId(sourceType)));
+                }
             }
         }
 
