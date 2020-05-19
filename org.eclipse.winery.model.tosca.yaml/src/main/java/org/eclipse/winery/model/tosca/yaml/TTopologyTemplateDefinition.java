@@ -112,6 +112,7 @@ public class TTopologyTemplateDefinition implements VisitorNode {
         this.description = description;
     }
 
+    @Nullable
     public Map<String, TParameterDefinition> getInputs() {
         return inputs;
     }
@@ -172,6 +173,7 @@ public class TTopologyTemplateDefinition implements VisitorNode {
         this.policies = policies;
     }
 
+    @Nullable
     public Map<String, TParameterDefinition> getOutputs() {
         return outputs;
     }
