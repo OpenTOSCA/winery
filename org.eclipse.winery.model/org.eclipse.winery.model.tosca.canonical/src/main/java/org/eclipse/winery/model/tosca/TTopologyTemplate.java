@@ -254,7 +254,7 @@ public class TTopologyTemplate extends TExtensibleElements {
         }
 
         public Builder addRelationshipTemplate(TRelationshipTemplate relationshipTemplates) {
-            if (this.relationshipTemplates == null) {
+            if (relationshipTemplates == null) {
                 return this;
             }
 
