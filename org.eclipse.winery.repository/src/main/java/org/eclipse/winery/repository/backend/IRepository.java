@@ -99,8 +99,10 @@ import org.eclipse.winery.repository.backend.xsd.RepositoryBasedXsdImportManager
 import org.eclipse.winery.repository.backend.xsd.XsdImportManager;
 import org.eclipse.winery.repository.exceptions.RepositoryCorruptException;
 import org.eclipse.winery.repository.exceptions.WineryRepositoryException;
+import org.eclipse.winery.repository.export.entries.RemoteRefBasedCsarEntry;
 
 import org.apache.commons.configuration2.Configuration;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.tika.mime.MediaType;
 import org.slf4j.Logger;
@@ -306,6 +308,16 @@ public interface IRepository extends IWineryRepositoryCommon {
             }
         }
         return mimeType;
+    }
+
+    default String getMimeType(RemoteRefBasedCsarEntry ref) throws IOException {
+        MediaType mediaType = BackendUtils.getMimeType(new BufferedInputStream(ref.getInputStream()), FilenameUtils.getName(ref.getUrl().getPath()));
+        if (Objects.nonNull(mediaType)) {
+            return mediaType.toString();
+        } else {
+            LOGGER.debug("Could not determine mimetype of the remote file");
+            return "application/octet-stream";
+        }
     }
 
     /**
