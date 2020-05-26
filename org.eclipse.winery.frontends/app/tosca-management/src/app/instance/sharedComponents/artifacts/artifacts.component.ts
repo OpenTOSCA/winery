@@ -41,8 +41,8 @@ export class ArtifactsComponent implements OnInit {
     @ViewChild('modal') modal: ModalDirective;
     @ViewChild('removeModal') removeModal: ModalDirective;
     validatorObject: WineryValidatorObject;
-    
-    isFileRemote: boolean = false;
+
+    isFileRemote = false;
     selectedFile: File;
     allowedTypes = '';
 
