@@ -23,7 +23,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import org.eclipse.winery.model.tosca.TPrmMapping;
+import org.eclipse.winery.model.tosca.extensions.TPrmMapping;
 import org.eclipse.winery.repository.rest.RestUtils;
 
 public abstract class AbstractRefinementModelMappingsResource {

@@ -25,7 +25,7 @@ import org.eclipse.winery.model.tosca.TNodeTemplate;
 import org.eclipse.winery.model.tosca.TRelationDirection;
 import org.eclipse.winery.model.tosca.TRelationMapping;
 import org.eclipse.winery.model.tosca.TRelationshipTemplate;
-import org.eclipse.winery.model.tosca.TTestRefinementModel;
+import org.eclipse.winery.model.tosca.extensions.TTestRefinementModel;
 import org.eclipse.winery.model.tosca.TTopologyTemplate;
 import org.eclipse.winery.topologygraph.matching.ToscaIsomorphismMatcher;
 import org.eclipse.winery.topologygraph.matching.ToscaTypeMatcher;

@@ -15,8 +15,8 @@
 package org.eclipse.winery.repository.rest.resources.apiData;
 
 import org.eclipse.winery.model.tosca.TEntityTemplate;
-import org.eclipse.winery.model.tosca.TPrmModelElementType;
-import org.eclipse.winery.model.tosca.TStayMapping;
+import org.eclipse.winery.model.tosca.extensions.TPrmModelElementType;
+import org.eclipse.winery.model.tosca.extensions.TStayMapping;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 

@@ -11,22 +11,28 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR Apache-2.0
  *******************************************************************************/
-
-package org.eclipse.winery.model.tosca.kvproperties;
+package org.eclipse.winery.model.tosca.extensions.kvproperties;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-@XmlRootElement(name = "ConstraintDefinitions")
-public class ConstraintClauseKVList extends ArrayList<ConstraintClauseKV> implements Serializable {
-    
-    @XmlElement(name = "ConstraintDefinition")
-    public List<ConstraintClauseKV> getConstraintDefinitionKVs() {
-        return this;
+@XmlRootElement(name = "AttributeDefinitions")
+public class AttributeDefinitionList extends ArrayList<AttributeDefinition> implements Serializable {
+
+    public AttributeDefinitionList() {
     }
 
+    public AttributeDefinitionList(Collection<? extends AttributeDefinition> c) {
+        super(c);
+    }
+
+    @XmlElement(name = "AttributeDefinition")
+    public List<AttributeDefinition> getAttributeDefinitions() {
+        return this;
+    }
 }

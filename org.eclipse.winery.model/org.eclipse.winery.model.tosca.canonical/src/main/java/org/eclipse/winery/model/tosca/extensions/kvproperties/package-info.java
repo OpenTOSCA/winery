@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019 Contributors to the Eclipse Foundation
+ * Copyright (c) 2019-2020 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -22,7 +22,7 @@
  *
  */
 @XmlSchema(namespace = Namespaces.TOSCA_WINERY_EXTENSIONS_NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED)
-package org.eclipse.winery.model.tosca.kvproperties;
+package org.eclipse.winery.model.tosca.extensions.kvproperties;
 
 import javax.xml.bind.annotation.XmlNsForm;
 import javax.xml.bind.annotation.XmlSchema;

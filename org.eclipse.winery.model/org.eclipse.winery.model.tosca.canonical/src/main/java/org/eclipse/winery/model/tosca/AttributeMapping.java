@@ -16,6 +16,7 @@ package org.eclipse.winery.model.tosca;
 
 import javax.xml.bind.annotation.XmlAttribute;
 
+import org.eclipse.winery.model.tosca.extensions.TPrmMapping;
 import org.eclipse.winery.model.tosca.visitor.Visitor;
 
 import org.eclipse.jdt.annotation.Nullable;

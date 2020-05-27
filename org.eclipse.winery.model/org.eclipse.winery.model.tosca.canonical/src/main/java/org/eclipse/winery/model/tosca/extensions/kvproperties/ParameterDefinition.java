@@ -11,7 +11,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR Apache-2.0
  *******************************************************************************/
-package org.eclipse.winery.model.tosca.kvproperties;
+package org.eclipse.winery.model.tosca.extensions.kvproperties;
 
 import java.io.Serializable;
 import java.util.Objects;

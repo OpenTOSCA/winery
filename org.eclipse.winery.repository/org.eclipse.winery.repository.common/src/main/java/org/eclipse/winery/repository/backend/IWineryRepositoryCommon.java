@@ -26,15 +26,15 @@ import org.eclipse.winery.model.ids.definitions.DataTypeId;
 import org.eclipse.winery.model.ids.definitions.DefinitionsChildId;
 import org.eclipse.winery.model.ids.definitions.NodeTypeId;
 import org.eclipse.winery.model.ids.definitions.NodeTypeImplementationId;
-import org.eclipse.winery.model.ids.definitions.PatternRefinementModelId;
+import org.eclipse.winery.model.ids.extensions.PatternRefinementModelId;
 import org.eclipse.winery.model.ids.definitions.PolicyTemplateId;
 import org.eclipse.winery.model.ids.definitions.PolicyTypeId;
-import org.eclipse.winery.model.ids.definitions.RefinementId;
+import org.eclipse.winery.model.ids.extensions.RefinementId;
 import org.eclipse.winery.model.ids.definitions.RelationshipTypeId;
 import org.eclipse.winery.model.ids.definitions.RelationshipTypeImplementationId;
 import org.eclipse.winery.model.ids.definitions.RequirementTypeId;
 import org.eclipse.winery.model.ids.definitions.ServiceTemplateId;
-import org.eclipse.winery.model.ids.definitions.TestRefinementModelId;
+import org.eclipse.winery.model.ids.extensions.TestRefinementModelId;
 import org.eclipse.winery.model.tosca.TArtifactTemplate;
 import org.eclipse.winery.model.tosca.TArtifactType;
 import org.eclipse.winery.model.tosca.TCapability;
@@ -48,7 +48,7 @@ import org.eclipse.winery.model.tosca.TExtensibleElements;
 import org.eclipse.winery.model.tosca.TNodeTemplate;
 import org.eclipse.winery.model.tosca.TNodeType;
 import org.eclipse.winery.model.tosca.TNodeTypeImplementation;
-import org.eclipse.winery.model.tosca.TPatternRefinementModel;
+import org.eclipse.winery.model.tosca.extensions.TPatternRefinementModel;
 import org.eclipse.winery.model.tosca.TPolicyTemplate;
 import org.eclipse.winery.model.tosca.TPolicyType;
 import org.eclipse.winery.model.tosca.TRefinementModel;
@@ -58,7 +58,7 @@ import org.eclipse.winery.model.tosca.TRelationshipTypeImplementation;
 import org.eclipse.winery.model.tosca.TRequirement;
 import org.eclipse.winery.model.tosca.TRequirementType;
 import org.eclipse.winery.model.tosca.TServiceTemplate;
-import org.eclipse.winery.model.tosca.TTestRefinementModel;
+import org.eclipse.winery.model.tosca.extensions.TTestRefinementModel;
 
 /**
  * Enables access to the winery repository via Ids defined in package {@link org.eclipse.winery.model.ids}

@@ -20,6 +20,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.namespace.QName;
 
+import org.eclipse.winery.model.tosca.extensions.TPrmMapping;
 import org.eclipse.winery.model.tosca.visitor.Visitor;
 
 @XmlAccessorType(XmlAccessType.FIELD)

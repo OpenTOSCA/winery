@@ -27,7 +27,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlType;
 
-import org.eclipse.winery.model.tosca.kvproperties.ParameterDefinitionList;
+import org.eclipse.winery.model.tosca.extensions.kvproperties.ParameterDefinitionList;
 import org.eclipse.winery.model.tosca.xml.visitor.Visitor;
 
 import org.eclipse.jdt.annotation.NonNull;

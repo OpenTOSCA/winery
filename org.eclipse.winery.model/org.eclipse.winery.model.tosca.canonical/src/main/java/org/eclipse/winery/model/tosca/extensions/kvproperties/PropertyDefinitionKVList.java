@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 Contributors to the Eclipse Foundation
+ * Copyright (c) 2019-2020 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -11,28 +11,18 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR Apache-2.0
  *******************************************************************************/
-package org.eclipse.winery.model.tosca.kvproperties;
+package org.eclipse.winery.model.tosca.extensions.kvproperties;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+public class PropertyDefinitionKVList extends ArrayList<PropertyDefinitionKV> implements Serializable {
 
-@XmlRootElement(name = "ParameterDefinitions")
-public class ParameterDefinitionList extends ArrayList<ParameterDefinition> implements Serializable {
+    private static final long serialVersionUID = -6442041855597987094L;
 
-    public ParameterDefinitionList() {
-    }
-
-    public ParameterDefinitionList(Collection<? extends ParameterDefinition> c) {
-        super(c);
-    }
-
-    @XmlElement(name = "ParameterDefinition")
-    public List<ParameterDefinition> getParameterDefinitions() {
+    public List<PropertyDefinitionKV> getPropertyDefinitionKVs() {
         return this;
     }
+
 }

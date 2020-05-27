@@ -17,7 +17,7 @@ package org.eclipse.winery.repository.rest.resources.testrefinementmodels;
 import javax.ws.rs.Path;
 
 import org.eclipse.winery.model.ids.definitions.DefinitionsChildId;
-import org.eclipse.winery.model.tosca.TTestRefinementModel;
+import org.eclipse.winery.model.tosca.extensions.TTestRefinementModel;
 import org.eclipse.winery.repository.rest.resources._support.AbstractRefinementModelResource;
 import org.eclipse.winery.repository.rest.resources.servicetemplates.topologytemplates.TopologyTemplateResource;
 

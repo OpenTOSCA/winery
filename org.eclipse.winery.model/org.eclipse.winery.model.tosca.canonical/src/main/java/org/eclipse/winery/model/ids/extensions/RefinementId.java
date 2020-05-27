@@ -1,5 +1,5 @@
-/********************************************************************************
- * Copyright (c) 2018-2019 Contributors to the Eclipse Foundation
+/*******************************************************************************
+ * Copyright (c) 2019-2020 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -12,29 +12,24 @@
  * SPDX-License-Identifier: EPL-2.0 OR Apache-2.0
  *******************************************************************************/
 
-package org.eclipse.winery.model.ids.definitions;
+package org.eclipse.winery.model.ids.extensions;
 
 import javax.xml.namespace.QName;
 
 import org.eclipse.winery.model.ids.Namespace;
 import org.eclipse.winery.model.ids.XmlId;
+import org.eclipse.winery.model.ids.definitions.DefinitionsChildId;
 
-public class PatternRefinementModelId extends RefinementId {
-
-    public PatternRefinementModelId(Namespace namespace, XmlId xmlId) {
+public abstract class RefinementId extends DefinitionsChildId {
+    public RefinementId(Namespace namespace, XmlId xmlId) {
         super(namespace, xmlId);
     }
 
-    public PatternRefinementModelId(String ns, String id, boolean URLencoded) {
+    public RefinementId(String ns, String id, boolean URLencoded) {
         super(ns, id, URLencoded);
     }
 
-    public PatternRefinementModelId(QName type) {
-        super(type);
-    }
-
-    @Override
-    public String getGroup() {
-        return "PatternRefinementModel";
+    public RefinementId(QName qname) {
+        super(qname);
     }
 }

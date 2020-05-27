@@ -22,8 +22,8 @@ import javax.ws.rs.Path;
 
 import org.eclipse.winery.model.ids.definitions.DefinitionsChildId;
 import org.eclipse.winery.model.tosca.AttributeMapping;
-import org.eclipse.winery.model.tosca.TPatternRefinementModel;
-import org.eclipse.winery.model.tosca.TStayMapping;
+import org.eclipse.winery.model.tosca.extensions.TPatternRefinementModel;
+import org.eclipse.winery.model.tosca.extensions.TStayMapping;
 import org.eclipse.winery.repository.rest.resources._support.AbstractRefinementModelResource;
 import org.eclipse.winery.repository.rest.resources.servicetemplates.topologytemplates.TopologyTemplateResource;
 
