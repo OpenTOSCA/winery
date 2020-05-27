@@ -35,6 +35,7 @@ import org.eclipse.winery.repository.datatypes.ids.elements.DirectoryId;
 import org.eclipse.winery.repository.exceptions.RepositoryCorruptException;
 import org.eclipse.winery.repository.export.entries.CsarEntry;
 import org.eclipse.winery.repository.export.entries.DocumentBasedCsarEntry;
+import org.eclipse.winery.repository.export.entries.RemoteRefBasedCsarEntry;
 import org.eclipse.winery.repository.export.entries.RepositoryRefBasedCsarEntry;
 import org.eclipse.winery.repository.export.entries.XMLDefinitionsBasedCsarEntry;
 import org.eclipse.winery.repository.export.entries.YAMLDefinitionsBasedCsarEntry;
@@ -192,6 +193,8 @@ public class YamlExporter extends CsarExporter {
             } else if (csarEntry instanceof XMLDefinitionsBasedCsarEntry ||
                 csarEntry instanceof YAMLDefinitionsBasedCsarEntry) {
                 mimeType = MimeTypes.MIMETYPE_TOSCA_DEFINITIONS;
+            } else if (csarEntry instanceof RemoteRefBasedCsarEntry) {
+                mimeType = repository.getMimeType((RemoteRefBasedCsarEntry) csarEntry);
             } else {
                 mimeType = repository.getMimeType(((RepositoryRefBasedCsarEntry) csarEntry).getReference());
             }

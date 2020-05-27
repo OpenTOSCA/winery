@@ -15,6 +15,8 @@
 package org.eclipse.winery.repository.export;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -34,6 +36,7 @@ import org.eclipse.winery.common.ids.definitions.NodeTypeId;
 import org.eclipse.winery.common.ids.definitions.RelationshipTypeId;
 import org.eclipse.winery.common.ids.definitions.ServiceTemplateId;
 import org.eclipse.winery.model.tosca.Definitions;
+import org.eclipse.winery.model.tosca.TArtifact;
 import org.eclipse.winery.model.tosca.TArtifacts;
 import org.eclipse.winery.model.tosca.TImport;
 import org.eclipse.winery.model.tosca.TNodeTemplate;
@@ -43,9 +46,11 @@ import org.eclipse.winery.model.tosca.TServiceTemplate;
 import org.eclipse.winery.repository.backend.BackendUtils;
 import org.eclipse.winery.repository.backend.IRepository;
 import org.eclipse.winery.repository.exceptions.RepositoryCorruptException;
+import org.eclipse.winery.repository.export.entries.RemoteRefBasedCsarEntry;
 import org.eclipse.winery.repository.export.entries.YAMLDefinitionsBasedCsarEntry;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.validator.routines.UrlValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -167,63 +172,76 @@ public class YamlToscaExportUtil extends ToscaExportUtil {
     }
 
     private void prepareNodeTypeForExport(IRepository repository, NodeTypeId id, Definitions entryDefinitions) {
-
+        //refMap.put(new CsarContentProperties(BackendUtils.getPathInsideRepo(licenseRef)), new RepositoryRefBasedCsarEntry(licenseRef));
+        String nodeTypePath = BackendUtils.getPathInsideRepo(id);
         TNodeType node = repository.getElement(id);
         TArtifacts artifacts = node.getArtifacts();
         if (Objects.nonNull(artifacts)) {
 
             artifacts.getArtifact().forEach(artifact -> {
-                Path p = Paths.get("files", artifact.getId());
-                RepositoryFileReference ref = new RepositoryFileReference(id, p, artifact.getFile());
-                if (repository.exists(ref)) {
-                    putRefAsReferencedItemInCsar(ref);
-
-                    // update file paths in "artifacts" the exported service template
-                    entryDefinitions.getNodeTypes()
-                        .stream()
-                        .filter(nt -> nt.getQName().equals(node.getQName()))
-                        .forEach(nt -> {
-                            if (nt.getArtifacts() != null) {
-                                nt.getArtifacts().getArtifact().stream()
-                                    .filter(art -> art.getFile().equals(artifact.getFile()))
-                                    .forEach(art -> {
-                                        String pathInsideRepo = BackendUtils.getPathInsideRepo(ref);
-                                        art.setFile("/" + FilenameUtils.separatorsToUnix(pathInsideRepo));
-                                    });
-                            }
-
-                            if (nt.getInterfaceDefinitions() != null) {
-                                nt.getInterfaceDefinitions().forEach(interfaceDefinition -> {
-                                    if (interfaceDefinition.getOperations() != null) {
-                                        interfaceDefinition.getOperations().forEach(op -> {
-                                            if (op.getImplementation() != null) {
-                                                // update "primary" field in the exported service template
-                                                String artifactName = op.getImplementation().getPrimary();
-                                                if (artifactName.equalsIgnoreCase(artifact.getName())) {
-                                                    String pathInsideRepo = BackendUtils.getPathInsideRepo(ref);
-                                                    op.getImplementation().setPrimary("/" + FilenameUtils.separatorsToUnix(pathInsideRepo));
-                                                }
-
-                                                // update "dependencies" field in the exported service template
-                                                if (op.getImplementation().getDependencies() != null) {
-                                                    List<String> dependencies = op.getImplementation().getDependencies().stream().map(aName -> {
-                                                        if (aName.equalsIgnoreCase(artifact.getName())) {
-                                                            String pathInsideRepo = BackendUtils.getPathInsideRepo(ref);
-                                                            return "/" + FilenameUtils.separatorsToUnix(pathInsideRepo);
-                                                        }
-                                                        return aName;
-                                                    }).collect(Collectors.toList());
-                                                    op.getImplementation().setDependencies(dependencies);
-                                                }
-                                            }
-                                        });
-                                    }
-                                });
-                            }
-                        });
+                UrlValidator customValidator = new UrlValidator();
+                if (customValidator.isValid(artifact.getFile())) {
+                    LOGGER.info("Specified file is a valid URL, start processing the reference");
+                    try {
+                        String pathInsideRepo = putRemoteRefAsReferencedItemInCsar(new URL(artifact.getFile()), nodeTypePath, artifact.getName());
+                        updatePathsInNodeArtifacts(entryDefinitions, node, artifact, pathInsideRepo);
+                    } catch (MalformedURLException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    Path p = Paths.get("files", artifact.getId());
+                    RepositoryFileReference ref = new RepositoryFileReference(id, p, artifact.getFile());
+                    if (repository.exists(ref)) {
+                        putRefAsReferencedItemInCsar(ref);
+                        String pathInsideRepo = BackendUtils.getPathInsideRepo(ref);
+                        updatePathsInNodeArtifacts(entryDefinitions, node, artifact, pathInsideRepo);
+                    }
                 }
             });
         }
+    }
+
+    private void updatePathsInNodeArtifacts(Definitions entryDefinitions, TNodeType node, TArtifact artifact, String pathInsideRepo) {
+        // update file paths in "artifacts" the exported service template
+        entryDefinitions.getNodeTypes()
+            .stream()
+            .filter(nt -> nt.getQName().equals(node.getQName()))
+            .forEach(nt -> {
+                if (nt.getArtifacts() != null) {
+                    nt.getArtifacts().getArtifact().stream()
+                        .filter(art -> art.getFile().equals(artifact.getFile()))
+                        .forEach(art -> {
+                            art.setFile("/" + FilenameUtils.separatorsToUnix(pathInsideRepo));
+                        });
+                }
+
+                if (nt.getInterfaceDefinitions() != null) {
+                    nt.getInterfaceDefinitions().forEach(interfaceDefinition -> {
+                        if (interfaceDefinition.getOperations() != null) {
+                            interfaceDefinition.getOperations().forEach(op -> {
+                                if (op.getImplementation() != null) {
+                                    // update "primary" field in the exported service template
+                                    String artifactName = op.getImplementation().getPrimary();
+                                    if (artifactName.equalsIgnoreCase(artifact.getName())) {
+                                        op.getImplementation().setPrimary("/" + FilenameUtils.separatorsToUnix(pathInsideRepo));
+                                    }
+
+                                    // update "dependencies" field in the exported service template
+                                    if (op.getImplementation().getDependencies() != null) {
+                                        List<String> dependencies = op.getImplementation().getDependencies().stream().map(aName -> {
+                                            if (aName.equalsIgnoreCase(artifact.getName())) {
+                                                return "/" + FilenameUtils.separatorsToUnix(pathInsideRepo);
+                                            }
+                                            return aName;
+                                        }).collect(Collectors.toList());
+                                        op.getImplementation().setDependencies(dependencies);
+                                    }
+                                }
+                            });
+                        }
+                    });
+                }
+            });
     }
 
     /**
@@ -270,5 +288,26 @@ public class YamlToscaExportUtil extends ToscaExportUtil {
                 }
             }
         }
+    }
+
+    /**
+     * Puts the given reference as item in the CSAR
+     * <p>
+     * Thereby, it uses the global variable referencesToPathInCSARMap
+     */
+    protected String putRemoteRefAsReferencedItemInCsar(URL url, String typePath, String artifactName) {
+        RemoteRefBasedCsarEntry ref = new RemoteRefBasedCsarEntry(url);
+        String fileName = FilenameUtils.getName(url.getPath());
+
+        String pathInsideRepo = typePath.concat("/")
+            .concat("files")
+            .concat("/")
+            .concat(artifactName)
+            .concat("/")
+            .concat(fileName);
+
+        this.referencesToPathInCSARMap.put(new CsarContentProperties(pathInsideRepo), ref);
+
+        return pathInsideRepo;
     }
 }
