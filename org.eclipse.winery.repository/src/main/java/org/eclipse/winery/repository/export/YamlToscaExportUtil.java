@@ -20,6 +20,7 @@ import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -50,6 +51,7 @@ import org.eclipse.winery.repository.export.entries.RemoteRefBasedCsarEntry;
 import org.eclipse.winery.repository.export.entries.YAMLDefinitionsBasedCsarEntry;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.UrlValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -298,16 +300,10 @@ public class YamlToscaExportUtil extends ToscaExportUtil {
     protected String putRemoteRefAsReferencedItemInCsar(URL url, String typePath, String artifactName) {
         RemoteRefBasedCsarEntry ref = new RemoteRefBasedCsarEntry(url);
         String fileName = FilenameUtils.getName(url.getPath());
+        typePath = StringUtils.removeEnd(typePath, "/");
+        String path = StringUtils.join(Arrays.asList(typePath, "files", artifactName, fileName), "/");
+        this.referencesToPathInCSARMap.put(new CsarContentProperties(path), ref);
 
-        String pathInsideRepo = typePath.concat("/")
-            .concat("files")
-            .concat("/")
-            .concat(artifactName)
-            .concat("/")
-            .concat(fileName);
-
-        this.referencesToPathInCSARMap.put(new CsarContentProperties(pathInsideRepo), ref);
-
-        return pathInsideRepo;
+        return path;
     }
 }
