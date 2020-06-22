@@ -20,8 +20,35 @@ components:
           secure: "false"
           discoverable: "false"
           public: "true"
-    mountSources: true
+    # mountSources: true
     referenceContent: |
+      ---
+      apiVersion: v1
+      kind: PersistentVolume
+      metadata:
+        name: projects-volume
+        labels:
+          type: local
+      spec:
+        storageClassName: manual
+        capacity:
+          storage: 2Gi
+        accessModes:
+          - ReadWriteOnce
+        hostPath:
+          path: "/mnt/data"
+      ---
+      apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        name: projects
+      spec:
+        storageClassName: manual
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 1Gi
       ---
       apiVersion: apps/v1
       kind: Deployment
@@ -42,6 +69,10 @@ components:
               app: winery
               tier: frontend
           spec:
+            volumes:
+              - name: projects-storage
+                persistentVolumeClaim:
+                  claimName: projects
             containers:
               - name: winery
                 image: opentosca/radon-gmt:latest
@@ -59,3 +90,6 @@ components:
                     value: "/projects/radon-particles"
                   - name: WINERY_CSAR_OUTPUT_PATH
                     value: "/projects/radon-csars"
+                volumeMounts:
+                  - mountPath: "/projects"
+                    name: projects-storage
