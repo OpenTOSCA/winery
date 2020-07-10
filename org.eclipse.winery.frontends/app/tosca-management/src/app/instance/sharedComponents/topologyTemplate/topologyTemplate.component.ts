@@ -50,10 +50,15 @@ export class TopologyTemplateComponent implements OnInit {
             this.sharedData.path + '/topologytemplate/?view&uiURL=' + this.uiURL
         );
 
+        const radonEnabled = this.configurationService.configuration.features.radon;
+        const eclipseCheUrl = this.configurationService.configuration.endpoints.eclipseChe;
+
+        console.log(eclipseCheUrl);
         let editorConfig = '?repositoryURL=' + encodeURIComponent(backendBaseURL)
             + '&uiURL=' + this.uiURL
             + '&ns=' + encodeURIComponent(this.sharedData.toscaComponent.namespace)
-            + '&id=' + this.sharedData.toscaComponent.localName;
+            + '&id=' + this.sharedData.toscaComponent.localName
+            + (radonEnabled && eclipseCheUrl) ? '&eclipseCheUrl=' + encodeURIComponent(eclipseCheUrl) : '';
 
         // for declarative compliance rules add additional information to identify the location of the topology template
         if (this.sharedData.toscaComponent.toscaType !== ToscaTypes.ServiceTemplate) {

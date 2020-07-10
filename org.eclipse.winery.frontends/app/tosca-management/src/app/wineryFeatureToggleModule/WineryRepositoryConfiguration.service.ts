@@ -40,6 +40,7 @@ export interface WineryConfiguration {
         topologymodeler: string;
         workflowmodeler: string;
         edmmTransformationTool: string;
+        eclipseChe: string;
     };
 }
 
