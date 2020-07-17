@@ -274,6 +274,6 @@ export class NavbarComponent implements OnDestroy {
     }
 
     openChe() {
-        window.open('http://' + this.configurationService.configuration.endpoints.eclipseChe, '_blank')
+        window.open(this.configurationService.configuration.endpoints.eclipseChe, '_blank');
     }
 }
