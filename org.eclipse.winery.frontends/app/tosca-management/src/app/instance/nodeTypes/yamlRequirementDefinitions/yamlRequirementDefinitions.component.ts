@@ -128,8 +128,16 @@ export class YamlRequirementDefinitionsComponent implements OnInit {
     }
 
     removeConfirmed() {
-        this.tableData = this.tableData.filter(item => item !== this.elementToRemove);
-        this.elementToRemove = null;
+        this.service.deleteRequirementDefinition(this.elementToRemove)
+            .subscribe(next => {
+                this.notify.success('Deleted Requirement Definition');
+                this.tableData = this.tableData.filter(item => item !== this.elementToRemove);
+                this.elementToRemove = null;
+            },
+            error => {
+                this.notify.error('Could not delete Requirement Definition');
+                this.elementToRemove = null;
+            });
     }
 
     onAddClick() {
