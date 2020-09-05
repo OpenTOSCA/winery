@@ -15,6 +15,8 @@
 /**
  * constraint operators defined in tosca yaml spec 3.6.3.1
  */
+import * as assert from 'assert';
+
 enum ConstraintOperator {
     equal = 'equal',
     greater_than = 'greater_than',
@@ -53,8 +55,13 @@ export class ConstraintChecking {
             case ConstraintOperator.less_or_equal:
                 return checked <= constraint.value;
             case ConstraintOperator.in_range:
+                if (Array.isArray(checked)) {
+                    // assume we have a range that needs to be checked
+                    assert(checked.length === 2, 'Checked array value for in_range operator was not a range');
+                    return checked[0] >= constraint.value[0] && (checked[1] <= constraint.value[1] || constraint.value[1] === 'UNBOUNDED');
+                }
                 return checked >= constraint.value[0]
-                    && checked <= constraint.value[1];
+                    && (checked <= constraint.value[1] || constraint.value[1] === 'UNBOUNDED');
             case ConstraintOperator.valid_values:
                 return constraint.value.some(v => checked === v);
             case ConstraintOperator.length:

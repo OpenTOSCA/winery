@@ -11,15 +11,16 @@
   ~
   ~ SPDX-License-Identifier: EPL-2.0 OR Apache-2.0
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-<input
-    type="text"
-    style="width:100%;"
+<textarea
+    style="width:100%; resize: vertical"
     placeholder="Edit your value here."
-    required
+    wrap="soft"
+    rows="1"
     [disabled]="isDisabled"
     (keyup)="keyup($event.target)"
     [value]="unQuote(JSON.stringify(_value))"
-    [className]="errors.length ? 'ng-invalid' : ''"/>
+    [className]="errors.length ? 'ng-invalid' : ''">
+</textarea>
 
 <div class="alert alert-danger" *ngIf="errors.length">
     <p *ngFor="let message of errors">{{ message }}</p>

@@ -100,11 +100,12 @@ export class TypeConformanceValidator implements Validator {
                 return typeof structuredValue === 'string' && structuredValue.match(/\d+\.\d+(\.\d+(\..+?(-\d+)?)?)?/) !== undefined;
             case 'range':
                 // FIXME check whether the borders used are in fact scalar values or UNBOUNDED
-                return structuredValue.isArray && structuredValue.length === 2;
+                return Array.isArray(structuredValue) && structuredValue.length === 2;
             case 'list':
-                return structuredValue.isArray;
+                return Array.isArray(structuredValue);
             case 'map':
-                return structuredValue.isObject;
+                // FIXME need to actually check that this is an object with SOME entries
+                return structuredValue !== undefined;
             case 'scalar-unit':
             case 'scalar-unit.size':
             case 'scalar-unit.time':
