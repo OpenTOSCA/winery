@@ -14,10 +14,13 @@
 
 package org.eclipse.winery.repository.yaml;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.winery.model.tosca.yaml.TPropertyAssignment;
@@ -35,11 +38,39 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class YamlWriterTests {
 
     @ParameterizedTest
+    @ArgumentsSource(PropertyAssignmentArgumentsProvider.class)
+    public void testPropertyAssignmentSerialization(TPropertyAssignment prop, String expected) {
+        YamlWriter writer = new YamlWriter();
+        YamlPrinter p = writer.visit(prop, new YamlWriter.Parameter(0).addContext("root"));
+        assertEquals(expected, p.toString());
+    }
+
+    @ParameterizedTest
     @ArgumentsSource(PropertyFunctionArgumentsProvider.class)
     public void testPropertyFunctionSerialization(TPropertyAssignment prop, String expected) {
         YamlWriter writer = new YamlWriter();
         YamlPrinter p = writer.visit(prop, new YamlWriter.Parameter(0).addContext("root"));
         assertEquals(expected, p.toString());
+    }
+
+    static class PropertyAssignmentArgumentsProvider implements ArgumentsProvider {
+
+        @Override
+        public Stream<? extends Arguments> provideArguments(ExtensionContext context) throws Exception {
+            final TPropertyAssignment baseList = new TPropertyAssignment(Stream.of("a1", "a2").map(TPropertyAssignment::new).collect(Collectors.toList()));
+            final Map<String, TPropertyAssignment> nestedMap = new HashMap<>();
+            nestedMap.put("pre_activities", baseList);
+            nestedMap.put("post_activities", baseList);
+            nestedMap.put("type", new TPropertyAssignment("sequence"));
+            final List<TPropertyAssignment> multipleMaps = new ArrayList<>();
+            multipleMaps.add(new TPropertyAssignment(nestedMap));
+            multipleMaps.add(new TPropertyAssignment(nestedMap));
+            return Stream.of(
+                Arguments.of(baseList,"root:\n  - \"a1\"\n  - \"a2\"\n"),
+                Arguments.of(new TPropertyAssignment(Collections.singletonMap("entries", baseList)), "root:\n  entries:\n    - \"a1\"\n    - \"a2\"\n"),
+                Arguments.of(new TPropertyAssignment(multipleMaps), "root:\n  - post_activities:\n      - \"a1\"\n      - \"a2\"\n    pre_activities:\n      - \"a1\"\n      - \"a2\"\n    type: \"sequence\"\n  - post_activities:\n      - \"a1\"\n      - \"a2\"\n    pre_activities:\n      - \"a1\"\n      - \"a2\"\n    type: \"sequence\"\n")
+            );
+        }
     }
 
     static class PropertyFunctionArgumentsProvider implements ArgumentsProvider {

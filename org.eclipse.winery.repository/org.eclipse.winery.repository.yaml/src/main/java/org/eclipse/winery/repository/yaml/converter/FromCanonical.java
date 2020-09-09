@@ -1238,7 +1238,15 @@ public class FromCanonical {
                 );
                 return builder.build();
             }
-            // value is some kind of object, which we DO NOT TOUCH!
+            if (value instanceof List) {
+                builder.setValue(
+                    ((List<Object>)value).stream()
+                    .map(entry -> convert(entry))
+                    .collect(Collectors.toList())
+                );
+                return builder.build();
+            }
+            // value is some kind of object that's not a collection, which we DO NOT TOUCH!
             builder.setValue(value);
             return builder.build();
         }

@@ -428,7 +428,7 @@ public class YamlWriter extends AbstractVisitor<YamlPrinter, YamlWriter.Paramete
         // nested assignments are implemented by calling #printMap for Map values that are not property functions
         YamlPrinter printer = new YamlPrinter(parameter.getIndent());
         if (node.getValue() instanceof Map) {
-            Map<String, TPropertyAssignment> value = (Map<String, TPropertyAssignment>)node.getValue();
+            Map<String, TPropertyAssignment> value = (Map<String, TPropertyAssignment>) node.getValue();
             // special casing for property functions to always be a single-line map value
             if (value.size() == 1 && Arrays.stream(PROPERTY_FUNCTIONS).anyMatch(value::containsKey)) {
                 String key = value.keySet().iterator().next();
@@ -452,11 +452,13 @@ public class YamlWriter extends AbstractVisitor<YamlPrinter, YamlWriter.Paramete
                 }
                 printer.print(parameter.getKey()).print(":")
                     .print(" { ")
-                        .print(key).print(": ").print(functionArg)
+                    .print(key).print(": ").print(functionArg)
                     .print(" }").printNewLine();
             } else {
                 printer.print(printMap(parameter.getKey(), value, parameter));
             }
+        } else if (node.getValue() instanceof List) {
+            printer.print(printList(parameter.getKey(), (List<?>)node.getValue(), parameter));
         } else {
             printer.printKeyObject(parameter.getKey(), node.getValue());
         }
@@ -577,11 +579,14 @@ public class YamlWriter extends AbstractVisitor<YamlPrinter, YamlWriter.Paramete
     private <T> YamlPrinter printList(String keyValue, List<T> list, Parameter parameter) {
         YamlPrinter printer = new YamlPrinter(parameter.getIndent());
         if (list != null && !list.isEmpty()) {
-            printer.printKey(keyValue)
-                .print(list.stream()
-                    .map(entry -> ((VisitorNode) entry).accept(this, new Parameter(parameter.getIndent() + INDENT_SIZE)))
-                    .reduce(YamlPrinter::print)
-                );
+            printer.printKey(keyValue);
+            printer.indent(INDENT_SIZE);
+            list.stream()
+                // transform items to yaml-strings without indentation
+                // since indentation is done in printListObject
+                .map(entry -> ((VisitorNode) entry).accept(this, new Parameter(0)))
+                .reduce(printer, YamlPrinter::printListObject);
+            printer.indent(-2);
         }
         return printer;
     }
@@ -591,24 +596,26 @@ public class YamlWriter extends AbstractVisitor<YamlPrinter, YamlWriter.Paramete
         if (map == null) {
             return printer;
         }
-        map.values().removeIf(Objects::isNull);
+//        map.values().removeIf(Objects::isNull);
         if (map.isEmpty()) {
             return printer;
         }
-        printer.printKey(keyValue)
-            .print(map.entrySet().stream()
-                .map((entry) -> {
-                        YamlPrinter p = new YamlPrinter(parameter.getIndent() + INDENT_SIZE)
-                            .print(
-                                printVisitorNode(entry.getValue(),
-                                    new Parameter(parameter.getIndent() + INDENT_SIZE).addContext(entry.getKey())
-                                )
-                            );
-                        return p;
-                    }
-                )
-                .reduce(YamlPrinter::print)
-            );
+        if (!keyValue.isEmpty()) {
+            printer.printKey(keyValue);
+        }
+        printer.print(map.entrySet().stream()
+            .map((entry) -> {
+                    YamlPrinter p = new YamlPrinter(parameter.getIndent() + INDENT_SIZE)
+                        .print(
+                            printVisitorNode(entry.getValue(),
+                                new Parameter(parameter.getIndent() + INDENT_SIZE).addContext(entry.getKey())
+                            )
+                        );
+                    return p;
+                }
+            )
+            .reduce(YamlPrinter::print)
+        );
         return printer;
     }
 
