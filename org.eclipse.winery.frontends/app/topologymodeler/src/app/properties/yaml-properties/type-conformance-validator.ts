@@ -82,7 +82,7 @@ export class TypeConformanceValidator implements Validator {
     }
 
     private fulfilsWellKnownType(structuredValue: any, knownType: YamlWellKnown): boolean {
-        if (!structuredValue && knownType !== 'null') {
+        if ((structuredValue === undefined || structuredValue === null) && knownType !== 'null') {
             return false;
         }
         switch (knownType) {
