@@ -21,7 +21,6 @@ import java.util.stream.Collectors;
 
 import javax.xml.namespace.QName;
 
-import org.eclipse.winery.model.tosca.TEntityType;
 import org.eclipse.winery.model.tosca.yaml.TStatusValue;
 import org.eclipse.winery.model.tosca.yaml.TVersion;
 import org.eclipse.winery.model.tosca.yaml.visitor.AbstractResult;

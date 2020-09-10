@@ -102,7 +102,7 @@ export class BackendService {
     private handleAllEntitiesResult(results: [any, any, boolean]) {
         const templateAndVisuals = results[0];
 
-        this.topologyTemplate = templateAndVisuals[0];
+        this.topologyTemplate = BackendService.patchProperties(templateAndVisuals[0]);
         const visuals = templateAndVisuals[1];
         const diff = templateAndVisuals[2];
 
@@ -555,6 +555,48 @@ export class BackendService {
         return this.http.get<EntityType[]>(url, { headers: this.headers });
     }
 
+    /**
+     * Patches the property values of all node- and relationship templates in the given topology.
+     * @param topology
+     */
+    private static patchProperties(topology: TTopologyTemplate): TTopologyTemplate {
+        function patchMembers(p: object): void {
+            function jsonParse(v: string): string | object {
+                let result;
+                try {
+                    result = JSON.parse(v);
+                } catch (e) {
+                    result = v;
+                }
+                return result;
+            }
+
+            // tslint:disable-next-line:forin
+            for (const member in p) {
+                const memberType = typeof(p[member]);
+                if (memberType === 'string') {
+                    const patched = jsonParse(p[member]);
+                    if (typeof(patched) !== 'string') {
+                        p[member] = patched;
+                    }
+                } else if (memberType === 'object') {
+                    // recurse, just to be safe
+                    patchMembers(p[member]);
+                }
+            }
+        }
+        for (const node of topology.nodeTemplates) {
+            if (node.properties && node.properties.properties) {
+                patchMembers(node.properties.properties);
+            }
+        }
+        for (const rel of topology.relationshipTemplates) {
+            if (rel.properties && rel.properties.properties) {
+                patchMembers(rel.properties.properties);
+            }
+        }
+        return topology;
+    }
 
     /**
      * Requests all policy types from the backend
