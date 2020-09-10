@@ -460,7 +460,13 @@ public class YamlWriter extends AbstractVisitor<YamlPrinter, YamlWriter.Paramete
         } else if (node.getValue() instanceof List) {
             printer.print(printList(parameter.getKey(), (List<?>)node.getValue(), parameter));
         } else {
-            printer.printKeyObject(parameter.getKey(), node.getValue());
+            // printKeyObject skips null and empty values, which is a reasonable default
+            // therefore we serialize values ourselves here
+            final String value = Objects.toString(node.getValue());
+            final boolean isStringValue = node.getValue() instanceof String;
+            // an empty value should require the original type to be a String, thusly adding quotes to the serialization
+            assert (!value.isEmpty() || isStringValue);
+            printer.printKeyValue(parameter.getKey(), value, isStringValue, true);
         }
         return printer;
     }
