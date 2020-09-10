@@ -66,11 +66,12 @@ public class YamlWriterTests {
             multipleMaps.add(new TPropertyAssignment(nestedMap));
             multipleMaps.add(new TPropertyAssignment(nestedMap));
             return Stream.of(
+                Arguments.of(new TPropertyAssignment(Collections.singletonMap("key", new TPropertyAssignment("value"))), "root:\n  key: \"value\"\n"),
+                Arguments.of(new TPropertyAssignment(Collections.singletonMap("key", new TPropertyAssignment((Object)null))), "root:\n  key: null\n"),
+                Arguments.of(new TPropertyAssignment(Collections.singletonMap("key", new TPropertyAssignment(""))), "root:\n  key: \"\"\n"),
                 Arguments.of(baseList,"root:\n  - \"a1\"\n  - \"a2\"\n"),
                 Arguments.of(new TPropertyAssignment(Collections.singletonMap("entries", baseList)), "root:\n  entries:\n    - \"a1\"\n    - \"a2\"\n"),
-                Arguments.of(new TPropertyAssignment(multipleMaps), "root:\n  - post_activities:\n      - \"a1\"\n      - \"a2\"\n    pre_activities:\n      - \"a1\"\n      - \"a2\"\n    type: \"sequence\"\n  - post_activities:\n      - \"a1\"\n      - \"a2\"\n    pre_activities:\n      - \"a1\"\n      - \"a2\"\n    type: \"sequence\"\n"),
-                Arguments.of(new TPropertyAssignment(Collections.singletonMap("key", new TPropertyAssignment((Object)null))), "root:\n  key: null\n"),
-                Arguments.of(new TPropertyAssignment(Collections.singletonMap("key", new TPropertyAssignment(""))), "root:\n  key: \"\"\n")
+                Arguments.of(new TPropertyAssignment(multipleMaps), "root:\n  - post_activities:\n      - \"a1\"\n      - \"a2\"\n    pre_activities:\n      - \"a1\"\n      - \"a2\"\n    type: \"sequence\"\n  - post_activities:\n      - \"a1\"\n      - \"a2\"\n    pre_activities:\n      - \"a1\"\n      - \"a2\"\n    type: \"sequence\"\n")
             );
         }
     }
@@ -78,14 +79,7 @@ public class YamlWriterTests {
     static class PropertyFunctionArgumentsProvider implements ArgumentsProvider {
         @Override
         public Stream<? extends Arguments> provideArguments(ExtensionContext context) {
-            // workaround for test #2 to not use an unmodifiable collection
-            Map<String, TPropertyAssignment> input = new HashMap<>();
-            input.put("key", new TPropertyAssignment("value"));
             return Stream.of(
-                Arguments.of(new TPropertyAssignment(), ""),
-                Arguments.of(
-                    new TPropertyAssignment(input),
-                    "root:\n  key: \"value\"\n"),
                 Arguments.of(
                     new TPropertyAssignment(Collections.singletonMap("get_input", new TPropertyAssignment("value"))),
                     "root: { get_input: value }\n"),
