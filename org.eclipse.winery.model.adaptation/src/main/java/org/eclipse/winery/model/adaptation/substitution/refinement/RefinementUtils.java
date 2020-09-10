@@ -96,7 +96,7 @@ public abstract class RefinementUtils {
             .noneMatch(map -> map.getDetectorElement().getId().equals(detectorNode.getId())
                 && map.getRefinementElement().getId().equals(refinementNode.getId()))) {
             prm.setPermutationMappings(
-                addMapping(detectorNode, refinementNode, new OTPermutationMapping(), prm.getPermutationMappings())
+                addMapping(detectorNode, refinementNode, new OTPermutationMapping(new OTPermutationMapping.Builder()), prm.getPermutationMappings())
             );
         }
     }

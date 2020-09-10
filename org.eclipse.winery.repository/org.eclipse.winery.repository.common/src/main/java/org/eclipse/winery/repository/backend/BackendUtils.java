@@ -638,13 +638,13 @@ public class BackendUtils {
         } else if (id instanceof ArtifactTemplateId) {
             element = new TArtifactTemplate();
         } else if (id instanceof ComplianceRuleId) {
-            element = new OTComplianceRule();
+            element = new OTComplianceRule(new OTComplianceRule.Builder(id.getXmlId().getDecoded()));
         } else if (id instanceof PatternRefinementModelId) {
-            element = new OTPatternRefinementModel();
+            element = new OTPatternRefinementModel(new OTPatternRefinementModel.Builder());
         } else if (id instanceof TopologyFragmentRefinementModelId) {
-            element = new OTTopologyFragmentRefinementModel();
+            element = new OTTopologyFragmentRefinementModel(new OTPatternRefinementModel.Builder());
         } else if (id instanceof TestRefinementModelId) {
-            element = new OTTestRefinementModel();
+            element = new OTTestRefinementModel(new OTTestRefinementModel.Builder());
         } else if (id instanceof InterfaceTypeId) {
             element = new TInterfaceType();
         } else if (id instanceof XSDImportId) {

@@ -308,14 +308,14 @@ public class AbstractRefinementTest {
         // endregion
 
         // region *** relation mapping ***
-        OTRelationMapping rm1 = new OTRelationMapping();
+        OTRelationMapping rm1 = new OTRelationMapping(new OTRelationMapping.Builder());
         rm1.setDetectorElement(nt7);
         rm1.setRelationType(QName.valueOf("{http://ex.org}relType_1"));
         rm1.setDirection(OTRelationDirection.INGOING);
         rm1.setValidSourceOrTarget(QName.valueOf("{http://ex.org}nodeType_3"));
         rm1.setRefinementElement(nt11);
 
-        OTRelationMapping rm2 = new OTRelationMapping();
+        OTRelationMapping rm2 = new OTRelationMapping(new OTRelationMapping.Builder());
         rm2.setDetectorElement(nt7);
         rm2.setRelationType(QName.valueOf("{http://ex.org}relType_1"));
         rm2.setDirection(OTRelationDirection.OUTGOING);
@@ -323,7 +323,7 @@ public class AbstractRefinementTest {
         rm2.setRefinementElement(nt10);
         // endregion
 
-        OTPatternRefinementModel prmWithNt2HostedOnNt4AndIngoingRt1AtNt2AndOutgoingRt1AtNt2 = new OTPatternRefinementModel();
+        OTPatternRefinementModel prmWithNt2HostedOnNt4AndIngoingRt1AtNt2AndOutgoingRt1AtNt2 = new OTPatternRefinementModel(new OTPatternRefinementModel.Builder());
         prmWithNt2HostedOnNt4AndIngoingRt1AtNt2AndOutgoingRt1AtNt2.setDetector(detector);
         prmWithNt2HostedOnNt4AndIngoingRt1AtNt2AndOutgoingRt1AtNt2.setRefinementTopology(refinementStructure);
 
@@ -344,7 +344,7 @@ public class AbstractRefinementTest {
         // endregion
 
         // region *** invalidCandidateForTopology **
-        OTPatternRefinementModel prmWithNt2HostedOnNt4AndOutgoingRt1AtNt2 = new OTPatternRefinementModel();
+        OTPatternRefinementModel prmWithNt2HostedOnNt4AndOutgoingRt1AtNt2 = new OTPatternRefinementModel(new OTPatternRefinementModel.Builder());
         prmWithNt2HostedOnNt4AndOutgoingRt1AtNt2.setDetector(detector);
 
         List<OTRelationMapping> relationMappingsNonMatchingPrm = new ArrayList<>();
@@ -372,13 +372,13 @@ public class AbstractRefinementTest {
             .findMatches(detectorGraph, topologyGraph3, new ToscaTypeMatcher())
             .next();
 
-        OTDeploymentArtifactMapping deploymentArtifactMapping1 = new OTDeploymentArtifactMapping();
+        OTDeploymentArtifactMapping deploymentArtifactMapping1 = new OTDeploymentArtifactMapping(new OTDeploymentArtifactMapping.Builder());
         deploymentArtifactMapping1.setId("daMap-1");
         deploymentArtifactMapping1.setArtifactType(artifactTypeFile);
         deploymentArtifactMapping1.setDetectorElement(nt8);
         deploymentArtifactMapping1.setRefinementElement(nt13);
 
-        OTPatternRefinementModel matchingPrmWithDa = new OTPatternRefinementModel();
+        OTPatternRefinementModel matchingPrmWithDa = new OTPatternRefinementModel(new OTPatternRefinementModel.Builder());
         matchingPrmWithDa.setDetector(detector);
         matchingPrmWithDa.setRefinementTopology(refinementStructure);
         matchingPrmWithDa.setDeploymentArtifactMappings(Collections.singletonList(deploymentArtifactMapping1));
@@ -388,13 +388,13 @@ public class AbstractRefinementTest {
 
         QName artifactTypeZip = new QName("zip", "http://example.org/tosca/at");
 
-        OTDeploymentArtifactMapping deploymentArtifactMapping2 = new OTDeploymentArtifactMapping();
+        OTDeploymentArtifactMapping deploymentArtifactMapping2 = new OTDeploymentArtifactMapping(new OTDeploymentArtifactMapping.Builder());
         deploymentArtifactMapping2.setId("daMap-1");
         deploymentArtifactMapping2.setArtifactType(artifactTypeZip);
         deploymentArtifactMapping2.setDetectorElement(nt7);
         deploymentArtifactMapping2.setRefinementElement(nt11);
 
-        OTPatternRefinementModel nonMatchingPrmWithDa = new OTPatternRefinementModel();
+        OTPatternRefinementModel nonMatchingPrmWithDa = new OTPatternRefinementModel(new OTPatternRefinementModel.Builder());
         nonMatchingPrmWithDa.setDetector(detector);
         nonMatchingPrmWithDa.setRefinementTopology(refinementStructure);
         nonMatchingPrmWithDa.setDeploymentArtifactMappings(Collections.singletonList(deploymentArtifactMapping2));
@@ -409,13 +409,13 @@ public class AbstractRefinementTest {
             .findMatches(detectorGraph, topology4Graph, new ToscaTypeMatcher())
             .next();
 
-        OTRelationMapping rm3 = new OTRelationMapping();
+        OTRelationMapping rm3 = new OTRelationMapping(new OTRelationMapping.Builder());
         rm3.setRelationType(QName.valueOf("{http://ex.org}relType_1"));
         rm3.setDirection(OTRelationDirection.INGOING);
         rm3.setDetectorElement(nt7);
         rm3.setRefinementElement(nt11);
 
-        OTPatternRefinementModel prmWithNT2HostedOnNT4AndIngoingRT1AtNT2 = new OTPatternRefinementModel();
+        OTPatternRefinementModel prmWithNT2HostedOnNT4AndIngoingRT1AtNT2 = new OTPatternRefinementModel(new OTPatternRefinementModel.Builder());
         prmWithNT2HostedOnNT4AndIngoingRT1AtNT2.setDetector(detector);
         prmWithNT2HostedOnNT4AndIngoingRT1AtNT2.setRefinementTopology(refinementStructure);
         prmWithNT2HostedOnNT4AndIngoingRT1AtNT2.setRelationMappings(Collections.singletonList(rm3));
@@ -423,13 +423,13 @@ public class AbstractRefinementTest {
         invalidCandidateForTopology4 = new RefinementCandidate(prmWithNT2HostedOnNT4AndIngoingRT1AtNT2,
             detectorWithTopology4Mapping, detectorGraph, 7);
 
-        OTRelationMapping rm4 = new OTRelationMapping();
+        OTRelationMapping rm4 = new OTRelationMapping(new OTRelationMapping.Builder());
         rm4.setRelationType(QName.valueOf("{http://ex.org}relType_1"));
         rm4.setDirection(OTRelationDirection.INGOING);
         rm4.setDetectorElement(nt8);
         rm4.setRefinementElement(nt13);
 
-        OTPatternRefinementModel prmWithNT2HostedOnNT4AndIngoingRT1AtNT2AndIngoingRT1AtNT4 = new OTPatternRefinementModel();
+        OTPatternRefinementModel prmWithNT2HostedOnNT4AndIngoingRT1AtNT2AndIngoingRT1AtNT4 = new OTPatternRefinementModel(new OTPatternRefinementModel.Builder());
         prmWithNT2HostedOnNT4AndIngoingRT1AtNT2AndIngoingRT1AtNT4.setDetector(detector);
         prmWithNT2HostedOnNT4AndIngoingRT1AtNT2AndIngoingRT1AtNT4.setRefinementTopology(refinementStructure);
         prmWithNT2HostedOnNT4AndIngoingRT1AtNT2AndIngoingRT1AtNT4.setRelationMappings(Arrays.asList(rm3, rm4));

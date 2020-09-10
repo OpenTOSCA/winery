@@ -53,16 +53,18 @@ public class OTComplianceRule extends HasId implements HasName, HasTargetNamespa
     protected TTags tags;
 
     @Deprecated
-    public OTComplianceRule() { }
+    public OTComplianceRule() {
+    }
 
-    private OTComplianceRule(Builder builder) {
+    public OTComplianceRule(Builder builder) {
         super(builder);
         this.name = builder.name;
         this.identifier = builder.identifier;
         this.requiredStructure = builder.requiredStructure;
         this.tags = builder.tags;
+        this.targetNamespace = builder.targetNamespace;
     }
-    
+
     @Override
     public String getName() {
         return name;
@@ -129,6 +131,11 @@ public class OTComplianceRule extends HasId implements HasName, HasTargetNamespa
         private TTopologyTemplate identifier;
         private TTopologyTemplate requiredStructure;
         private TTags tags;
+        private String targetNamespace;
+
+        public Builder() {
+            super();
+        }
 
         public Builder(String id) {
             super(id);
@@ -154,6 +161,11 @@ public class OTComplianceRule extends HasId implements HasName, HasTargetNamespa
                 this.tags = new TTags();
             }
             this.tags.getTag().addAll(tags);
+            return self();
+        }
+
+        public Builder setTargetNamespace(String targetNamespace) {
+            this.targetNamespace = targetNamespace;
             return self();
         }
 

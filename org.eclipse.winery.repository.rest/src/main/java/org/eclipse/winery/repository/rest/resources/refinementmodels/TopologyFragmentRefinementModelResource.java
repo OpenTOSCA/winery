@@ -42,7 +42,7 @@ public class TopologyFragmentRefinementModelResource extends AbstractRefinementM
 
     @Override
     protected OTPatternRefinementModel createNewElement() {
-        return new OTPatternRefinementModel();
+        return new OTPatternRefinementModel(new OTPatternRefinementModel.Builder());
     }
 
     public OTTopologyFragmentRefinementModel getTRefinementModel() {

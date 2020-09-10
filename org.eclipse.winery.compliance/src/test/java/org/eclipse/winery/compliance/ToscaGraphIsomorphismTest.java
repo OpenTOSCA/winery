@@ -102,7 +102,7 @@ public class ToscaGraphIsomorphismTest extends TestWithGitBackedRepository {
 
     @Test
     public void testTComplianceRulePersistence() throws Exception {
-        OTComplianceRule rule = new OTComplianceRule();
+        OTComplianceRule rule = new OTComplianceRule(new OTComplianceRule.Builder());
         rule.setName("test");
         rule.setTargetNamespace(TEST_TARGET_NAMESPACE);
 

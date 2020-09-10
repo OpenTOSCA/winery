@@ -1009,7 +1009,7 @@ public class ToCanonical {
         return builder.build();
     }
 
-    private <Builder extends org.eclipse.winery.model.tosca.extensions.OTTopologyFragmentRefinementModel.Builder, Value extends OTTopologyFragmentRefinementModel> void 
+    private <Builder extends org.eclipse.winery.model.tosca.extensions.OTTopologyFragmentRefinementModel.RefinementBuilder, Value extends OTTopologyFragmentRefinementModel> void 
         fillOTTopologyFragmentRefinementModelProperites(Builder builder, Value value) {
         builder.setRefinementStructure(convert(value.getRefinementStructure()));
         builder.setDeploymentArtifactMappings(convertList(value.getDeploymentArtifactMappings(), this::convert));

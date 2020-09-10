@@ -34,7 +34,7 @@ public class TestRefinementModelResource extends AbstractRefinementModelResource
 
     @Override
     protected OTTestRefinementModel createNewElement() {
-        return new OTTestRefinementModel();
+        return new OTTestRefinementModel(new OTTestRefinementModel.Builder());
     }
 
     @Path("testfragment")

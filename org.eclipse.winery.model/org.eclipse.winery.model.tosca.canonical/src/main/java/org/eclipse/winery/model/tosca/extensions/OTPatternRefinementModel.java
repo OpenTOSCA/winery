@@ -24,14 +24,17 @@ import org.eclipse.winery.model.tosca.constants.Namespaces;
 public class OTPatternRefinementModel extends OTTopologyFragmentRefinementModel {
 
     @Deprecated
-    public OTPatternRefinementModel() { }
+    public OTPatternRefinementModel() {
+    }
 
     public OTPatternRefinementModel(Builder builder) {
         super(builder);
     }
 
-    public static class Builder extends OTTopologyFragmentRefinementModel.Builder {
-        public Builder() { }
+    public static class Builder extends RefinementBuilder<Builder> {
+
+        public Builder() {
+        }
 
         public OTPatternRefinementModel build() {
             return new OTPatternRefinementModel(this);

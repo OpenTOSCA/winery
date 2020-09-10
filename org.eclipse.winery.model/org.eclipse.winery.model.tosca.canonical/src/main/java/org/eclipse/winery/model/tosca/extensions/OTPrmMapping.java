@@ -93,12 +93,12 @@ public abstract class OTPrmMapping extends HasId implements Serializable {
             super(id);
         }
 
-        public Builder<T> setDetectorElement(TEntityTemplate detectorElement) {
+        public T setDetectorElement(TEntityTemplate detectorElement) {
             this.detectorElement = detectorElement;
             return self();
         }
 
-        public Builder<T> setRefinementElement(TEntityTemplate refinementElement) {
+        public T setRefinementElement(TEntityTemplate refinementElement) {
             this.refinementElement = refinementElement;
             return self();
         }

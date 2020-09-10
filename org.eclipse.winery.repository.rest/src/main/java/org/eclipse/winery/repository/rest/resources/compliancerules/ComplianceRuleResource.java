@@ -44,7 +44,7 @@ public class ComplianceRuleResource extends AbstractComponentInstanceResourceCon
 
     @Override
     protected TExtensibleElements createNewElement() {
-        return new OTComplianceRule();
+        return new OTComplianceRule(new OTComplianceRule.Builder());
     }
 
     public OTComplianceRule getComplianceRule() {

@@ -28,6 +28,7 @@ public class OTStringList {
     @XmlList
     protected List<String> values;
 
+    @Deprecated
     public OTStringList() {
     }
 

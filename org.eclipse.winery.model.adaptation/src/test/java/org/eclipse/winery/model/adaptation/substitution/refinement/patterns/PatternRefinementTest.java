@@ -326,19 +326,19 @@ class PatternRefinementTest extends AbstractRefinementTest {
         nt11Props.setKVProperties(nt11PropsMap);
         nt11.setProperties(nt11Props);
 
-        OTAttributeMapping allOn4to13 = new OTAttributeMapping();
+        OTAttributeMapping allOn4to13 = new OTAttributeMapping(new OTAttributeMapping.Builder());
         allOn4to13.setType(OTAttributeMappingType.ALL);
         allOn4to13.setDetectorElement(candidateForTopology.getRefinementModel().getDetector().getNodeTemplate("8"));
         allOn4to13.setRefinementElement(nt13);
 
-        OTAttributeMapping pIn2_to_jIn12 = new OTAttributeMapping();
+        OTAttributeMapping pIn2_to_jIn12 = new OTAttributeMapping(new OTAttributeMapping.Builder());
         pIn2_to_jIn12.setType(OTAttributeMappingType.SELECTIVE);
         pIn2_to_jIn12.setDetectorElement(candidateForTopology.getRefinementModel().getDetector().getNodeTemplate("7"));
         pIn2_to_jIn12.setRefinementElement(nt12);
         pIn2_to_jIn12.setDetectorProperty("p");
         pIn2_to_jIn12.setRefinementProperty("j");
 
-        OTAttributeMapping xIn2_to_kIn11 = new OTAttributeMapping();
+        OTAttributeMapping xIn2_to_kIn11 = new OTAttributeMapping(new OTAttributeMapping.Builder());
         xIn2_to_kIn11.setType(OTAttributeMappingType.SELECTIVE);
         xIn2_to_kIn11.setDetectorElement(candidateForTopology.getRefinementModel().getDetector().getNodeTemplate("7"));
         xIn2_to_kIn11.setRefinementElement(nt11);

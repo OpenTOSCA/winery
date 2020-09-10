@@ -58,14 +58,17 @@ public class OTTopologyFragmentRefinementModel extends OTRefinementModel {
     protected List<OTStringList> componentSets;
 
     @Deprecated
-    public OTTopologyFragmentRefinementModel() { }
+    public OTTopologyFragmentRefinementModel() {
+    }
 
-    public OTTopologyFragmentRefinementModel(Builder builder) {
+    public OTTopologyFragmentRefinementModel(RefinementBuilder<? extends RefinementBuilder<?>> builder) {
         super(builder);
         this.refinementStructure = builder.refinementStructure;
         this.attributeMappings = builder.attributeMappings;
         this.stayMappings = builder.stayMappings;
         this.deploymentArtifactMappings = builder.deploymentArtifactMappings;
+        this.permutationOptions = builder.permutationOptions;
+        this.permutationMappings = builder.permutationMappings;
     }
 
     @NonNull
@@ -129,35 +132,52 @@ public class OTTopologyFragmentRefinementModel extends OTRefinementModel {
         this.componentSets = componentSets;
     }
 
-    public static class Builder extends OTRefinementModel.Builder<Builder> {
+    public abstract static class RefinementBuilder<T extends OTRefinementModel.Builder<T>> extends OTRefinementModel.Builder<T> {
 
+        private List<OTPermutationMapping> permutationMappings;
+        private List<OTStringList> permutationOptions;
         private TTopologyTemplate refinementStructure;
         private List<OTAttributeMapping> attributeMappings;
         private List<OTStayMapping> stayMappings;
         private List<OTDeploymentArtifactMapping> deploymentArtifactMappings;
 
-        public Builder() {
-            super();
+        public RefinementBuilder() {
         }
 
-        public Builder setRefinementStructure(TTopologyTemplate refinementStructure) {
+        public T setRefinementStructure(TTopologyTemplate refinementStructure) {
             this.refinementStructure = refinementStructure;
             return self();
         }
 
-        public Builder setAttributeMappings(List<OTAttributeMapping> attributeMappings) {
+        public T setAttributeMappings(List<OTAttributeMapping> attributeMappings) {
             this.attributeMappings = attributeMappings;
             return self();
         }
 
-        public Builder setStayMappings(List<OTStayMapping> stayMappings) {
+        public T setStayMappings(List<OTStayMapping> stayMappings) {
             this.stayMappings = stayMappings;
             return self();
         }
-        
-        public Builder setDeploymentArtifactMappings(List<OTDeploymentArtifactMapping> deploymentArtifactMappings) {
+
+        public T setDeploymentArtifactMappings(List<OTDeploymentArtifactMapping> deploymentArtifactMappings) {
             this.deploymentArtifactMappings = deploymentArtifactMappings;
             return self();
+        }
+
+        public T setPermutationOptions(List<OTStringList> permutationOptions) {
+            this.permutationOptions = permutationOptions;
+            return self();
+        }
+
+        public T setPermutationMappings(List<OTPermutationMapping> permutationMappings) {
+            this.permutationMappings = permutationMappings;
+            return self();
+        }
+    }
+
+    public static class Builder extends RefinementBuilder<Builder> {
+
+        public Builder() {
         }
 
         public OTTopologyFragmentRefinementModel build() {
