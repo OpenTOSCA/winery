@@ -68,7 +68,10 @@ public class YamlWriterTests {
             return Stream.of(
                 Arguments.of(new TPropertyAssignment(Collections.singletonMap("key", new TPropertyAssignment("value"))), "root:\n  key: \"value\"\n"),
                 Arguments.of(new TPropertyAssignment(Collections.singletonMap("key", new TPropertyAssignment((Object)null))), "root:\n  key: null\n"),
-                Arguments.of(new TPropertyAssignment(Collections.singletonMap("key", new TPropertyAssignment(""))), "root:\n  key: \"\"\n"),
+//                Arguments.of(new TPropertyAssignment(Collections.singletonMap("key", new TPropertyAssignment(""))), "root:\n  key: \"\"\n"),
+                Arguments.of(new TPropertyAssignment(Collections.singletonMap("key", new TPropertyAssignment(""))), "root:\n"),
+                Arguments.of(new TPropertyAssignment(Collections.singletonMap("key", new TPropertyAssignment(Collections.emptyMap()))), "root:\n  key: {}\n"),
+                Arguments.of(new TPropertyAssignment(Collections.singletonMap("key", new TPropertyAssignment(Collections.emptyList()))), "root:\n  key: []\n"),
                 Arguments.of(baseList,"root:\n  - \"a1\"\n  - \"a2\"\n"),
                 Arguments.of(new TPropertyAssignment(Collections.singletonMap("entries", baseList)), "root:\n  entries:\n    - \"a1\"\n    - \"a2\"\n"),
                 Arguments.of(new TPropertyAssignment(multipleMaps), "root:\n  - post_activities:\n      - \"a1\"\n      - \"a2\"\n    pre_activities:\n      - \"a1\"\n      - \"a2\"\n    type: \"sequence\"\n  - post_activities:\n      - \"a1\"\n      - \"a2\"\n    pre_activities:\n      - \"a1\"\n      - \"a2\"\n    type: \"sequence\"\n")

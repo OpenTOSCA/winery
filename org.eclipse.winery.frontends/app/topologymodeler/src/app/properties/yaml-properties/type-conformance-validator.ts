@@ -55,7 +55,9 @@ export class TypeConformanceValidator implements Validator {
             // this only happens if parsing is not lax OR the value could not be parsed as string after enquoting it
             return { 'typeConformance':  [ 'Could not parse entered value as JSON' ]};
         }
-        if (!this.propDef.required && structuredValue === null) {
+        // if (!this.propDef.required && structuredValue === null) {
+        if (structuredValue === null) {
+            // skip all validation for null values
             return;
         }
         const results = this.fulfilsTypeDefinition(this.enforcedType, '',  structuredValue);

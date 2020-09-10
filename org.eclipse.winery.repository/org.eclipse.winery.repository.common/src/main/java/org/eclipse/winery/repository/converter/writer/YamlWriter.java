@@ -428,11 +428,12 @@ public class YamlWriter extends AbstractVisitor<YamlPrinter, YamlWriter.Paramete
         // nested assignments are implemented by calling #printMap for Map values that are not property functions
         YamlPrinter printer = new YamlPrinter(parameter.getIndent());
         if (node.getValue() instanceof Map) {
+            @SuppressWarnings("unchecked")
             Map<String, TPropertyAssignment> value = (Map<String, TPropertyAssignment>) node.getValue();
             // special casing for property functions to always be a single-line map value
             if (value.size() == 1 && Arrays.stream(PROPERTY_FUNCTIONS).anyMatch(value::containsKey)) {
                 String key = value.keySet().iterator().next();
-                final Object rawFunctionArg = ((TPropertyAssignment) value.get(key)).getValue();
+                final Object rawFunctionArg = value.get(key).getValue();
                 final String functionArg;
                 if (rawFunctionArg instanceof List) {
                     final String list = ((List<?>) rawFunctionArg).stream()
@@ -454,19 +455,25 @@ public class YamlWriter extends AbstractVisitor<YamlPrinter, YamlWriter.Paramete
                     .print(" { ")
                     .print(key).print(": ").print(functionArg)
                     .print(" }").printNewLine();
+            } else if (value.isEmpty()) {
+                // printMap would skip an empty map
+                printer.printKeyValue(parameter.getKey(), "{}");
             } else {
                 printer.print(printMap(parameter.getKey(), value, parameter));
             }
         } else if (node.getValue() instanceof List) {
-            printer.print(printList(parameter.getKey(), (List<?>)node.getValue(), parameter));
+            if (((List<?>) node.getValue()).isEmpty()) {
+                // printList would skip an empty list
+                printer.printKeyValue(parameter.getKey(), "[]");
+            } else {
+                printer.print(printList(parameter.getKey(), (List<?>) node.getValue(), parameter));
+            }
         } else {
             // printKeyObject skips null and empty values, which is a reasonable default
-            // therefore we serialize values ourselves here
+            // therefore we serialize null values ourselves here
             final String value = Objects.toString(node.getValue());
             final boolean isStringValue = node.getValue() instanceof String;
-            // an empty value should require the original type to be a String, thusly adding quotes to the serialization
-            assert (!value.isEmpty() || isStringValue);
-            printer.printKeyValue(parameter.getKey(), value, isStringValue, true);
+            printer.printKeyValue(parameter.getKey(), value, isStringValue, false);
         }
         return printer;
     }
@@ -599,12 +606,7 @@ public class YamlWriter extends AbstractVisitor<YamlPrinter, YamlWriter.Paramete
 
     private <T extends VisitorNode> YamlPrinter printMap(String keyValue, Map<String, T> map, Parameter parameter) {
         YamlPrinter printer = new YamlPrinter(parameter.getIndent());
-        if (map == null) {
-            return printer;
-        }
-        // null objects should be removed in the FromCanonical converter at the latest
-        // map.values().removeIf(Objects::isNull);
-        if (map.isEmpty()) {
+        if (map == null || map.isEmpty()) {
             return printer;
         }
         if (!keyValue.isEmpty()) {
