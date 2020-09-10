@@ -28,7 +28,8 @@ public class OTDeploymentArtifactMapping extends OTPrmMapping {
     private QName artifactType;
 
     @Deprecated
-    public OTDeploymentArtifactMapping() { }
+    public OTDeploymentArtifactMapping() {
+    }
 
     public OTDeploymentArtifactMapping(Builder builder) {
         super(builder);
@@ -46,6 +47,10 @@ public class OTDeploymentArtifactMapping extends OTPrmMapping {
     public static class Builder extends OTPrmMapping.Builder<Builder> {
 
         private QName artifactType;
+
+        public Builder() {
+            super();
+        }
 
         public Builder(String id) {
             super(id);

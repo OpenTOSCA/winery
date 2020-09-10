@@ -32,37 +32,37 @@ public abstract class OTPrmMapping extends HasId implements Serializable {
     @XmlIDREF
     @XmlSchemaType(name = "IDREF")
     @NonNull
-    private TEntityTemplate detectorNode;
+    private TEntityTemplate detectorElement;
 
     @XmlAttribute(name = "refinementNode", required = true)
     @XmlIDREF
     @XmlSchemaType(name = "IDREF")
     @NonNull
-    private TEntityTemplate refinementNode;
+    private TEntityTemplate refinementElement;
 
     @Deprecated
     public OTPrmMapping() { }
 
     public OTPrmMapping(Builder builder) {
         super(builder);
-        this.detectorNode = builder.detectorNode;
-        this.refinementNode = builder.refinementNode;
+        this.detectorElement = builder.detectorElement;
+        this.refinementElement = builder.refinementElement;
     }
 
-    public TEntityTemplate getDetectorNode() {
-        return detectorNode;
+    public TEntityTemplate getDetectorElement() {
+        return detectorElement;
     }
 
-    public void setDetectorNode(TEntityTemplate detectorNode) {
-        this.detectorNode = detectorNode;
+    public void setDetectorElement(TEntityTemplate detectorElement) {
+        this.detectorElement = detectorElement;
     }
 
-    public TEntityTemplate getRefinementNode() {
-        return refinementNode;
+    public TEntityTemplate getRefinementElement() {
+        return refinementElement;
     }
 
-    public void setRefinementNode(TEntityTemplate refinementNode) {
-        this.refinementNode = refinementNode;
+    public void setRefinementElement(TEntityTemplate refinementElement) {
+        this.refinementElement = refinementElement;
     }
 
     @Override
@@ -71,20 +71,24 @@ public abstract class OTPrmMapping extends HasId implements Serializable {
     }
 
     public static abstract class Builder<T extends Builder<T>> extends HasId.Builder<T> {
-        private TEntityTemplate detectorNode;
-        private TEntityTemplate refinementNode;
+        private TEntityTemplate detectorElement;
+        private TEntityTemplate refinementElement;
 
+        public Builder() {
+            super();
+        }
+        
         public Builder(String id) {
             super(id);
         }
 
-        public Builder<T> setDetectorNode(TEntityTemplate detectorNode) {
-            this.detectorNode = detectorNode;
+        public Builder<T> setDetectorElement(TEntityTemplate detectorElement) {
+            this.detectorElement = detectorElement;
             return self();
         }
 
-        public Builder<T> setRefinementNode(TEntityTemplate refinementNode) {
-            this.refinementNode = refinementNode;
+        public Builder<T> setRefinementElement(TEntityTemplate refinementElement) {
+            this.refinementElement = refinementElement;
             return self();
         }
     }

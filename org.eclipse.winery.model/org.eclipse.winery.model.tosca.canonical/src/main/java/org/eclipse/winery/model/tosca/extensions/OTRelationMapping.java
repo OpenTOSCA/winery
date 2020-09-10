@@ -36,7 +36,8 @@ public class OTRelationMapping extends OTPrmMapping {
     private QName validSourceOrTarget;
 
     @Deprecated
-    public OTRelationMapping() { }
+    public OTRelationMapping() {
+    }
 
     public OTRelationMapping(Builder builder) {
         super(builder);
@@ -85,6 +86,10 @@ public class OTRelationMapping extends OTPrmMapping {
         private QName relationType;
         private OTRelationDirection direction;
         private QName validSourceOrTarget;
+
+        public Builder() {
+            super();
+        }
 
         public Builder(String id) {
             super(id);

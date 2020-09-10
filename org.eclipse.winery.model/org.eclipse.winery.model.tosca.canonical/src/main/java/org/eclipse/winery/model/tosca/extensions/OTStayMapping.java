@@ -19,6 +19,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
 
+import org.eclipse.winery.model.tosca.TEntityTemplate;
 import org.eclipse.winery.model.tosca.visitor.Visitor;
 
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -29,11 +30,15 @@ public class OTStayMapping extends OTPrmMapping {
     private OTPrmModelElementType modelElementType;
 
     @Deprecated
-    public OTStayMapping() { }
+    public OTStayMapping() {
+    }
 
     public OTStayMapping(Builder builder) {
         super(builder);
-        this.modelElementType = builder.modelElementType;
+    }
+
+    public OTStayMapping(TEntityTemplate detectorElement, TEntityTemplate refinementElement) {
+        super(detectorElement, refinementElement);
     }
 
     @Override
@@ -58,6 +63,10 @@ public class OTStayMapping extends OTPrmMapping {
     public static class Builder extends OTPrmMapping.Builder<Builder> {
 
         private OTPrmModelElementType modelElementType;
+
+        public Builder() {
+            super();
+        }
 
         public Builder(String id) {
             super(id);

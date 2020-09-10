@@ -933,8 +933,8 @@ public class FromCanonical {
 
     private <Builder extends OTPrmMapping.Builder, Value extends org.eclipse.winery.model.tosca.extensions.OTPrmMapping>
     void fillOTPrmMappingProperties(Builder builder, Value value) {
-        builder.setDetectorNode(convertEntityTemplate(value.getDetectorNode()));
-        builder.setRefinementNode(convertEntityTemplate(value.getRefinementNode()));
+        builder.setDetectorElement(convertEntityTemplate(value.getDetectorElement()));
+        builder.setRefinementElement(convertEntityTemplate(value.getRefinementElement()));
         fillExtensibleElementsProperties(builder, value);
     }
 

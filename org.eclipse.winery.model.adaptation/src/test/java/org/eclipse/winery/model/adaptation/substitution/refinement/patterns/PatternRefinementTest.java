@@ -28,14 +28,14 @@ import javax.xml.namespace.QName;
 import org.eclipse.winery.model.adaptation.substitution.refinement.AbstractRefinementTest;
 import org.eclipse.winery.model.adaptation.substitution.refinement.DefaultRefinementChooser;
 import org.eclipse.winery.model.adaptation.substitution.refinement.RefinementCandidate;
-import org.eclipse.winery.model.tosca.extensions.OTAttributeMapping;
-import org.eclipse.winery.model.tosca.extensions.OTAttributeMappingType;
-import org.eclipse.winery.model.tosca.extensions.OTPatternRefinementModel;
-import org.eclipse.winery.model.tosca.extensions.OTPrmModelElementType;
 import org.eclipse.winery.model.tosca.TEntityTemplate;
 import org.eclipse.winery.model.tosca.TNodeTemplate;
 import org.eclipse.winery.model.tosca.TRelationshipTemplate;
 import org.eclipse.winery.model.tosca.TTopologyTemplate;
+import org.eclipse.winery.model.tosca.extensions.OTAttributeMapping;
+import org.eclipse.winery.model.tosca.extensions.OTAttributeMappingType;
+import org.eclipse.winery.model.tosca.extensions.OTPatternRefinementModel;
+import org.eclipse.winery.model.tosca.extensions.OTPrmModelElementType;
 import org.eclipse.winery.model.tosca.extensions.OTStayMapping;
 import org.eclipse.winery.model.tosca.utils.ModelUtilities;
 import org.eclipse.winery.repository.backend.BackendUtils;
@@ -119,10 +119,13 @@ class PatternRefinementTest extends AbstractRefinementTest {
         patternRefinement.applyRefinement(candidateForTopology, topology);
 
         // static elements
+        TRelationshipTemplate relation21 = topology.getRelationshipTemplate("21");
+        TRelationshipTemplate relation32 = topology.getRelationshipTemplate("32");
+
         assertTrue(Objects.nonNull(topology.getNodeTemplate("1")));
         assertTrue(Objects.nonNull(topology.getNodeTemplate("3")));
-        assertTrue(Objects.nonNull(topology.getRelationshipTemplate("21")));
-        assertTrue(Objects.nonNull(topology.getRelationshipTemplate("32")));
+        assertTrue(Objects.nonNull(relation21));
+        assertTrue(Objects.nonNull(relation32));
 
         // added elements
         assertTrue(Objects.nonNull(topology.getNodeTemplate("10")));
@@ -139,8 +142,8 @@ class PatternRefinementTest extends AbstractRefinementTest {
         assertTrue(Objects.isNull(topology.getRelationshipTemplate("24")));
 
         // changes
-        assertEquals("10", topology.getRelationshipTemplate("21").getSourceElement().getRef().getId());
-        assertEquals("11", topology.getRelationshipTemplate("32").getTargetElement().getRef().getId());
+        assertEquals("10", relation21.getSourceElement().getRef().getId());
+        assertEquals("11", relation32.getTargetElement().getRef().getId());
         assertEquals(11, topology.getNodeTemplateOrRelationshipTemplate().size());
     }
 
@@ -180,7 +183,9 @@ class PatternRefinementTest extends AbstractRefinementTest {
 
         // static elements
         assertTrue(Objects.nonNull(topology2.getNodeTemplate("1")));
-        assertTrue(Objects.nonNull(topology2.getRelationshipTemplate("21")));
+
+        TRelationshipTemplate relation21 = topology2.getRelationshipTemplate("21");
+        assertTrue(Objects.nonNull(relation21));
 
         // added elements
         assertTrue(Objects.nonNull(topology2.getNodeTemplate("10")));
@@ -197,8 +202,8 @@ class PatternRefinementTest extends AbstractRefinementTest {
         assertTrue(Objects.isNull(topology2.getRelationshipTemplate("24")));
 
         // changes
-        assertNotNull(topology2.getRelationshipTemplate("21"));
-        assertEquals("10", topology2.getRelationshipTemplate("21").getSourceElement().getRef().getId());
+        assertNotNull(relation21);
+        assertEquals("10", relation21.getSourceElement().getRef().getId());
         assertEquals(9, topology2.getNodeTemplateOrRelationshipTemplate().size());
     }
     // endregion
@@ -296,6 +301,7 @@ class PatternRefinementTest extends AbstractRefinementTest {
 
         // region *** setup the PRM ***
         TNodeTemplate nt13 = candidateForTopology.getRefinementModel().getRefinementTopology().getNodeTemplate("13");
+        assert nt13 != null;
         TEntityTemplate.WineryKVProperties nt13Props = new TEntityTemplate.WineryKVProperties();
         LinkedHashMap<String, String> nt13PropsMap = new LinkedHashMap<>();
         nt13PropsMap.put("a", null);
@@ -305,6 +311,7 @@ class PatternRefinementTest extends AbstractRefinementTest {
         nt13.setProperties(nt13Props);
 
         TNodeTemplate nt12 = candidateForTopology.getRefinementModel().getRefinementTopology().getNodeTemplate("12");
+        assert nt12 != null;
         TEntityTemplate.WineryKVProperties nt12Props = new TEntityTemplate.WineryKVProperties();
         LinkedHashMap<String, String> nt12PropsMap = new LinkedHashMap<>();
         nt12PropsMap.put("j", null);
@@ -312,6 +319,7 @@ class PatternRefinementTest extends AbstractRefinementTest {
         nt12.setProperties(nt12Props);
 
         TNodeTemplate nt11 = candidateForTopology.getRefinementModel().getRefinementTopology().getNodeTemplate("11");
+        assert nt11 != null;
         TEntityTemplate.WineryKVProperties nt11Props = new TEntityTemplate.WineryKVProperties();
         LinkedHashMap<String, String> nt11PropsMap = new LinkedHashMap<>();
         nt11PropsMap.put("k", null);
@@ -320,20 +328,20 @@ class PatternRefinementTest extends AbstractRefinementTest {
 
         OTAttributeMapping allOn4to13 = new OTAttributeMapping();
         allOn4to13.setType(OTAttributeMappingType.ALL);
-        allOn4to13.setDetectorNode(candidateForTopology.getRefinementModel().getDetector().getNodeTemplate("8"));
-        allOn4to13.setRefinementNode(nt13);
+        allOn4to13.setDetectorElement(candidateForTopology.getRefinementModel().getDetector().getNodeTemplate("8"));
+        allOn4to13.setRefinementElement(nt13);
 
         OTAttributeMapping pIn2_to_jIn12 = new OTAttributeMapping();
         pIn2_to_jIn12.setType(OTAttributeMappingType.SELECTIVE);
-        pIn2_to_jIn12.setDetectorNode(candidateForTopology.getRefinementModel().getDetector().getNodeTemplate("7"));
-        pIn2_to_jIn12.setRefinementNode(nt12);
+        pIn2_to_jIn12.setDetectorElement(candidateForTopology.getRefinementModel().getDetector().getNodeTemplate("7"));
+        pIn2_to_jIn12.setRefinementElement(nt12);
         pIn2_to_jIn12.setDetectorProperty("p");
         pIn2_to_jIn12.setRefinementProperty("j");
 
         OTAttributeMapping xIn2_to_kIn11 = new OTAttributeMapping();
         xIn2_to_kIn11.setType(OTAttributeMappingType.SELECTIVE);
-        xIn2_to_kIn11.setDetectorNode(candidateForTopology.getRefinementModel().getDetector().getNodeTemplate("7"));
-        xIn2_to_kIn11.setRefinementNode(nt11);
+        xIn2_to_kIn11.setDetectorElement(candidateForTopology.getRefinementModel().getDetector().getNodeTemplate("7"));
+        xIn2_to_kIn11.setRefinementElement(nt11);
         xIn2_to_kIn11.setDetectorProperty("x");
         xIn2_to_kIn11.setRefinementProperty("k");
 
@@ -347,6 +355,7 @@ class PatternRefinementTest extends AbstractRefinementTest {
 
         // region *** setup the topology ***
         TNodeTemplate nt2 = topology.getNodeTemplate("2");
+        assert nt2 != null;
         TEntityTemplate.WineryKVProperties nt2Props = new TEntityTemplate.WineryKVProperties();
         LinkedHashMap<String, String> nt2PropsMap = new LinkedHashMap<>();
         nt2PropsMap.put("p", "1");
@@ -355,6 +364,7 @@ class PatternRefinementTest extends AbstractRefinementTest {
         nt2.setProperties(nt2Props);
 
         TNodeTemplate nt4 = topology.getNodeTemplate("4");
+        assert nt4 != null;
         TEntityTemplate.WineryKVProperties nt4Props = new TEntityTemplate.WineryKVProperties();
         LinkedHashMap<String, String> nt4PropsMap = new LinkedHashMap<>();
         nt4PropsMap.put("a", "3");
@@ -371,23 +381,34 @@ class PatternRefinementTest extends AbstractRefinementTest {
         PatternRefinement patternRefinement = new PatternRefinement();
 
         patternRefinement.applyPropertyMappings(candidateForTopology, "8", nt4, topology, idMapping);
-        assertNotNull(topology.getNodeTemplate("13"));
-        assertNotNull(topology.getNodeTemplate("13").getProperties());
-        Map<String, String> properties13 = ModelUtilities.getPropertiesKV(topology.getNodeTemplate("13"));
+
+        TNodeTemplate node13 = topology.getNodeTemplate("13");
+        assertNotNull(node13);
+        Map<String, String> properties13 = ModelUtilities.getPropertiesKV(node13);
+        assertNotNull(properties13);
         assertEquals(3, properties13.size());
         assertEquals("3", properties13.get("a"));
         assertEquals("4", properties13.get("b"));
         assertEquals("0", properties13.get("c"));
 
         patternRefinement.applyPropertyMappings(candidateForTopology, "7", nt2, topology, idMapping);
-        Map<String, String> properties11 = ModelUtilities.getPropertiesKV(topology.getNodeTemplate("11"));
-        Map<String, String> properties12 = ModelUtilities.getPropertiesKV(topology.getNodeTemplate("12"));
-        
+        TNodeTemplate node11 = topology.getNodeTemplate("11");
+        assertNotNull(node11);
+        Map<String, String> properties11 = ModelUtilities.getPropertiesKV(node11);
+        TNodeTemplate node12 = topology.getNodeTemplate("12");
+        assertNotNull(node12);
+        Map<String, String> properties12 = ModelUtilities.getPropertiesKV(node12);
+
+        assertNotNull(properties11);
         assertEquals(1, properties11.size());
         assertEquals("2", properties11.get("k"));
+        assertNotNull(properties12);
         assertEquals(1, properties12.size());
         assertEquals("1", properties12.get("j"));
-        assertNull(topology.getNodeTemplate("10").getProperties());
+
+        TNodeTemplate node10 = topology.getNodeTemplate("10");
+        assertNotNull(node10);
+        assertNull(node10.getProperties());
     }
     // endregion
 
@@ -434,8 +455,8 @@ class PatternRefinementTest extends AbstractRefinementTest {
         OTStayMapping nt4staysAsNt12 = new OTStayMapping();
         nt4staysAsNt12.setModelElementType(OTPrmModelElementType.NODE);
         nt4staysAsNt12.setId("stay1");
-        nt4staysAsNt12.setDetectorNode(nt4);
-        nt4staysAsNt12.setRefinementNode(nt12);
+        nt4staysAsNt12.setDetectorElement(nt4);
+        nt4staysAsNt12.setRefinementElement(nt12);
         ((OTPatternRefinementModel) candidateForTopology.getRefinementModel())
             .setStayMappings(Collections.singletonList(nt4staysAsNt12));
         // endregion
@@ -455,14 +476,20 @@ class PatternRefinementTest extends AbstractRefinementTest {
 
         // region *** assertions ***
         assertNotNull(topology2.getNodeTemplate("4"));
-        assertEquals(topology2.getRelationshipTemplate("1012").getTargetElement().getRef().getId(), "4");
-        assertEquals(topology2.getRelationshipTemplate("1012").getSourceElement().getRef().getId(), "10");
+        TRelationshipTemplate relation1012 = topology2.getRelationshipTemplate("1012");
+        assertNotNull(relation1012);
+        assertEquals("4", relation1012.getTargetElement().getRef().getId());
+        assertEquals("10", relation1012.getSourceElement().getRef().getId());
 
-        assertEquals(topology2.getRelationshipTemplate("1112").getTargetElement().getRef().getId(), "4");
-        assertEquals(topology2.getRelationshipTemplate("1112").getSourceElement().getRef().getId(), "11");
+        TRelationshipTemplate relation1112 = topology2.getRelationshipTemplate("1112");
+        assertNotNull(relation1112);
+        assertEquals("4", relation1112.getTargetElement().getRef().getId());
+        assertEquals("11", relation1112.getSourceElement().getRef().getId());
 
-        assertEquals(topology2.getRelationshipTemplate("21").getTargetElement().getRef().getId(), "1");
-        assertEquals(topology2.getRelationshipTemplate("21").getSourceElement().getRef().getId(), "10");
+        TRelationshipTemplate relation21 = topology2.getRelationshipTemplate("21");
+        assertNotNull(relation21);
+        assertEquals("1", relation21.getTargetElement().getRef().getId());
+        assertEquals("10", relation21.getSourceElement().getRef().getId());
         // endregion
     }
 
@@ -499,7 +526,7 @@ class PatternRefinementTest extends AbstractRefinementTest {
         patternRefinement.applyRefinement(candidateForTopology3WithDa, topology3);
 
         // region *** assertions ***
-        TNodeTemplate refinedNt = topology3.getNodeTemplate("11");
+        TNodeTemplate refinedNt = topology3.getNodeTemplate("13");
         assertNotNull(refinedNt);
         assertNotNull(refinedNt.getDeploymentArtifacts());
         assertEquals(1, refinedNt.getDeploymentArtifacts().getDeploymentArtifact().size());

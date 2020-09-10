@@ -39,9 +39,6 @@ import javax.ws.rs.core.UriInfo;
 import javax.xml.namespace.QName;
 
 import org.eclipse.winery.common.configuration.Environments;
-import org.eclipse.winery.model.ids.EncodingUtil;
-import org.eclipse.winery.model.ids.definitions.NodeTypeId;
-import org.eclipse.winery.model.ids.definitions.ServiceTemplateId;
 import org.eclipse.winery.common.version.WineryVersion;
 import org.eclipse.winery.model.adaptation.enhance.EnhancementUtils;
 import org.eclipse.winery.model.adaptation.enhance.TopologyAndErrorList;
@@ -49,6 +46,9 @@ import org.eclipse.winery.model.adaptation.placement.PlacementUtils;
 import org.eclipse.winery.model.adaptation.problemsolving.SolutionFactory;
 import org.eclipse.winery.model.adaptation.problemsolving.SolutionInputData;
 import org.eclipse.winery.model.adaptation.problemsolving.SolutionStrategy;
+import org.eclipse.winery.model.ids.EncodingUtil;
+import org.eclipse.winery.model.ids.definitions.NodeTypeId;
+import org.eclipse.winery.model.ids.definitions.ServiceTemplateId;
 import org.eclipse.winery.model.tosca.HasTags;
 import org.eclipse.winery.model.tosca.TEntityTemplate;
 import org.eclipse.winery.model.tosca.TEntityType;
@@ -89,7 +89,7 @@ public class TopologyTemplateResource {
 
     private final AbstractComponentInstanceResourceContainingATopology parent;
     private final String type;
-    
+
     private final IRepository requestRepository = RepositoryFactory.getRepository();
 
     /**
@@ -146,7 +146,7 @@ public class TopologyTemplateResource {
         "@return The JSON representation of the topology template <em>without</em> associated artifacts and without the parent service template")
     @Produces(MediaType.APPLICATION_JSON)
     // @formatter:on
-    public TTopologyTemplate getComponentInstanceJSON() {
+    public TTopologyTemplate getTopologyTempalte() {
         return this.topologyTemplate;
     }
 
@@ -343,7 +343,8 @@ public class TopologyTemplateResource {
             .filter(template -> template.getProperties() != null)
             .findFirst();
 
-        if (foundTemplate.isPresent() && Objects.nonNull(ModelUtilities.getPropertiesKV(foundTemplate.get()))) {
+        if (foundTemplate.isPresent() && Objects.nonNull(foundTemplate.get().getProperties()) &&
+            Objects.nonNull(ModelUtilities.getPropertiesKV(foundTemplate.get()))) {
             HashMap<String, String> oldKvs = ModelUtilities.getPropertiesKV(foundTemplate.get());
 
             QName qNameType = QName.valueOf(updateInfo.getNewComponentType());
@@ -391,35 +392,31 @@ public class TopologyTemplateResource {
     @Path("update")
     @Consumes(MediaType.APPLICATION_JSON)
     public TTopologyTemplate updateVersionOfNodeTemplate(UpdateInfo updateInfo) {
-        if (topologyTemplate.getNodeTemplate(updateInfo.getNodeTemplateId()).getProperties() != null) {
+        TNodeTemplate nodeTemplate = topologyTemplate.getNodeTemplate(updateInfo.getNodeTemplateId());
+        if (nodeTemplate != null && nodeTemplate.getProperties() != null) {
             Map<String, String> propertyMappings = new LinkedHashMap<>();
             updateInfo.getMappingList().forEach(
                 propertyMatching -> propertyMappings.put(propertyMatching.getOldKey(), propertyMatching.getNewKey())
             );
 
             LinkedHashMap<String, String> resultKvs = new LinkedHashMap<>();
-
-            topologyTemplate.getNodeTemplateOrRelationshipTemplate().stream()
-                .filter(template -> template.getId().equals(updateInfo.getNodeTemplateId()))
-                .filter(template -> template.getProperties() != null)
-                .findFirst()
-                .ifPresent(nodeTemplate -> {
-                    Map<String, String> oldKvs = ModelUtilities.getPropertiesKV(nodeTemplate);
-                    oldKvs.forEach((key, value) -> {
-                        if (propertyMappings.containsKey(key)) {
-                            resultKvs.put(propertyMappings.get(key), value);
-                        }
-                        if (updateInfo.getResolvedList().contains(key)) {
-                            resultKvs.put(key, value);
-                        }
-                    });
-                    updateInfo.getNewList().forEach(key -> {
-                        if (!resultKvs.containsKey(key)) {
-                            resultKvs.put(key, "");
-                        }
-                    });
-                    ModelUtilities.setPropertiesKV(nodeTemplate, resultKvs);
+            Map<String, String> oldKvs = ModelUtilities.getPropertiesKV(nodeTemplate);
+            if (oldKvs != null) {
+                oldKvs.forEach((key, value) -> {
+                    if (propertyMappings.containsKey(key)) {
+                        resultKvs.put(propertyMappings.get(key), value);
+                    }
+                    if (updateInfo.getResolvedList().contains(key)) {
+                        resultKvs.put(key, value);
+                    }
                 });
+                updateInfo.getNewList().forEach(key -> {
+                    if (!resultKvs.containsKey(key)) {
+                        resultKvs.put(key, "");
+                    }
+                });
+                ModelUtilities.setPropertiesKV(nodeTemplate, resultKvs);
+            }
         }
 
         BackendUtils.updateVersionOfNodeTemplate(this.topologyTemplate, updateInfo.getNodeTemplateId(), updateInfo.getNewComponentType());
@@ -529,18 +526,20 @@ public class TopologyTemplateResource {
         Map<QName, List<WineryVersion>> versionElements = new HashMap<>();
 
         for (TNodeTemplate node : this.topologyTemplate.getNodeTemplates()) {
-            NodeTypeId nodeTypeId = new NodeTypeId(node.getType());
-            if (!versionElements.containsKey(nodeTypeId.getQName())) {
-                List<WineryVersion> versionList = WineryVersionUtils.getAllVersionsOfOneDefinition(nodeTypeId, repository).stream()
-                    .filter(wineryVersion -> {
-                        QName qName = VersionSupport.getDefinitionInTheGivenVersion(nodeTypeId, wineryVersion).getQName();
-                        NamespaceProperties namespaceProperties = repository.getNamespaceManager().getNamespaceProperties(qName.getNamespaceURI());
-                        return !(namespaceProperties.isGeneratedNamespace()
-                            || ModelUtilities.isFeatureType(qName, nodeTypes));
-                    })
-                    .collect(Collectors.toList());
+            if (nodeTypes.containsKey(node.getType())) {
+                NodeTypeId nodeTypeId = new NodeTypeId(node.getType());
+                if (!versionElements.containsKey(nodeTypeId.getQName())) {
+                    List<WineryVersion> versionList = WineryVersionUtils.getAllVersionsOfOneDefinition(nodeTypeId, repository).stream()
+                        .filter(wineryVersion -> {
+                            QName qName = VersionSupport.getDefinitionInTheGivenVersion(nodeTypeId, wineryVersion).getQName();
+                            NamespaceProperties namespaceProperties = repository.getNamespaceManager().getNamespaceProperties(qName.getNamespaceURI());
+                            return !(namespaceProperties.isGeneratedNamespace()
+                                || ModelUtilities.isFeatureType(qName, nodeTypes));
+                        })
+                        .collect(Collectors.toList());
 
-                versionElements.put(nodeTypeId.getQName(), versionList);
+                    versionElements.put(nodeTypeId.getQName(), versionList);
+                }
             }
         }
 

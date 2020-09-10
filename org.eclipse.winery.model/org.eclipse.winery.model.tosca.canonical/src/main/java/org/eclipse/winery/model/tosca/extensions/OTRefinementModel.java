@@ -45,8 +45,13 @@ public abstract class OTRefinementModel extends TExtensibleElements implements H
     @XmlElement(name = "RelationMapping")
     protected List<OTRelationMapping> relationMappings;
 
+    @XmlElementWrapper(name = "PermutationMappings")
+    @XmlElement(name = "PermutationMapping")
+    protected List<OTPermutationMapping> permutationMappings;
+
     @Deprecated
-    public OTRefinementModel() { }
+    public OTRefinementModel() {
+    }
 
     @SuppressWarnings("unchecked")
     public OTRefinementModel(Builder builder) {
@@ -111,6 +116,14 @@ public abstract class OTRefinementModel extends TExtensibleElements implements H
         visitor.visit(this);
     }
 
+    public List<OTPermutationMapping> getPermutationMappings() {
+        return permutationMappings;
+    }
+
+    public void setPermutationMappings(List<OTPermutationMapping> permutationMappings) {
+        this.permutationMappings = permutationMappings;
+    }
+
     public static abstract class Builder<T extends Builder<T>> extends TExtensibleElements.Builder<T> {
 
         private String name;
@@ -118,7 +131,8 @@ public abstract class OTRefinementModel extends TExtensibleElements implements H
         private TTopologyTemplate detector;
         private List<OTRelationMapping> relationMappings;
 
-        public Builder() { }
+        public Builder() {
+        }
 
         public T setName(String name) {
             this.name = name;

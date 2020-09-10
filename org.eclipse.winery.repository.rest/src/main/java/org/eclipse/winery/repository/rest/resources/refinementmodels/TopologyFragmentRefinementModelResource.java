@@ -18,8 +18,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 
+import org.eclipse.winery.model.adaptation.substitution.refinement.PermutationGenerator;
+import org.eclipse.winery.model.tosca.extensions.OTPermutationMapping;
 import org.eclipse.winery.model.tosca.extensions.OTAttributeMapping;
 import org.eclipse.winery.model.tosca.extensions.OTDeploymentArtifactMapping;
 import org.eclipse.winery.model.tosca.extensions.OTTopologyFragmentRefinementModel;
@@ -27,6 +31,7 @@ import org.eclipse.winery.model.tosca.extensions.OTPatternRefinementModel;
 import org.eclipse.winery.model.tosca.extensions.OTStayMapping;
 import org.eclipse.winery.model.ids.definitions.DefinitionsChildId;
 import org.eclipse.winery.repository.rest.resources._support.AbstractRefinementModelResource;
+import org.eclipse.winery.repository.rest.resources.apiData.PermutationsResponse;
 import org.eclipse.winery.repository.rest.resources.servicetemplates.topologytemplates.TopologyTemplateResource;
 
 public class TopologyFragmentRefinementModelResource extends AbstractRefinementModelResource {
@@ -45,7 +50,7 @@ public class TopologyFragmentRefinementModelResource extends AbstractRefinementM
     }
 
     @Path("refinementstructure")
-    public TopologyTemplateResource getRefinementTopology() {
+    public TopologyTemplateResource getRefinementTopologyResource() {
         return new TopologyTemplateResource(this, this.getTRefinementModel().getRefinementTopology(), REFINEMENT_TOPOLOGY);
     }
 
@@ -83,5 +88,44 @@ public class TopologyFragmentRefinementModelResource extends AbstractRefinementM
         }
 
         return new DeploymentArtifactMappingsResource(this, artifactMappings);
+    }
+
+    @Path("permutationmappings")
+    public PermutationMappingsResource getPermutationMappings() {
+        List<OTPermutationMapping> permutationMappings = this.getTRefinementModel().getPermutationMappings();
+
+        if (Objects.isNull(permutationMappings)) {
+            permutationMappings = new ArrayList<>();
+            this.getTRefinementModel().setPermutationMappings(permutationMappings);
+        }
+        return new PermutationMappingsResource(this, permutationMappings);
+    }
+
+    @Path("generatePermutations")
+    @POST
+    public PermutationsResponse generatePermutations() {
+        PermutationsResponse permutationsResponse = new PermutationsResponse();
+
+        PermutationGenerator permutationGenerator = new PermutationGenerator();
+        try {
+            permutationsResponse.setPermutations(permutationGenerator.generatePermutations(this.getTRefinementModel()));
+            permutationsResponse.setMutable(true);
+        } catch (Exception e) {
+            permutationsResponse.setError(permutationGenerator.getMutabilityErrorReason());
+        }
+
+        return permutationsResponse;
+    }
+
+    @Path("checkMutability")
+    @GET
+    public PermutationsResponse getMutability() {
+        PermutationsResponse permutationsResponse = new PermutationsResponse();
+
+        PermutationGenerator permutationGenerator = new PermutationGenerator();
+        permutationsResponse.setMutable(permutationGenerator.checkMutability(this.getTRefinementModel()));
+        permutationsResponse.setError(permutationGenerator.getMutabilityErrorReason());
+
+        return permutationsResponse;
     }
 }
