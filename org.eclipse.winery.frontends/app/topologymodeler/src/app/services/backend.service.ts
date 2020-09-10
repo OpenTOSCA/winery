@@ -571,8 +571,11 @@ export class BackendService {
                 return result;
             }
 
-            // tslint:disable-next-line:forin
             for (const member in p) {
+                if (!{}.hasOwnProperty.call(p, member)) {
+                    // skipping object prototype inherited members to make tslint happy
+                    continue;
+                }
                 const memberType = typeof(p[member]);
                 if (memberType === 'string') {
                     const patched = jsonParse(p[member]);

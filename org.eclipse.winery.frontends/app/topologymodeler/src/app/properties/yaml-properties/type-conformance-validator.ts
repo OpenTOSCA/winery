@@ -81,10 +81,12 @@ export class TypeConformanceValidator implements Validator {
         return this.fulfilsKnownConstraints(structuredValue, hierarchy, valuePath);
     }
 
+    /**
+     * Checks whether a given structured value fulfils the requirements of a well-known type.
+     * @param structuredValue the structured value to check
+     * @param knownType the well-known type to check the value against
+     */
     private fulfilsWellKnownType(structuredValue: any, knownType: YamlWellKnown): boolean {
-        if ((structuredValue === undefined || structuredValue === null) && knownType !== 'null') {
-            return false;
-        }
         switch (knownType) {
             case 'string':
                 // consider that this might need to also accept stuff that's parseable as number, boolean or anything else
@@ -171,7 +173,7 @@ export class TypeConformanceValidator implements Validator {
                 continue;
             }
             const memberType = this.resolveType(correspondingProperty.type);
-            if (memberType === undefined) {
+            if (typeof memberType === 'undefined') {
                 errors.push(`Could not resolve type ${correspondingProperty.type} of property ${correspondingProperty.name}`);
                 continue;
             }
@@ -217,11 +219,11 @@ export class TypeConformanceValidator implements Validator {
         return result;
     }
 
-    private resolveType(type: QName | YamlWellKnown | string): YamlWellKnown | TDataType {
+    private resolveType(type: QName | YamlWellKnown | string): YamlWellKnown | TDataType | undefined {
         if (isWellKnown(type)) {
             return type;
         }
-        return this.dataTypes.find(t => t.qName === type || t.id === type);
+        return this.dataTypes.find((t) => t.qName === type || t.id === type);
     }
 }
 
