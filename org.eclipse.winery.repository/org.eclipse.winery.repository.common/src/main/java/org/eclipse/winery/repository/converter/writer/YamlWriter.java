@@ -596,7 +596,8 @@ public class YamlWriter extends AbstractVisitor<YamlPrinter, YamlWriter.Paramete
         if (map == null) {
             return printer;
         }
-//        map.values().removeIf(Objects::isNull);
+        // null objects should be removed in the FromCanonical converter at the latest
+        // map.values().removeIf(Objects::isNull);
         if (map.isEmpty()) {
             return printer;
         }
