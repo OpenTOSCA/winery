@@ -31,7 +31,7 @@ import org.eclipse.jdt.annotation.Nullable;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "otTopologyFragmentRefinementModel")
-@XmlSeeAlso({
+@XmlSeeAlso( {
     OTPatternRefinementModel.class
 })
 public class OTTopologyFragmentRefinementModel extends OTRefinementModel {
@@ -60,7 +60,8 @@ public class OTTopologyFragmentRefinementModel extends OTRefinementModel {
     protected List<OTStringList> componentSets;
 
     @Deprecated
-    public OTTopologyFragmentRefinementModel() { }
+    public OTTopologyFragmentRefinementModel() {
+    }
 
     public OTTopologyFragmentRefinementModel(Builder builder) {
         super(builder);
@@ -68,6 +69,7 @@ public class OTTopologyFragmentRefinementModel extends OTRefinementModel {
         this.attributeMappings = builder.attributeMappings;
         this.stayMappings = builder.stayMappings;
         this.deploymentArtifactMappings = builder.deploymentArtifactMappings;
+        this.permutationOptions = builder.permutationOptions;
     }
 
     @NonNull
@@ -136,6 +138,7 @@ public class OTTopologyFragmentRefinementModel extends OTRefinementModel {
         private List<OTAttributeMapping> attributeMappings;
         private List<OTStayMapping> stayMappings;
         private List<OTDeploymentArtifactMapping> deploymentArtifactMappings;
+        private List<OTStringList> permutationOptions;
 
         public Builder() {
             super();
@@ -155,9 +158,14 @@ public class OTTopologyFragmentRefinementModel extends OTRefinementModel {
             this.stayMappings = stayMappings;
             return self();
         }
-        
+
         public Builder setDeploymentArtifactMappings(List<OTDeploymentArtifactMapping> deploymentArtifactMappings) {
             this.deploymentArtifactMappings = deploymentArtifactMappings;
+            return self();
+        }
+
+        public Builder setPermutationOptions(List<OTStringList> permutationOptions) {
+            this.permutationOptions = permutationOptions;
             return self();
         }
 

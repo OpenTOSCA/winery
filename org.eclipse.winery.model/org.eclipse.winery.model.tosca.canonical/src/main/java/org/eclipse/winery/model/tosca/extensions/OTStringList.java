@@ -36,11 +36,40 @@ public class OTStringList {
         this.values = options;
     }
 
+    public OTStringList(Builder builder) {
+        this.values = builder.values;
+    }
+
     public List<String> getValues() {
         return values;
     }
 
     public void setValues(List<String> values) {
         this.values = values;
+    }
+
+    public static class Builder {
+
+        private List<String> values;
+
+        public Builder() {
+        }
+
+        public Builder(List<String> values) {
+            this.values = values;
+        }
+
+        public Builder self() {
+            return this;
+        }
+
+        public Builder setValues(List<String> values) {
+            this.values = values;
+            return self();
+        }
+
+        public OTStringList build() {
+            return new OTStringList(this);
+        }
     }
 }

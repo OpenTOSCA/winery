@@ -16,7 +16,6 @@ package org.eclipse.winery.model.tosca.xml.extensions;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
 
 import org.eclipse.winery.model.tosca.xml.visitor.Visitor;
@@ -25,15 +24,12 @@ import org.eclipse.winery.model.tosca.xml.visitor.Visitor;
 @XmlType(name = "otStayMapping")
 public class OTStayMapping extends OTPrmMapping {
 
-    @XmlAttribute(name = "modelElementType")
-    private OTPrmModelElementType modelElementType;
-
     @Deprecated
-    public OTStayMapping() { }
+    public OTStayMapping() {
+    }
 
     public OTStayMapping(Builder builder) {
         super(builder);
-        this.modelElementType = builder.modelElementType;
     }
 
     @Override
@@ -47,25 +43,10 @@ public class OTStayMapping extends OTPrmMapping {
         visitor.visit(this);
     }
 
-    public OTPrmModelElementType getModelElementType() {
-        return modelElementType;
-    }
-
-    public void setModelElementType(OTPrmModelElementType modelElementType) {
-        this.modelElementType = modelElementType;
-    }
-
     public static class Builder extends OTPrmMapping.Builder<Builder> {
-
-        private OTPrmModelElementType modelElementType;
 
         public Builder(String id) {
             super(id);
-        }
-
-        public Builder setModelElementType(OTPrmModelElementType modelElementType) {
-            this.modelElementType = modelElementType;
-            return self();
         }
 
         public OTStayMapping build() {

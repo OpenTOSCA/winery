@@ -18,6 +18,8 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlType;
 
+import org.eclipse.winery.model.tosca.xml.visitor.Visitor;
+
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "otPermutationMapping")
 public class OTPermutationMapping extends OTPrmMapping {
@@ -25,6 +27,29 @@ public class OTPermutationMapping extends OTPrmMapping {
     @Deprecated
     public OTPermutationMapping() {
     }
-    
-    
+
+    public OTPermutationMapping(Builder builder) {
+        super(builder);
+    }
+
+    @Override
+    public void accept(Visitor visitor) {
+        visitor.visit(this);
+    }
+
+    public static class Builder extends OTPrmMapping.Builder<Builder> {
+
+        public Builder(String id) {
+            super(id);
+        }
+
+        public OTPermutationMapping build() {
+            return new OTPermutationMapping(this);
+        }
+
+        @Override
+        public Builder self() {
+            return this;
+        }
+    }
 }

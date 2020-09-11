@@ -35,7 +35,6 @@ import org.eclipse.winery.model.tosca.TTopologyTemplate;
 import org.eclipse.winery.model.tosca.extensions.OTAttributeMapping;
 import org.eclipse.winery.model.tosca.extensions.OTAttributeMappingType;
 import org.eclipse.winery.model.tosca.extensions.OTPatternRefinementModel;
-import org.eclipse.winery.model.tosca.extensions.OTPrmModelElementType;
 import org.eclipse.winery.model.tosca.extensions.OTStayMapping;
 import org.eclipse.winery.model.tosca.utils.ModelUtilities;
 import org.eclipse.winery.repository.backend.BackendUtils;
@@ -452,11 +451,10 @@ class PatternRefinementTest extends AbstractRefinementTest {
         nt12.setType("{http://ex.org}nodeType_4");
         TNodeTemplate nt4 = detector.getNodeTemplate("8");
 
-        OTStayMapping nt4staysAsNt12 = new OTStayMapping();
-        nt4staysAsNt12.setModelElementType(OTPrmModelElementType.NODE);
-        nt4staysAsNt12.setId("stay1");
-        nt4staysAsNt12.setDetectorElement(nt4);
-        nt4staysAsNt12.setRefinementElement(nt12);
+        OTStayMapping nt4staysAsNt12 = new OTStayMapping.Builder("stay1")
+            .setDetectorElement(nt4)
+            .setRefinementElement(nt12)
+            .build();
         ((OTPatternRefinementModel) candidateForTopology.getRefinementModel())
             .setStayMappings(Collections.singletonList(nt4staysAsNt12));
         // endregion

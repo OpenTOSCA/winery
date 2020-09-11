@@ -32,7 +32,7 @@ import org.eclipse.winery.model.tosca.xml.visitor.Visitor;
 import org.eclipse.jdt.annotation.NonNull;
 
 @XmlType(name = "")
-@XmlSeeAlso({
+@XmlSeeAlso( {
     OTTopologyFragmentRefinementModel.class,
     OTTestRefinementModel.class,
 })
@@ -52,16 +52,21 @@ public abstract class OTRefinementModel extends TExtensibleElements implements H
     @XmlElement(name = "RelationMapping")
     protected List<OTRelationMapping> relationMappings;
 
-    @Deprecated
-    public OTRefinementModel() { }
+    @XmlElementWrapper(name = "PermutationMappings")
+    @XmlElement(name = "PermutationMapping")
+    protected List<OTPermutationMapping> permutationMappings;
 
-    @SuppressWarnings("unchecked")
-    public OTRefinementModel(Builder builder) {
+    @Deprecated
+    public OTRefinementModel() {
+    }
+
+    public OTRefinementModel(Builder<? extends Builder<?>> builder) {
         super(builder);
         this.name = builder.name;
         this.targetNamespace = builder.targetNamespace;
         this.detector = builder.detector;
         this.relationMappings = builder.relationMappings;
+        this.permutationMappings = builder.permutationMappings;
     }
 
     @Override
@@ -87,6 +92,14 @@ public abstract class OTRefinementModel extends TExtensibleElements implements H
     @Override
     public void setTargetNamespace(String value) {
         targetNamespace = value;
+    }
+
+    public List<OTPermutationMapping> getPermutationMappings() {
+        return permutationMappings;
+    }
+
+    public void setPermutationMappings(List<OTPermutationMapping> permutationMappings) {
+        this.permutationMappings = permutationMappings;
     }
 
     @NonNull
@@ -120,12 +133,14 @@ public abstract class OTRefinementModel extends TExtensibleElements implements H
 
     public static abstract class Builder<T extends Builder<T>> extends TExtensibleElements.Builder<T> {
 
+        private List<OTPermutationMapping> permutationMappings;
         private String name;
         private String targetNamespace;
         private TTopologyTemplate detector;
         private List<OTRelationMapping> relationMappings;
 
-        public Builder() { }
+        public Builder() {
+        }
 
         public T setName(String name) {
             this.name = name;
@@ -144,6 +159,11 @@ public abstract class OTRefinementModel extends TExtensibleElements implements H
 
         public T setRelationMappings(List<OTRelationMapping> relationMappings) {
             this.relationMappings = relationMappings;
+            return self();
+        }
+
+        public T setPermutationMappings(List<OTPermutationMapping> permutationMappings) {
+            this.permutationMappings = permutationMappings;
             return self();
         }
     }

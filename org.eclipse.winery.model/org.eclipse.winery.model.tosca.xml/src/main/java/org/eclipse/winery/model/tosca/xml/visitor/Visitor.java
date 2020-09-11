@@ -48,6 +48,7 @@ import org.eclipse.winery.model.tosca.xml.TDeploymentArtifact;
 import org.eclipse.winery.model.tosca.xml.TDeploymentArtifacts;
 import org.eclipse.winery.model.tosca.xml.TRequirement;
 import org.eclipse.winery.model.tosca.xml.TTopologyTemplate;
+import org.eclipse.winery.model.tosca.xml.extensions.OTStringList;
 
 import org.eclipse.jdt.annotation.NonNull;
 
@@ -355,6 +356,10 @@ public abstract class Visitor {
     }
 
     public void visit(TImplementationArtifact artifact) {
+        // this is a leaf, so no action to take
+    }
+
+    public void accept(OTStringList otStringList) {
         // this is a leaf, so no action to take
     }
 }

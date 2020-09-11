@@ -14,6 +14,7 @@
 
 package org.eclipse.winery.model.tosca.xml.extensions;
 
+import java.io.Serializable;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -22,13 +23,17 @@ import javax.xml.bind.annotation.XmlList;
 import javax.xml.bind.annotation.XmlValue;
 
 @XmlAccessorType(XmlAccessType.FIELD)
-public class OTStringList {
+public class OTStringList implements Serializable {
 
     @XmlValue
     @XmlList
     protected List<String> values;
 
     public OTStringList() {
+    }
+
+    public OTStringList(Builder builder) {
+        this.values = builder.values;
     }
 
     public OTStringList(List<String> options) {
@@ -41,5 +46,30 @@ public class OTStringList {
 
     public void setValues(List<String> values) {
         this.values = values;
+    }
+
+    public static class Builder {
+
+        private List<String> values;
+
+        public Builder() {
+        }
+
+        public Builder(List<String> values) {
+            this.values = values;
+        }
+
+        public Builder self() {
+            return this;
+        }
+
+        public Builder setValues(List<String> values) {
+            this.values = values;
+            return self();
+        }
+
+        public OTStringList build() {
+            return new OTStringList(this);
+        }
     }
 }
