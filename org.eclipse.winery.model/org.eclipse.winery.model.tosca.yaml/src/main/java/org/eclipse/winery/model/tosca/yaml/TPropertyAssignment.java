@@ -58,9 +58,7 @@ public class TPropertyAssignment extends TPropertyAssignmentOrDefinition {
 
     @Override
     public String toString() {
-        return "TPropertyAssignment{" +
-            "value=" + getValue() +
-            "}";
+        return String.valueOf(value);
     }
 
     @Nullable
