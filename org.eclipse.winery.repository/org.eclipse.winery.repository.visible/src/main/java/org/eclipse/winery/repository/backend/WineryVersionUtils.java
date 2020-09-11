@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.stream.Collectors;
 
+import org.eclipse.winery.common.configuration.Environments;
 import org.eclipse.winery.common.version.VersionUtils;
 import org.eclipse.winery.common.version.WineryVersion;
 import org.eclipse.winery.model.ids.definitions.DefinitionsChildId;
@@ -118,6 +119,11 @@ public class WineryVersionUtils {
             current[0].setEditable(changesInFile && current[0].isReleasable());
         } else {
             current[0].setEditable(changesInFile);
+        }
+
+        // In RADON, all versions should always be editable
+        if (Environments.isFeatureEnabled("radon")) {
+            versionList.forEach(v -> v.setEditable(true));
         }
 
         return versionList;
