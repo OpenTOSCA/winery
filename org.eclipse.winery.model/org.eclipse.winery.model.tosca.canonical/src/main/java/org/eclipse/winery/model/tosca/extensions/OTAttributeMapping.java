@@ -1,9 +1,5 @@
 /*******************************************************************************
-<<<<<<< HEAD:org.eclipse.winery.model/org.eclipse.winery.model.tosca.canonical/src/main/java/org/eclipse/winery/model/tosca/extensions/OTAttributeMapping.java
  * Copyright (c) 2020 Contributors to the Eclipse Foundation
-=======
- * Copyright (c) 2019-2020 Contributors to the Eclipse Foundation
->>>>>>> d1751e010... Add XML Roundtrip test accessing the test-repository:org.eclipse.winery.model/org.eclipse.winery.model.tosca.canonical/src/main/java/org/eclipse/winery/model/tosca/extensions/AttributeMapping.java
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -43,7 +39,8 @@ public class OTAttributeMapping extends OTPrmMapping {
     private String refinementProperty;
 
     @Deprecated
-    public OTAttributeMapping() { }
+    public OTAttributeMapping() {
+    }
 
     public OTAttributeMapping(Builder builder) {
         super(builder);
@@ -51,7 +48,7 @@ public class OTAttributeMapping extends OTPrmMapping {
         this.detectorProperty = builder.detectorProperty;
         this.refinementProperty = builder.refinementProperty;
     }
-    
+
     public OTAttributeMappingType getType() {
         return type;
     }
@@ -92,6 +89,10 @@ public class OTAttributeMapping extends OTPrmMapping {
         private OTAttributeMappingType type;
         private String detectorProperty;
         private String refinementProperty;
+
+        public Builder() {
+            super();
+        }
 
         public Builder(String id) {
             super(id);

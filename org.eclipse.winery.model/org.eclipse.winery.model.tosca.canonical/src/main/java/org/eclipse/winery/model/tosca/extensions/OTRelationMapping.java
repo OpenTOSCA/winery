@@ -36,7 +36,8 @@ public class OTRelationMapping extends OTPrmMapping {
     private QName validSourceOrTarget;
 
     @Deprecated
-    public OTRelationMapping() { }
+    public OTRelationMapping() {
+    }
 
     public OTRelationMapping(Builder builder) {
         super(builder);
@@ -86,6 +87,10 @@ public class OTRelationMapping extends OTPrmMapping {
         private OTRelationDirection direction;
         private QName validSourceOrTarget;
 
+        public Builder() {
+            super();
+        }
+
         public Builder(String id) {
             super(id);
         }
@@ -112,6 +117,11 @@ public class OTRelationMapping extends OTPrmMapping {
         @Override
         public Builder self() {
             return this;
+        }
+
+        public Builder setRelationType(String s) {
+            this.relationType = QName.valueOf("{http://ex.org}relType_hostedOn");
+            return self();
         }
     }
 }

@@ -34,11 +34,11 @@ public class TestRefinementModelResource extends AbstractRefinementModelResource
 
     @Override
     protected OTTestRefinementModel createNewElement() {
-        return new OTTestRefinementModel();
+        return new OTTestRefinementModel(new OTTestRefinementModel.Builder());
     }
 
     @Path("testfragment")
-    public TopologyTemplateResource getRefinementTopology() {
+    public TopologyTemplateResource getRefinementTopologyResource() {
         return new TopologyTemplateResource(this, this.getTRefinementModel().getRefinementTopology(), REFINEMENT_TOPOLOGY);
     }
 }

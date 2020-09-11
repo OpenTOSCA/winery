@@ -29,19 +29,15 @@ public class RelationMappingApiData extends AbstractPrmMappingElement {
     public QName validSourceOrTarget;
 
     public RelationMappingApiData() {
-
     }
 
     @JsonIgnore
     public OTRelationMapping createTRelationMapping(TNodeTemplate detectorNodeTemplate, TNodeTemplate refinementNodeTemplate) {
-        OTRelationMapping mapping = new OTRelationMapping();
-        mapping.setId(this.id);
-        mapping.setDetectorNode(detectorNodeTemplate);
-        mapping.setRefinementNode(refinementNodeTemplate);
-        mapping.setDirection(this.direction);
-        mapping.setRelationType(this.relationType);
-        mapping.setValidSourceOrTarget(this.validSourceOrTarget);
-
-        return mapping;
+        return new OTRelationMapping(new OTRelationMapping.Builder(this.id)
+            .setDetectorElement(detectorNodeTemplate)
+            .setRefinementElement(refinementNodeTemplate)
+            .setDirection(this.direction)
+            .setRelationType(this.relationType)
+            .setValidSourceOrTarget(this.validSourceOrTarget));
     }
 }

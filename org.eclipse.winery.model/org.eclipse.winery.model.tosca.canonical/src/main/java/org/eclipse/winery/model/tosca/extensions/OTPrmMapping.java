@@ -15,6 +15,7 @@
 package org.eclipse.winery.model.tosca.extensions;
 
 import java.io.Serializable;
+import java.util.UUID;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlIDREF;
@@ -34,38 +35,45 @@ public abstract class OTPrmMapping extends HasId implements Serializable {
     @XmlIDREF
     @XmlSchemaType(name = "IDREF")
     @NonNull
-    private TEntityTemplate detectorNode;
+    private TEntityTemplate detectorElement;
 
     @JsonIdentityReference(alwaysAsId = true)
     @XmlAttribute(name = "refinementNode", required = true)
     @XmlIDREF
     @XmlSchemaType(name = "IDREF")
     @NonNull
-    private TEntityTemplate refinementNode;
+    private TEntityTemplate refinementElement;
 
     @Deprecated
-    public OTPrmMapping() { }
+    public OTPrmMapping() {
+    }
 
     public OTPrmMapping(Builder builder) {
         super(builder);
-        this.detectorNode = builder.detectorNode;
-        this.refinementNode = builder.refinementNode;
+        this.detectorElement = builder.detectorElement;
+        this.refinementElement = builder.refinementElement;
     }
 
-    public TEntityTemplate getDetectorNode() {
-        return detectorNode;
+    public OTPrmMapping(TEntityTemplate detectorElement, TEntityTemplate refinementElement) {
+        this.detectorElement = detectorElement;
+        this.refinementElement = refinementElement;
+        this.setId(UUID.randomUUID().toString());
     }
 
-    public void setDetectorNode(TEntityTemplate detectorNode) {
-        this.detectorNode = detectorNode;
+    public TEntityTemplate getDetectorElement() {
+        return detectorElement;
     }
 
-    public TEntityTemplate getRefinementNode() {
-        return refinementNode;
+    public void setDetectorElement(TEntityTemplate detectorElement) {
+        this.detectorElement = detectorElement;
     }
 
-    public void setRefinementNode(TEntityTemplate refinementNode) {
-        this.refinementNode = refinementNode;
+    public TEntityTemplate getRefinementElement() {
+        return refinementElement;
+    }
+
+    public void setRefinementElement(TEntityTemplate refinementElement) {
+        this.refinementElement = refinementElement;
     }
 
     @Override
@@ -74,20 +82,24 @@ public abstract class OTPrmMapping extends HasId implements Serializable {
     }
 
     public static abstract class Builder<T extends Builder<T>> extends HasId.Builder<T> {
-        private TEntityTemplate detectorNode;
-        private TEntityTemplate refinementNode;
+        private TEntityTemplate detectorElement;
+        private TEntityTemplate refinementElement;
+
+        public Builder() {
+            super();
+        }
 
         public Builder(String id) {
             super(id);
         }
 
-        public Builder<T> setDetectorNode(TEntityTemplate detectorNode) {
-            this.detectorNode = detectorNode;
+        public T setDetectorElement(TEntityTemplate detectorElement) {
+            this.detectorElement = detectorElement;
             return self();
         }
 
-        public Builder<T> setRefinementNode(TEntityTemplate refinementNode) {
-            this.refinementNode = refinementNode;
+        public T setRefinementElement(TEntityTemplate refinementElement) {
+            this.refinementElement = refinementElement;
             return self();
         }
     }

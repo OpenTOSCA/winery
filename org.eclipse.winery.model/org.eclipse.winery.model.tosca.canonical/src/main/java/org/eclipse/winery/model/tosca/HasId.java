@@ -14,6 +14,7 @@
 package org.eclipse.winery.model.tosca;
 
 import java.util.Objects;
+import java.util.UUID;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlID;
@@ -69,6 +70,10 @@ public abstract class HasId extends TExtensibleElements implements HasIdInIdOrNa
     @ADR(11)
     public abstract static class Builder<T extends Builder<T>> extends TExtensibleElements.Builder<T> {
         private final String id;
+        
+        public Builder() {
+            this(UUID.randomUUID().toString());
+        }
 
         public Builder(String id) {
             this.id = id;
