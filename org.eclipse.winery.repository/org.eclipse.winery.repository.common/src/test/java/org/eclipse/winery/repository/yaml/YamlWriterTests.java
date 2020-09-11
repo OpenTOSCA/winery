@@ -23,6 +23,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.eclipse.winery.model.tosca.TConstraint;
+import org.eclipse.winery.model.tosca.yaml.TConstraintClause;
 import org.eclipse.winery.model.tosca.yaml.TPropertyAssignment;
 import org.eclipse.winery.repository.converter.writer.YamlPrinter;
 import org.eclipse.winery.repository.converter.writer.YamlWriter;
@@ -38,6 +40,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class YamlWriterTests {
 
     @ParameterizedTest
+    @ArgumentsSource(ConstraintClausesArgumentsProvider.class)
+    public void testConstraintClauses(TConstraintClause node, String expected) {
+        YamlWriter writer = new YamlWriter();
+        YamlPrinter p = writer.visit(node, new YamlWriter.Parameter(0).addContext("root"));
+        assertEquals(expected, p.toString());
+    }
+
+    @ParameterizedTest
     @ArgumentsSource(PropertyAssignmentArgumentsProvider.class)
     public void testPropertyAssignmentSerialization(TPropertyAssignment prop, String expected) {
         YamlWriter writer = new YamlWriter();
@@ -51,6 +61,22 @@ public class YamlWriterTests {
         YamlWriter writer = new YamlWriter();
         YamlPrinter p = writer.visit(prop, new YamlWriter.Parameter(0).addContext("root"));
         assertEquals(expected, p.toString());
+    }
+
+    static class ConstraintClausesArgumentsProvider implements ArgumentsProvider {
+        @Override
+        public Stream<? extends Arguments> provideArguments(ExtensionContext context) {
+            final TConstraintClause simpleClause = new TConstraintClause();
+            simpleClause.setKey("in_range");
+            simpleClause.setList(Arrays.asList("512", "2048"));
+            final TConstraintClause valueClause = new TConstraintClause();
+            valueClause.setKey("key");
+            valueClause.setValue("value");
+            return Stream.of(
+                Arguments.of(simpleClause, "in_range: [ 512, 2048 ]\n"),
+                Arguments.of(valueClause, "key: value\n")
+            );
+        }
     }
 
     static class PropertyAssignmentArgumentsProvider implements ArgumentsProvider {

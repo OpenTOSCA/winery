@@ -503,10 +503,10 @@ public class YamlWriter extends AbstractVisitor<YamlPrinter, YamlWriter.Paramete
     public YamlPrinter visit(TConstraintClause node, Parameter parameter) {
         if (node.getValue() != null) {
             return new YamlPrinter(parameter.getIndent())
-                .printKeyValue("- " + node.getKey(), node.getValue());
+                .printKeyValue(node.getKey(), node.getValue());
         } else if (node.getList() != null) {
             return new YamlPrinter(parameter.getIndent())
-                .printKeyListObjectInline("- " + node.getKey(), new ArrayList<>(node.getList()));
+                .printKeyListObjectInline(node.getKey(), new ArrayList<>(node.getList()));
         }
         return null;
     }

@@ -351,7 +351,7 @@ public class YamlPrinter extends AbstractResult<YamlPrinter> {
             .print(' ')
             .print('[')
             .print(' ')
-            .print(list.stream().map(Object::toString).collect(Collectors.joining(",")))
+            .print(list.stream().map(Object::toString).collect(Collectors.joining(", ")))
             .print(' ')
             .print(']')
             .printNewLine();
