@@ -119,8 +119,8 @@ public class OTRelationMapping extends OTPrmMapping {
             return this;
         }
 
-        public Builder setRelationType(String s) {
-            this.relationType = QName.valueOf("{http://ex.org}relType_hostedOn");
+        public Builder setRelationType(String type) {
+            this.relationType = QName.valueOf(type);
             return self();
         }
     }

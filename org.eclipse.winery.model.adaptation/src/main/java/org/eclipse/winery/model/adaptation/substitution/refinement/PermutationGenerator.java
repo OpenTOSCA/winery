@@ -111,6 +111,11 @@ public class PermutationGenerator {
                 );
 
             ModelUtilities.getIncomingRelationshipTemplates(refinementModel.getDetector(), detectorNode)
+                .stream()
+                .filter(relation -> refinementModel.getComponentSets().stream()
+                    .noneMatch(setList -> setList.getValues().contains(relation.getTargetElement().getRef().getId())
+                        && setList.getValues().contains(relation.getSourceElement().getRef().getId()))
+                )
                 .forEach(relation -> {
                     TNodeTemplate dependantNode = (TNodeTemplate) relation.getSourceElement().getRef();
                     if (refinementModel.getRelationMappings() != null) {

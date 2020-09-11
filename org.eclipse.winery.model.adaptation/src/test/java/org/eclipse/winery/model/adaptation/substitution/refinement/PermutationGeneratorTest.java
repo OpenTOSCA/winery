@@ -121,7 +121,7 @@ class PermutationGeneratorTest extends AbstractRefinementTest {
     void checkMutabilityOfComplexPrmWithoutPatternSet() {
         OTPatternRefinementModel refinementModel = generateComplexPrmWithPatternSet();
         addAllPermutationMappings(refinementModel);
-        refinementModel.getRelationMappings().removeIf(map -> map.getId().equals("p2_to_n15"));
+        refinementModel.getRelationMappings().removeIf(map -> map.getId().equals("rm-2--15"));
 
         PermutationGenerator permutationGenerator = new PermutationGenerator();
         assertFalse(permutationGenerator.checkMutability(refinementModel));
@@ -147,7 +147,7 @@ class PermutationGeneratorTest extends AbstractRefinementTest {
         OTPatternRefinementModel refinementModel = generateComplexPrmWithPatternSet();
         addSomePermutationMappings(refinementModel);
 
-        refinementModel.getPermutationMappings().removeIf(map -> map.getId().equals("p2_to_n14"));
+        refinementModel.getPermutationMappings().removeIf(map -> map.getId().equals("pm-2--14"));
 
         PermutationGenerator permutationGenerator = new PermutationGenerator();
         assertFalse(permutationGenerator.checkMutability(refinementModel));
