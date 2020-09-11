@@ -1548,6 +1548,7 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
                     type: '',
                     properties: '',
                 },
+                relationshipTemplate: undefined,
                 source: '',
                 target: ''
             }
@@ -1967,12 +1968,12 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
         this.clearSelectedNodes();
         this.newJsPlumbInstance.select().removeType('marked');
         const currentRel = this.allRelationshipTemplates.find(con => con.id === conn.id);
-        let name = currentRel.name;
-        if (currentRel.name.startsWith(this.backendService.configuration.relationshipPrefix)) {
-            // Workaround to support old topology templates with the real name
-            name = currentRel.type.substring(currentRel.type.indexOf('}') + 1);
-        }
         if (currentRel) {
+            let name = currentRel.name;
+            if (currentRel.name.startsWith(this.backendService.configuration.relationshipPrefix)) {
+                // Workaround to support old topology templates with the real name
+                name = currentRel.type.substring(currentRel.type.indexOf('}') + 1);
+            }
             this.ngRedux.dispatch(this.actions.openSidebar({
                 sidebarContents: {
                     visible: true,

@@ -11,16 +11,17 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR Apache-2.0
  *******************************************************************************/
+import { TRelationshipTemplate } from '../../models/ttopology-template';
 
 export class DetailsSidebarState {
     visible: boolean;
     nodeClicked: boolean;
     template: SidebarEntityTemplate;
+    relationshipTemplate?: TRelationshipTemplate;
     minInstances: number;
     // this shoehorns the possibility of unicode infinity into the type
     maxInstances: number | '\u221E';
     // relationship editing information
-    relationshipTemplate: any;
     source: any;
     target: any;
 }
