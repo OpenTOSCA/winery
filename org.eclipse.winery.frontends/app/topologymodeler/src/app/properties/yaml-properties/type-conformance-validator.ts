@@ -56,8 +56,8 @@ export class TypeConformanceValidator implements Validator {
             return { 'typeConformance':  [ 'Could not parse entered value as JSON' ]};
         }
         // if (!this.propDef.required && structuredValue === null) {
-        if (structuredValue === null) {
-            // skip all validation for null values
+        if (structuredValue === null || structuredValue === '') {
+            // skip all validation for null values and empty form-fields
             return;
         }
         const results = this.fulfilsTypeDefinition(this.enforcedType, '',  structuredValue);
