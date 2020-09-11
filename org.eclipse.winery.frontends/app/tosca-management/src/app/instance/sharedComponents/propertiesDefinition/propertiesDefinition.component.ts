@@ -470,6 +470,7 @@ export class PropertiesDefinitionComponent implements OnInit {
         this.confirmDeleteModalRef.hide();
         this.deleteItem(this.elementToRemove);
         this.elementToRemove = null;
+        this.save();
         this.copyToTable();
     }
     // region ########## Table Callbacks ##########
@@ -605,7 +606,6 @@ export class PropertiesDefinitionComponent implements OnInit {
     }
 
     /**
-<<<<<<< HEAD
      * Deletes a property from the table and model.
      * @param itemToDelete
      */
@@ -626,8 +626,6 @@ export class PropertiesDefinitionComponent implements OnInit {
     }
 
     /**
-=======
->>>>>>> blessed/master
      * Sets loading to false and shows error notification.
      *
      * @param error

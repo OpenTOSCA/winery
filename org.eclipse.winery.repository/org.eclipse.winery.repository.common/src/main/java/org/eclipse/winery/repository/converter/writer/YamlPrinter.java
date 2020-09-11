@@ -183,6 +183,15 @@ public class YamlPrinter extends AbstractResult<YamlPrinter> {
 
     public YamlPrinter printKeyValue(String key, String value, boolean printQuotes, boolean printEmptyValues) {
         if (Objects.isNull(value) || (!printEmptyValues && value.isEmpty())) return this;
+        if (key.isEmpty()) {
+            if (printQuotes) {
+                return print("\"")
+                    .print(value)
+                    .print("\"");
+            } else {
+                return print(value);
+            }
+        }
         if (value.contains("\n")) {
             return print(key)
                 .print(": >")
@@ -297,6 +306,14 @@ public class YamlPrinter extends AbstractResult<YamlPrinter> {
     }
 
     public YamlPrinter printListObject(Object object) {
+        if (object instanceof YamlPrinter) {
+            // we assume the YamlPrinter object here generates valid yaml, terminated with a newline
+            print('-').print(' ')
+                .print(object.toString().replaceAll("^  ", "").replaceAll("\n", "\n" + getIndentString()));
+            if (!((YamlPrinter) object).endsWithNewLine()) {
+                return printNewLine();
+            }
+        }
         if (object instanceof String) {
             String value = (String) object;
             if (value.contains("\n")) {
@@ -334,7 +351,7 @@ public class YamlPrinter extends AbstractResult<YamlPrinter> {
             .print(' ')
             .print('[')
             .print(' ')
-            .print(list.stream().map(Object::toString).collect(Collectors.joining(",")))
+            .print(list.stream().map(Object::toString).collect(Collectors.joining(", ")))
             .print(' ')
             .print(']')
             .printNewLine();

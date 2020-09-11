@@ -210,7 +210,11 @@ export class InheritanceUtils {
         const definedProperties = type.full.serviceTemplateOrNodeTypeOrNodeTypeImplementation[0].propertiesDefinition.properties;
         for (const obj of definedProperties) {
             // set default value, regardless of whether the property is required
-            newProperties[obj.name] = obj.defaultValue;
+            try {
+                newProperties[obj.name] = JSON.parse(obj.defaultValue);
+            } catch (e) {
+                newProperties[obj.name] = obj.defaultValue;
+            }
         }
         return newProperties;
     }

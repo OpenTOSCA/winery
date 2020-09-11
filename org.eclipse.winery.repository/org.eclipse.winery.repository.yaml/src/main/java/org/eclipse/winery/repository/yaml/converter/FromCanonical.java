@@ -225,10 +225,6 @@ public class FromCanonical {
                     Map.Entry::getKey,
                     Map.Entry::getValue
                 ));
-            // remove assignments without a value
-            assignments.values().removeIf(Objects::isNull);
-            assignments.values().removeIf(tpa -> tpa.getValue() == null);
-            // TODO consider traversing the assignment tree to successively remove leaves that don't have an assignment
             return assignments;
         }
         // FIXME deal with converting WineryKVProperties and XmlProperties
@@ -1238,7 +1234,15 @@ public class FromCanonical {
                 );
                 return builder.build();
             }
-            // value is some kind of object, which we DO NOT TOUCH!
+            if (value instanceof List) {
+                builder.setValue(
+                    ((List<Object>)value).stream()
+                    .map(entry -> convert(entry))
+                    .collect(Collectors.toList())
+                );
+                return builder.build();
+            }
+            // value is some kind of object that's not a collection, which we DO NOT TOUCH!
             builder.setValue(value);
             return builder.build();
         }

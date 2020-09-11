@@ -19,6 +19,7 @@ import { Constraint, isWellKnown, YamlWellKnown } from '../../../../../tosca-man
 import { ConstraintChecking } from '../property-constraints';
 import { InheritanceUtils } from '../../models/InheritanceUtils';
 import { ToscaUtils } from '../../models/toscaUtils';
+import { QName } from 'app/shared/src/app/model/qName';
 
 export class TypeConformanceValidator implements Validator {
 
@@ -54,6 +55,11 @@ export class TypeConformanceValidator implements Validator {
             // this only happens if parsing is not lax OR the value could not be parsed as string after enquoting it
             return { 'typeConformance':  [ 'Could not parse entered value as JSON' ]};
         }
+        // if (!this.propDef.required && structuredValue === null) {
+        if (structuredValue === null || structuredValue === '') {
+            // skip all validation for null values and empty form-fields
+            return;
+        }
         const results = this.fulfilsTypeDefinition(this.enforcedType, '',  structuredValue);
         for (const error of this.fulfilsConstraints(this.propDef.constraints, structuredValue, '')) {
             results.push(error);
@@ -77,10 +83,12 @@ export class TypeConformanceValidator implements Validator {
         return this.fulfilsKnownConstraints(structuredValue, hierarchy, valuePath);
     }
 
+    /**
+     * Checks whether a given structured value fulfils the requirements of a well-known type.
+     * @param structuredValue the structured value to check
+     * @param knownType the well-known type to check the value against
+     */
     private fulfilsWellKnownType(structuredValue: any, knownType: YamlWellKnown): boolean {
-        if (!structuredValue && knownType !== 'null') {
-            return false;
-        }
         switch (knownType) {
             case 'string':
                 // consider that this might need to also accept stuff that's parseable as number, boolean or anything else
@@ -167,11 +175,19 @@ export class TypeConformanceValidator implements Validator {
                 continue;
             }
             const memberType = this.resolveType(correspondingProperty.type);
-            for (const error of this.fulfilsTypeDefinition(memberType, valuePath + '.' + member, structuredValue[member])) {
+            if (typeof memberType === 'undefined') {
+                errors.push(`Could not resolve type ${correspondingProperty.type} of property ${correspondingProperty.name}`);
+                continue;
+            }
+            const memberValue = structuredValue[member];
+            if (memberValue === null && !correspondingProperty.required) {
+                continue;
+            }
+            for (const error of this.fulfilsTypeDefinition(memberType, valuePath + '.' + member, memberValue)) {
                 errors.push(error);
             }
             // propertiesDefinitions can include constraints. They are validated here
-            const violations = this.fulfilsConstraints(correspondingProperty.constraints, structuredValue[member], valuePath + '.' + member);
+            const violations = this.fulfilsConstraints(correspondingProperty.constraints, memberValue, valuePath + '.' + member);
             for (const error of violations) {
                 errors.push(error);
             }
@@ -205,11 +221,11 @@ export class TypeConformanceValidator implements Validator {
         return result;
     }
 
-    private resolveType(type: any): YamlWellKnown | TDataType {
+    private resolveType(type: QName | YamlWellKnown | string): YamlWellKnown | TDataType | undefined {
         if (isWellKnown(type)) {
             return type;
         }
-        return this.dataTypes.find(t => t.qName === type.qName || t.id === type.localName);
+        return this.dataTypes.find((t) => t.qName === type || t.id === type);
     }
 }
 

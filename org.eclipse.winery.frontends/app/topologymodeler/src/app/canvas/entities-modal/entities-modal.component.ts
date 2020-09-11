@@ -533,8 +533,14 @@ export class EntitiesModalComponent implements OnInit, OnChanges, OnDestroy {
                     if (this.selectedYamlArtifactAllowedTypes.length > 0) {
                         this.selectedYamlArtifactAllowedTypes += ',';
                     }
-
                     this.selectedYamlArtifactAllowedTypes += selectedYamlArtifactType.mimeType;
+                }
+                // in this case we only allow referencing the artifact as URL
+                if (selectedYamlArtifactType.qName === '{radon.artifacts}Repository') {
+                    this.deploymentArtifactOrPolicyModalData.isRepositoryType = true;
+                    this.deploymentArtifactOrPolicyModalData.isFileRemote = true;
+                } else {
+                    this.deploymentArtifactOrPolicyModalData.isRepositoryType = false;
                 }
             }
         }

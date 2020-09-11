@@ -210,5 +210,12 @@ public final class Environments {
             Environment.getInstance().reloadAccountabilityConfiguration(inputStream);
         }
     }
+
+    public static boolean isFeatureEnabled(String name) {
+        Boolean value = getInstance().getUiConfig().getFeatures().get(name);
+        if (value == null) {
+            return false;
+        }
+        return value;
+    }
 }
- 
