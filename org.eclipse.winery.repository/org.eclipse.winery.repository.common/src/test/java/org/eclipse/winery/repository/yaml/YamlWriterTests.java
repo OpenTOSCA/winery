@@ -93,7 +93,7 @@ public class YamlWriterTests {
             return Stream.of(
                 Arguments.of(new TPropertyAssignment(Collections.singletonMap("key", new TPropertyAssignment("value"))), "root:\n  key: \"value\"\n"),
                 Arguments.of(new TPropertyAssignment(Collections.singletonMap("key", new TPropertyAssignment((Object) null))), "root:\n  key: null\n"),
-//                Arguments.of(new TPropertyAssignment(Collections.singletonMap("key", new TPropertyAssignment(""))), "root:\n  key: \"\"\n"),
+                // Arguments.of(new TPropertyAssignment(Collections.singletonMap("key", new TPropertyAssignment(""))), "root:\n  key: \"\"\n"),
                 Arguments.of(new TPropertyAssignment(Collections.singletonMap("key", new TPropertyAssignment(""))), "root:\n"),
                 Arguments.of(new TPropertyAssignment(Collections.singletonMap("key", new TPropertyAssignment(Collections.emptyMap()))), "root:\n  key: {}\n"),
                 Arguments.of(new TPropertyAssignment(Collections.singletonMap("key", new TPropertyAssignment(Collections.emptyList()))), "root:\n  key: []\n"),

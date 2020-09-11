@@ -437,7 +437,8 @@ public class YamlWriter extends AbstractVisitor<YamlPrinter, YamlWriter.Paramete
                 final String functionArg;
                 if (rawFunctionArg instanceof List) {
                     final String list = ((List<?>) rawFunctionArg).stream()
-                        .map(String::valueOf).collect(Collectors.joining(", "));
+                        .map(String::valueOf)
+                        .collect(Collectors.joining(", "));
                     // get_operation_output value is not in brackets, compare Section 4.6.1 of YAML-Standard 1.3
                     if (key.equals("get_operation_output")) {
                         functionArg = list;
