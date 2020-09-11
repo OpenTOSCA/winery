@@ -95,24 +95,24 @@ public abstract class PermutationHelper {
         // endregion
 
         // region mappings
-        OTStayMapping pattern1_to_node11 = new OTStayMapping.Builder("p1_to_n11")
+        OTStayMapping pattern1_to_node11 = new OTStayMapping.Builder("sm-1--11")
             .setDetectorElement(detector.getNodeTemplate("1"))
             .setRefinementElement(refinementNode_11)
             .build();
 
-        OTRelationMapping pattern2_to_node13 = new OTRelationMapping.Builder("p2_to_n13")
+        OTRelationMapping pattern2_to_node13 = new OTRelationMapping.Builder("pm-2--13")
             .setRelationType("{http://ex.org}relType_hostedOn")
             .setDirection(OTRelationDirection.INGOING)
             .setDetectorElement(detector.getNodeTemplate("2"))
             .setRefinementElement(refinementNode_13)
             .build();
 
-        OTPermutationMapping pattern2_to_node15 = new OTPermutationMapping.Builder("p2_to_n15")
+        OTPermutationMapping pattern2_to_node15 = new OTPermutationMapping.Builder("pm-2--15")
             .setDetectorElement(detector.getNodeTemplate("2"))
             .setRefinementElement(refinementNode_15)
             .build();
 
-        OTRelationMapping pattern3_to_node16 = new OTRelationMapping.Builder("p3_to_n16")
+        OTRelationMapping pattern3_to_node16 = new OTRelationMapping.Builder("pm-3--16")
             .setRelationType(QName.valueOf("{http://ex.org}relType_connectsTo"))
             .setDirection(OTRelationDirection.INGOING)
             .setDetectorElement(detector.getNodeTemplate("3"))
@@ -203,14 +203,14 @@ public abstract class PermutationHelper {
         // endregion
 
         // region mappings
-        OTRelationMapping pattern1_to_node11 = new OTRelationMapping.Builder("p1_to_n11")
+        OTRelationMapping pattern1_to_node11 = new OTRelationMapping.Builder("rm-1--11")
             .setRelationType(QName.valueOf("{http://ex.org}relType_connectsTo"))
             .setDirection(OTRelationDirection.INGOING)
             .setDetectorElement(detector.getNodeTemplate("1"))
             .setRefinementElement(refinementNode_11)
             .build();
 
-        OTRelationMapping pattern2_to_node13 = new OTRelationMapping.Builder("p2_to_n13")
+        OTRelationMapping pattern2_to_node13 = new OTRelationMapping.Builder("rm-2--13")
             .setRelationType(QName.valueOf("{http://ex.org}relType_hostedOn"))
             .setDirection(OTRelationDirection.INGOING)
             .setDetectorElement(detector.getNodeTemplate("2"))
@@ -218,7 +218,7 @@ public abstract class PermutationHelper {
             .build();
 
         OTRelationMapping pattern3_to_node14 = new OTRelationMapping.Builder(
-            "p3_to_n14")
+            "rm-3-14")
             .setRelationType(QName.valueOf("{http://ex.org}relType_connectsTo"))
             .setDirection(OTRelationDirection.INGOING)
             .setDetectorElement(detector.getNodeTemplate("3"))
@@ -292,12 +292,12 @@ public abstract class PermutationHelper {
         // endregion
 
         // region mappings
-        OTPermutationMapping pattern1_to_node11 = new OTPermutationMapping.Builder("1_to_11")
+        OTPermutationMapping pattern1_to_node11 = new OTPermutationMapping.Builder("pm-1--11")
             .setRefinementElement(refinementNode_11)
             .setDetectorElement(detector.getNodeTemplate("1"))
             .build();
 
-        OTPermutationMapping pattern2_to_node13 = new OTPermutationMapping.Builder("2_to_13")
+        OTPermutationMapping pattern2_to_node13 = new OTPermutationMapping.Builder("pm-2--13")
             .setDetectorElement(detector.getNodeTemplate("2"))
             .setRefinementElement(refinementNode_13)
             .build();
@@ -311,7 +311,8 @@ public abstract class PermutationHelper {
 
         return new OTPatternRefinementModel.Builder()
             .setName("PrmWithComplexRelationMappings")
-            .setTargetNamespace("http://ex.org").setDetector(detector)
+            .setTargetNamespace("http://ex.org")
+            .setDetector(detector)
             .setRefinementStructure(refinementStructure)
             .setPermutationMappings(list)
             .build();
@@ -376,17 +377,17 @@ public abstract class PermutationHelper {
         // endregion
 
         // region mappings
-        OTPermutationMapping pattern1_to_node11 = new OTPermutationMapping.Builder("1_to_11")
+        OTPermutationMapping pattern1_to_node11 = new OTPermutationMapping.Builder("pm-1--11")
             .setRefinementElement(refinementNode_11)
             .setDetectorElement(detector.getNodeTemplate("1"))
             .build();
 
-        OTPermutationMapping pattern2_to_node13 = new OTPermutationMapping.Builder("2_to_13")
+        OTPermutationMapping pattern2_to_node13 = new OTPermutationMapping.Builder("pm-2--13")
             .setDetectorElement(detector.getNodeTemplate("2"))
             .setRefinementElement(refinementNode_13)
             .build();
 
-        OTPermutationMapping pattern3_to_node12 = new OTPermutationMapping.Builder("3_to_12")
+        OTPermutationMapping pattern3_to_node12 = new OTPermutationMapping.Builder("pm-3--12")
             .setDetectorElement(detector.getNodeTemplate("3"))
             .setRefinementElement(refinementNode_12)
             .build();
@@ -477,12 +478,12 @@ public abstract class PermutationHelper {
         // endregion
 
         //region mappings
-        OTPermutationMapping pattern1_to_node11 = new OTPermutationMapping.Builder("1_to_11")
+        OTPermutationMapping pattern1_to_node11 = new OTPermutationMapping.Builder("pm-1--11")
             .setRefinementElement(refinementNode_11)
             .setDetectorElement(detector.getNodeTemplate("1"))
             .build();
 
-        OTPermutationMapping pattern2_to_node14 = new OTPermutationMapping.Builder("2_to_14")
+        OTPermutationMapping pattern2_to_node14 = new OTPermutationMapping.Builder("pm-2--14")
             .setDetectorElement(detector.getNodeTemplate("2"))
             .setRefinementElement(refinementNode_14)
             .build();
@@ -585,33 +586,33 @@ public abstract class PermutationHelper {
         // endregion
 
         // region mappings
-        OTRelationMapping pattern1_to_node11 = new OTRelationMapping.Builder("p1_to_n11")
+        OTRelationMapping pattern1_to_node11 = new OTRelationMapping.Builder("rm-1--11")
             .setRelationType("{http://ex.org}relType_connectsTo")
             .setDirection(OTRelationDirection.INGOING)
             .setDetectorElement(detector.getNodeTemplate("1"))
             .setRefinementElement(refinementNode_11)
             .build();
 
-        OTDeploymentArtifactMapping pattern1_to_node12 = new OTDeploymentArtifactMapping.Builder("p1_to_n12")
+        OTDeploymentArtifactMapping pattern1_to_node12 = new OTDeploymentArtifactMapping.Builder("dam-1--12")
             .setDetectorElement(detector.getNodeTemplate("1"))
             .setRefinementElement(refinementNode_12)
             .setArtifactType(QName.valueOf("{http://ex.org}artType_war"))
             .build();
 
-        OTAttributeMapping pattern2_to_node13 = new OTAttributeMapping.Builder("p2_to_n13")
+        OTAttributeMapping pattern2_to_node13 = new OTAttributeMapping.Builder("am-2--13")
             .setType(OTAttributeMappingType.ALL)
             .setDetectorElement(detector.getNodeTemplate("2"))
             .setRefinementElement(refinementNode_13)
             .build();
 
-        OTRelationMapping pattern2_to_node15 = new OTRelationMapping.Builder("p2_to_n15")
+        OTRelationMapping pattern2_to_node15 = new OTRelationMapping.Builder("rm-2--15")
             .setRelationType("{http://ex.org}relType_connectsTo")
             .setDirection(OTRelationDirection.INGOING)
             .setDetectorElement(detector.getNodeTemplate("2"))
             .setRefinementElement(refinementNode_15)
             .build();
 
-        OTRelationMapping pattern3_to_node15 = new OTRelationMapping.Builder("p3_to_n15")
+        OTRelationMapping pattern3_to_node15 = new OTRelationMapping.Builder("rm-3--15")
             .setRelationType(QName.valueOf("{http://ex.org}relType_connectsTo"))
             .setDirection(OTRelationDirection.INGOING)
             .setDetectorElement(detector.getNodeTemplate("3"))
@@ -693,7 +694,7 @@ public abstract class PermutationHelper {
     static void addAllPermutationMappings(OTPatternRefinementModel refinementModel) {
         addSomePermutationMappings(refinementModel);
 
-        OTPermutationMapping relation1to2_to_relation12to14 = new OTPermutationMapping.Builder("p1-p2_to_n14")
+        OTPermutationMapping relation1to2_to_relation12to14 = new OTPermutationMapping.Builder("pm-1-2--14")
             .setDetectorElement(refinementModel.getDetector().getRelationshipTemplate("1--2"))
             .setRefinementElement(refinementModel.getRefinementStructure().getNodeTemplate("14"))
             .build();
@@ -701,17 +702,17 @@ public abstract class PermutationHelper {
     }
 
     static void addSomePermutationMappings(OTPatternRefinementModel refinementModel) {
-        OTPermutationMapping pattern2_to_node14 = new OTPermutationMapping.Builder("p2_to_n14")
+        OTPermutationMapping pattern2_to_node14 = new OTPermutationMapping.Builder("pm-2--14")
             .setDetectorElement(refinementModel.getDetector().getNodeTemplate("2"))
             .setRefinementElement(refinementModel.getRefinementStructure().getNodeTemplate("14"))
             .build();
 
-        OTPermutationMapping pattern3_to_node15 = new OTPermutationMapping.Builder("p3_to_n15")
+        OTPermutationMapping pattern3_to_node15 = new OTPermutationMapping.Builder("pm-3--15")
             .setDetectorElement(refinementModel.getDetector().getNodeTemplate("3"))
             .setRefinementElement(refinementModel.getRefinementStructure().getNodeTemplate("15"))
             .build();
 
-        OTPermutationMapping pattern3_to_node16 = new OTPermutationMapping.Builder("p3_to_n16")
+        OTPermutationMapping pattern3_to_node16 = new OTPermutationMapping.Builder("pm-3--16")
             .setDetectorElement(refinementModel.getDetector().getNodeTemplate("3"))
             .setRefinementElement(refinementModel.getRefinementStructure().getNodeTemplate("16"))
             .build();

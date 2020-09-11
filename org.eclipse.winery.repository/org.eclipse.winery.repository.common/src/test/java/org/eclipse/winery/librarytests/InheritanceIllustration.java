@@ -13,23 +13,34 @@
  *******************************************************************************/
 package org.eclipse.winery.librarytests;
 
-import org.apache.commons.lang3.time.DateUtils;
-
-import java.text.ParseException;
-import java.util.Date;
-import java.util.Locale;
-
 /**
- * Date parsing test, when the system locale is not ENGLISH
+ * This class is intended to demonstrate static resolution of overloaded methods
+ * <p>
+ * The output of this class is "Doing sth. with a followed by "Doing sth. with b" even if the passed "theObject" is of
+ * type B
  */
-public class DateTest {
+public class InheritanceIllustration {
 
-    public static void main(String[] args) throws ParseException {
-        // In case the following line is commented, this method throws a ParseException
-        Locale.setDefault(Locale.ENGLISH);
-        String modified = "Fri, 23 Mar 2012 11:04:56 GMT";
-        Date modifiedDate = DateUtils.parseDate(modified, org.eclipse.winery.repository.DateUtils.DEFAULT_PATTERNS);
-        System.out.println(modifiedDate);
+    private static class A {
     }
 
+    private static class B extends A {
+    }
+
+    private static class X {
+
+        public static void doSomething(A a) {
+            System.out.println("Doing sth. with a");
+        }
+
+        public static void doSomething(B b) {
+            System.out.println("Doing sth. with b");
+        }
+    }
+
+    public static void main(String[] args) {
+        A theObject = new B();
+        X.doSomething(theObject);
+        X.doSomething((B) theObject);
+    }
 }
