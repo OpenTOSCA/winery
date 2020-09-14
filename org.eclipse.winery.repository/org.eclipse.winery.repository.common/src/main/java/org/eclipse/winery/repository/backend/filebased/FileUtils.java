@@ -61,28 +61,28 @@ public class FileUtils {
                     }
 
                     @Override
-                    public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+                    public FileVisitResult postVisitDirectory(Path dir, IOException exc) {
                         if (exc == null) {
                             try {
                                 Files.delete(dir);
                             } catch (Exception e) {
-                                logger.debug("Could not delete dir", e);
+                                logger.debug("Could not delete dir: {}", e.getMessage());
                             }
                             return CONTINUE;
                         } else {
-                            logger.debug("Could not delete file", exc);
+                            logger.debug("Could not delete file: {}", exc.getMessage());
                             return CONTINUE;
                         }
                     }
                 });
             } catch (IOException e) {
-                logger.debug("Could not delete dir", e);
+                logger.debug("Could not delete dir: {}", e.getMessage());
             }
         } else {
             try {
                 Files.delete(path);
             } catch (IOException e) {
-                logger.debug("Could not delete file", e.getMessage());
+                logger.debug("Could not delete file: {}", e.getMessage());
             }
         }
     }
