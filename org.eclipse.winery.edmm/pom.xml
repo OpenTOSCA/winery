@@ -33,7 +33,7 @@
     
     <dependencies>
         <dependency>
-            <groupId>com.github.UST-EDMM.edmm</groupId>
+            <groupId>com.github.ust-edmm.transformation-framework</groupId>
             <artifactId>edmm-core</artifactId>
             <version>v1.0.6</version>
         </dependency>
