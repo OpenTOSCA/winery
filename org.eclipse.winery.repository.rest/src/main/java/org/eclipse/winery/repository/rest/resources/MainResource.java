@@ -271,7 +271,6 @@ public class MainResource {
         }
         if (importMetaInformation.errors.isEmpty()) {
             if (options.isValidate()) {
-
                 return Response.ok(importMetaInformation, MediaType.APPLICATION_JSON).build();
             } else if (Objects.nonNull(importMetaInformation.entryServiceTemplate)) {
                 URI url = uriInfo.getBaseUri().resolve(RestUtils.getAbsoluteURL(importMetaInformation.entryServiceTemplate));
