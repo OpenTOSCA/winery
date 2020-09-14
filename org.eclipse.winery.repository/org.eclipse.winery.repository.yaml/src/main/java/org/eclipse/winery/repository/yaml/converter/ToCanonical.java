@@ -1190,8 +1190,17 @@ public class ToCanonical {
 
         // FIXME need to actually transform the node.getProperties() to an xml schema
         //  to be able to import it and add a PropertiesDefinition reference to that schema
+        String namespace = this.namespace;
+        if (namespace == null) {
+            // attempt to patch namespace with the definitions' targetNamespace
+            namespace = result.getTargetNamespace();
+        }
+        if (namespace == null) {
+            LOGGER.warn("Could not determine namespace for DataType {}. Imports may be incorrect!", name);
+            return result;
+        }
         TImport importDefinition = new TImport.Builder(Namespaces.XML_NS)
-            .setLocation(EncodingUtil.URLencode(this.namespace) + ".xsd")
+            .setLocation(EncodingUtil.URLencode(namespace) + ".xsd")
             // namespace must not be null
             .setNamespace(namespace)
             .build();
