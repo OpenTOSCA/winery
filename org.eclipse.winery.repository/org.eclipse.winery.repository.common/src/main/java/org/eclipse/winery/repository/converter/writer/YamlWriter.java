@@ -70,6 +70,7 @@ import org.eclipse.winery.model.tosca.yaml.TTopologyTemplateDefinition;
 import org.eclipse.winery.model.tosca.yaml.TVersion;
 import org.eclipse.winery.model.tosca.yaml.support.Metadata;
 import org.eclipse.winery.model.tosca.yaml.support.TListString;
+import org.eclipse.winery.model.tosca.yaml.support.TMapImportDefinition;
 import org.eclipse.winery.model.tosca.yaml.support.TMapObject;
 import org.eclipse.winery.model.tosca.yaml.support.TMapPropertyFilterDefinition;
 import org.eclipse.winery.model.tosca.yaml.support.TMapRequirementAssignment;
@@ -140,7 +141,7 @@ public class YamlWriter extends AbstractVisitor<YamlPrinter, YamlWriter.Paramete
             .printNewLine()
             .print(node.getMetadata().accept(this, parameter))
             .print(printList("imports",
-                node.getImports().stream().map(m -> m.getMap().values()).flatMap(Collection::stream).collect(Collectors.toList()),
+                node.getImports().stream().map(TMapImportDefinition::values).flatMap(Collection::stream).collect(Collectors.toList()),
                 parameter))
             // .printKeyValue("description", node.getDescription())
             .print(printMapObject("dsl_definitions", node.getDslDefinitions(), parameter))
@@ -199,11 +200,11 @@ public class YamlWriter extends AbstractVisitor<YamlPrinter, YamlWriter.Paramete
 
     public YamlPrinter visit(TImportDefinition node, Parameter parameter) {
         return new YamlPrinter(parameter.getIndent())
-            .printKeyValue("- file", node.getFile())
-            .printKeyValue("  repository", node.getRepository())
-            .printKeyValue("  namespace_uri", node.getNamespaceUri())
-            // .printKeyValue("  namespace_uri", node.getNamespaceUri(), !node.getNamespaceUri().equals(Namespaces.DEFAULT_NS))
-            .printKeyValue("  namespace_prefix", node.getNamespacePrefix());
+            .printKeyValue("file", node.getFile())
+            .printKeyValue("repository", node.getRepository())
+            .printKeyValue("namespace_uri", node.getNamespaceUri())
+            // .printKeyValue("namespace_uri", node.getNamespaceUri(), !node.getNamespaceUri().equals(Namespaces.DEFAULT_NS))
+            .printKeyValue("namespace_prefix", node.getNamespacePrefix());
     }
 
     public YamlPrinter visit(TArtifactType node, Parameter parameter) {
@@ -600,7 +601,7 @@ public class YamlWriter extends AbstractVisitor<YamlPrinter, YamlWriter.Paramete
                 // since indentation is done in printListObject
                 .map(entry -> ((VisitorNode) entry).accept(this, new Parameter(0)))
                 .reduce(printer, YamlPrinter::printListObject);
-            printer.indent(-2);
+            printer.indent(-INDENT_SIZE);
         }
         return printer;
     }
@@ -638,6 +639,8 @@ public class YamlWriter extends AbstractVisitor<YamlPrinter, YamlWriter.Paramete
                     .map(
                         (entry) -> new YamlPrinter(parameter.getIndent() + INDENT_SIZE)
                             .printListKey(entry.getKey())
+                            // FIXME replace <T> with <T extends VisitorNode> to enforce type at compile time
+                            //  this also necessitates adjusting the yaml-model to contain that type information
                             .print(((VisitorNode) entry.getValue())
                                 .accept(this,
                                     new Parameter(parameter.getIndent() + 3 * INDENT_SIZE).addContext(entry.getKey())

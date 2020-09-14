@@ -307,9 +307,16 @@ public class YamlPrinter extends AbstractResult<YamlPrinter> {
 
     public YamlPrinter printListObject(Object object) {
         if (object instanceof YamlPrinter) {
-            // we assume the YamlPrinter object here generates valid yaml, terminated with a newline
+            // we assume the YamlPrinter object here generates valid yaml, possibly with nested objects and lists
             print('-').print(' ')
-                .print(object.toString().replaceAll("^  ", "").replaceAll("\n", "\n" + getIndentString()));
+                .print(object.toString()
+                    // remove whitespace from the beginning
+                    .replaceAll("^\\s+", "")
+                    // replace up to one level of indentation of the string with the current indentation + 1 level 
+                    .replaceAll("\n\\s{0,2}", "\n  " + getIndentString())
+                    // replace the indented end of the string with the actual current indentation
+                    .replaceAll("\n\\s+$", "\n" + getIndentString())
+                );
             if (!((YamlPrinter) object).endsWithNewLine()) {
                 return printNewLine();
             }
