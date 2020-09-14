@@ -24,7 +24,10 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.winery.model.tosca.yaml.TConstraintClause;
+import org.eclipse.winery.model.tosca.yaml.TImportDefinition;
 import org.eclipse.winery.model.tosca.yaml.TPropertyAssignment;
+import org.eclipse.winery.model.tosca.yaml.TServiceTemplate;
+import org.eclipse.winery.model.tosca.yaml.support.Defaults;
 import org.eclipse.winery.repository.converter.writer.YamlPrinter;
 import org.eclipse.winery.repository.converter.writer.YamlWriter;
 
@@ -39,10 +42,26 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class YamlWriterTests {
 
     @ParameterizedTest
-    @ArgumentsSource(ConstraintClausesArgumentsProvider.class)
-    public void testConstraintClauses(TConstraintClause node, String expected) {
+    @ArgumentsSource(ServiceTemplatesProvider.class)
+    public void testServiceTemplates(TServiceTemplate template, String expected) {
         YamlWriter writer = new YamlWriter();
-        YamlPrinter p = writer.visit(node, new YamlWriter.Parameter(0).addContext("root"));
+        YamlPrinter p = writer.visit(template, new YamlWriter.Parameter(0));
+        assertEquals(expected, p.toString());
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(ImportArgumentsProvider.class)
+    public void testImports(TImportDefinition importDef, String expected) {
+        YamlWriter writer = new YamlWriter();
+        YamlPrinter p = writer.visit(importDef, new YamlWriter.Parameter(0).addContext("root"));
+        assertEquals(expected, p.toString());
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(ConstraintClausesArgumentsProvider.class)
+    public void testConstraintClauses(TConstraintClause constraint, String expected) {
+        YamlWriter writer = new YamlWriter();
+        YamlPrinter p = writer.visit(constraint, new YamlWriter.Parameter(0).addContext("root"));
         assertEquals(expected, p.toString());
     }
 
@@ -60,6 +79,38 @@ public class YamlWriterTests {
         YamlWriter writer = new YamlWriter();
         YamlPrinter p = writer.visit(prop, new YamlWriter.Parameter(0).addContext("root"));
         assertEquals(expected, p.toString());
+    }
+
+    static class ServiceTemplatesProvider implements ArgumentsProvider {
+        @Override
+        public Stream<? extends Arguments> provideArguments(ExtensionContext context) {
+            TServiceTemplate stWithImports = new TServiceTemplate.Builder(Defaults.TOSCA_DEFINITIONS_VERSION)
+                .addImports("S3Bucket", new TImportDefinition.Builder("radonnodesaws__AwsS3Bucket.tosca")
+                    .setNamespacePrefix("radonnodesaws")
+                    .setNamespaceUri("radon.nodes.aws")
+                    .build())
+                .addImports("Lambda", new TImportDefinition.Builder("radonnodesaws__AwsLambdaFunctionFromS3.tosca")
+                    .setNamespacePrefix("radonnodesaws")
+                    .setNamespaceUri("radon.nodes.aws")
+                    .build())
+                .build();
+            return Stream.of(
+                Arguments.of(stWithImports, "tosca_definitions_version: tosca_simple_yaml_1_3\n\nimports:\n  - file: radonnodesaws__AwsS3Bucket.tosca\n    namespace_uri: radon.nodes.aws\n    namespace_prefix: radonnodesaws\n  - file: radonnodesaws__AwsLambdaFunctionFromS3.tosca\n    namespace_uri: radon.nodes.aws\n    namespace_prefix: radonnodesaws\n")
+            );
+        }
+    }
+
+    static class ImportArgumentsProvider implements ArgumentsProvider {
+        @Override
+        public Stream<? extends Arguments> provideArguments(ExtensionContext context) {
+            TImportDefinition base = new TImportDefinition.Builder("radonnodes__AwsS3Bucket.tosca")
+                .setNamespacePrefix("radonnodesaws")
+                .setNamespaceUri("radon.nodes.aws")
+                .build();
+            return Stream.of(
+                Arguments.of(base, "file: radonnodes__AwsS3Bucket.tosca\nnamespace_uri: radon.nodes.aws\nnamespace_prefix: radonnodesaws\n")
+            );
+        }
     }
 
     static class ConstraintClausesArgumentsProvider implements ArgumentsProvider {
