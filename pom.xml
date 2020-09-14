@@ -53,13 +53,6 @@
         <developerConnection>scm:git:https://github.com/eclipse/winery.git</developerConnection>
         <tag>HEAD</tag>
     </scm>
-    <distributionManagement>
-        <repository>
-            <id>internal.repo</id>
-            <name>Temporary Staging Repository</name>
-            <url>file://${main.basedir}/target/mvn-repo</url>
-        </repository>
-    </distributionManagement>
     <properties>
         <github.global.server>github</github.global.server>
         <main.basedir>${project.basedir}</main.basedir>
@@ -197,4 +190,11 @@
             </plugins>
         </pluginManagement>
     </build>
+    <repositories>
+        <repository>
+            <id>google-maven-central</id>
+            <name>GCS Maven Central mirror EU</name>
+            <url>https://maven-central-eu.storage-download.googleapis.com/maven2/</url>
+        </repository>
+    </repositories>
 </project>

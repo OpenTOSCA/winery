@@ -24,14 +24,6 @@
     </parent>
     <artifactId>org.eclipse.winery.accountability</artifactId>
 
-    <distributionManagement>
-        <repository>
-            <id>internal.repo</id>
-            <name>Temporary Staging Repository</name>
-            <url>file://${main.basedir}/target/mvn-repo</url>
-        </repository>
-    </distributionManagement>
-
     <properties>
         <checkstyle.config.location>../checkstyle.xml</checkstyle.config.location>
         <!-- property is required for deployment to mvn-repo -->
