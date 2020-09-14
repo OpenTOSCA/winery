@@ -37,11 +37,12 @@ import javax.ws.rs.core.UriInfo;
 import javax.xml.namespace.QName;
 
 import org.eclipse.winery.common.configuration.Environments;
-import org.eclipse.winery.common.configuration.RepositoryConfigurationObject;
 import org.eclipse.winery.common.version.VersionUtils;
 import org.eclipse.winery.edmm.EdmmUtils;
 import org.eclipse.winery.model.tosca.TServiceTemplate;
+import org.eclipse.winery.repository.backend.IRepository;
 import org.eclipse.winery.repository.backend.RepositoryFactory;
+import org.eclipse.winery.repository.backend.filebased.GitBasedRepository;
 import org.eclipse.winery.repository.importing.CsarImportOptions;
 import org.eclipse.winery.repository.importing.CsarImporter;
 import org.eclipse.winery.repository.importing.ImportMetaInformation;
@@ -68,8 +69,8 @@ import org.eclipse.winery.repository.rest.resources.refinementmodels.TestRefinem
 import org.eclipse.winery.repository.rest.resources.refinementmodels.TopologyFragmentRefinementModelsResource;
 import org.eclipse.winery.repository.rest.resources.servicetemplates.ServiceTemplatesResource;
 import org.eclipse.winery.repository.rest.resources.threats.ThreatsResource;
-import org.eclipse.winery.repository.rest.resources.yaml.YAMLParserResource;
 import org.eclipse.winery.repository.rest.resources.yaml.DataTypesResource;
+import org.eclipse.winery.repository.rest.resources.yaml.YAMLParserResource;
 import org.eclipse.winery.repository.yaml.YamlRepository;
 
 import io.swagger.annotations.Api;
@@ -83,6 +84,8 @@ import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static org.eclipse.winery.common.configuration.RepositoryConfigurationObject.RepositoryProvider.YAML;
 
 /**
  * All paths listed here have to be listed in Jersey's filter configuration
@@ -116,7 +119,7 @@ public class MainResource {
     public CapabilityTypesResource capabilitytypes() {
         return new CapabilityTypesResource();
     }
-    
+
     @Path("datatypes/")
     public DataTypesResource datatypes() {
         return new DataTypesResource();
@@ -196,7 +199,7 @@ public class MainResource {
     public YAMLParserResource yamlParser() {
         return new YAMLParserResource();
     }
-    
+
     @Path("threats")
     public ThreatsResource threats() {
         return new ThreatsResource();
@@ -245,12 +248,15 @@ public class MainResource {
         // @formatter:on
 
         CsarImporter importer;
-        // FIXME the importer selection must not rely on the Provider, but on the type of CSAR uploaded!
-        if (Environments.getInstance().getUiConfig().getFeatures().get(RepositoryConfigurationObject.RepositoryProvider.YAML.toString())) {
-            // cast should be safe
-            importer = new YamlCsarImporter((YamlRepository)RepositoryFactory.getRepository());
+        IRepository repository = RepositoryFactory.getRepository();
+        if (Environments.getInstance().getUiConfig().getFeatures().get(YAML.toString())) {
+            if (repository instanceof GitBasedRepository) {
+                importer = new YamlCsarImporter((YamlRepository) ((GitBasedRepository) repository).getRepository());
+            } else {
+                importer = new YamlCsarImporter((YamlRepository) repository);
+            }
         } else {
-            importer = new CsarImporter(RepositoryFactory.getRepository());
+            importer = new CsarImporter(repository);
         }
 
         CsarImportOptions options = new CsarImportOptions();
