@@ -150,21 +150,24 @@ export class InheritanceUtils {
         return result;
     }
 
-    static getEffectiveKVPropertiesOfTemplateElement(templateElementProperties: any, typeQName: string, entityTypes: EntityType[]): any {
+    static getEffectivePropertiesOfTemplateElement(templateElementProperties: any, typeQName: string, entityTypes: EntityType[]): any {
         const defaultTypeProperties = this.getDefaultPropertiesFromEntityTypes(typeQName, entityTypes);
         const result = {};
-        if (defaultTypeProperties && defaultTypeProperties.kvproperties) {
-            Object.keys(defaultTypeProperties.kvproperties).forEach(currentPropKey => {
-
-                if (templateElementProperties && templateElementProperties.kvproperties &&
-                    Object.keys(templateElementProperties.kvproperties).some(tempPropertyKey => tempPropertyKey === currentPropKey)) {
-                    result[currentPropKey] = templateElementProperties.kvproperties[currentPropKey];
-                } else {
-                    result[currentPropKey] = defaultTypeProperties.kvproperties[currentPropKey];
-                }
-            });
+        if (!defaultTypeProperties) {
+            console.log('Could not find default type properties for type ' + typeQName);
+            return { propertyType: PropertyDefinitionType.NONE };
         }
-        return { kvproperties: result };
+        if (defaultTypeProperties.propertyType === PropertyDefinitionType.KV) {
+            Object.assign(result, defaultTypeProperties.kvproperties);
+        }
+        if (defaultTypeProperties.propertyType === PropertyDefinitionType.YAML) {
+            Object.assign(result, defaultTypeProperties.properties);
+        }
+        // overwrite defaults from the entity type with the properties of the element
+        if (templateElementProperties && templateElementProperties.properties) {
+            Object.assign(result, templateElementProperties.properties);
+        }
+        return { properties: result };
     }
 
     /**
