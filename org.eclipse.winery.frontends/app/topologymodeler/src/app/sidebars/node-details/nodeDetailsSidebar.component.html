@@ -68,10 +68,10 @@
                     <winery-policies
                         [readonly]=false
                         (toggleModalHandler)="addNewPolicy($event)"
-                        [currentNodeData]="{currentNodeId: sidebarState.relationshipTemplate.id,
+                        [currentNodeData]="{currentNodeId: sidebarState.relationshipTemplate?.id,
                                     currentNodePart: 'POLICIES',
                                     currentProperties: sidebarState.relationshipTemplate}"
-                        [policies]="sidebarState.relationshipTemplate.policies?.policy">
+                        [policies]="sidebarState.relationshipTemplate?.policies?.policy">
                     </winery-policies>
                 </div>
             </div>
