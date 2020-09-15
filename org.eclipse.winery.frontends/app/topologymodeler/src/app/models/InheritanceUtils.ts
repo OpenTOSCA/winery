@@ -167,7 +167,9 @@ export class InheritanceUtils {
         if (templateElementProperties && templateElementProperties.properties) {
             Object.assign(result, templateElementProperties.properties);
         }
-        return { properties: result };
+        // FIXME: because this method is only used for Yaml Policies this forced mapping to YAML-properties is doable
+        //  This is highly likely to break for anything beyond that specific usecase!
+        return { propertyType: PropertyDefinitionType.YAML, properties: result };
     }
 
     /**
