@@ -1,9 +1,5 @@
 /*******************************************************************************
-<<<<<<< HEAD:org.eclipse.winery.model/org.eclipse.winery.model.tosca.canonical/src/main/java/org/eclipse/winery/model/tosca/extensions/OTAttributeMapping.java
- * Copyright (c) 2020 Contributors to the Eclipse Foundation
-=======
  * Copyright (c) 2019-2020 Contributors to the Eclipse Foundation
->>>>>>> d1751e010... Add XML Roundtrip test accessing the test-repository:org.eclipse.winery.model/org.eclipse.winery.model.tosca.canonical/src/main/java/org/eclipse/winery/model/tosca/extensions/AttributeMapping.java
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
