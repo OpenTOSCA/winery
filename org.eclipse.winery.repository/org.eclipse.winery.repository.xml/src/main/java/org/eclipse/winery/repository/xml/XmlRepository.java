@@ -38,8 +38,8 @@ import org.eclipse.winery.model.ids.IdUtil;
 import org.eclipse.winery.model.ids.Namespace;
 import org.eclipse.winery.model.ids.XmlId;
 import org.eclipse.winery.model.ids.definitions.DefinitionsChildId;
-import org.eclipse.winery.model.tosca.xml.Definitions;
-import org.eclipse.winery.model.tosca.xml.TDefinitions;
+import org.eclipse.winery.model.tosca.xml.XDefinitions;
+import org.eclipse.winery.model.tosca.xml.XTDefinitions;
 import org.eclipse.winery.repository.JAXBSupport;
 import org.eclipse.winery.repository.backend.BackendUtils;
 import org.eclipse.winery.repository.backend.constants.MediaTypes;
@@ -81,7 +81,7 @@ public class XmlRepository extends AbstractFileBasedRepository {
             return null;
         }
         ToCanonical converter = new ToCanonical(this);
-        return converter.convert((Definitions) definition);
+        return converter.convert((XDefinitions) definition);
     }
 
     @Override
@@ -117,7 +117,7 @@ public class XmlRepository extends AbstractFileBasedRepository {
     @Override
     public void putDefinition(RepositoryFileReference ref, org.eclipse.winery.model.tosca.TDefinitions content) throws IOException {
         FromCanonical converter = new FromCanonical(this);
-        TDefinitions definitions = converter.convert(content);
+        XTDefinitions definitions = converter.convert(content);
         Path serializationTarget = ref2AbsolutePath(ref);
         Files.createDirectories(serializationTarget.getParent());
         try (OutputStream out = Files.newOutputStream(serializationTarget, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE)) {
@@ -189,11 +189,11 @@ public class XmlRepository extends AbstractFileBasedRepository {
     @Override
     public void serialize(org.eclipse.winery.model.tosca.TDefinitions definitions, OutputStream target) throws IOException {
         FromCanonical converter = new FromCanonical(this);
-        TDefinitions implementedStandard = converter.convert(definitions);
+        XTDefinitions implementedStandard = converter.convert(definitions);
         serialize(implementedStandard, target);
     }
 
-    private void serialize(TDefinitions definitions, OutputStream target) throws IOException {
+    private void serialize(XTDefinitions definitions, OutputStream target) throws IOException {
         try {
             Marshaller m = XmlModelJAXBSupport.createMarshaller(true, this.getNamespaceManager().asPrefixMapper());
             m.marshal(definitions, target);

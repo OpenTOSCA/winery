@@ -13,13 +13,13 @@
  *******************************************************************************/
 package org.eclipse.winery.model.tosca.xml.utils;
 
-import org.eclipse.winery.model.tosca.xml.TEntityTemplate;
-import org.eclipse.winery.model.tosca.xml.TNodeTemplate;
-import org.eclipse.winery.model.tosca.xml.TPolicies;
-import org.eclipse.winery.model.tosca.xml.TRelationshipTemplate;
+import org.eclipse.winery.model.tosca.xml.XTEntityTemplate;
+import org.eclipse.winery.model.tosca.xml.XTNodeTemplate;
+import org.eclipse.winery.model.tosca.xml.XTPolicies;
+import org.eclipse.winery.model.tosca.xml.XTRelationshipTemplate;
 import org.eclipse.winery.model.tosca.xml.visitor.Visitor;
-import org.eclipse.winery.model.tosca.xml.TDeploymentArtifacts;
-import org.eclipse.winery.model.tosca.xml.TTopologyTemplate;
+import org.eclipse.winery.model.tosca.xml.XTDeploymentArtifacts;
+import org.eclipse.winery.model.tosca.xml.XTTopologyTemplate;
 
 import io.github.adr.embedded.ADR;
 
@@ -35,12 +35,12 @@ import io.github.adr.embedded.ADR;
 public class RemoveEmptyLists extends Visitor {
 
     @Override
-    public void visit(TEntityTemplate entityTemplate) {
-        final TEntityTemplate.PropertyConstraints propertyConstraints = entityTemplate.getPropertyConstraints();
+    public void visit(XTEntityTemplate entityTemplate) {
+        final XTEntityTemplate.PropertyConstraints propertyConstraints = entityTemplate.getPropertyConstraints();
         if ((propertyConstraints != null) && propertyConstraints.getPropertyConstraint().isEmpty()) {
             entityTemplate.setPropertyConstraints(null);
         }
-        TEntityTemplate.Properties properties = entityTemplate.getProperties();
+        XTEntityTemplate.Properties properties = entityTemplate.getProperties();
         if ((properties != null) && (properties.getAny() == null)) {
             entityTemplate.setProperties(null);
         }
@@ -48,20 +48,20 @@ public class RemoveEmptyLists extends Visitor {
     }
 
     @Override
-    public void visit(TNodeTemplate nodeTemplate) {
-        final TNodeTemplate.Requirements requirements = nodeTemplate.getRequirements();
+    public void visit(XTNodeTemplate nodeTemplate) {
+        final XTNodeTemplate.Requirements requirements = nodeTemplate.getRequirements();
         if ((requirements != null) && requirements.getRequirement().isEmpty()) {
             nodeTemplate.setRequirements(null);
         }
-        final TNodeTemplate.Capabilities capabilities = nodeTemplate.getCapabilities();
+        final XTNodeTemplate.Capabilities capabilities = nodeTemplate.getCapabilities();
         if ((capabilities != null) && capabilities.getCapability().isEmpty()) {
             nodeTemplate.setCapabilities(null);
         }
-        final TDeploymentArtifacts deploymentArtifacts = nodeTemplate.getDeploymentArtifacts();
+        final XTDeploymentArtifacts deploymentArtifacts = nodeTemplate.getDeploymentArtifacts();
         if ((deploymentArtifacts != null) && deploymentArtifacts.getDeploymentArtifact().isEmpty()) {
             nodeTemplate.setDeploymentArtifacts(null);
         }
-        final TPolicies policies = nodeTemplate.getPolicies();
+        final XTPolicies policies = nodeTemplate.getPolicies();
         if ((policies != null) && policies.getPolicy().isEmpty()) {
             nodeTemplate.setPolicies(null);
         }
@@ -69,8 +69,8 @@ public class RemoveEmptyLists extends Visitor {
     }
 
     @Override
-    public void visit(TRelationshipTemplate relationshipTemplate) {
-        final TRelationshipTemplate.RelationshipConstraints relationshipConstraints = relationshipTemplate.getRelationshipConstraints();
+    public void visit(XTRelationshipTemplate relationshipTemplate) {
+        final XTRelationshipTemplate.RelationshipConstraints relationshipConstraints = relationshipTemplate.getRelationshipConstraints();
         if ((relationshipConstraints != null) && relationshipConstraints.getRelationshipConstraint().isEmpty()) {
             relationshipTemplate.setRelationshipConstraints(null);
         }
@@ -82,7 +82,7 @@ public class RemoveEmptyLists extends Visitor {
      *
      * @param topologyTemplate the topology template to modify
      */
-    public void removeEmptyLists(TTopologyTemplate topologyTemplate) {
+    public void removeEmptyLists(XTTopologyTemplate topologyTemplate) {
         this.visit(topologyTemplate);
     }
 }

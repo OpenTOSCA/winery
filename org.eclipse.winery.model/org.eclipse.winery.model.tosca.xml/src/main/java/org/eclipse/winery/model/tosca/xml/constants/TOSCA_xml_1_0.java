@@ -14,33 +14,33 @@
 
 package org.eclipse.winery.model.tosca.xml.constants;
 
-import org.eclipse.winery.model.tosca.xml.TArtifactTemplate;
-import org.eclipse.winery.model.tosca.xml.TArtifactType;
-import org.eclipse.winery.model.tosca.xml.TCapabilityType;
-import org.eclipse.winery.model.tosca.xml.TExtensibleElements;
-import org.eclipse.winery.model.tosca.xml.TNodeType;
-import org.eclipse.winery.model.tosca.xml.TNodeTypeImplementation;
-import org.eclipse.winery.model.tosca.xml.TPolicyTemplate;
-import org.eclipse.winery.model.tosca.xml.TPolicyType;
-import org.eclipse.winery.model.tosca.xml.TRelationshipType;
-import org.eclipse.winery.model.tosca.xml.TRelationshipTypeImplementation;
-import org.eclipse.winery.model.tosca.xml.TRequirementType;
-import org.eclipse.winery.model.tosca.xml.TServiceTemplate;
+import org.eclipse.winery.model.tosca.xml.XTArtifactTemplate;
+import org.eclipse.winery.model.tosca.xml.XTArtifactType;
+import org.eclipse.winery.model.tosca.xml.XTCapabilityType;
+import org.eclipse.winery.model.tosca.xml.XTExtensibleElements;
+import org.eclipse.winery.model.tosca.xml.XTNodeType;
+import org.eclipse.winery.model.tosca.xml.XTNodeTypeImplementation;
+import org.eclipse.winery.model.tosca.xml.XTPolicyTemplate;
+import org.eclipse.winery.model.tosca.xml.XTPolicyType;
+import org.eclipse.winery.model.tosca.xml.XTRelationshipType;
+import org.eclipse.winery.model.tosca.xml.XTRelationshipTypeImplementation;
+import org.eclipse.winery.model.tosca.xml.XTRequirementType;
+import org.eclipse.winery.model.tosca.xml.XTServiceTemplate;
 
 public class TOSCA_xml_1_0 {
     @SuppressWarnings("unchecked")
-    public static final Class<? extends TExtensibleElements>[] DEFINITIONS_ELEMENT_CLASSES =
+    public static final Class<? extends XTExtensibleElements>[] DEFINITIONS_ELEMENT_CLASSES =
         new Class[] {
-            TServiceTemplate.class,
-            TNodeType.class,
-            TNodeTypeImplementation.class,
-            TRelationshipType.class,
-            TRelationshipTypeImplementation.class,
-            TRequirementType.class,
-            TCapabilityType.class,
-            TArtifactType.class,
-            TArtifactTemplate.class,
-            TPolicyType.class,
-            TPolicyTemplate.class
+            XTServiceTemplate.class,
+            XTNodeType.class,
+            XTNodeTypeImplementation.class,
+            XTRelationshipType.class,
+            XTRelationshipTypeImplementation.class,
+            XTRequirementType.class,
+            XTCapabilityType.class,
+            XTArtifactType.class,
+            XTArtifactTemplate.class,
+            XTPolicyType.class,
+            XTPolicyTemplate.class
     };
 }

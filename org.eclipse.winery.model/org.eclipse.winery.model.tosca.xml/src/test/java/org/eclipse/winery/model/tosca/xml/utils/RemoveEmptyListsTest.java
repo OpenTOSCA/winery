@@ -14,10 +14,10 @@
 
 package org.eclipse.winery.model.tosca.xml.utils;
 
-import org.eclipse.winery.model.tosca.xml.TEntityTemplate;
-import org.eclipse.winery.model.tosca.xml.TNodeTemplate;
-import org.eclipse.winery.model.tosca.xml.TPolicies;
-import org.eclipse.winery.model.tosca.xml.TTopologyTemplate;
+import org.eclipse.winery.model.tosca.xml.XTEntityTemplate;
+import org.eclipse.winery.model.tosca.xml.XTNodeTemplate;
+import org.eclipse.winery.model.tosca.xml.XTPolicies;
+import org.eclipse.winery.model.tosca.xml.XTTopologyTemplate;
 
 import org.junit.jupiter.api.Test;
 
@@ -28,21 +28,21 @@ public class RemoveEmptyListsTest {
 
     @Test
     public void emptyPropertiesAndPoliciesListsRemovedFromNodeTemplate() {
-        TTopologyTemplate topologyTemplate = new TTopologyTemplate();
-        TNodeTemplate nodeTemplate = new TNodeTemplate();
+        XTTopologyTemplate topologyTemplate = new XTTopologyTemplate();
+        XTNodeTemplate nodeTemplate = new XTNodeTemplate();
         topologyTemplate.getNodeTemplateOrRelationshipTemplate().add(nodeTemplate);
 
-        nodeTemplate.setProperties(new TEntityTemplate.Properties());
-        nodeTemplate.setPolicies(new TPolicies());
+        nodeTemplate.setProperties(new XTEntityTemplate.Properties());
+        nodeTemplate.setPolicies(new XTPolicies());
 
-        assertNotNull(((TNodeTemplate) topologyTemplate.getNodeTemplateOrRelationshipTemplate().get(0)).getPolicies());
-        assertNotNull(((TNodeTemplate) topologyTemplate.getNodeTemplateOrRelationshipTemplate().get(0)).getProperties());
+        assertNotNull(((XTNodeTemplate) topologyTemplate.getNodeTemplateOrRelationshipTemplate().get(0)).getPolicies());
+        assertNotNull(((XTNodeTemplate) topologyTemplate.getNodeTemplateOrRelationshipTemplate().get(0)).getProperties());
         // preconditions fulfilled
 
         RemoveEmptyLists removeEmptyLists = new RemoveEmptyLists();
         removeEmptyLists.removeEmptyLists(topologyTemplate);
         
-        assertNull(((TNodeTemplate) topologyTemplate.getNodeTemplateOrRelationshipTemplate().get(0)).getPolicies());
-        assertNull(((TNodeTemplate) topologyTemplate.getNodeTemplateOrRelationshipTemplate().get(0)).getProperties());
+        assertNull(((XTNodeTemplate) topologyTemplate.getNodeTemplateOrRelationshipTemplate().get(0)).getPolicies());
+        assertNull(((XTNodeTemplate) topologyTemplate.getNodeTemplateOrRelationshipTemplate().get(0)).getProperties());
     }
 }

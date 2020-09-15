@@ -22,7 +22,7 @@ import java.util.Objects;
 
 import javax.xml.bind.JAXBException;
 
-import org.eclipse.winery.model.tosca.xml.TDefinitions;
+import org.eclipse.winery.model.tosca.xml.XTDefinitions;
 import org.eclipse.winery.repository.JAXBSupport;
 import org.eclipse.winery.repository.backend.IRepository;
 
@@ -36,15 +36,15 @@ import org.eclipse.winery.repository.backend.IRepository;
 public class XMLDefinitionsBasedCsarEntry implements CsarEntry {
     private static final boolean INCLUDE_PROCESSING = true;
     
-    private TDefinitions definitions;
+    private XTDefinitions definitions;
     private IRepository repository;
 
-    public XMLDefinitionsBasedCsarEntry(TDefinitions definitions, IRepository repository) {
+    public XMLDefinitionsBasedCsarEntry(XTDefinitions definitions, IRepository repository) {
         this.repository = Objects.requireNonNull(repository);
         this.definitions = Objects.requireNonNull(definitions);
     }
 
-    public TDefinitions getDefinitions() {
+    public XTDefinitions getDefinitions() {
         return definitions;
     }
 

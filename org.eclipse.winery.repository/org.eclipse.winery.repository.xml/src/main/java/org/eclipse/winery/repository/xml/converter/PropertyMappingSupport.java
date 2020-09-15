@@ -17,7 +17,7 @@ package org.eclipse.winery.repository.xml.converter;
 import java.util.LinkedHashMap;
 
 import org.eclipse.winery.model.tosca.constants.Namespaces;
-import org.eclipse.winery.model.tosca.xml.TEntityTemplate;
+import org.eclipse.winery.model.tosca.xml.XTEntityTemplate;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,7 +31,7 @@ public class PropertyMappingSupport {
     
     private static final Logger LOGGER = LoggerFactory.getLogger(PropertyMappingSupport.class);
     
-    public static boolean isKeyValuePropertyDefinition(TEntityTemplate.Properties xmlProps) {
+    public static boolean isKeyValuePropertyDefinition(XTEntityTemplate.Properties xmlProps) {
         if (xmlProps == null) {
             return false;
         }
@@ -66,7 +66,7 @@ public class PropertyMappingSupport {
         return true;
     }
     
-    public static org.eclipse.winery.model.tosca.TEntityTemplate.WineryKVProperties convertToKVProperties(TEntityTemplate.Properties propDef) {
+    public static org.eclipse.winery.model.tosca.TEntityTemplate.WineryKVProperties convertToKVProperties(XTEntityTemplate.Properties propDef) {
         if (!isKeyValuePropertyDefinition(propDef)) {
             throw new IllegalArgumentException("Passed properties are not KeyValue properties and therefore can't be converted as such");
         }
