@@ -23,24 +23,24 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlType;
 
-import org.eclipse.winery.model.tosca.yaml.TRequirementAssignment;
+import org.eclipse.winery.model.tosca.yaml.YTRequirementAssignment;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "tMapRequirementAssignment", namespace = " http://docs.oasis-open.org/tosca/ns/simple/yaml/1.3", propOrder = {
     "map"
 })
-public class TMapRequirementAssignment implements Map<String, TRequirementAssignment> {
-    private Map<String, TRequirementAssignment> map;
+public class TMapRequirementAssignment implements Map<String, YTRequirementAssignment> {
+    private Map<String, YTRequirementAssignment> map;
 
     public TMapRequirementAssignment() {
         this.map = new LinkedHashMap<>();
     }
 
-    public Map<String, TRequirementAssignment> getMap() {
+    public Map<String, YTRequirementAssignment> getMap() {
         return map;
     }
 
-    public TMapRequirementAssignment setMap(Map<String, TRequirementAssignment> map) {
+    public TMapRequirementAssignment setMap(Map<String, YTRequirementAssignment> map) {
         this.map = new LinkedHashMap<>(map);
         return this;
     }
@@ -84,22 +84,22 @@ public class TMapRequirementAssignment implements Map<String, TRequirementAssign
     }
 
     @Override
-    public TRequirementAssignment get(Object o) {
+    public YTRequirementAssignment get(Object o) {
         return this.map.get(o);
     }
 
     @Override
-    public TRequirementAssignment put(String s, TRequirementAssignment requirementAssignment) {
+    public YTRequirementAssignment put(String s, YTRequirementAssignment requirementAssignment) {
         return this.map.put(s, requirementAssignment);
     }
 
     @Override
-    public TRequirementAssignment remove(Object o) {
+    public YTRequirementAssignment remove(Object o) {
         return this.map.remove(o);
     }
 
     @Override
-    public void putAll(Map<? extends String, ? extends TRequirementAssignment> map) {
+    public void putAll(Map<? extends String, ? extends YTRequirementAssignment> map) {
         this.map.putAll(map);
     }
 
@@ -114,12 +114,12 @@ public class TMapRequirementAssignment implements Map<String, TRequirementAssign
     }
 
     @Override
-    public Collection<TRequirementAssignment> values() {
+    public Collection<YTRequirementAssignment> values() {
         return this.map.values();
     }
 
     @Override
-    public Set<Entry<String, TRequirementAssignment>> entrySet() {
+    public Set<Entry<String, YTRequirementAssignment>> entrySet() {
         return this.map.entrySet();
     }
 }

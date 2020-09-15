@@ -41,8 +41,8 @@ import org.w3c.dom.Document;
 public class SchemaVisitor extends ExceptionVisitor<Result, Parameter> {
 
     private Map<QName, Map<String, QName>> propertyDefinition;
-    private Map<String, List<Map.Entry<String, TImportDefinition>>> imports;
-    private Map<String, TDataType> data_types;
+    private Map<String, List<Map.Entry<String, YTImportDefinition>>> imports;
+    private Map<String, YTDataType> data_types;
     private List<String> localDatatypeNames;
     private Map<String, SchemaBuilder> schemaBuilders;
     private Map<String, List<String>> schemaTypes;
@@ -66,7 +66,7 @@ public class SchemaVisitor extends ExceptionVisitor<Result, Parameter> {
         return propertyDefinition;
     }
 
-    private void addImport(String namespace, Map.Entry<String, TImportDefinition> importDefinition) {
+    private void addImport(String namespace, Map.Entry<String, YTImportDefinition> importDefinition) {
         if (imports.containsKey(namespace)) {
             imports.get(namespace).add(importDefinition);
         } else {
@@ -82,12 +82,12 @@ public class SchemaVisitor extends ExceptionVisitor<Result, Parameter> {
         }
     }
 
-    public Map<QName, Map<String, QName>> visit(TServiceTemplate node, Path path, Path outpath, String namespace) {
+    public Map<QName, Map<String, QName>> visit(YTServiceTemplate node, Path path, Path outpath, String namespace) {
         for (TMapImportDefinition map : node.getImports()) {
-            for (Map.Entry<String, TImportDefinition> entry : map.entrySet()) {
+            for (Map.Entry<String, YTImportDefinition> entry : map.entrySet()) {
                 YamlReader reader = new YamlReader();
                 try {
-                    TServiceTemplate serviceTemplate = reader.parse(entry.getValue(), path, entry.getValue().getNamespaceUri());
+                    YTServiceTemplate serviceTemplate = reader.parse(entry.getValue(), path, entry.getValue().getNamespaceUri());
                     visit(serviceTemplate, new Parameter(outpath, entry.getValue().getNamespaceUri()).setBuildSchema(false));
                 } catch (MultiException e) {
                     setException(e);
@@ -99,12 +99,12 @@ public class SchemaVisitor extends ExceptionVisitor<Result, Parameter> {
     }
 
     @Override
-    public Result visit(TServiceTemplate node, Parameter parameter) {
+    public Result visit(YTServiceTemplate node, Parameter parameter) {
 
-        Map<String, TDataType> tmpDataTypes = this.data_types;
+        Map<String, YTDataType> tmpDataTypes = this.data_types;
         this.data_types = node.getDataTypes();
         for (TMapImportDefinition map : node.getImports()) {
-            for (Map.Entry<String, TImportDefinition> entry : map.entrySet()) {
+            for (Map.Entry<String, YTImportDefinition> entry : map.entrySet()) {
                 addImport(entry.getValue().getNamespaceUri(), new AbstractMap.SimpleEntry<>(entry));
             }
         }
@@ -115,7 +115,7 @@ public class SchemaVisitor extends ExceptionVisitor<Result, Parameter> {
         // Default: parameter.datatype is not set -> visit all datatype nodes
         QName type = parameter.getDatatype();
         if (type == null) {
-            for (Map.Entry<String, TDataType> entry : node.getDataTypes().entrySet()) {
+            for (Map.Entry<String, YTDataType> entry : node.getDataTypes().entrySet()) {
                 if (entry.getValue() != null) {
                     entry.getValue().accept(this, parameter.copy().addContext("datatypes", entry.getKey()));
                 }
@@ -146,7 +146,7 @@ public class SchemaVisitor extends ExceptionVisitor<Result, Parameter> {
     }
 
     @Override
-    public Result visit(TDataType node, Parameter parameter) {
+    public Result visit(YTDataType node, Parameter parameter) {
         SchemaBuilder builder;
 
         if (this.schemaBuilders.containsKey(parameter.getNamespace())) {
@@ -158,7 +158,7 @@ public class SchemaVisitor extends ExceptionVisitor<Result, Parameter> {
 
         Map<String, QName> buildPlan = new LinkedHashMap<>();
 
-        for (Map.Entry<String, TPropertyDefinition> entry : node.getProperties().entrySet()) {
+        for (Map.Entry<String, YTPropertyDefinition> entry : node.getProperties().entrySet()) {
             QName type = entry.getValue().getType();
             buildPlan.put(entry.getKey(), entry.getValue().getType());
 
@@ -175,10 +175,10 @@ public class SchemaVisitor extends ExceptionVisitor<Result, Parameter> {
             // if parameter.datatype is defined and property type is not in this service template
             else if (!type.getNamespaceURI().equals(parameter.getNamespace())
                 || !this.localDatatypeNames.contains(type.getLocalPart())) {
-                for (Map.Entry<String, TImportDefinition> importDefinition : imports.get(type.getNamespaceURI())) {
+                for (Map.Entry<String, YTImportDefinition> importDefinition : imports.get(type.getNamespaceURI())) {
                     try {
                         YamlReader reader = new YamlReader();
-                        TServiceTemplate serviceTemplate = reader.parse(importDefinition.getValue(), parameter.getPath(), importDefinition.getValue().getNamespaceUri());
+                        YTServiceTemplate serviceTemplate = reader.parse(importDefinition.getValue(), parameter.getPath(), importDefinition.getValue().getNamespaceUri());
                         visit(serviceTemplate,
                             new Parameter(parameter.getPath(), type.getNamespaceURI())
                                 .setDatatype(type).setBuildSchema(false));
@@ -208,8 +208,8 @@ public class SchemaVisitor extends ExceptionVisitor<Result, Parameter> {
     }
 
     @Override
-    public Result visit(TEntityType node, Parameter parameter) {
-        if (node instanceof TDataType || node.getProperties().isEmpty()) {
+    public Result visit(YTEntityType node, Parameter parameter) {
+        if (node instanceof YTDataType || node.getProperties().isEmpty()) {
             return null;
         }
         // BuildPlan for assignments
@@ -220,7 +220,7 @@ public class SchemaVisitor extends ExceptionVisitor<Result, Parameter> {
 
         Map<String, String> imports = new LinkedHashMap<>();
 
-        for (Map.Entry<String, TPropertyDefinition> entry : node.getProperties().entrySet()) {
+        for (Map.Entry<String, YTPropertyDefinition> entry : node.getProperties().entrySet()) {
             builder.addElements(entry.getKey(), entry.getValue());
             QName type = entry.getValue().getType();
             if (type.getNamespaceURI() != null && !type.getNamespaceURI().equals(Namespaces.YAML_NS)) {
@@ -242,7 +242,7 @@ public class SchemaVisitor extends ExceptionVisitor<Result, Parameter> {
     /**
      * Visit all childes of ServiceTemplates except from metadata, repositories, imports, data_types
      */
-    private void visitChildes(TServiceTemplate node, Parameter parameter) {
+    private void visitChildes(YTServiceTemplate node, Parameter parameter) {
         node.getArtifactTypes().entrySet().stream()
             .filter(entry -> Objects.nonNull(entry) && Objects.nonNull(entry.getValue()))
             .forEach(entry ->

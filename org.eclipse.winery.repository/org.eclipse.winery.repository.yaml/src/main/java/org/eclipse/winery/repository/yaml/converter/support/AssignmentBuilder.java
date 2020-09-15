@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
-import org.eclipse.winery.model.tosca.yaml.TPropertyAssignment;
+import org.eclipse.winery.model.tosca.yaml.YTPropertyAssignment;
 import org.eclipse.winery.model.converter.support.Namespaces;
 import org.eclipse.winery.repository.converter.writer.support.AnonymousPropertiesList;
 import org.eclipse.winery.repository.converter.writer.support.PropertiesList;
@@ -39,7 +39,7 @@ public class AssignmentBuilder {
         this.typeConverter = new TypeConverter();
     }
 
-    public PropertiesList getAssignment(Map<String, TPropertyAssignment> assignmentMap, QName type) {
+    public PropertiesList getAssignment(Map<String, YTPropertyAssignment> assignmentMap, QName type) {
         Map<String, Object> assignments = assignmentMap.entrySet().stream()
             .filter(e -> e.getValue() != null)
             .collect(Collectors.toMap(

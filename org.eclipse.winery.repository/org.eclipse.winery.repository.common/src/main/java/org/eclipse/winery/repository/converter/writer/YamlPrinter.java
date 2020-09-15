@@ -21,8 +21,8 @@ import java.util.stream.Collectors;
 
 import javax.xml.namespace.QName;
 
-import org.eclipse.winery.model.tosca.yaml.TStatusValue;
-import org.eclipse.winery.model.tosca.yaml.TVersion;
+import org.eclipse.winery.model.tosca.yaml.YTStatusValue;
+import org.eclipse.winery.model.tosca.yaml.YTVersion;
 import org.eclipse.winery.model.tosca.yaml.visitor.AbstractResult;
 
 public class YamlPrinter extends AbstractResult<YamlPrinter> {
@@ -212,12 +212,12 @@ public class YamlPrinter extends AbstractResult<YamlPrinter> {
         return printer.printNewLine();
     }
 
-    public YamlPrinter printKeyValue(String key, TVersion value) {
+    public YamlPrinter printKeyValue(String key, YTVersion value) {
         if (Objects.isNull(value)) return this;
         return printKeyValue(key, value.getVersion());
     }
 
-    public YamlPrinter printKeyValue(String key, TStatusValue value) {
+    public YamlPrinter printKeyValue(String key, YTStatusValue value) {
         if (Objects.isNull(value)) return this;
         return printKeyValue(key, value.name());
     }

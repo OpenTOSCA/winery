@@ -28,46 +28,46 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import org.eclipse.winery.model.tosca.yaml.TArtifactDefinition;
-import org.eclipse.winery.model.tosca.yaml.TArtifactType;
-import org.eclipse.winery.model.tosca.yaml.TAttributeAssignment;
-import org.eclipse.winery.model.tosca.yaml.TAttributeDefinition;
-import org.eclipse.winery.model.tosca.yaml.TCapabilityAssignment;
-import org.eclipse.winery.model.tosca.yaml.TCapabilityDefinition;
-import org.eclipse.winery.model.tosca.yaml.TCapabilityType;
-import org.eclipse.winery.model.tosca.yaml.TConstraintClause;
-import org.eclipse.winery.model.tosca.yaml.TDataType;
-import org.eclipse.winery.model.tosca.yaml.TEntityType;
-import org.eclipse.winery.model.tosca.yaml.TSchemaDefinition;
-import org.eclipse.winery.model.tosca.yaml.TGroupDefinition;
-import org.eclipse.winery.model.tosca.yaml.TGroupType;
-import org.eclipse.winery.model.tosca.yaml.TImplementation;
-import org.eclipse.winery.model.tosca.yaml.TImportDefinition;
-import org.eclipse.winery.model.tosca.yaml.TInterfaceAssignment;
-import org.eclipse.winery.model.tosca.yaml.TInterfaceDefinition;
-import org.eclipse.winery.model.tosca.yaml.TInterfaceType;
-import org.eclipse.winery.model.tosca.yaml.TNodeFilterDefinition;
-import org.eclipse.winery.model.tosca.yaml.TNodeTemplate;
-import org.eclipse.winery.model.tosca.yaml.TNodeType;
-import org.eclipse.winery.model.tosca.yaml.TOperationDefinition;
-import org.eclipse.winery.model.tosca.yaml.TParameterDefinition;
-import org.eclipse.winery.model.tosca.yaml.TPolicyDefinition;
-import org.eclipse.winery.model.tosca.yaml.TPolicyType;
-import org.eclipse.winery.model.tosca.yaml.TPropertyAssignment;
-import org.eclipse.winery.model.tosca.yaml.TPropertyDefinition;
-import org.eclipse.winery.model.tosca.yaml.TPropertyFilterDefinition;
-import org.eclipse.winery.model.tosca.yaml.TRelationshipAssignment;
-import org.eclipse.winery.model.tosca.yaml.TRelationshipDefinition;
-import org.eclipse.winery.model.tosca.yaml.TRelationshipTemplate;
-import org.eclipse.winery.model.tosca.yaml.TRelationshipType;
-import org.eclipse.winery.model.tosca.yaml.TRepositoryDefinition;
-import org.eclipse.winery.model.tosca.yaml.TRequirementAssignment;
-import org.eclipse.winery.model.tosca.yaml.TRequirementDefinition;
-import org.eclipse.winery.model.tosca.yaml.TServiceTemplate;
-import org.eclipse.winery.model.tosca.yaml.TStatusValue;
-import org.eclipse.winery.model.tosca.yaml.TSubstitutionMappings;
-import org.eclipse.winery.model.tosca.yaml.TTopologyTemplateDefinition;
-import org.eclipse.winery.model.tosca.yaml.TVersion;
+import org.eclipse.winery.model.tosca.yaml.YTArtifactDefinition;
+import org.eclipse.winery.model.tosca.yaml.YTArtifactType;
+import org.eclipse.winery.model.tosca.yaml.YTAttributeAssignment;
+import org.eclipse.winery.model.tosca.yaml.YTAttributeDefinition;
+import org.eclipse.winery.model.tosca.yaml.YTCapabilityAssignment;
+import org.eclipse.winery.model.tosca.yaml.YTCapabilityDefinition;
+import org.eclipse.winery.model.tosca.yaml.YTCapabilityType;
+import org.eclipse.winery.model.tosca.yaml.YTConstraintClause;
+import org.eclipse.winery.model.tosca.yaml.YTDataType;
+import org.eclipse.winery.model.tosca.yaml.YTEntityType;
+import org.eclipse.winery.model.tosca.yaml.YTSchemaDefinition;
+import org.eclipse.winery.model.tosca.yaml.YTGroupDefinition;
+import org.eclipse.winery.model.tosca.yaml.YTGroupType;
+import org.eclipse.winery.model.tosca.yaml.YTImplementation;
+import org.eclipse.winery.model.tosca.yaml.YTImportDefinition;
+import org.eclipse.winery.model.tosca.yaml.YTInterfaceAssignment;
+import org.eclipse.winery.model.tosca.yaml.YTInterfaceDefinition;
+import org.eclipse.winery.model.tosca.yaml.YTInterfaceType;
+import org.eclipse.winery.model.tosca.yaml.YTNodeFilterDefinition;
+import org.eclipse.winery.model.tosca.yaml.YTNodeTemplate;
+import org.eclipse.winery.model.tosca.yaml.YTNodeType;
+import org.eclipse.winery.model.tosca.yaml.YTOperationDefinition;
+import org.eclipse.winery.model.tosca.yaml.YTParameterDefinition;
+import org.eclipse.winery.model.tosca.yaml.YTPolicyDefinition;
+import org.eclipse.winery.model.tosca.yaml.YTPolicyType;
+import org.eclipse.winery.model.tosca.yaml.YTPropertyAssignment;
+import org.eclipse.winery.model.tosca.yaml.YTPropertyDefinition;
+import org.eclipse.winery.model.tosca.yaml.YTPropertyFilterDefinition;
+import org.eclipse.winery.model.tosca.yaml.YTRelationshipAssignment;
+import org.eclipse.winery.model.tosca.yaml.YTRelationshipDefinition;
+import org.eclipse.winery.model.tosca.yaml.YTRelationshipTemplate;
+import org.eclipse.winery.model.tosca.yaml.YTRelationshipType;
+import org.eclipse.winery.model.tosca.yaml.YTRepositoryDefinition;
+import org.eclipse.winery.model.tosca.yaml.YTRequirementAssignment;
+import org.eclipse.winery.model.tosca.yaml.YTRequirementDefinition;
+import org.eclipse.winery.model.tosca.yaml.YTServiceTemplate;
+import org.eclipse.winery.model.tosca.yaml.YTStatusValue;
+import org.eclipse.winery.model.tosca.yaml.YTSubstitutionMappings;
+import org.eclipse.winery.model.tosca.yaml.YTTopologyTemplateDefinition;
+import org.eclipse.winery.model.tosca.yaml.YTVersion;
 import org.eclipse.winery.model.tosca.yaml.support.Metadata;
 import org.eclipse.winery.model.tosca.yaml.support.TListString;
 import org.eclipse.winery.model.tosca.yaml.support.TMapImportDefinition;
@@ -102,7 +102,7 @@ public class YamlWriter extends AbstractVisitor<YamlPrinter, YamlWriter.Paramete
         this.INDENT_SIZE = indentSize;
     }
 
-    public InputStream writeToInputStream(TServiceTemplate serviceTemplate) {
+    public InputStream writeToInputStream(YTServiceTemplate serviceTemplate) {
         try {
             String output = this.visit(serviceTemplate, new Parameter(0)).toString();
             return new ByteArrayInputStream(output.getBytes());
@@ -112,7 +112,7 @@ public class YamlWriter extends AbstractVisitor<YamlPrinter, YamlWriter.Paramete
         return null;
     }
 
-    public void write(TServiceTemplate serviceTemplate, Path fileName) {
+    public void write(YTServiceTemplate serviceTemplate, Path fileName) {
         Objects.requireNonNull(serviceTemplate);
         try {
             Files.createDirectories(Objects.requireNonNull(fileName).getParent());
@@ -128,14 +128,14 @@ public class YamlWriter extends AbstractVisitor<YamlPrinter, YamlWriter.Paramete
     }
 
     /**
-     * @deprecated Use {@link YamlWriter#write(TServiceTemplate, Path)}
+     * @deprecated Use {@link YamlWriter#write(YTServiceTemplate, Path)}
      */
     @Deprecated
-    public void write(TServiceTemplate serviceTemplate, String fileName) {
+    public void write(YTServiceTemplate serviceTemplate, String fileName) {
         this.write(serviceTemplate, Paths.get(fileName));
     }
 
-    public YamlPrinter visit(TServiceTemplate node, Parameter parameter) {
+    public YamlPrinter visit(YTServiceTemplate node, Parameter parameter) {
         return new YamlPrinter(parameter.getIndent())
             .printKeyValue("tosca_definitions_version", node.getToscaDefinitionsVersion())
             .printNewLine()
@@ -157,7 +157,7 @@ public class YamlWriter extends AbstractVisitor<YamlPrinter, YamlWriter.Paramete
             .print(printVisitorNode(node.getTopologyTemplate(), new Parameter(parameter.getIndent()).addContext("topology_template")));
     }
 
-    public YamlPrinter visit(TTopologyTemplateDefinition node, Parameter parameter) {
+    public YamlPrinter visit(YTTopologyTemplateDefinition node, Parameter parameter) {
         return new YamlPrinter(parameter.getIndent())
             .printKeyValue("description", node.getDescription())
             .print(printMap("inputs", node.getInputs(), parameter))
@@ -180,7 +180,7 @@ public class YamlWriter extends AbstractVisitor<YamlPrinter, YamlWriter.Paramete
         return printer;
     }
 
-    public YamlPrinter visit(TRepositoryDefinition node, Parameter parameter) {
+    public YamlPrinter visit(YTRepositoryDefinition node, Parameter parameter) {
         YamlPrinter printer = new YamlPrinter(parameter.getIndent())
             .printKeyValue("description", node.getDescription())
             .printKeyValue("url", node.getUrl());
@@ -198,7 +198,7 @@ public class YamlWriter extends AbstractVisitor<YamlPrinter, YamlWriter.Paramete
         return printer;
     }
 
-    public YamlPrinter visit(TImportDefinition node, Parameter parameter) {
+    public YamlPrinter visit(YTImportDefinition node, Parameter parameter) {
         return new YamlPrinter(parameter.getIndent())
             .printKeyValue("file", node.getFile())
             .printKeyValue("repository", node.getRepository())
@@ -207,13 +207,13 @@ public class YamlWriter extends AbstractVisitor<YamlPrinter, YamlWriter.Paramete
             .printKeyValue("namespace_prefix", node.getNamespacePrefix());
     }
 
-    public YamlPrinter visit(TArtifactType node, Parameter parameter) {
+    public YamlPrinter visit(YTArtifactType node, Parameter parameter) {
         return new YamlPrinter(parameter.getIndent())
             .printKeyValue("mime_type", node.getMimeType())
             .printKeyValue("file_ext", node.getFileExt());
     }
 
-    public YamlPrinter visit(TEntityType node, Parameter parameter) {
+    public YamlPrinter visit(YTEntityType node, Parameter parameter) {
         return new YamlPrinter(parameter.getIndent())
             .printKeyValue("description", node.getDescription())
             .printKeyValue("version", node.getVersion())
@@ -223,7 +223,7 @@ public class YamlWriter extends AbstractVisitor<YamlPrinter, YamlWriter.Paramete
             .print(printMap("properties", node.getProperties(), parameter));
     }
 
-    public YamlPrinter visit(TPropertyDefinition node, Parameter parameter) {
+    public YamlPrinter visit(YTPropertyDefinition node, Parameter parameter) {
         YamlPrinter printer = new YamlPrinter(parameter.getIndent())
             .printKeyValue("type", node.getType())
             .printKeyValue("description", node.getDescription());
@@ -233,7 +233,7 @@ public class YamlWriter extends AbstractVisitor<YamlPrinter, YamlWriter.Paramete
         }
         printer.printYamlValue("default", node.getDefault());
         // do not print the default value for status to avoid bloating the output
-        if (node.getStatus() != TStatusValue.supported) {
+        if (node.getStatus() != YTStatusValue.supported) {
             printer.printKeyValue("status", node.getStatus());
         }
         printer.print(printList("constraints", node.getConstraints(), parameter));
@@ -247,14 +247,14 @@ public class YamlWriter extends AbstractVisitor<YamlPrinter, YamlWriter.Paramete
         return printer;
     }
 
-    public YamlPrinter visit(TSchemaDefinition node, Parameter parameter) {
+    public YamlPrinter visit(YTSchemaDefinition node, Parameter parameter) {
         return new YamlPrinter(parameter.getIndent())
             .printKeyValue("type", node.getType())
             .printKeyValue("description", node.getDescription())
             .print(printList("constraints", node.getConstraints(), parameter));
     }
 
-    public YamlPrinter visit(TAttributeDefinition node, Parameter parameter) {
+    public YamlPrinter visit(YTAttributeDefinition node, Parameter parameter) {
         return new YamlPrinter(parameter.getIndent())
             .printKeyValue("description", node.getDescription())
             .printKeyValue("type", node.getType())
@@ -263,17 +263,17 @@ public class YamlWriter extends AbstractVisitor<YamlPrinter, YamlWriter.Paramete
             .print(printVisitorNode(node.getEntrySchema(), parameter.addContext("entry_schema")));
     }
 
-    public YamlPrinter visit(TDataType node, Parameter parameter) {
+    public YamlPrinter visit(YTDataType node, Parameter parameter) {
         return new YamlPrinter(parameter.getIndent())
             .print(printList("constraints", node.getConstraints(), parameter));
     }
 
-    public YamlPrinter visit(TCapabilityType node, Parameter parameter) {
+    public YamlPrinter visit(YTCapabilityType node, Parameter parameter) {
         return new YamlPrinter(parameter.getIndent())
             .printKeyValue("valid_source_types", node.getValidSourceTypes());
     }
 
-    public YamlPrinter visit(TInterfaceType node, Parameter parameter) {
+    public YamlPrinter visit(YTInterfaceType node, Parameter parameter) {
         return new YamlPrinter(parameter.getIndent())
             .print(node.getOperations().entrySet().stream()
                 .map(entry ->
@@ -284,7 +284,7 @@ public class YamlWriter extends AbstractVisitor<YamlPrinter, YamlWriter.Paramete
             .print(printMap("inputs", node.getInputs(), parameter));
     }
 
-    public YamlPrinter visit(TOperationDefinition node, Parameter parameter) {
+    public YamlPrinter visit(YTOperationDefinition node, Parameter parameter) {
         return new YamlPrinter(parameter.getIndent())
             .printKeyValue("description", node.getDescription())
             .print(printMap("inputs", node.getInputs(), new Parameter(parameter.getIndent())))
@@ -292,7 +292,7 @@ public class YamlWriter extends AbstractVisitor<YamlPrinter, YamlWriter.Paramete
             .print(printVisitorNode(node.getImplementation(), new Parameter(parameter.getIndent()).addContext("implementation")));
     }
 
-    public YamlPrinter visit(TImplementation node, Parameter parameter) {
+    public YamlPrinter visit(YTImplementation node, Parameter parameter) {
         YamlPrinter printer = new YamlPrinter(parameter.getIndent())
             .printKeyValue("primary", node.getPrimaryArtifactName())
             .printKeyValue("dependencies", node.getDependencyArtifactNames())
@@ -303,13 +303,13 @@ public class YamlWriter extends AbstractVisitor<YamlPrinter, YamlWriter.Paramete
         return printer;
     }
 
-    public YamlPrinter visit(TRelationshipType node, Parameter parameter) {
+    public YamlPrinter visit(YTRelationshipType node, Parameter parameter) {
         return new YamlPrinter(parameter.getIndent())
             .printKeyValue("valid_target_types", node.getValidTargetTypes())
             .print(printMap("interfaces", node.getInterfaces(), parameter));
     }
 
-    public YamlPrinter visit(TInterfaceDefinition node, Parameter parameter) {
+    public YamlPrinter visit(YTInterfaceDefinition node, Parameter parameter) {
         return new YamlPrinter(parameter.getIndent())
             .printKeyValue("type", node.getType())
             .print(printMap("inputs", node.getInputs(), parameter))
@@ -325,7 +325,7 @@ public class YamlWriter extends AbstractVisitor<YamlPrinter, YamlWriter.Paramete
 //            );
     }
 
-    public YamlPrinter visit(TNodeType node, Parameter parameter) {
+    public YamlPrinter visit(YTNodeType node, Parameter parameter) {
         return new YamlPrinter(parameter.getIndent())
             .print(printListMap("requirements", node.getRequirements().stream().map(TMapRequirementDefinition::getMap).collect(Collectors.toList()), parameter))
             .print(printMap("capabilities", node.getCapabilities(), parameter))
@@ -333,7 +333,7 @@ public class YamlWriter extends AbstractVisitor<YamlPrinter, YamlWriter.Paramete
             .print(printMap("artifacts", node.getArtifacts(), parameter));
     }
 
-    public YamlPrinter visit(TRequirementDefinition node, Parameter parameter) {
+    public YamlPrinter visit(YTRequirementDefinition node, Parameter parameter) {
         return new YamlPrinter(parameter.getIndent())
             .printKeyValue("capability", node.getCapability())
             .printKeyValue("node", node.getNode())
@@ -342,14 +342,14 @@ public class YamlWriter extends AbstractVisitor<YamlPrinter, YamlWriter.Paramete
             .printKeyValue("description", node.getDescription());
     }
 
-    public YamlPrinter visit(TRelationshipDefinition node, Parameter parameter) {
+    public YamlPrinter visit(YTRelationshipDefinition node, Parameter parameter) {
         return new YamlPrinter(parameter.getIndent())
             // Removed to support short notations
             // .printKeyValue("type", node.getType())
             .print(printMap("interfaces", node.getInterfaces(), parameter));
     }
 
-    public YamlPrinter visit(TCapabilityDefinition node, Parameter parameter) {
+    public YamlPrinter visit(YTCapabilityDefinition node, Parameter parameter) {
         return new YamlPrinter(parameter.getIndent())
             .printKeyValue("description", node.getDescription())
             .printKeyValue("occurrences", node.getOccurrences())
@@ -359,7 +359,7 @@ public class YamlWriter extends AbstractVisitor<YamlPrinter, YamlWriter.Paramete
             .print(printMap("attributes", node.getAttributes(), parameter));
     }
 
-    public YamlPrinter visit(TArtifactDefinition node, Parameter parameter) {
+    public YamlPrinter visit(YTArtifactDefinition node, Parameter parameter) {
         YamlPrinter output = new YamlPrinter(parameter.getIndent())
             .printKeyValue("type", node.getType())
             .printKeyValue("repository", node.getRepository())
@@ -371,7 +371,7 @@ public class YamlWriter extends AbstractVisitor<YamlPrinter, YamlWriter.Paramete
         return output;
     }
 
-    public YamlPrinter visit(TGroupType node, Parameter parameter) {
+    public YamlPrinter visit(YTGroupType node, Parameter parameter) {
         return new YamlPrinter(parameter.getIndent())
             .printKeyValue("members", node.getMembers())
             .print(printListMap("requirements", node.getRequirements().stream().map(TMapRequirementDefinition::getMap).collect(Collectors.toList()), parameter))
@@ -379,18 +379,18 @@ public class YamlWriter extends AbstractVisitor<YamlPrinter, YamlWriter.Paramete
             .print(printMap("interfaces", node.getInterfaces(), parameter));
     }
 
-    public YamlPrinter visit(TPolicyType node, Parameter parameter) {
+    public YamlPrinter visit(YTPolicyType node, Parameter parameter) {
         return new YamlPrinter(parameter.getIndent())
             .printKeyValue("targets", node.getTargets())
             .printKeyObject("triggers", node.getTriggers());
     }
 
-    public YamlPrinter visit(TVersion node, Parameter parameter) {
+    public YamlPrinter visit(YTVersion node, Parameter parameter) {
         return new YamlPrinter(parameter.getIndent())
             .print(node.getVersion());
     }
 
-    public YamlPrinter visit(TNodeTemplate node, Parameter parameter) {
+    public YamlPrinter visit(YTNodeTemplate node, Parameter parameter) {
         return new YamlPrinter(parameter.getIndent())
             .printKeyValue("type", node.getType())
             .printKeyValue("description", node.getDescription())
@@ -406,7 +406,7 @@ public class YamlWriter extends AbstractVisitor<YamlPrinter, YamlWriter.Paramete
             .printKeyValue("copy", node.getCopy());
     }
 
-    public YamlPrinter visit(TGroupDefinition node, Parameter parameter) {
+    public YamlPrinter visit(YTGroupDefinition node, Parameter parameter) {
         return new YamlPrinter(parameter.getIndent())
             .printKeyValue("type", node.getType())
             .printKeyValue("description", node.getDescription())
@@ -416,7 +416,7 @@ public class YamlWriter extends AbstractVisitor<YamlPrinter, YamlWriter.Paramete
             .print(printMap("interfaces", node.getInterfaces(), parameter));
     }
 
-    public YamlPrinter visit(TPolicyDefinition node, Parameter parameter) {
+    public YamlPrinter visit(YTPolicyDefinition node, Parameter parameter) {
         return new YamlPrinter(parameter.getIndent())
             .printKeyValue("type", node.getType())
             .printKeyValue("description", node.getDescription())
@@ -425,12 +425,12 @@ public class YamlWriter extends AbstractVisitor<YamlPrinter, YamlWriter.Paramete
             .printKeyValue("targets", node.getTargets());
     }
 
-    public YamlPrinter visit(TPropertyAssignment node, Parameter parameter) {
+    public YamlPrinter visit(YTPropertyAssignment node, Parameter parameter) {
         // nested assignments are implemented by calling #printMap for Map values that are not property functions
         YamlPrinter printer = new YamlPrinter(parameter.getIndent());
         if (node.getValue() instanceof Map) {
             @SuppressWarnings("unchecked")
-            Map<String, TPropertyAssignment> value = (Map<String, TPropertyAssignment>) node.getValue();
+            Map<String, YTPropertyAssignment> value = (Map<String, YTPropertyAssignment>) node.getValue();
             // special casing for property functions to always be a single-line map value
             if (value.size() == 1 && Arrays.stream(PROPERTY_FUNCTIONS).anyMatch(value::containsKey)) {
                 String key = value.keySet().iterator().next();
@@ -480,17 +480,17 @@ public class YamlWriter extends AbstractVisitor<YamlPrinter, YamlWriter.Paramete
         return printer;
     }
 
-    public YamlPrinter visit(TAttributeAssignment node, Parameter parameter) {
+    public YamlPrinter visit(YTAttributeAssignment node, Parameter parameter) {
         return new YamlPrinter(parameter.getIndent())
             .printKeyValue("description", node.getDescription())
             .printYamlValue(parameter.getKey(), node.getValue(), true);
     }
 
-    public YamlPrinter visit(TInterfaceAssignment node, Parameter parameter) {
+    public YamlPrinter visit(YTInterfaceAssignment node, Parameter parameter) {
         return new YamlPrinter(parameter.getIndent());
     }
 
-    public YamlPrinter visit(TParameterDefinition node, Parameter parameter) {
+    public YamlPrinter visit(YTParameterDefinition node, Parameter parameter) {
         return new YamlPrinter(parameter.getIndent())
             .printKeyValue("type", node.getType())
             .printKeyValue("description", node.getDescription())
@@ -502,7 +502,7 @@ public class YamlWriter extends AbstractVisitor<YamlPrinter, YamlWriter.Paramete
             .printYamlValue("value", node.getValue());
     }
 
-    public YamlPrinter visit(TConstraintClause node, Parameter parameter) {
+    public YamlPrinter visit(YTConstraintClause node, Parameter parameter) {
         if (node.getValue() != null) {
             return new YamlPrinter(parameter.getIndent())
                 .printKeyValue(node.getKey(), node.getValue());
@@ -513,13 +513,13 @@ public class YamlWriter extends AbstractVisitor<YamlPrinter, YamlWriter.Paramete
         return null;
     }
 
-    public YamlPrinter visit(TCapabilityAssignment node, Parameter parameter) {
+    public YamlPrinter visit(YTCapabilityAssignment node, Parameter parameter) {
         return new YamlPrinter(parameter.getIndent())
             .print(printMap("properties", node.getProperties(), parameter))
             .print(printMap("attributes", node.getAttributes(), parameter));
     }
 
-    public YamlPrinter visit(TNodeFilterDefinition node, Parameter parameter) {
+    public YamlPrinter visit(YTNodeFilterDefinition node, Parameter parameter) {
         return new YamlPrinter(parameter.getIndent())
             .print(printListMap("properties",
                 node.getProperties().stream().map(TMapPropertyFilterDefinition::getMap).collect(Collectors.toList()),
@@ -531,7 +531,7 @@ public class YamlWriter extends AbstractVisitor<YamlPrinter, YamlWriter.Paramete
             );
     }
 
-    public YamlPrinter visit(TRelationshipTemplate node, Parameter parameter) {
+    public YamlPrinter visit(YTRelationshipTemplate node, Parameter parameter) {
         return new YamlPrinter(parameter.getIndent())
             .printKeyValue("type", node.getType())
             .printKeyValue("description", node.getDescription())
@@ -542,13 +542,13 @@ public class YamlWriter extends AbstractVisitor<YamlPrinter, YamlWriter.Paramete
             .printKeyValue("copy", node.getCopy());
     }
 
-    public YamlPrinter visit(TSubstitutionMappings node, Parameter parameter) {
+    public YamlPrinter visit(YTSubstitutionMappings node, Parameter parameter) {
         return new YamlPrinter(parameter.getIndent())
             .printKeyValue("node_type", node.getNodeType())
             .print(printMapInlineStringList("capabilities", node.getCapabilities(), parameter));
     }
 
-    public YamlPrinter visit(TRequirementAssignment node, Parameter parameter) {
+    public YamlPrinter visit(YTRequirementAssignment node, Parameter parameter) {
         return new YamlPrinter(parameter.getIndent())
             .printKeyValue("node", node.getNode())
             .print(printVisitorNode(node.getRelationship(), new Parameter(parameter.getIndent()).addContext("relationship")))
@@ -557,7 +557,7 @@ public class YamlWriter extends AbstractVisitor<YamlPrinter, YamlWriter.Paramete
             .printKeyValue("occurrences", node.getOccurrences());
     }
 
-    public YamlPrinter visit(TRelationshipAssignment node, Parameter parameter) {
+    public YamlPrinter visit(YTRelationshipAssignment node, Parameter parameter) {
         return new YamlPrinter(parameter.getIndent())
             // Removed to support short notations
             // .printKeyValue("type", node.getType())
@@ -565,7 +565,7 @@ public class YamlWriter extends AbstractVisitor<YamlPrinter, YamlWriter.Paramete
             .print(printMap("interfaces", node.getInterfaces(), parameter));
     }
 
-    public YamlPrinter visit(TPropertyFilterDefinition node, Parameter parameter) {
+    public YamlPrinter visit(YTPropertyFilterDefinition node, Parameter parameter) {
         return new YamlPrinter(parameter.getIndent())
             .print(printList("constraints", node.getConstraints(), parameter));
     }
@@ -573,15 +573,15 @@ public class YamlWriter extends AbstractVisitor<YamlPrinter, YamlWriter.Paramete
     public YamlPrinter printVisitorNode(VisitorNode node, Parameter parameter) {
         YamlPrinter printer = new YamlPrinter(parameter.getIndent());
         if (Objects.nonNull(node)) {
-            if (node instanceof TPropertyAssignment) {
+            if (node instanceof YTPropertyAssignment) {
                 printer.print(node.accept(this,
                     new Parameter(parameter.getIndent()).addContext(parameter.getKey())
                 ));
-            } else if (node instanceof TRelationshipAssignment) {
-                printer.print(parameter.getKey() + ": ").printQName(((TRelationshipAssignment) node).getType())
+            } else if (node instanceof YTRelationshipAssignment) {
+                printer.print(parameter.getKey() + ": ").printQName(((YTRelationshipAssignment) node).getType())
                     .print(node.accept(this, new Parameter(parameter.getIndent() + INDENT_SIZE)));
-            } else if (node instanceof TRelationshipDefinition) {
-                printer.print(parameter.getKey() + ": ").printQName(((TRelationshipDefinition) node).getType())
+            } else if (node instanceof YTRelationshipDefinition) {
+                printer.print(parameter.getKey() + ": ").printQName(((YTRelationshipDefinition) node).getType())
                     .print(node.accept(this, new Parameter(parameter.getIndent() + INDENT_SIZE)));
             } else {
                 printer.printKey(parameter.getKey())

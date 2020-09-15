@@ -22,8 +22,8 @@ import java.util.Map;
 
 import org.eclipse.winery.repository.converter.validator.support.Parameter;
 import org.eclipse.winery.repository.converter.validator.support.Result;
-import org.eclipse.winery.model.tosca.yaml.TNodeTemplate;
-import org.eclipse.winery.model.tosca.yaml.TRepositoryDefinition;
+import org.eclipse.winery.model.tosca.yaml.YTNodeTemplate;
+import org.eclipse.winery.model.tosca.yaml.YTRepositoryDefinition;
 
 public class DefinitionsVisitor extends ImportVisitor {
     private Map<String, List<String>> nodeTemplates;
@@ -36,13 +36,13 @@ public class DefinitionsVisitor extends ImportVisitor {
     }
 
     @Override
-    public Result visit(TNodeTemplate node, Parameter parameter) {
+    public Result visit(YTNodeTemplate node, Parameter parameter) {
         setDefinitions(parameter.getKey(), nodeTemplates);
         return super.visit(node, parameter);
     }
 
     @Override
-    public Result visit(TRepositoryDefinition node, Parameter parameter) {
+    public Result visit(YTRepositoryDefinition node, Parameter parameter) {
         setDefinitions(parameter.getKey(), repositoryDefinitions);
         return super.visit(node, parameter);
     }

@@ -22,14 +22,14 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlType;
 
-import org.eclipse.winery.model.tosca.yaml.TPropertyFilterDefinition;
+import org.eclipse.winery.model.tosca.yaml.YTPropertyFilterDefinition;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "tMapPropertyFilterDefinition", namespace = " http://docs.oasis-open.org/tosca/ns/simple/yaml/1.3", propOrder = {
     "map"
 })
-public class TMapPropertyFilterDefinition implements Map<String, TPropertyFilterDefinition> {
-    private Map<String, TPropertyFilterDefinition> map;
+public class TMapPropertyFilterDefinition implements Map<String, YTPropertyFilterDefinition> {
+    private Map<String, YTPropertyFilterDefinition> map;
 
     @Override
     public boolean equals(Object o) {
@@ -49,11 +49,11 @@ public class TMapPropertyFilterDefinition implements Map<String, TPropertyFilter
         return map.toString();
     }
 
-    public Map<String, TPropertyFilterDefinition> getMap() {
+    public Map<String, YTPropertyFilterDefinition> getMap() {
         return map;
     }
 
-    public void setMap(Map<String, TPropertyFilterDefinition> map) {
+    public void setMap(Map<String, YTPropertyFilterDefinition> map) {
         this.map = map;
     }
 
@@ -78,22 +78,22 @@ public class TMapPropertyFilterDefinition implements Map<String, TPropertyFilter
     }
 
     @Override
-    public TPropertyFilterDefinition get(Object o) {
+    public YTPropertyFilterDefinition get(Object o) {
         return this.map.get(o);
     }
 
     @Override
-    public TPropertyFilterDefinition put(String s, TPropertyFilterDefinition propertyFilterDefinition) {
+    public YTPropertyFilterDefinition put(String s, YTPropertyFilterDefinition propertyFilterDefinition) {
         return this.map.put(s, propertyFilterDefinition);
     }
 
     @Override
-    public TPropertyFilterDefinition remove(Object o) {
+    public YTPropertyFilterDefinition remove(Object o) {
         return this.map.remove(o);
     }
 
     @Override
-    public void putAll(Map<? extends String, ? extends TPropertyFilterDefinition> map) {
+    public void putAll(Map<? extends String, ? extends YTPropertyFilterDefinition> map) {
         this.map.putAll(map);
     }
 
@@ -108,12 +108,12 @@ public class TMapPropertyFilterDefinition implements Map<String, TPropertyFilter
     }
 
     @Override
-    public Collection<TPropertyFilterDefinition> values() {
+    public Collection<YTPropertyFilterDefinition> values() {
         return this.map.values();
     }
 
     @Override
-    public Set<Entry<String, TPropertyFilterDefinition>> entrySet() {
+    public Set<Entry<String, YTPropertyFilterDefinition>> entrySet() {
         return this.map.entrySet();
     }
 }

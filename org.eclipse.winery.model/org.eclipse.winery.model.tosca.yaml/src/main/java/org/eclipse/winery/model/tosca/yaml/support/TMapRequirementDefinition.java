@@ -23,14 +23,14 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlType;
 
-import org.eclipse.winery.model.tosca.yaml.TRequirementDefinition;
+import org.eclipse.winery.model.tosca.yaml.YTRequirementDefinition;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "tMapRequirementDefinition", namespace = " http://docs.oasis-open.org/tosca/ns/simple/yaml/1.3", propOrder = {
     "map"
 })
-public class TMapRequirementDefinition implements Map<String, TRequirementDefinition> {
-    private Map<String, TRequirementDefinition> map;
+public class TMapRequirementDefinition implements Map<String, YTRequirementDefinition> {
+    private Map<String, YTRequirementDefinition> map;
 
     public TMapRequirementDefinition() {
         this.map = new LinkedHashMap<>();
@@ -54,11 +54,11 @@ public class TMapRequirementDefinition implements Map<String, TRequirementDefini
         return map.toString();
     }
 
-    public Map<String, TRequirementDefinition> getMap() {
+    public Map<String, YTRequirementDefinition> getMap() {
         return map;
     }
 
-    public TMapRequirementDefinition setMap(Map<String, TRequirementDefinition> map) {
+    public TMapRequirementDefinition setMap(Map<String, YTRequirementDefinition> map) {
         this.map = new LinkedHashMap<>(map);
         return this;
     }
@@ -84,22 +84,22 @@ public class TMapRequirementDefinition implements Map<String, TRequirementDefini
     }
 
     @Override
-    public TRequirementDefinition get(Object o) {
+    public YTRequirementDefinition get(Object o) {
         return this.map.get(o);
     }
 
     @Override
-    public TRequirementDefinition put(String s, TRequirementDefinition requirementDefinition) {
+    public YTRequirementDefinition put(String s, YTRequirementDefinition requirementDefinition) {
         return this.map.put(s, requirementDefinition);
     }
 
     @Override
-    public TRequirementDefinition remove(Object o) {
+    public YTRequirementDefinition remove(Object o) {
         return this.map.remove(o);
     }
 
     @Override
-    public void putAll(Map<? extends String, ? extends TRequirementDefinition> map) {
+    public void putAll(Map<? extends String, ? extends YTRequirementDefinition> map) {
         this.map.putAll(map);
     }
 
@@ -114,12 +114,12 @@ public class TMapRequirementDefinition implements Map<String, TRequirementDefini
     }
 
     @Override
-    public Collection<TRequirementDefinition> values() {
+    public Collection<YTRequirementDefinition> values() {
         return this.map.values();
     }
 
     @Override
-    public Set<Entry<String, TRequirementDefinition>> entrySet() {
+    public Set<Entry<String, YTRequirementDefinition>> entrySet() {
         return this.map.entrySet();
     }
 }

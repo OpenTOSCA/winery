@@ -23,14 +23,14 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlType;
 
-import org.eclipse.winery.model.tosca.yaml.TImportDefinition;
+import org.eclipse.winery.model.tosca.yaml.YTImportDefinition;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "tMapImportDefinition", namespace = "http://docs.oasis-open.org/tosca/ns/simple/yaml/1.3", propOrder = {
     "map"
 })
-public class TMapImportDefinition implements Map<String, TImportDefinition> {
-    private Map<String, TImportDefinition> map;
+public class TMapImportDefinition implements Map<String, YTImportDefinition> {
+    private Map<String, YTImportDefinition> map;
 
     public TMapImportDefinition() {
         this.map = new LinkedHashMap<>();
@@ -54,11 +54,11 @@ public class TMapImportDefinition implements Map<String, TImportDefinition> {
         return map.toString();
     }
 
-    public Map<String, TImportDefinition> getMap() {
+    public Map<String, YTImportDefinition> getMap() {
         return map;
     }
 
-    public void setMap(Map<String, TImportDefinition> map) {
+    public void setMap(Map<String, YTImportDefinition> map) {
         this.map = map;
     }
 
@@ -83,22 +83,22 @@ public class TMapImportDefinition implements Map<String, TImportDefinition> {
     }
 
     @Override
-    public TImportDefinition get(Object o) {
+    public YTImportDefinition get(Object o) {
         return this.map.get(o);
     }
 
     @Override
-    public TImportDefinition put(String s, TImportDefinition importDefinition) {
+    public YTImportDefinition put(String s, YTImportDefinition importDefinition) {
         return this.map.put(s, importDefinition);
     }
 
     @Override
-    public TImportDefinition remove(Object o) {
+    public YTImportDefinition remove(Object o) {
         return this.map.remove(o);
     }
 
     @Override
-    public void putAll(Map<? extends String, ? extends TImportDefinition> map) {
+    public void putAll(Map<? extends String, ? extends YTImportDefinition> map) {
         this.map.putAll(map);
     }
 
@@ -113,12 +113,12 @@ public class TMapImportDefinition implements Map<String, TImportDefinition> {
     }
 
     @Override
-    public Collection<TImportDefinition> values() {
+    public Collection<YTImportDefinition> values() {
         return this.map.values();
     }
 
     @Override
-    public Set<Entry<String, TImportDefinition>> entrySet() {
+    public Set<Entry<String, YTImportDefinition>> entrySet() {
         return this.map.entrySet();
     }
 }

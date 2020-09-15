@@ -22,7 +22,7 @@ import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.eclipse.winery.model.tosca.yaml.TPropertyDefinition;
+import org.eclipse.winery.model.tosca.yaml.YTPropertyDefinition;
 import org.eclipse.winery.model.converter.support.Namespaces;
 
 import org.eclipse.jdt.annotation.NonNull;
@@ -114,7 +114,7 @@ public class SchemaBuilder {
         return addElements(tmp);
     }
 
-    public SchemaBuilder addElements(String key, TPropertyDefinition propertyDefinition) {
+    public SchemaBuilder addElements(String key, YTPropertyDefinition propertyDefinition) {
         assert notFinished;
         Element element = document.createElement("element");
         element.setAttribute("name", key);

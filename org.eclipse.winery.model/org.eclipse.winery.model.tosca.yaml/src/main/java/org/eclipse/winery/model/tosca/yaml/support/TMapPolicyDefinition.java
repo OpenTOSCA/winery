@@ -24,28 +24,28 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlType;
 
-import org.eclipse.winery.model.tosca.yaml.TPolicyDefinition;
+import org.eclipse.winery.model.tosca.yaml.YTPolicyDefinition;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "tMapPolicyDefinition", namespace = " http://docs.oasis-open.org/tosca/ns/simple/yaml/1.3", propOrder = {
     "map"
 })
-public class TMapPolicyDefinition implements Map<String, TPolicyDefinition> {
-    private Map<String, TPolicyDefinition> map;
+public class TMapPolicyDefinition implements Map<String, YTPolicyDefinition> {
+    private Map<String, YTPolicyDefinition> map;
 
     public TMapPolicyDefinition() {
         this.map = new LinkedHashMap<>();
     }
 
-    public TMapPolicyDefinition(Map<String, TPolicyDefinition> map) {
+    public TMapPolicyDefinition(Map<String, YTPolicyDefinition> map) {
         this.map = map;
     }
 
-    public Map<String, TPolicyDefinition> getMap() {
+    public Map<String, YTPolicyDefinition> getMap() {
         return map;
     }
 
-    public void setMap(Map<String, TPolicyDefinition> map) {
+    public void setMap(Map<String, YTPolicyDefinition> map) {
         this.map = map;
     }
 
@@ -88,22 +88,22 @@ public class TMapPolicyDefinition implements Map<String, TPolicyDefinition> {
     }
 
     @Override
-    public TPolicyDefinition get(Object key) {
+    public YTPolicyDefinition get(Object key) {
         return map.get(key);
     }
 
     @Override
-    public TPolicyDefinition put(String key, TPolicyDefinition value) {
+    public YTPolicyDefinition put(String key, YTPolicyDefinition value) {
         return map.put(key, value);
     }
 
     @Override
-    public TPolicyDefinition remove(Object key) {
+    public YTPolicyDefinition remove(Object key) {
         return remove(key);
     }
 
     @Override
-    public void putAll(Map<? extends String, ? extends TPolicyDefinition> m) {
+    public void putAll(Map<? extends String, ? extends YTPolicyDefinition> m) {
         map.putAll(m);
     }
 
@@ -118,12 +118,12 @@ public class TMapPolicyDefinition implements Map<String, TPolicyDefinition> {
     }
 
     @Override
-    public Collection<TPolicyDefinition> values() {
+    public Collection<YTPolicyDefinition> values() {
         return map.values();
     }
 
     @Override
-    public Set<Entry<String, TPolicyDefinition>> entrySet() {
+    public Set<Entry<String, YTPolicyDefinition>> entrySet() {
         return map.entrySet();
     }
 }

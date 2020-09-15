@@ -43,7 +43,7 @@ import org.eclipse.winery.model.tosca.TImport;
 import org.eclipse.winery.model.tosca.TNodeType;
 import org.eclipse.winery.model.tosca.TRelationshipType;
 import org.eclipse.winery.model.tosca.utils.ModelUtilities;
-import org.eclipse.winery.model.tosca.yaml.TServiceTemplate;
+import org.eclipse.winery.model.tosca.yaml.YTServiceTemplate;
 import org.eclipse.winery.repository.backend.BackendUtils;
 import org.eclipse.winery.repository.backend.IRepository;
 import org.eclipse.winery.repository.backend.RepositoryFactory;
@@ -87,7 +87,7 @@ public class YamlCsarImporter extends CsarImporter {
     @Override
     protected Optional<TDefinitions> parseDefinitionsElement(Path entryDefinitionsPath, final List<String> errors) {
         YamlReader reader = new YamlReader();
-        TServiceTemplate serviceTemplate;
+        YTServiceTemplate serviceTemplate;
         try {
             serviceTemplate = reader.parse(new FileInputStream(entryDefinitionsPath.toFile()));
 

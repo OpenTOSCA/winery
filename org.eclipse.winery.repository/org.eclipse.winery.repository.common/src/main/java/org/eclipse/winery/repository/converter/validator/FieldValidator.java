@@ -28,7 +28,7 @@ import javax.xml.bind.annotation.XmlElement;
 
 import org.eclipse.winery.model.converter.support.exception.InvalidToscaSyntax;
 import org.eclipse.winery.repository.converter.reader.YamlBuilder;
-import org.eclipse.winery.model.tosca.yaml.TArtifactDefinition;
+import org.eclipse.winery.model.tosca.yaml.YTArtifactDefinition;
 
 public class FieldValidator {
     private Map<Class, Set<String>> declaredFields;
@@ -42,7 +42,7 @@ public class FieldValidator {
             this.declaredFields.put(base, new HashSet<>());
         }
 
-        if (parent.equals(TArtifactDefinition.class)) {
+        if (parent.equals(YTArtifactDefinition.class)) {
             this.declaredFields.get(base).add("file");
         }
 

@@ -17,83 +17,83 @@ import org.eclipse.winery.model.tosca.yaml.*;
 import org.eclipse.winery.model.tosca.yaml.support.Metadata;
 
 public interface IVisitor<R extends AbstractResult, P extends AbstractParameter> {
-    R visit(TArtifactDefinition node, P parameter);
+    R visit(YTArtifactDefinition node, P parameter);
 
-    R visit(TArtifactType node, P parameter);
+    R visit(YTArtifactType node, P parameter);
 
-    R visit(TAttributeAssignment node, P parameter);
+    R visit(YTAttributeAssignment node, P parameter);
 
-    R visit(TAttributeDefinition node, P parameter);
+    R visit(YTAttributeDefinition node, P parameter);
 
-    R visit(TCapabilityAssignment node, P parameter);
+    R visit(YTCapabilityAssignment node, P parameter);
 
-    R visit(TCapabilityDefinition node, P parameter);
+    R visit(YTCapabilityDefinition node, P parameter);
 
-    R visit(TCapabilityType node, P parameter);
+    R visit(YTCapabilityType node, P parameter);
 
-    R visit(TConstraintClause node, P parameter);
+    R visit(YTConstraintClause node, P parameter);
 
-    R visit(TDataType node, P parameter);
+    R visit(YTDataType node, P parameter);
 
-    R visit(TEntityType node, P parameter);
+    R visit(YTEntityType node, P parameter);
 
-    R visit(TSchemaDefinition node, P parameter);
+    R visit(YTSchemaDefinition node, P parameter);
 
-    R visit(TGroupDefinition node, P parameter);
+    R visit(YTGroupDefinition node, P parameter);
 
-    R visit(TGroupType node, P parameter);
+    R visit(YTGroupType node, P parameter);
 
-    R visit(TImplementation node, P parameter);
+    R visit(YTImplementation node, P parameter);
 
-    R visit(TImportDefinition node, P parameter);
+    R visit(YTImportDefinition node, P parameter);
 
-    R visit(TInterfaceAssignment node, P parameter);
+    R visit(YTInterfaceAssignment node, P parameter);
 
-    R visit(TInterfaceDefinition node, P parameter);
+    R visit(YTInterfaceDefinition node, P parameter);
 
-    R visit(TInterfaceType node, P parameter);
+    R visit(YTInterfaceType node, P parameter);
 
-    R visit(TNodeFilterDefinition node, P parameter);
+    R visit(YTNodeFilterDefinition node, P parameter);
 
-    R visit(TNodeTemplate node, P parameter);
+    R visit(YTNodeTemplate node, P parameter);
 
-    R visit(TNodeType node, P parameter);
+    R visit(YTNodeType node, P parameter);
 
-    R visit(TOperationDefinition node, P parameter);
+    R visit(YTOperationDefinition node, P parameter);
 
-    R visit(TParameterDefinition node, P parameter);
+    R visit(YTParameterDefinition node, P parameter);
 
-    R visit(TPolicyDefinition node, P parameter);
+    R visit(YTPolicyDefinition node, P parameter);
 
-    R visit(TPolicyType node, P parameter);
+    R visit(YTPolicyType node, P parameter);
 
-    R visit(TPropertyAssignment node, P parameter);
+    R visit(YTPropertyAssignment node, P parameter);
 
-    R visit(TPropertyDefinition node, P parameter);
+    R visit(YTPropertyDefinition node, P parameter);
 
-    R visit(TPropertyFilterDefinition node, P parameter);
+    R visit(YTPropertyFilterDefinition node, P parameter);
 
-    R visit(TRelationshipAssignment node, P parameter);
+    R visit(YTRelationshipAssignment node, P parameter);
 
-    R visit(TRelationshipDefinition node, P parameter);
+    R visit(YTRelationshipDefinition node, P parameter);
 
-    R visit(TRelationshipTemplate node, P parameter);
+    R visit(YTRelationshipTemplate node, P parameter);
 
-    R visit(TRelationshipType node, P parameter);
+    R visit(YTRelationshipType node, P parameter);
 
-    R visit(TRepositoryDefinition node, P parameter);
+    R visit(YTRepositoryDefinition node, P parameter);
 
-    R visit(TRequirementAssignment node, P parameter);
+    R visit(YTRequirementAssignment node, P parameter);
 
-    R visit(TRequirementDefinition node, P parameter);
+    R visit(YTRequirementDefinition node, P parameter);
 
-    R visit(TServiceTemplate node, P parameter);
+    R visit(YTServiceTemplate node, P parameter);
 
-    R visit(TSubstitutionMappings node, P parameter);
+    R visit(YTSubstitutionMappings node, P parameter);
 
-    R visit(TTopologyTemplateDefinition node, P parameter);
+    R visit(YTTopologyTemplateDefinition node, P parameter);
 
-    R visit(TVersion node, P parameter);
+    R visit(YTVersion node, P parameter);
 
     R visit(Metadata node, P parameter);
 }

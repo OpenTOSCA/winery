@@ -19,72 +19,72 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import org.eclipse.winery.model.tosca.yaml.TArtifactDefinition;
-import org.eclipse.winery.model.tosca.yaml.TArtifactType;
-import org.eclipse.winery.model.tosca.yaml.TAttributeAssignment;
-import org.eclipse.winery.model.tosca.yaml.TAttributeDefinition;
-import org.eclipse.winery.model.tosca.yaml.TCapabilityAssignment;
-import org.eclipse.winery.model.tosca.yaml.TCapabilityDefinition;
-import org.eclipse.winery.model.tosca.yaml.TCapabilityType;
-import org.eclipse.winery.model.tosca.yaml.TConstraintClause;
-import org.eclipse.winery.model.tosca.yaml.TDataType;
-import org.eclipse.winery.model.tosca.yaml.TEntityType;
-import org.eclipse.winery.model.tosca.yaml.TSchemaDefinition;
-import org.eclipse.winery.model.tosca.yaml.TGroupDefinition;
-import org.eclipse.winery.model.tosca.yaml.TGroupType;
-import org.eclipse.winery.model.tosca.yaml.TImplementation;
-import org.eclipse.winery.model.tosca.yaml.TImportDefinition;
-import org.eclipse.winery.model.tosca.yaml.TInterfaceAssignment;
-import org.eclipse.winery.model.tosca.yaml.TInterfaceDefinition;
-import org.eclipse.winery.model.tosca.yaml.TInterfaceType;
-import org.eclipse.winery.model.tosca.yaml.TNodeFilterDefinition;
-import org.eclipse.winery.model.tosca.yaml.TNodeTemplate;
-import org.eclipse.winery.model.tosca.yaml.TNodeType;
-import org.eclipse.winery.model.tosca.yaml.TOperationDefinition;
-import org.eclipse.winery.model.tosca.yaml.TParameterDefinition;
-import org.eclipse.winery.model.tosca.yaml.TPolicyDefinition;
-import org.eclipse.winery.model.tosca.yaml.TPolicyType;
-import org.eclipse.winery.model.tosca.yaml.TPropertyAssignment;
-import org.eclipse.winery.model.tosca.yaml.TPropertyDefinition;
-import org.eclipse.winery.model.tosca.yaml.TPropertyFilterDefinition;
-import org.eclipse.winery.model.tosca.yaml.TRelationshipAssignment;
-import org.eclipse.winery.model.tosca.yaml.TRelationshipDefinition;
-import org.eclipse.winery.model.tosca.yaml.TRelationshipTemplate;
-import org.eclipse.winery.model.tosca.yaml.TRelationshipType;
-import org.eclipse.winery.model.tosca.yaml.TRepositoryDefinition;
-import org.eclipse.winery.model.tosca.yaml.TRequirementAssignment;
-import org.eclipse.winery.model.tosca.yaml.TRequirementDefinition;
-import org.eclipse.winery.model.tosca.yaml.TServiceTemplate;
-import org.eclipse.winery.model.tosca.yaml.TSubstitutionMappings;
-import org.eclipse.winery.model.tosca.yaml.TTopologyTemplateDefinition;
-import org.eclipse.winery.model.tosca.yaml.TVersion;
+import org.eclipse.winery.model.tosca.yaml.YTArtifactDefinition;
+import org.eclipse.winery.model.tosca.yaml.YTArtifactType;
+import org.eclipse.winery.model.tosca.yaml.YTAttributeAssignment;
+import org.eclipse.winery.model.tosca.yaml.YTAttributeDefinition;
+import org.eclipse.winery.model.tosca.yaml.YTCapabilityAssignment;
+import org.eclipse.winery.model.tosca.yaml.YTCapabilityDefinition;
+import org.eclipse.winery.model.tosca.yaml.YTCapabilityType;
+import org.eclipse.winery.model.tosca.yaml.YTConstraintClause;
+import org.eclipse.winery.model.tosca.yaml.YTDataType;
+import org.eclipse.winery.model.tosca.yaml.YTEntityType;
+import org.eclipse.winery.model.tosca.yaml.YTSchemaDefinition;
+import org.eclipse.winery.model.tosca.yaml.YTGroupDefinition;
+import org.eclipse.winery.model.tosca.yaml.YTGroupType;
+import org.eclipse.winery.model.tosca.yaml.YTImplementation;
+import org.eclipse.winery.model.tosca.yaml.YTImportDefinition;
+import org.eclipse.winery.model.tosca.yaml.YTInterfaceAssignment;
+import org.eclipse.winery.model.tosca.yaml.YTInterfaceDefinition;
+import org.eclipse.winery.model.tosca.yaml.YTInterfaceType;
+import org.eclipse.winery.model.tosca.yaml.YTNodeFilterDefinition;
+import org.eclipse.winery.model.tosca.yaml.YTNodeTemplate;
+import org.eclipse.winery.model.tosca.yaml.YTNodeType;
+import org.eclipse.winery.model.tosca.yaml.YTOperationDefinition;
+import org.eclipse.winery.model.tosca.yaml.YTParameterDefinition;
+import org.eclipse.winery.model.tosca.yaml.YTPolicyDefinition;
+import org.eclipse.winery.model.tosca.yaml.YTPolicyType;
+import org.eclipse.winery.model.tosca.yaml.YTPropertyAssignment;
+import org.eclipse.winery.model.tosca.yaml.YTPropertyDefinition;
+import org.eclipse.winery.model.tosca.yaml.YTPropertyFilterDefinition;
+import org.eclipse.winery.model.tosca.yaml.YTRelationshipAssignment;
+import org.eclipse.winery.model.tosca.yaml.YTRelationshipDefinition;
+import org.eclipse.winery.model.tosca.yaml.YTRelationshipTemplate;
+import org.eclipse.winery.model.tosca.yaml.YTRelationshipType;
+import org.eclipse.winery.model.tosca.yaml.YTRepositoryDefinition;
+import org.eclipse.winery.model.tosca.yaml.YTRequirementAssignment;
+import org.eclipse.winery.model.tosca.yaml.YTRequirementDefinition;
+import org.eclipse.winery.model.tosca.yaml.YTServiceTemplate;
+import org.eclipse.winery.model.tosca.yaml.YTSubstitutionMappings;
+import org.eclipse.winery.model.tosca.yaml.YTTopologyTemplateDefinition;
+import org.eclipse.winery.model.tosca.yaml.YTVersion;
 import org.eclipse.winery.model.tosca.yaml.support.Metadata;
 
 import org.eclipse.jdt.annotation.NonNull;
 
 public abstract class AbstractVisitor<R extends AbstractResult<R>, P extends AbstractParameter<P>> implements IVisitor<R, P> {
     @Override
-    public R visit(TArtifactDefinition node, P parameter) {
+    public R visit(YTArtifactDefinition node, P parameter) {
         return null;
     }
 
     @Override
-    public R visit(TArtifactType node, P parameter) {
+    public R visit(YTArtifactType node, P parameter) {
         return null;
     }
 
     @Override
-    public R visit(TAttributeAssignment node, P parameter) {
+    public R visit(YTAttributeAssignment node, P parameter) {
         return null;
     }
 
     @Override
-    public R visit(TAttributeDefinition node, P parameter) {
+    public R visit(YTAttributeDefinition node, P parameter) {
         return visitElement(node.getEntrySchema(), parameter, "entry_schema");
     }
 
     @Override
-    public R visit(TCapabilityAssignment node, P parameter) {
+    public R visit(YTCapabilityAssignment node, P parameter) {
         return reduce(Stream.of(
             visitElement(node.getProperties(), parameter, "properties"),
             visitElement(node.getAttributes(), parameter, "attributes")
@@ -92,7 +92,7 @@ public abstract class AbstractVisitor<R extends AbstractResult<R>, P extends Abs
     }
 
     @Override
-    public R visit(TCapabilityDefinition node, P parameter) {
+    public R visit(YTCapabilityDefinition node, P parameter) {
         return reduce(Stream.of(
             visitElement(node.getProperties(), parameter, "properties"),
             visitElement(node.getAttributes(), parameter, "attributes")
@@ -100,22 +100,22 @@ public abstract class AbstractVisitor<R extends AbstractResult<R>, P extends Abs
     }
 
     @Override
-    public R visit(TCapabilityType node, P parameter) {
+    public R visit(YTCapabilityType node, P parameter) {
         return null;
     }
 
     @Override
-    public R visit(TConstraintClause node, P parameter) {
+    public R visit(YTConstraintClause node, P parameter) {
         return null;
     }
 
     @Override
-    public R visit(TDataType node, P parameter) {
+    public R visit(YTDataType node, P parameter) {
         return visitElement(node.getConstraints(), parameter, "constraints");
     }
 
     @Override
-    public R visit(TEntityType node, P parameter) {
+    public R visit(YTEntityType node, P parameter) {
         return reduce(Stream.of(
             visitElement(node.getVersion(), parameter, "version"),
             visitElement(node.getProperties(), parameter, "properties"),
@@ -125,12 +125,12 @@ public abstract class AbstractVisitor<R extends AbstractResult<R>, P extends Abs
     }
 
     @Override
-    public R visit(TSchemaDefinition node, P parameter) {
+    public R visit(YTSchemaDefinition node, P parameter) {
         return visitElement(node.getConstraints(), parameter, "constraints");
     }
 
     @Override
-    public R visit(TGroupDefinition node, P parameter) {
+    public R visit(YTGroupDefinition node, P parameter) {
         return reduce(Stream.of(
             visitElement(node.getMetadata(), parameter, "metadata"),
             visitElement(node.getProperties(), parameter, "properties"),
@@ -139,7 +139,7 @@ public abstract class AbstractVisitor<R extends AbstractResult<R>, P extends Abs
     }
 
     @Override
-    public R visit(TGroupType node, P parameter) {
+    public R visit(YTGroupType node, P parameter) {
         return reduce(Stream.of(
             visitMapElement(node.getRequirements(), parameter, "requirements"),
             visitElement(node.getCapabilities(), parameter, "capabilities"),
@@ -148,22 +148,22 @@ public abstract class AbstractVisitor<R extends AbstractResult<R>, P extends Abs
     }
 
     @Override
-    public R visit(TImplementation node, P parameter) {
+    public R visit(YTImplementation node, P parameter) {
         return null;
     }
 
     @Override
-    public R visit(TImportDefinition node, P parameter) {
+    public R visit(YTImportDefinition node, P parameter) {
         return null;
     }
 
     @Override
-    public R visit(TInterfaceAssignment node, P parameter) {
+    public R visit(YTInterfaceAssignment node, P parameter) {
         return null;
     }
 
     @Override
-    public R visit(TInterfaceDefinition node, P parameter) {
+    public R visit(YTInterfaceDefinition node, P parameter) {
         return reduce(Stream.of(
             visitElement(node.getInputs(), parameter, "inputs"),
             visitElement(node.getOperations(), parameter, "operations")
@@ -171,7 +171,7 @@ public abstract class AbstractVisitor<R extends AbstractResult<R>, P extends Abs
     }
 
     @Override
-    public R visit(TInterfaceType node, P parameter) {
+    public R visit(YTInterfaceType node, P parameter) {
         return reduce(Stream.of(
             visitElement(node.getInputs(), parameter, "inputs"),
             visitElement(node.getOperations(), parameter, "operations")
@@ -179,12 +179,12 @@ public abstract class AbstractVisitor<R extends AbstractResult<R>, P extends Abs
     }
 
     @Override
-    public R visit(TNodeFilterDefinition node, P parameter) {
+    public R visit(YTNodeFilterDefinition node, P parameter) {
         return visitMapElement(node.getProperties(), parameter, "properties");
     }
 
     @Override
-    public R visit(TNodeTemplate node, P parameter) {
+    public R visit(YTNodeTemplate node, P parameter) {
         return reduce(Stream.of(
             visitElement(node.getMetadata(), parameter, "metadata"),
             visitElement(node.getProperties(), parameter, "properties"),
@@ -198,7 +198,7 @@ public abstract class AbstractVisitor<R extends AbstractResult<R>, P extends Abs
     }
 
     @Override
-    public R visit(TNodeType node, P parameter) {
+    public R visit(YTNodeType node, P parameter) {
         return reduce(Stream.of(
             visitMapElement(node.getRequirements(), parameter, "requirements"),
             visitElement(node.getInterfaces(), parameter, "interfaces"),
@@ -207,7 +207,7 @@ public abstract class AbstractVisitor<R extends AbstractResult<R>, P extends Abs
     }
 
     @Override
-    public R visit(TOperationDefinition node, P parameter) {
+    public R visit(YTOperationDefinition node, P parameter) {
         return reduce(Stream.of(
             visitElement(node.getInputs(), parameter, "inputs"),
             visitElement(node.getImplementation(), parameter, "implementation")
@@ -215,7 +215,7 @@ public abstract class AbstractVisitor<R extends AbstractResult<R>, P extends Abs
     }
 
     @Override
-    public R visit(TParameterDefinition node, P parameter) {
+    public R visit(YTParameterDefinition node, P parameter) {
         return reduce(Stream.of(
             visitElement(node.getConstraints(), parameter, "constraints"),
             visitElement(node.getEntrySchema(), parameter, "entry_schema")
@@ -223,7 +223,7 @@ public abstract class AbstractVisitor<R extends AbstractResult<R>, P extends Abs
     }
 
     @Override
-    public R visit(TPolicyDefinition node, P parameter) {
+    public R visit(YTPolicyDefinition node, P parameter) {
         return reduce(Stream.of(
             visitElement(node.getMetadata(), parameter, "metadata"),
             visitElement(node.getProperties(), parameter, "properties")
@@ -231,17 +231,17 @@ public abstract class AbstractVisitor<R extends AbstractResult<R>, P extends Abs
     }
 
     @Override
-    public R visit(TPolicyType node, P parameter) {
+    public R visit(YTPolicyType node, P parameter) {
         return null;
     }
 
     @Override
-    public R visit(TPropertyAssignment node, P parameter) {
+    public R visit(YTPropertyAssignment node, P parameter) {
         return null;
     }
 
     @Override
-    public R visit(TPropertyDefinition node, P parameter) {
+    public R visit(YTPropertyDefinition node, P parameter) {
         return reduce(Stream.of(
             visitElement(node.getConstraints(), parameter, "constraints"),
             visitElement(node.getEntrySchema(), parameter, "entry_schema")
@@ -249,12 +249,12 @@ public abstract class AbstractVisitor<R extends AbstractResult<R>, P extends Abs
     }
 
     @Override
-    public R visit(TPropertyFilterDefinition node, P parameter) {
+    public R visit(YTPropertyFilterDefinition node, P parameter) {
         return visitElement(node.getConstraints(), parameter, "constraints");
     }
 
     @Override
-    public R visit(TRelationshipAssignment node, P parameter) {
+    public R visit(YTRelationshipAssignment node, P parameter) {
         return reduce(Stream.of(
             visitElement(node.getProperties(), parameter, "properties"),
             visitElement(node.getInterfaces(), parameter, "interfaces")
@@ -262,12 +262,12 @@ public abstract class AbstractVisitor<R extends AbstractResult<R>, P extends Abs
     }
 
     @Override
-    public R visit(TRelationshipDefinition node, P parameter) {
+    public R visit(YTRelationshipDefinition node, P parameter) {
         return visitElement(node.getInterfaces(), parameter, "interfaces");
     }
 
     @Override
-    public R visit(TRelationshipTemplate node, P parameter) {
+    public R visit(YTRelationshipTemplate node, P parameter) {
         return reduce(Stream.of(
             visitElement(node.getMetadata(), parameter, "metadata"),
             visitElement(node.getProperties(), parameter, "properties"),
@@ -277,17 +277,17 @@ public abstract class AbstractVisitor<R extends AbstractResult<R>, P extends Abs
     }
 
     @Override
-    public R visit(TRelationshipType node, P parameter) {
+    public R visit(YTRelationshipType node, P parameter) {
         return visitElement(node.getInterfaces(), parameter, "interfaces");
     }
 
     @Override
-    public R visit(TRepositoryDefinition node, P parameter) {
+    public R visit(YTRepositoryDefinition node, P parameter) {
         return null;
     }
 
     @Override
-    public R visit(TRequirementAssignment node, P parameter) {
+    public R visit(YTRequirementAssignment node, P parameter) {
         return reduce(Stream.of(
             visitElement(node.getRelationship(), parameter, "relationship"),
             visitElement(node.getNodeFilter(), parameter, "node_filter")
@@ -295,12 +295,12 @@ public abstract class AbstractVisitor<R extends AbstractResult<R>, P extends Abs
     }
 
     @Override
-    public R visit(TRequirementDefinition node, P parameter) {
+    public R visit(YTRequirementDefinition node, P parameter) {
         return visitElement(node.getRelationship(), parameter, "constraints");
     }
 
     @Override
-    public R visit(TServiceTemplate node, P parameter) {
+    public R visit(YTServiceTemplate node, P parameter) {
         return reduce(Stream.of(
             node.getMetadata().accept(this, parameter.copy().addContext("metadata")),
             visitElement(node.getRepositories(), parameter, "repositories"),
@@ -318,12 +318,12 @@ public abstract class AbstractVisitor<R extends AbstractResult<R>, P extends Abs
     }
 
     @Override
-    public R visit(TSubstitutionMappings node, P parameter) {
+    public R visit(YTSubstitutionMappings node, P parameter) {
         return null;
     }
 
     @Override
-    public R visit(TTopologyTemplateDefinition node, P parameter) {
+    public R visit(YTTopologyTemplateDefinition node, P parameter) {
         return reduce(Stream.of(
             visitElement(node.getInputs(), parameter, "inputs"),
             visitElement(node.getNodeTemplates(), parameter, "node_templates"),
@@ -336,7 +336,7 @@ public abstract class AbstractVisitor<R extends AbstractResult<R>, P extends Abs
     }
 
     @Override
-    public R visit(TVersion node, P parameter) {
+    public R visit(YTVersion node, P parameter) {
         return null;
     }
 
