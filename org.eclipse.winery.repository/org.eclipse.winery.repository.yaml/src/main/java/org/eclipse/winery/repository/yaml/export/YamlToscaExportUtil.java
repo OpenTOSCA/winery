@@ -36,8 +36,8 @@ import org.eclipse.winery.model.ids.definitions.NodeTypeId;
 import org.eclipse.winery.model.ids.definitions.RelationshipTypeId;
 import org.eclipse.winery.model.ids.definitions.ServiceTemplateId;
 import org.eclipse.winery.model.tosca.TArtifact;
-import org.eclipse.winery.model.tosca.TDefinitions;
 import org.eclipse.winery.model.tosca.TArtifacts;
+import org.eclipse.winery.model.tosca.TDefinitions;
 import org.eclipse.winery.model.tosca.TImport;
 import org.eclipse.winery.model.tosca.TNodeTemplate;
 import org.eclipse.winery.model.tosca.TNodeType;
@@ -47,11 +47,12 @@ import org.eclipse.winery.repository.backend.BackendUtils;
 import org.eclipse.winery.repository.backend.IRepository;
 import org.eclipse.winery.repository.common.RepositoryFileReference;
 import org.eclipse.winery.repository.exceptions.RepositoryCorruptException;
-import org.eclipse.winery.repository.export.entries.RemoteRefBasedCsarEntry;
 import org.eclipse.winery.repository.export.CsarContentProperties;
 import org.eclipse.winery.repository.export.ToscaExportUtil;
+import org.eclipse.winery.repository.export.entries.RemoteRefBasedCsarEntry;
 import org.eclipse.winery.repository.yaml.export.entries.YAMLDefinitionsBasedCsarEntry;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.UrlValidator;
@@ -319,10 +320,9 @@ public class YamlToscaExportUtil extends ToscaExportUtil {
     protected String putRemoteRefAsReferencedItemInCsar(URL url, String typePath, String artifactName) {
         RemoteRefBasedCsarEntry ref = new RemoteRefBasedCsarEntry(url);
         String fileName = FilenameUtils.getName(url.getPath());
-        typePath = StringUtils.removeEnd(typePath, "/");
-        String path = StringUtils.join(Arrays.asList(typePath, "files", artifactName, fileName), "/");
+        String type = StringUtils.removeEnd(typePath, "/");
+        String path = StringUtils.join(Arrays.asList(type, "files", artifactName, fileName), "/");
         this.referencesToPathInCSARMap.put(new CsarContentProperties(path), ref);
-
         return path;
     }
 }
