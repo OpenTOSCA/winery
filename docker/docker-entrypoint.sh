@@ -1,9 +1,12 @@
 #!/bin/bash
 
-cheBaseUrl=$(echo $CHE_API | cut -d"/" -f3)
-cheUrl=${cheBaseUrl}/dashboard/\#/ide/${CHE_WORKSPACE_NAMESPACE}/${CHE_WORKSPACE_NAME}
+# detect if eclipse che environment is present
+if [ -z "${CHE_API}" ]; then
+    cheBaseUrl=$(echo "$CHE_API" | cut -d"/" -f3)
+    cheUrl=${cheBaseUrl}/dashboard/\#/ide/${CHE_WORKSPACE_NAMESPACE}/${CHE_WORKSPACE_NAME}
+    export CHE_URL=$cheUrl
+fi
 
-export CHE_URL=$cheUrl
 
 mkdir -p .winery
 dockerize -template winery.yml.tpl:.winery/winery.yml
