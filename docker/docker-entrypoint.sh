@@ -7,7 +7,6 @@ if [ -z "${CHE_API}" ]; then
     export CHE_URL=$cheUrl
 fi
 
-
 mkdir -p .winery
 dockerize -template winery.yml.tpl:.winery/winery.yml
 if [ -d "${WINERY_REPOSITORY_PATH}" ] && [ "$(ls -A ${WINERY_REPOSITORY_PATH})" ]; then
