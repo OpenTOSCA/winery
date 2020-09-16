@@ -272,4 +272,8 @@ export class NavbarComponent implements OnDestroy {
     openManagementUi() {
         window.open(this.backendService.serviceTemplateUiUrl, '_blank');
     }
+
+    openChe() {
+        window.open(this.configurationService.configuration.endpoints.eclipseChe, '_blank');
+    }
 }
