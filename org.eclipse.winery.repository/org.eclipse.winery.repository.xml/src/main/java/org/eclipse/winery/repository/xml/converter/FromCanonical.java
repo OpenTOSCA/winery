@@ -14,11 +14,73 @@
 
 package org.eclipse.winery.repository.xml.converter;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.eclipse.winery.model.tosca.HasId;
+import org.eclipse.winery.model.tosca.RelationshipSourceOrTarget;
+import org.eclipse.winery.model.tosca.TArtifact;
+import org.eclipse.winery.model.tosca.TArtifactReference;
+import org.eclipse.winery.model.tosca.TArtifactTemplate;
+import org.eclipse.winery.model.tosca.TArtifactType;
+import org.eclipse.winery.model.tosca.TBoundaryDefinitions;
+import org.eclipse.winery.model.tosca.TCapability;
+import org.eclipse.winery.model.tosca.TCapabilityDefinition;
+import org.eclipse.winery.model.tosca.TCapabilityRef;
+import org.eclipse.winery.model.tosca.TCapabilityType;
+import org.eclipse.winery.model.tosca.TCondition;
+import org.eclipse.winery.model.tosca.TConstraint;
+import org.eclipse.winery.model.tosca.TDefinitions;
+import org.eclipse.winery.model.tosca.TDeploymentArtifact;
+import org.eclipse.winery.model.tosca.TDocumentation;
+import org.eclipse.winery.model.tosca.TEntityTemplate;
+import org.eclipse.winery.model.tosca.TEntityType;
+import org.eclipse.winery.model.tosca.TEntityTypeImplementation;
+import org.eclipse.winery.model.tosca.TExportedInterface;
+import org.eclipse.winery.model.tosca.TExportedOperation;
+import org.eclipse.winery.model.tosca.TExtensibleElements;
+import org.eclipse.winery.model.tosca.TExtension;
+import org.eclipse.winery.model.tosca.TImplementationArtifacts;
+import org.eclipse.winery.model.tosca.TImport;
+import org.eclipse.winery.model.tosca.TInterface;
+import org.eclipse.winery.model.tosca.TInterfaces;
+import org.eclipse.winery.model.tosca.TNodeTemplate;
+import org.eclipse.winery.model.tosca.TNodeType;
+import org.eclipse.winery.model.tosca.TNodeTypeImplementation;
+import org.eclipse.winery.model.tosca.TOperation;
+import org.eclipse.winery.model.tosca.TParameter;
+import org.eclipse.winery.model.tosca.TPlan;
+import org.eclipse.winery.model.tosca.TPolicy;
+import org.eclipse.winery.model.tosca.TPolicyTemplate;
+import org.eclipse.winery.model.tosca.TPolicyType;
+import org.eclipse.winery.model.tosca.TPropertyConstraint;
+import org.eclipse.winery.model.tosca.TPropertyMapping;
+import org.eclipse.winery.model.tosca.TRelationshipTemplate;
+import org.eclipse.winery.model.tosca.TRelationshipType;
+import org.eclipse.winery.model.tosca.TRelationshipTypeImplementation;
+import org.eclipse.winery.model.tosca.TRequiredContainerFeature;
+import org.eclipse.winery.model.tosca.TRequirement;
+import org.eclipse.winery.model.tosca.TRequirementDefinition;
+import org.eclipse.winery.model.tosca.TRequirementRef;
+import org.eclipse.winery.model.tosca.TRequirementType;
+import org.eclipse.winery.model.tosca.TServiceTemplate;
+import org.eclipse.winery.model.tosca.TTag;
+import org.eclipse.winery.model.tosca.TTopologyTemplate;
+import org.eclipse.winery.model.tosca.extensions.OTAttributeMapping;
+import org.eclipse.winery.model.tosca.extensions.OTComplianceRule;
+import org.eclipse.winery.model.tosca.extensions.OTDeploymentArtifactMapping;
+import org.eclipse.winery.model.tosca.extensions.OTPatternRefinementModel;
+import org.eclipse.winery.model.tosca.extensions.OTPermutationMapping;
+import org.eclipse.winery.model.tosca.extensions.OTPrmMapping;
+import org.eclipse.winery.model.tosca.extensions.OTRefinementModel;
+import org.eclipse.winery.model.tosca.extensions.OTRelationMapping;
+import org.eclipse.winery.model.tosca.extensions.OTStayMapping;
+import org.eclipse.winery.model.tosca.extensions.OTStringList;
+import org.eclipse.winery.model.tosca.extensions.OTTestRefinementModel;
+import org.eclipse.winery.model.tosca.extensions.OTTopologyFragmentRefinementModel;
 import org.eclipse.winery.model.tosca.extensions.kvproperties.WinerysPropertiesDefinition;
 import org.eclipse.winery.model.tosca.xml.XDefinitions;
 import org.eclipse.winery.model.tosca.xml.XHasId;
@@ -48,7 +110,6 @@ import org.eclipse.winery.model.tosca.xml.XTExportedInterface;
 import org.eclipse.winery.model.tosca.xml.XTExportedOperation;
 import org.eclipse.winery.model.tosca.xml.XTExtensibleElements;
 import org.eclipse.winery.model.tosca.xml.XTExtension;
-import org.eclipse.winery.model.tosca.xml.XTImplementation;
 import org.eclipse.winery.model.tosca.xml.XTImplementationArtifacts;
 import org.eclipse.winery.model.tosca.xml.XTImport;
 import org.eclipse.winery.model.tosca.xml.XTInterface;
@@ -112,17 +173,18 @@ public class FromCanonical {
         this.repository = repository;
     }
 
-    public XTDefinitions convert(org.eclipse.winery.model.tosca.TDefinitions canonical) {
+    public XTDefinitions convert(TDefinitions canonical) {
         return convert(canonical, false);
     }
 
     /**
      * Converts a canonical TDefinitions collection to XML TDefinitions.
      */
-    public XTDefinitions convert(org.eclipse.winery.model.tosca.TDefinitions canonical, boolean convertImports) {
+    public XTDefinitions convert(TDefinitions canonical, boolean convertImports) {
         // FIXME need to correctly deal with convertImports flag to create a self-contained Definitions to export as CSAR if it is set.
         XDefinitions.Builder builder = new XDefinitions.Builder(canonical.getId(), canonical.getTargetNamespace())
             .setImport(convertList(canonical.getImport(), this::convert))
+            .setExtensions(convertExtensions(canonical.getExtensions()))
             .addTypes(convertTypes(canonical.getTypes()))
             .setServiceTemplates(convertList(canonical.getServiceTemplates(), this::convert))
             .setNodeTypes(convertList(canonical.getNodeTypes(), this::convert))
@@ -146,7 +208,7 @@ public class FromCanonical {
         return builder.build();
     }
 
-    private XTRelationshipType convert(org.eclipse.winery.model.tosca.TRelationshipType canonical) {
+    private XTRelationshipType convert(TRelationshipType canonical) {
         XTRelationshipType.Builder builder = new XTRelationshipType.Builder(canonical.getIdFromIdOrNameField())
             .addSourceInterfaces(convertInterfaces(canonical.getSourceInterfaces()))
             .addTargetInterfaces(convertInterfaces(canonical.getTargetInterfaces()))
@@ -164,22 +226,22 @@ public class FromCanonical {
         return builder.build();
     }
 
-    private List<XTInterface> convertInterfaces(org.eclipse.winery.model.tosca.@Nullable TInterfaces interfaces) {
+    private List<XTInterface> convertInterfaces(@Nullable TInterfaces interfaces) {
         if (interfaces == null) {
             return Collections.emptyList();
         }
         return interfaces.getInterface().stream().map(this::convertInterface).collect(Collectors.toList());
     }
 
-    private XTInterface convertInterface(org.eclipse.winery.model.tosca.TInterface canonical) {
+    private XTInterface convertInterface(TInterface canonical) {
         return new XTInterface.Builder(canonical.getName(), convertOperations(canonical.getOperation())).build();
     }
 
-    private List<XTOperation> convertOperations(List<org.eclipse.winery.model.tosca.TOperation> operation) {
+    private List<XTOperation> convertOperations(List<TOperation> operation) {
         return operation.stream().map(this::convert).collect(Collectors.toList());
     }
 
-    private XTOperation convert(org.eclipse.winery.model.tosca.TOperation canonical) {
+    private XTOperation convert(TOperation canonical) {
         XTOperation.Builder builder = new XTOperation.Builder(canonical.getName());
         if (canonical.getInputParameters() != null) {
             builder.addInputParameters(canonical.getInputParameters().getInputParameter().stream()
@@ -192,11 +254,11 @@ public class FromCanonical {
         return builder.build();
     }
 
-    private XTParameter convert(org.eclipse.winery.model.tosca.TParameter canonical) {
+    private XTParameter convert(TParameter canonical) {
         return new XTParameter.Builder(canonical.getName(), canonical.getType(), canonical.getRequired()).build();
     }
 
-    private XTRelationshipTypeImplementation convert(org.eclipse.winery.model.tosca.TRelationshipTypeImplementation canonical) {
+    private XTRelationshipTypeImplementation convert(TRelationshipTypeImplementation canonical) {
         XTRelationshipTypeImplementation.Builder builder = new XTRelationshipTypeImplementation.Builder(canonical.getName(), canonical.getRelationshipType());
         fillEntityTypeImplementationProperties(builder, canonical);
         if (canonical.getDerivedFrom() != null) {
@@ -207,7 +269,7 @@ public class FromCanonical {
         return builder.build();
     }
 
-    private <Builder extends XTEntityTypeImplementation.Builder<Builder>, Value extends org.eclipse.winery.model.tosca.TEntityTypeImplementation>
+    private <Builder extends XTEntityTypeImplementation.Builder<Builder>, Value extends TEntityTypeImplementation>
     void fillEntityTypeImplementationProperties(Builder builder, Value canonical) {
         if (canonical.getRequiredContainerFeatures() != null) {
             builder.addRequiredContainerFeatures(canonical.getRequiredContainerFeatures().getRequiredContainerFeature()
@@ -226,7 +288,7 @@ public class FromCanonical {
         fillExtensibleElementsProperties(builder, canonical);
     }
 
-    private XTImplementationArtifacts.ImplementationArtifact convert(org.eclipse.winery.model.tosca.TImplementationArtifacts.ImplementationArtifact canonical) {
+    private XTImplementationArtifacts.ImplementationArtifact convert(TImplementationArtifacts.ImplementationArtifact canonical) {
         return new XTImplementationArtifacts.ImplementationArtifact.Builder(canonical.getArtifactType())
             .setName(canonical.getName())
             .setInterfaceName(canonical.getInterfaceName())
@@ -235,24 +297,24 @@ public class FromCanonical {
             .build();
     }
 
-    private XTTag convert(org.eclipse.winery.model.tosca.TTag canonical) {
+    private XTTag convert(TTag canonical) {
         return new XTTag.Builder().setName(canonical.getName()).setValue(canonical.getValue()).build();
     }
 
-    private XTRequiredContainerFeature convert(org.eclipse.winery.model.tosca.TRequiredContainerFeature canonical) {
+    private XTRequiredContainerFeature convert(TRequiredContainerFeature canonical) {
         XTRequiredContainerFeature result = new XTRequiredContainerFeature();
         result.setFeature(canonical.getFeature());
         return result;
     }
 
-    private XTPolicyTemplate convert(org.eclipse.winery.model.tosca.TPolicyTemplate canonical) {
+    private XTPolicyTemplate convert(TPolicyTemplate canonical) {
         XTPolicyTemplate.Builder builder = new XTPolicyTemplate.Builder(canonical.getId(), canonical.getType());
         builder.setName(canonical.getName());
         fillEntityTemplateProperties(builder, canonical);
         return builder.build();
     }
 
-    private XTPolicyType convert(org.eclipse.winery.model.tosca.TPolicyType canonical) {
+    private XTPolicyType convert(TPolicyType canonical) {
         XTPolicyType.Builder builder = new XTPolicyType.Builder(canonical.getName());
         if (canonical.getAppliesTo() != null) {
             XTAppliesTo appliesTo = new XTAppliesTo();
@@ -269,7 +331,7 @@ public class FromCanonical {
         return builder.build();
     }
 
-    private <Builder extends XTEntityType.Builder<Builder>, Value extends org.eclipse.winery.model.tosca.TEntityType>
+    private <Builder extends XTEntityType.Builder<Builder>, Value extends TEntityType>
     void fillEntityTypeProperties(Builder builder, Value canonical) {
         if (canonical.getTags() != null) {
             builder.addTags(convertList(canonical.getTags().getTag(), this::convert));
@@ -280,22 +342,20 @@ public class FromCanonical {
             builder.setDerivedFrom(derived);
         }
         if (canonical.getProperties() != null) {
-            org.eclipse.winery.model.tosca.TEntityType.PropertiesDefinition properties = canonical.getProperties();
+            TEntityType.PropertiesDefinition properties = canonical.getProperties();
             if (properties instanceof WinerysPropertiesDefinition) {
                 // do the magic thingy of storing the properties definition in the any element.
                 builder.addAny(properties);
-            } else if (properties instanceof org.eclipse.winery.model.tosca.TEntityType.XmlElementDefinition) {
+            } else if (properties instanceof TEntityType.XmlElementDefinition) {
                 XTEntityType.PropertiesDefinition propertiesDefinition = new XTEntityType.PropertiesDefinition();
-                propertiesDefinition.setElement(
-                    ((org.eclipse.winery.model.tosca.TEntityType.XmlElementDefinition) properties).getElement());
+                propertiesDefinition.setElement(((TEntityType.XmlElementDefinition) properties).getElement());
                 builder.setPropertiesDefinition(propertiesDefinition);
-            } else if (properties instanceof org.eclipse.winery.model.tosca.TEntityType.XmlTypeDefinition) {
+            } else if (properties instanceof TEntityType.XmlTypeDefinition) {
                 XTEntityType.PropertiesDefinition propertiesDefinition = new XTEntityType.PropertiesDefinition();
-                propertiesDefinition.setType(
-                    ((org.eclipse.winery.model.tosca.TEntityType.XmlTypeDefinition) properties).getType()
+                propertiesDefinition.setType(((TEntityType.XmlTypeDefinition) properties).getType()
                 );
                 builder.setPropertiesDefinition(propertiesDefinition);
-            } else if (properties instanceof org.eclipse.winery.model.tosca.TEntityType.YamlPropertiesDefinition) {
+            } else if (properties instanceof TEntityType.YamlPropertiesDefinition) {
                 // currently unsupported!?
                 LOGGER.warn("Trying to convert YAML-based type definition [{}] to XML. Properties are incorrect!", canonical.getQName());
             }
@@ -306,21 +366,21 @@ public class FromCanonical {
         fillExtensibleElementsProperties(builder, canonical);
     }
 
-    private <Builder extends XTExtensibleElements.Builder<Builder>, Value extends org.eclipse.winery.model.tosca.TExtensibleElements>
+    private <Builder extends XTExtensibleElements.Builder<Builder>, Value extends TExtensibleElements>
     void fillExtensibleElementsProperties(Builder builder, Value canonical) {
         builder.setDocumentation(canonical.getDocumentation().stream().map(this::convert).collect(Collectors.toList()));
         builder.setOtherAttributes(canonical.getOtherAttributes());
         builder.addAny(canonical.getAny());
     }
 
-    private XTRequirementType convert(org.eclipse.winery.model.tosca.TRequirementType canonical) {
+    private XTRequirementType convert(TRequirementType canonical) {
         XTRequirementType.Builder builder = new XTRequirementType.Builder(canonical.getName());
         builder.setRequiredCapabilityType(canonical.getRequiredCapabilityType());
         fillEntityTypeProperties(builder, canonical);
         return builder.build();
     }
 
-    private XTNodeTypeImplementation convert(org.eclipse.winery.model.tosca.TNodeTypeImplementation canonical) {
+    private XTNodeTypeImplementation convert(TNodeTypeImplementation canonical) {
         XTNodeTypeImplementation.Builder builder = new XTNodeTypeImplementation.Builder(canonical.getName(), canonical.getNodeType());
         if (canonical.getDeploymentArtifacts() != null) {
             XTDeploymentArtifacts artifacts = new XTDeploymentArtifacts.Builder(canonical.getDeploymentArtifacts()
@@ -336,14 +396,14 @@ public class FromCanonical {
         return builder.build();
     }
 
-    private XTDeploymentArtifact convert(org.eclipse.winery.model.tosca.TDeploymentArtifact canonical) {
+    private XTDeploymentArtifact convert(TDeploymentArtifact canonical) {
         XTDeploymentArtifact.Builder builder = new XTDeploymentArtifact.Builder(canonical.getName(), canonical.getArtifactType());
         builder.setArtifactRef(canonical.getArtifactRef());
         fillExtensibleElementsProperties(builder, canonical);
         return builder.build();
     }
 
-    private XTNodeType convert(org.eclipse.winery.model.tosca.TNodeType canonical) {
+    private XTNodeType convert(TNodeType canonical) {
         XTNodeType.Builder builder = new XTNodeType.Builder(canonical.getName());
         if (canonical.getRequirementDefinitions() != null) {
             XTNodeType.RequirementDefinitions reqDefs = new XTNodeType.RequirementDefinitions();
@@ -383,16 +443,7 @@ public class FromCanonical {
         return builder.build();
     }
 
-    private XTImplementation convert(org.eclipse.winery.model.tosca.TImplementation canonical) {
-        XTImplementation definition = new XTImplementation();
-        definition.setPrimary(canonical.getPrimary());
-        definition.setDependencies(canonical.getDependencies());
-        definition.setOperationHost(canonical.getOperationHost());
-        definition.setTimeout(canonical.getTimeout());
-        return definition;
-    }
-
-    private XTArtifact convert(org.eclipse.winery.model.tosca.TArtifact canonical) {
+    private XTArtifact convert(TArtifact canonical) {
         XTArtifact.Builder builder = new XTArtifact.Builder(canonical.getName(), canonical.getType());
         builder.setDeployPath(canonical.getDeployPath());
         builder.setDescription(canonical.getDescription());
@@ -401,7 +452,7 @@ public class FromCanonical {
         return builder.build();
     }
 
-    private XTRequirementDefinition convert(org.eclipse.winery.model.tosca.TRequirementDefinition canonical) {
+    private XTRequirementDefinition convert(TRequirementDefinition canonical) {
         // requirementType can be null in the canonical model because YAML mode doesn't use it.
         //  it's required for us, though, so we just assume it's present
         XTRequirementDefinition.Builder builder = new XTRequirementDefinition.Builder(canonical.getName(), canonical.getRequirementType());
@@ -421,7 +472,7 @@ public class FromCanonical {
         return builder.build();
     }
 
-    private XTCapabilityDefinition convert(org.eclipse.winery.model.tosca.TCapabilityDefinition canonical) {
+    private XTCapabilityDefinition convert(TCapabilityDefinition canonical) {
         XTCapabilityDefinition.Builder builder = new XTCapabilityDefinition.Builder(canonical.getName(), canonical.getCapabilityType());
         if (canonical.getConstraints() != null) {
             canonical.getConstraints().getConstraint()
@@ -435,26 +486,26 @@ public class FromCanonical {
         return builder.build();
     }
 
-    private XTConstraint convert(org.eclipse.winery.model.tosca.TConstraint canonical) {
+    private XTConstraint convert(TConstraint canonical) {
         XTConstraint constraint = new XTConstraint();
         constraint.setAny(canonical.getAny());
         constraint.setConstraintType(canonical.getConstraintType());
         return constraint;
     }
 
-    private XTCapability convert(org.eclipse.winery.model.tosca.TCapability canonical) {
+    private XTCapability convert(TCapability canonical) {
         XTCapability.Builder builder = new XTCapability.Builder(canonical.getId(), canonical.getType(), canonical.getName());
         fillRelationshipSourceOrTargetProperties(builder, canonical);
         return builder.build();
     }
 
-    private <Builder extends XRelationshipSourceOrTarget.Builder<Builder>, Value extends org.eclipse.winery.model.tosca.RelationshipSourceOrTarget>
+    private <Builder extends XRelationshipSourceOrTarget.Builder<Builder>, Value extends RelationshipSourceOrTarget>
     void fillRelationshipSourceOrTargetProperties(Builder builder, Value canonical) {
         // no specific properties to fill, just traverse the hierarchy
         fillEntityTemplateProperties(builder, canonical);
     }
 
-    private <Builder extends XTEntityTemplate.Builder<Builder>, Value extends org.eclipse.winery.model.tosca.TEntityTemplate>
+    private <Builder extends XTEntityTemplate.Builder<Builder>, Value extends TEntityTemplate>
     void fillEntityTemplateProperties(Builder builder, Value canonical) {
         if (canonical.getProperties() != null) {
             builder.setProperties(convertProperties(canonical.getProperties()));
@@ -468,21 +519,21 @@ public class FromCanonical {
         fillExtensibleElementsProperties(builder, canonical);
     }
 
-    private XTEntityTemplate.Properties convertProperties(org.eclipse.winery.model.tosca.TEntityTemplate.Properties canonical) {
+    private XTEntityTemplate.Properties convertProperties(TEntityTemplate.Properties canonical) {
         XTEntityTemplate.Properties props = new XTEntityTemplate.Properties();
-        if (canonical instanceof org.eclipse.winery.model.tosca.TEntityTemplate.XmlProperties) {
-            props.setAny(((org.eclipse.winery.model.tosca.TEntityTemplate.XmlProperties) canonical).getAny());
-        } else if (canonical instanceof org.eclipse.winery.model.tosca.TEntityTemplate.WineryKVProperties) {
-            final org.eclipse.winery.model.tosca.TEntityTemplate.WineryKVProperties wineryKV = (org.eclipse.winery.model.tosca.TEntityTemplate.WineryKVProperties) canonical;
+        if (canonical instanceof TEntityTemplate.XmlProperties) {
+            props.setAny(((TEntityTemplate.XmlProperties) canonical).getAny());
+        } else if (canonical instanceof TEntityTemplate.WineryKVProperties) {
+            final TEntityTemplate.WineryKVProperties wineryKV = (TEntityTemplate.WineryKVProperties) canonical;
             props.setKVProperties(wineryKV.getNamespace(), wineryKV.getElementName(), wineryKV.getKVProperties());
-        } else if (canonical instanceof org.eclipse.winery.model.tosca.TEntityTemplate.YamlProperties) {
+        } else if (canonical instanceof TEntityTemplate.YamlProperties) {
             // this is the messy case of converting from YAML to XML
             LOGGER.warn("KVProperties with complex entries are not supported for XML serialization");
         }
         return props;
     }
 
-    private XTPropertyConstraint convert(org.eclipse.winery.model.tosca.TPropertyConstraint canonical) {
+    private XTPropertyConstraint convert(TPropertyConstraint canonical) {
         XTPropertyConstraint constraint = new XTPropertyConstraint();
         constraint.setAny(canonical.getAny());
         constraint.setConstraintType(canonical.getConstraintType());
@@ -490,14 +541,14 @@ public class FromCanonical {
         return constraint;
     }
 
-    private XTExtension convert(org.eclipse.winery.model.tosca.TExtension canonical) {
+    private XTExtension convert(TExtension canonical) {
         XTExtension.Builder builder = new XTExtension.Builder(canonical.getNamespace());
         builder.setMustUnderstand(canonical.getMustUnderstand() ? XTBoolean.YES : XTBoolean.NO);
         fillExtensibleElementsProperties(builder, canonical);
         return builder.build();
     }
 
-    private XTDocumentation convert(org.eclipse.winery.model.tosca.TDocumentation canonical) {
+    private XTDocumentation convert(TDocumentation canonical) {
         XTDocumentation xml = new XTDocumentation();
         xml.getContent().addAll(canonical.getContent());
         xml.setSource(canonical.getSource());
@@ -505,7 +556,7 @@ public class FromCanonical {
         return xml;
     }
 
-    private XTCapabilityType convert(org.eclipse.winery.model.tosca.TCapabilityType canonical) {
+    private XTCapabilityType convert(TCapabilityType canonical) {
         XTCapabilityType.Builder builder = new XTCapabilityType.Builder(canonical.getName());
         // FIXME validSourceTypes are apparently a YAML feature (again)
         builder.setValidSourceTypes(canonical.getValidNodeTypes());
@@ -513,7 +564,7 @@ public class FromCanonical {
         return builder.build();
     }
 
-    private XTArtifactType convert(org.eclipse.winery.model.tosca.TArtifactType canonical) {
+    private XTArtifactType convert(TArtifactType canonical) {
         XTArtifactType.Builder builder = new XTArtifactType.Builder(canonical.getName());
         builder.setMimeType(canonical.getMimeType());
         builder.setFileExtensions(canonical.getFileExtensions());
@@ -521,7 +572,7 @@ public class FromCanonical {
         return builder.build();
     }
 
-    private XTArtifactTemplate convert(org.eclipse.winery.model.tosca.TArtifactTemplate canonical) {
+    private XTArtifactTemplate convert(TArtifactTemplate canonical) {
         XTArtifactTemplate.Builder builder = new XTArtifactTemplate.Builder(canonical.getId(), canonical.getType());
         builder.setName(canonical.getName());
         if (canonical.getArtifactReferences() != null) {
@@ -533,15 +584,30 @@ public class FromCanonical {
         return builder.build();
     }
 
-    private XTArtifactReference convert(org.eclipse.winery.model.tosca.TArtifactReference canonical) {
-        XTArtifactReference xml = new XTArtifactReference();
-        // FIXME because all of this is a mess, the includes and excludes are stored as Include and Exclude in the same field
-//        xml.getIncludeOrExclude().add(canonical.getIncludeOrExclude());
-        xml.setReference(canonical.getReference());
-        return xml;
+    private XTArtifactReference convert(TArtifactReference canonical) {
+        XTArtifactReference.Builder xml = new XTArtifactReference.Builder(canonical.getReference());
+        xml.setIncludeOrExclude(convertIncludeOrExclude(canonical.getIncludeOrExclude()));
+        return xml.build();
     }
 
-    private XTImport convert(org.eclipse.winery.model.tosca.TImport canonical) {
+    private List<Object> convertIncludeOrExclude(List<Object> includeOrExclude) {
+        List<Object> results = new ArrayList<>();
+        for (Object item : includeOrExclude) {
+            if (item instanceof TArtifactReference.Include) {
+                XTArtifactReference.Include xml = new XTArtifactReference.Include();
+                xml.setPattern(((TArtifactReference.Include) item).getPattern());
+                results.add(xml);
+            }
+            if (item instanceof TArtifactReference.Exclude) {
+                XTArtifactReference.Exclude xml = new XTArtifactReference.Exclude();
+                xml.setPattern(((TArtifactReference.Exclude) item).getPattern());
+                results.add(xml);
+            }
+        }
+        return results;
+    }
+
+    private XTImport convert(TImport canonical) {
         XTImport.Builder builder = new XTImport.Builder(canonical.getImportType());
         builder.setNamespace(canonical.getNamespace());
         builder.setLocation(canonical.getLocation());
@@ -549,7 +615,7 @@ public class FromCanonical {
         return builder.build();
     }
 
-    private XTServiceTemplate convert(org.eclipse.winery.model.tosca.TServiceTemplate canonical) {
+    private XTServiceTemplate convert(TServiceTemplate canonical) {
         XTServiceTemplate.Builder builder = new XTServiceTemplate.Builder(canonical.getId(), convert(canonical.getTopologyTemplate()));
         builder.setName(canonical.getName());
         builder.setTargetNamespace(canonical.getTargetNamespace());
@@ -568,7 +634,7 @@ public class FromCanonical {
         return builder.build();
     }
 
-    private XTPlan convert(org.eclipse.winery.model.tosca.TPlan canonical) {
+    private XTPlan convert(TPlan canonical) {
         XTPlan.Builder builder = new XTPlan.Builder(canonical.getId(), canonical.getPlanType(), canonical.getPlanLanguage());
         if (canonical.getPrecondition() != null) {
             builder.setPrecondition(convert(canonical.getPrecondition()));
@@ -598,7 +664,7 @@ public class FromCanonical {
         return builder.build();
     }
 
-    private XTCondition convert(org.eclipse.winery.model.tosca.TCondition canonical) {
+    private XTCondition convert(TCondition canonical) {
         XTCondition xml = new XTCondition();
         xml.setExpressionLanguage(canonical.getExpressionLanguage());
         xml.getAny().addAll(canonical.getAny());
@@ -606,7 +672,7 @@ public class FromCanonical {
     }
 
     @Nullable
-    private XTBoundaryDefinitions convert(org.eclipse.winery.model.tosca.@Nullable TBoundaryDefinitions canonical) {
+    private XTBoundaryDefinitions convert(@Nullable TBoundaryDefinitions canonical) {
         if (canonical == null) {
             return null;
         }
@@ -652,14 +718,14 @@ public class FromCanonical {
         return builder.build();
     }
 
-    private XTExportedInterface convert(org.eclipse.winery.model.tosca.TExportedInterface canonical) {
+    private XTExportedInterface convert(TExportedInterface canonical) {
         XTExportedInterface exportedInterface = new XTExportedInterface();
         exportedInterface.setName(canonical.getName());
         exportedInterface.getOperation().addAll(canonical.getOperation().stream().map(this::convert).collect(Collectors.toList()));
         return exportedInterface;
     }
 
-    private XTExportedOperation convert(org.eclipse.winery.model.tosca.TExportedOperation canonical) {
+    private XTExportedOperation convert(TExportedOperation canonical) {
         XTExportedOperation xml = new XTExportedOperation();
         xml.setName(canonical.getName());
         if (canonical.getNodeOperation() != null) {
@@ -673,38 +739,38 @@ public class FromCanonical {
             if (canonical.getPlan().getPlanRef() instanceof String) {
                 plan.setPlanRef(canonical.getPlan().getPlanRef());
             } else {
-                plan.setPlanRef(convert((org.eclipse.winery.model.tosca.TPlan) canonical.getPlan().getPlanRef()));
+                plan.setPlanRef(convert((TPlan) canonical.getPlan().getPlanRef()));
             }
             xml.setPlan(plan);
         }
         return xml;
     }
 
-    private XTExportedOperation.RelationshipOperation convert(org.eclipse.winery.model.tosca.TExportedOperation.RelationshipOperation canonical) {
+    private XTExportedOperation.RelationshipOperation convert(TExportedOperation.RelationshipOperation canonical) {
         XTExportedOperation.RelationshipOperation xml = new XTExportedOperation.RelationshipOperation();
         if (canonical.getRelationshipRef() instanceof String) {
             xml.setRelationshipRef(canonical.getRelationshipRef());
         } else {
-            xml.setRelationshipRef(convert((org.eclipse.winery.model.tosca.TRelationshipTemplate) canonical.getRelationshipRef()));
+            xml.setRelationshipRef(convert((TRelationshipTemplate) canonical.getRelationshipRef()));
         }
         xml.setInterfaceName(canonical.getInterfaceName());
         xml.setOperationName(canonical.getOperationName());
         return xml;
     }
 
-    private XTExportedOperation.NodeOperation convert(org.eclipse.winery.model.tosca.TExportedOperation.NodeOperation canonical) {
+    private XTExportedOperation.NodeOperation convert(TExportedOperation.NodeOperation canonical) {
         XTExportedOperation.NodeOperation xml = new XTExportedOperation.NodeOperation();
         if (canonical.getNodeRef() instanceof String) {
             xml.setNodeRef(canonical.getNodeRef());
         } else {
-            xml.setNodeRef(convert((org.eclipse.winery.model.tosca.TNodeTemplate) canonical.getNodeRef()));
+            xml.setNodeRef(convert((TNodeTemplate) canonical.getNodeRef()));
         }
         xml.setInterfaceName(canonical.getInterfaceName());
         xml.setOperationName(canonical.getOperationName());
         return xml;
     }
 
-    private XTPolicy convert(org.eclipse.winery.model.tosca.TPolicy canonical) {
+    private XTPolicy convert(TPolicy canonical) {
         XTPolicy.Builder builder = new XTPolicy.Builder(canonical.getPolicyType());
         builder.setName(canonical.getName());
         builder.setPolicyRef(canonical.getPolicyRef());
@@ -715,21 +781,21 @@ public class FromCanonical {
         return builder.build();
     }
 
-    private XTCapabilityRef convert(org.eclipse.winery.model.tosca.TCapabilityRef canonical) {
+    private XTCapabilityRef convert(TCapabilityRef canonical) {
         XTCapabilityRef xml = new XTCapabilityRef();
         xml.setName(canonical.getName());
         xml.setRef(convert(canonical.getRef()));
         return xml;
     }
 
-    private XTRequirementRef convert(org.eclipse.winery.model.tosca.TRequirementRef canonical) {
+    private XTRequirementRef convert(TRequirementRef canonical) {
         XTRequirementRef xml = new XTRequirementRef();
         xml.setName(canonical.getName());
         xml.setRef(convert(canonical.getRef()));
         return xml;
     }
 
-    private XTRequirement convert(org.eclipse.winery.model.tosca.TRequirement canonical) {
+    private XTRequirement convert(TRequirement canonical) {
         XTRequirement.Builder builder = new XTRequirement.Builder(canonical.getId(), canonical.getName(), canonical.getType());
         builder.setCapability(canonical.getCapability());
         builder.setRelationship(canonical.getRelationship());
@@ -738,7 +804,7 @@ public class FromCanonical {
         return builder.build();
     }
 
-    private XTPropertyMapping convert(org.eclipse.winery.model.tosca.TPropertyMapping canonical) {
+    private XTPropertyMapping convert(TPropertyMapping canonical) {
         XTPropertyMapping xml = new XTPropertyMapping();
         xml.setServiceTemplatePropertyRef(canonical.getServiceTemplatePropertyRef());
         xml.setTargetPropertyRef(canonical.getTargetPropertyRef());
@@ -747,7 +813,7 @@ public class FromCanonical {
     }
 
     @Nullable
-    private XTTopologyTemplate convert(org.eclipse.winery.model.tosca.@Nullable TTopologyTemplate canonical) {
+    private XTTopologyTemplate convert(@Nullable TTopologyTemplate canonical) {
         if (canonical == null) {
             return null;
         }
@@ -759,7 +825,7 @@ public class FromCanonical {
         return builder.build();
     }
 
-    private XTNodeTemplate convert(org.eclipse.winery.model.tosca.TNodeTemplate canonical) {
+    private XTNodeTemplate convert(TNodeTemplate canonical) {
         XTNodeTemplate.Builder builder = new XTNodeTemplate.Builder(canonical.getId(), canonical.getType());
         if (canonical.getRequirements() != null) {
             XTNodeTemplate.Requirements reqs = new XTNodeTemplate.Requirements();
@@ -790,7 +856,7 @@ public class FromCanonical {
         return builder.build();
     }
 
-    private XTRelationshipTemplate convert(org.eclipse.winery.model.tosca.TRelationshipTemplate canonical) {
+    private XTRelationshipTemplate convert(TRelationshipTemplate canonical) {
         XTRelationshipTemplate.Builder builder = new XTRelationshipTemplate.Builder(canonical.getId(), canonical.getType(),
             convert(canonical.getSourceElement()), convert(canonical.getTargetElement()));
         builder.setName(canonical.getName());
@@ -804,61 +870,64 @@ public class FromCanonical {
         return builder.build();
     }
 
-    private XTRelationshipTemplate.RelationshipConstraints.RelationshipConstraint convert(org.eclipse.winery.model.tosca.TRelationshipTemplate.RelationshipConstraints.RelationshipConstraint canonical) {
+    private XTRelationshipTemplate.RelationshipConstraints.RelationshipConstraint convert(TRelationshipTemplate.RelationshipConstraints.RelationshipConstraint canonical) {
         XTRelationshipTemplate.RelationshipConstraints.RelationshipConstraint xml = new XTRelationshipTemplate.RelationshipConstraints.RelationshipConstraint();
         xml.setAny(canonical.getAny());
         xml.setConstraintType(canonical.getConstraintType());
         return xml;
     }
 
-    private XTRelationshipTemplate.SourceOrTargetElement convert(org.eclipse.winery.model.tosca.TRelationshipTemplate.SourceOrTargetElement canonical) {
+    private XTRelationshipTemplate.SourceOrTargetElement convert(TRelationshipTemplate.SourceOrTargetElement canonical) {
         XTRelationshipTemplate.SourceOrTargetElement xml = new XTRelationshipTemplate.SourceOrTargetElement();
         xml.setRef(convert(canonical.getRef()));
         return xml;
     }
 
     @Nullable
-    private XTEntityTemplate convertEntityTemplate(org.eclipse.winery.model.tosca.TEntityTemplate canonical) {
-        if (canonical instanceof org.eclipse.winery.model.tosca.RelationshipSourceOrTarget) {
-            return convert((org.eclipse.winery.model.tosca.RelationshipSourceOrTarget) canonical);
+    private XTEntityTemplate convertEntityTemplate(TEntityTemplate canonical) {
+        if (canonical instanceof RelationshipSourceOrTarget) {
+            return convert((RelationshipSourceOrTarget) canonical);
         }
-        if (canonical instanceof org.eclipse.winery.model.tosca.TArtifact) {
-            return convert((org.eclipse.winery.model.tosca.TArtifact) canonical);
+        if (canonical instanceof TArtifact) {
+            return convert((TArtifact) canonical);
         }
-        if (canonical instanceof org.eclipse.winery.model.tosca.TArtifactTemplate) {
-            return convert((org.eclipse.winery.model.tosca.TArtifactTemplate) canonical);
+        if (canonical instanceof TArtifactTemplate) {
+            return convert((TArtifactTemplate) canonical);
         }
-        if (canonical instanceof org.eclipse.winery.model.tosca.TPolicyTemplate) {
-            return convert((org.eclipse.winery.model.tosca.TPolicyTemplate) canonical);
+        if (canonical instanceof TPolicyTemplate) {
+            return convert((TPolicyTemplate) canonical);
         }
-        if (canonical instanceof org.eclipse.winery.model.tosca.TRelationshipTemplate) {
-            return convert((org.eclipse.winery.model.tosca.TRelationshipTemplate) canonical);
+        if (canonical instanceof TRelationshipTemplate) {
+            return convert((TRelationshipTemplate) canonical);
         }
         LOGGER.warn("Trying to convert unknown subtype of TEntityTemplate to xml {}", canonical.getClass());
         return null;
     }
 
-    private XRelationshipSourceOrTarget convert(org.eclipse.winery.model.tosca.RelationshipSourceOrTarget canonical) {
+    private XRelationshipSourceOrTarget convert(RelationshipSourceOrTarget canonical) {
         // Capability or NodeTemplate or Requirement
-        if (canonical instanceof org.eclipse.winery.model.tosca.TCapability) {
-            return convert((org.eclipse.winery.model.tosca.TCapability) canonical);
+        if (canonical instanceof TCapability) {
+            return convert((TCapability) canonical);
         }
-        if (canonical instanceof org.eclipse.winery.model.tosca.TNodeTemplate) {
-            return convert((org.eclipse.winery.model.tosca.TNodeTemplate) canonical);
+        if (canonical instanceof TNodeTemplate) {
+            return convert((TNodeTemplate) canonical);
         }
-        if (canonical instanceof org.eclipse.winery.model.tosca.TRequirement) {
-            return convert((org.eclipse.winery.model.tosca.TRequirement) canonical);
+        if (canonical instanceof TRequirement) {
+            return convert((TRequirement) canonical);
         }
         throw new IllegalStateException(String.format("Tried to convert unknown RelationshipSourceOrTarget implementation %s", canonical.getClass().getName()));
     }
 
-    private XTDefinitions.Extensions convertExtensions(org.eclipse.winery.model.tosca.TDefinitions.Extensions canonical) {
+    private XTDefinitions.Extensions convertExtensions(TDefinitions.@Nullable Extensions canonical) {
+        if (canonical == null) {
+            return null;
+        }
         XTDefinitions.Extensions result = new XTDefinitions.Extensions();
         result.getExtension().addAll(canonical.getExtension().stream().map(this::convert).collect(Collectors.toList()));
         return result;
     }
 
-    private XTDefinitions.Types convertTypes(org.eclipse.winery.model.tosca.TDefinitions.@Nullable Types canonical) {
+    private XTDefinitions.Types convertTypes(TDefinitions.@Nullable Types canonical) {
         if (canonical == null) {
             return new XTDefinitions.Types();
         }
@@ -867,26 +936,26 @@ public class FromCanonical {
         return result;
     }
 
-    private XHasId convert(org.eclipse.winery.model.tosca.HasId canonical) {
-        if (canonical instanceof org.eclipse.winery.model.tosca.TDefinitions) {
+    private XHasId convert(HasId canonical) {
+        if (canonical instanceof TDefinitions) {
             // what in the ever loving fuck am I supposed to do now??
             // this case should never ever come true
             throw new IllegalStateException("Attempted to convert a TDefinitions instance through HasId overload.");
         }
-        if (canonical instanceof org.eclipse.winery.model.tosca.RelationshipSourceOrTarget) {
-            return convert((org.eclipse.winery.model.tosca.RelationshipSourceOrTarget) canonical);
+        if (canonical instanceof RelationshipSourceOrTarget) {
+            return convert((RelationshipSourceOrTarget) canonical);
         }
-        if (canonical instanceof org.eclipse.winery.model.tosca.TArtifact) {
-            return convert((org.eclipse.winery.model.tosca.TArtifact) canonical);
+        if (canonical instanceof TArtifact) {
+            return convert((TArtifact) canonical);
         }
-        if (canonical instanceof org.eclipse.winery.model.tosca.TArtifactTemplate) {
-            return convert((org.eclipse.winery.model.tosca.TArtifactTemplate) canonical);
+        if (canonical instanceof TArtifactTemplate) {
+            return convert((TArtifactTemplate) canonical);
         }
-        if (canonical instanceof org.eclipse.winery.model.tosca.TPolicyTemplate) {
-            return convert((org.eclipse.winery.model.tosca.TPolicyTemplate) canonical);
+        if (canonical instanceof TPolicyTemplate) {
+            return convert((TPolicyTemplate) canonical);
         }
-        if (canonical instanceof org.eclipse.winery.model.tosca.TRelationshipTemplate) {
-            return convert((org.eclipse.winery.model.tosca.TRelationshipTemplate) canonical);
+        if (canonical instanceof TRelationshipTemplate) {
+            return convert((TRelationshipTemplate) canonical);
         }
         throw new IllegalStateException("Attempted to convert unknown element deriving from HasId with type " + canonical.getClass().getName());
     }
@@ -898,36 +967,7 @@ public class FromCanonical {
         return canonical.stream().map(convert).collect(Collectors.toList());
     }
 
-    // ############  SUPPORT FOR WINERY SPECIFIC EXTENSIONS TO THE TOSCA STANDARD ########################
-    private XTExtensibleElements convertNonStandard(org.eclipse.winery.model.tosca.TExtensibleElements canonical) {
-        if (canonical instanceof org.eclipse.winery.model.tosca.extensions.OTAttributeMapping) {
-            return convert((org.eclipse.winery.model.tosca.extensions.OTAttributeMapping) canonical);
-        }
-        if (canonical instanceof org.eclipse.winery.model.tosca.extensions.OTComplianceRule) {
-            return convert((org.eclipse.winery.model.tosca.extensions.OTComplianceRule) canonical);
-        }
-        if (canonical instanceof org.eclipse.winery.model.tosca.extensions.OTDeploymentArtifactMapping) {
-            return convert((org.eclipse.winery.model.tosca.extensions.OTDeploymentArtifactMapping) canonical);
-        }
-        if (canonical instanceof org.eclipse.winery.model.tosca.extensions.OTPatternRefinementModel) {
-            return convert((org.eclipse.winery.model.tosca.extensions.OTPatternRefinementModel) canonical);
-        }
-        if (canonical instanceof org.eclipse.winery.model.tosca.extensions.OTRelationMapping) {
-            return convert((org.eclipse.winery.model.tosca.extensions.OTRelationMapping) canonical);
-        }
-        if (canonical instanceof org.eclipse.winery.model.tosca.extensions.OTStayMapping) {
-            return convert((org.eclipse.winery.model.tosca.extensions.OTStayMapping) canonical);
-        }
-        if (canonical instanceof org.eclipse.winery.model.tosca.extensions.OTTestRefinementModel) {
-            return convert((org.eclipse.winery.model.tosca.extensions.OTTestRefinementModel) canonical);
-        }
-        if (canonical instanceof org.eclipse.winery.model.tosca.extensions.OTTopologyFragmentRefinementModel) {
-            return convert((org.eclipse.winery.model.tosca.extensions.OTTopologyFragmentRefinementModel) canonical);
-        }
-        throw new IllegalStateException("Attempted to convert unknown Extension to the TOSCA-Standard of the type " + canonical.getClass().getName() + " to canonical");
-    }
-
-    private XOTComplianceRule convert(org.eclipse.winery.model.tosca.extensions.OTComplianceRule canonical) {
+    private XOTComplianceRule convert(OTComplianceRule canonical) {
         XOTComplianceRule.Builder builder = new XOTComplianceRule.Builder(canonical.getId());
         builder.setIdentifier(convert(canonical.getIdentifier()));
         builder.setName(canonical.getName());
@@ -936,14 +976,14 @@ public class FromCanonical {
         return builder.build();
     }
 
-    private <Builder extends XOTPrmMapping.Builder<Builder>, Value extends org.eclipse.winery.model.tosca.extensions.OTPrmMapping>
+    private <Builder extends XOTPrmMapping.Builder<Builder>, Value extends OTPrmMapping>
     void fillOTPrmMappingProperties(Builder builder, Value value) {
         builder.setDetectorElement(convertEntityTemplate(value.getDetectorElement()));
         builder.setRefinementElement(convertEntityTemplate(value.getRefinementElement()));
         fillExtensibleElementsProperties(builder, value);
     }
 
-    private XOTAttributeMapping convert(org.eclipse.winery.model.tosca.extensions.OTAttributeMapping canonical) {
+    private XOTAttributeMapping convert(OTAttributeMapping canonical) {
         XOTAttributeMapping.Builder builder = new XOTAttributeMapping.Builder(canonical.getId());
         builder.setType(XOTAttributeMappingType.fromValue(canonical.getType().value()));
         builder.setDetectorProperty(canonical.getDetectorProperty());
@@ -952,14 +992,14 @@ public class FromCanonical {
         return builder.build();
     }
 
-    private XOTDeploymentArtifactMapping convert(org.eclipse.winery.model.tosca.extensions.OTDeploymentArtifactMapping canonical) {
+    private XOTDeploymentArtifactMapping convert(OTDeploymentArtifactMapping canonical) {
         XOTDeploymentArtifactMapping.Builder builder = new XOTDeploymentArtifactMapping.Builder(canonical.getId());
         builder.setArtifactType(canonical.getArtifactType());
         fillOTPrmMappingProperties(builder, canonical);
         return builder.build();
     }
 
-    private <Builder extends XOTTopologyFragmentRefinementModel.Builder, Value extends org.eclipse.winery.model.tosca.extensions.OTTopologyFragmentRefinementModel> void
+    private <Builder extends XOTTopologyFragmentRefinementModel.Builder, Value extends OTTopologyFragmentRefinementModel> void
     fillOTTopologyFragmentRefinementModelProperties(Builder builder, Value value) {
         builder.setRefinementStructure(convert(value.getRefinementStructure()));
         builder.setDeploymentArtifactMappings(convertList(value.getDeploymentArtifactMappings(), this::convert));
@@ -970,7 +1010,7 @@ public class FromCanonical {
         fillOTRefinementModelProperties(builder, value);
     }
 
-    private <Builder extends XOTRefinementModel.Builder<Builder>, Value extends org.eclipse.winery.model.tosca.extensions.OTRefinementModel> void
+    private <Builder extends XOTRefinementModel.Builder<Builder>, Value extends OTRefinementModel> void
     fillOTRefinementModelProperties(Builder builder, Value value) {
         builder.setName(value.getName());
         builder.setDetector(convert(value.getDetector()));
@@ -979,13 +1019,13 @@ public class FromCanonical {
         fillExtensibleElementsProperties(builder, value);
     }
 
-    private XOTPatternRefinementModel convert(org.eclipse.winery.model.tosca.extensions.OTPatternRefinementModel canonical) {
+    private XOTPatternRefinementModel convert(OTPatternRefinementModel canonical) {
         XOTPatternRefinementModel.Builder builder = new XOTPatternRefinementModel.Builder();
         fillOTTopologyFragmentRefinementModelProperties(builder, canonical);
         return builder.build();
     }
 
-    private XOTRelationMapping convert(org.eclipse.winery.model.tosca.extensions.OTRelationMapping canonical) {
+    private XOTRelationMapping convert(OTRelationMapping canonical) {
         XOTRelationMapping.Builder builder = new XOTRelationMapping.Builder(canonical.getId());
         builder.setDirection(XOTRelationDirection.fromValue(canonical.getDirection().value()));
         builder.setRelationType(canonical.getRelationType());
@@ -994,31 +1034,31 @@ public class FromCanonical {
         return builder.build();
     }
 
-    private XOTStayMapping convert(org.eclipse.winery.model.tosca.extensions.OTStayMapping canonical) {
+    private XOTStayMapping convert(OTStayMapping canonical) {
         XOTStayMapping.Builder builder = new XOTStayMapping.Builder(canonical.getId());
         fillOTPrmMappingProperties(builder, canonical);
         return builder.build();
     }
 
-    private XOTPermutationMapping convert(org.eclipse.winery.model.tosca.extensions.OTPermutationMapping canonical) {
+    private XOTPermutationMapping convert(OTPermutationMapping canonical) {
         XOTPermutationMapping.Builder builder = new XOTPermutationMapping.Builder(canonical.getId());
         fillOTPrmMappingProperties(builder, canonical);
         return builder.build();
     }
 
-    private XOTStringList convert(org.eclipse.winery.model.tosca.extensions.OTStringList xml) {
+    private XOTStringList convert(OTStringList xml) {
         XOTStringList.Builder builder = new XOTStringList.Builder(xml.getValues());
         return builder.build();
     }
 
-    private XOTTestRefinementModel convert(org.eclipse.winery.model.tosca.extensions.OTTestRefinementModel canonical) {
+    private XOTTestRefinementModel convert(OTTestRefinementModel canonical) {
         XOTTestRefinementModel.Builder builder = new XOTTestRefinementModel.Builder();
         builder.setTestFragment(convert(canonical.getTestFragment()));
         fillOTRefinementModelProperties(builder, canonical);
         return builder.build();
     }
 
-    private XOTTopologyFragmentRefinementModel convert(org.eclipse.winery.model.tosca.extensions.OTTopologyFragmentRefinementModel canonical) {
+    private XOTTopologyFragmentRefinementModel convert(OTTopologyFragmentRefinementModel canonical) {
         XOTTopologyFragmentRefinementModel.Builder builder = new XOTTopologyFragmentRefinementModel.Builder();
         fillOTTopologyFragmentRefinementModelProperties(builder, canonical);
         return builder.build();

@@ -398,7 +398,7 @@ public class XTDefinitions extends XHasId implements XHasName, XHasTargetNamespa
             this.target_namespace = target_namespace;
         }
 
-        public Builder setExtensions(XTDefinitions.Extensions extensions) {
+        public T setExtensions(XTDefinitions.Extensions extensions) {
             this.extensions = extensions;
             return self();
         }

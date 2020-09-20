@@ -33,37 +33,50 @@ import org.eclipse.winery.model.ids.definitions.CapabilityTypeId;
 import org.eclipse.winery.model.ids.definitions.DefinitionsChildId;
 import org.eclipse.winery.model.ids.definitions.InterfaceTypeId;
 import org.eclipse.winery.model.ids.definitions.NodeTypeId;
-import org.eclipse.winery.model.ids.definitions.NodeTypeImplementationId;
 import org.eclipse.winery.model.ids.definitions.PolicyTypeId;
 import org.eclipse.winery.model.ids.definitions.RelationshipTypeId;
-import org.eclipse.winery.model.ids.definitions.RelationshipTypeImplementationId;
 import org.eclipse.winery.model.ids.definitions.RequirementTypeId;
 import org.eclipse.winery.model.tosca.TAppliesTo;
 import org.eclipse.winery.model.tosca.TArtifact;
 import org.eclipse.winery.model.tosca.TArtifactReference;
 import org.eclipse.winery.model.tosca.TArtifactTemplate;
+import org.eclipse.winery.model.tosca.TArtifactType;
 import org.eclipse.winery.model.tosca.TArtifacts;
 import org.eclipse.winery.model.tosca.TBoundaryDefinitions;
 import org.eclipse.winery.model.tosca.TCapability;
+import org.eclipse.winery.model.tosca.TCapabilityDefinition;
+import org.eclipse.winery.model.tosca.TCapabilityType;
+import org.eclipse.winery.model.tosca.TDataType;
 import org.eclipse.winery.model.tosca.TDefinitions;
 import org.eclipse.winery.model.tosca.TDeploymentArtifact;
 import org.eclipse.winery.model.tosca.TDeploymentArtifacts;
 import org.eclipse.winery.model.tosca.TDocumentation;
 import org.eclipse.winery.model.tosca.TEntityTemplate;
 import org.eclipse.winery.model.tosca.TEntityType;
+import org.eclipse.winery.model.tosca.TImplementation;
 import org.eclipse.winery.model.tosca.TImplementationArtifact;
 import org.eclipse.winery.model.tosca.TImplementationArtifacts;
 import org.eclipse.winery.model.tosca.TInterface;
+import org.eclipse.winery.model.tosca.TInterfaceDefinition;
+import org.eclipse.winery.model.tosca.TInterfaceType;
 import org.eclipse.winery.model.tosca.TInterfaces;
+import org.eclipse.winery.model.tosca.TNodeTemplate;
+import org.eclipse.winery.model.tosca.TNodeType;
 import org.eclipse.winery.model.tosca.TNodeTypeImplementation;
 import org.eclipse.winery.model.tosca.TOperation;
+import org.eclipse.winery.model.tosca.TOperationDefinition;
 import org.eclipse.winery.model.tosca.TParameter;
 import org.eclipse.winery.model.tosca.TPolicies;
 import org.eclipse.winery.model.tosca.TPolicy;
+import org.eclipse.winery.model.tosca.TPolicyType;
+import org.eclipse.winery.model.tosca.TRelationshipTemplate;
+import org.eclipse.winery.model.tosca.TRelationshipType;
 import org.eclipse.winery.model.tosca.TRelationshipTypeImplementation;
 import org.eclipse.winery.model.tosca.TRequirement;
+import org.eclipse.winery.model.tosca.TRequirementDefinition;
 import org.eclipse.winery.model.tosca.TRequirementType;
 import org.eclipse.winery.model.tosca.TSchema;
+import org.eclipse.winery.model.tosca.TServiceTemplate;
 import org.eclipse.winery.model.tosca.TTag;
 import org.eclipse.winery.model.tosca.TTags;
 import org.eclipse.winery.model.tosca.TTopologyTemplate;
@@ -124,7 +137,6 @@ public class FromCanonical {
     public final static Logger LOGGER = LoggerFactory.getLogger(FromCanonical.class);
 
     private final YamlRepository repository;
-//    private final Path path;
 
     private HashBiMap<String, String> prefixNamespace;
     private Map<DefinitionsChildId, TDefinitions> importDefinitions;
@@ -212,7 +224,9 @@ public class FromCanonical {
     }
 
     public Map<String, YTPropertyAssignment> convert(TEntityTemplate.Properties node) {
-        if (Objects.isNull(node)) return null;
+        if (Objects.isNull(node)) {
+            return null;
+        }
         if (node instanceof TEntityTemplate.YamlProperties) {
             Map<String, Object> propertiesKV = ((TEntityTemplate.YamlProperties) node).getProperties();
             Map<String, YTPropertyAssignment> assignments = propertiesKV.entrySet().stream()
@@ -232,11 +246,15 @@ public class FromCanonical {
         return null;
     }
 
-    public YTTopologyTemplateDefinition convert(org.eclipse.winery.model.tosca.TServiceTemplate node) {
+    public YTTopologyTemplateDefinition convert(TServiceTemplate node) {
         // substitution mappings are an extension feature and currently not supported for YAML
-        if (Objects.isNull(node)) return null;
+        if (Objects.isNull(node)) {
+            return null;
+        }
         TTopologyTemplate topologyTemplate = node.getTopologyTemplate();
-        if (Objects.isNull(topologyTemplate)) return null;
+        if (Objects.isNull(topologyTemplate)) {
+            return null;
+        }
         YTTopologyTemplateDefinition.Builder builder = new YTTopologyTemplateDefinition.Builder()
             .setDescription(convertDocumentation(topologyTemplate.getDocumentation()))
             .setNodeTemplates(convert(topologyTemplate.getNodeTemplates(), topologyTemplate.getRelationshipTemplates()))
@@ -251,8 +269,10 @@ public class FromCanonical {
         return builder.build();
     }
 
-    public Map<String, YTNodeTemplate> convert(List<org.eclipse.winery.model.tosca.TNodeTemplate> nodes, List<org.eclipse.winery.model.tosca.TRelationshipTemplate> rTs) {
-        if (Objects.isNull(nodes)) return null;
+    public Map<String, YTNodeTemplate> convert(List<TNodeTemplate> nodes, List<TRelationshipTemplate> rTs) {
+        if (Objects.isNull(nodes)) {
+            return null;
+        }
         return nodes.stream()
             .filter(Objects::nonNull)
             .flatMap(entry -> convert(entry, Optional.ofNullable(rTs).orElse(new ArrayList<>())).entrySet().stream())
@@ -260,7 +280,7 @@ public class FromCanonical {
     }
 
     @NonNull
-    public Map<String, YTNodeTemplate> convert(org.eclipse.winery.model.tosca.TNodeTemplate node, @NonNull List<org.eclipse.winery.model.tosca.TRelationshipTemplate> rTs) {
+    public Map<String, YTNodeTemplate> convert(TNodeTemplate node, @NonNull List<TRelationshipTemplate> rTs) {
         if (Objects.isNull(node)) {
             return new LinkedHashMap<>();
         }
@@ -291,8 +311,10 @@ public class FromCanonical {
     }
 
     @NonNull
-    public Map<String, YTRelationshipTemplate> convert(org.eclipse.winery.model.tosca.TRelationshipTemplate node) {
-        if (Objects.isNull(node)) return new LinkedHashMap<>();
+    public Map<String, YTRelationshipTemplate> convert(TRelationshipTemplate node) {
+        if (Objects.isNull(node)) {
+            return new LinkedHashMap<>();
+        }
         return Collections.singletonMap(
             node.getIdFromIdOrNameField(),
             new YTRelationshipTemplate.Builder(convert(node.getType(), new RelationshipTypeId(node.getType())))
@@ -379,7 +401,9 @@ public class FromCanonical {
     }
 
     public Map<String, YTAttributeDefinition> convertAttributes(TEntityType node, @Nullable List<AttributeDefinition> attributes) {
-        if (Objects.isNull(node) || Objects.isNull(attributes)) return new HashMap<>();
+        if (Objects.isNull(node) || Objects.isNull(attributes)) {
+            return new HashMap<>();
+        }
         return attributes.stream().collect(Collectors.toMap(
             AttributeDefinition::getKey,
             entry -> new YTAttributeDefinition.Builder(entry.getType())
@@ -390,7 +414,9 @@ public class FromCanonical {
     }
 
     public List<YTConstraintClause> convertConstraints(List<ConstraintClauseKV> constraints) {
-        if (Objects.isNull(constraints)) return null;
+        if (Objects.isNull(constraints)) {
+            return null;
+        }
 
         List<YTConstraintClause> list = new ArrayList<>();
         constraints.forEach(entry -> {
@@ -403,37 +429,39 @@ public class FromCanonical {
         return list;
     }
 
-    public Map<String, YTArtifactType> convert(org.eclipse.winery.model.tosca.TArtifactType node) {
+    public Map<String, YTArtifactType> convert(TArtifactType node) {
         YTArtifactType.Builder builder = new YTArtifactType.Builder()
             .setMimeType(node.getMimeType())
             .setFileExt(node.getFileExtensions());
         String nodeFullName = this.getFullName(node);
         return Collections.singletonMap(
             nodeFullName,
-            convert(node, builder, org.eclipse.winery.model.tosca.TArtifactType.class).build()
+            convert(node, builder, TArtifactType.class).build()
         );
     }
 
-    public Map<String, YTNodeType> convert(org.eclipse.winery.model.tosca.TNodeType node) {
-        if (Objects.isNull(node)) return null;
-        // TNodeTypeImplementation impl = getNodeTypeImplementation(new QName(node.getTargetNamespace(), node.getName()));
+    public Map<String, YTNodeType> convert(TNodeType node) {
+        if (Objects.isNull(node)) {
+            return null;
+        }
 
         String nodeFullName = this.getFullName(node);
 
         return Collections.singletonMap(
             nodeFullName,
-            convert(node, new YTNodeType.Builder(), org.eclipse.winery.model.tosca.TNodeType.class)
+            convert(node, new YTNodeType.Builder(), TNodeType.class)
                 .setRequirements(convert(node.getRequirementDefinitions()))
                 .setCapabilities(convert(node.getCapabilityDefinitions()))
                 .setInterfaces(convert(node.getInterfaceDefinitions()))
                 .setArtifacts(convert(node.getArtifacts()))
-                // .setArtifacts(convert(node.getArtifacts().getArtifact()))
                 .build()
         );
     }
 
     public Map<String, YTArtifactDefinition> convert(TNodeTypeImplementation node, Map<String, YTArtifactDefinition> artifacts) {
-        if (Objects.isNull(node)) return null;
+        if (Objects.isNull(node)) {
+            return null;
+        }
         String suffix = "@" + node.getNodeType().getLocalPart() + "@" + "nodetypes";
         return Stream.of(convert(node.getDeploymentArtifacts(), artifacts), convert(node.getImplementationArtifacts(), artifacts))
             .filter(Objects::nonNull)
@@ -442,32 +470,21 @@ public class FromCanonical {
             .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
-//    public Map<String, TRelationshipType> convert(org.eclipse.winery.model.tosca.TRelationshipType node) {
-//        if (Objects.isNull(node)) return null;
-//        // TODO Use TRelationshipTypeImplementation artifacts
-//        TRelationshipTypeImplementation impl = getRelationshipTypeImplementation(new QName(node.getTargetNamespace(), node.getName()));
-//        return Collections.singletonMap(
-//            node.getIdFromIdOrNameField(),
-//            convert(node, new TRelationshipType.Builder(), org.eclipse.winery.model.tosca.TRelationshipType.class)
-//                .addInterfaces(convert(node.getSourceInterfaces(), impl))
-//                .addInterfaces(convert(node.getTargetInterfaces(), impl))
-//                .build()
-//        );
-//    }
-
-    public Map<String, YTRelationshipType> convert(org.eclipse.winery.model.tosca.TRelationshipType node) {
-        if (Objects.isNull(node)) return null;
+    public Map<String, YTRelationshipType> convert(TRelationshipType node) {
+        if (Objects.isNull(node)) {
+            return null;
+        }
         String nodeFullName = this.getFullName(node);
         return Collections.singletonMap(
             nodeFullName,
-            convert(node, new YTRelationshipType.Builder(), org.eclipse.winery.model.tosca.TRelationshipType.class)
+            convert(node, new YTRelationshipType.Builder(), TRelationshipType.class)
                 .addInterfaces(convert(node.getInterfaceDefinitions()))
                 .addValidTargetTypes(convertTargets(node.getValidSource(), node.getValidTarget()))
                 .build()
         );
     }
 
-    private List<QName> convertTargets(org.eclipse.winery.model.tosca.TRelationshipType.ValidSource validSource, org.eclipse.winery.model.tosca.TRelationshipType.ValidTarget validTarget) {
+    private List<QName> convertTargets(TRelationshipType.ValidSource validSource, TRelationshipType.ValidTarget validTarget) {
         if (validSource != null && validTarget != null) {
             List<QName> output = new ArrayList<>();
             output.add(new QName(validSource.getTypeRef().getNamespaceURI(), validSource.getTypeRef().getLocalPart()));
@@ -478,7 +495,9 @@ public class FromCanonical {
     }
 
     public Map<String, YTInterfaceDefinition> convert(TInterfaces node, TRelationshipTypeImplementation implementation) {
-        if (Objects.isNull(node)) return null;
+        if (Objects.isNull(node)) {
+            return null;
+        }
         return node.getInterface().stream()
             .filter(Objects::nonNull)
             .map(entry -> convert(
@@ -494,20 +513,22 @@ public class FromCanonical {
     }
 
     @NonNull
-    public Map<String, YTCapabilityType> convert(org.eclipse.winery.model.tosca.TCapabilityType node) {
+    public Map<String, YTCapabilityType> convert(TCapabilityType node) {
         if (Objects.isNull(node)) return new LinkedHashMap<>();
         String nodeFullName = this.getFullName(node);
         return Collections.singletonMap(
             nodeFullName,
-            convert(node, new YTCapabilityType.Builder(), org.eclipse.winery.model.tosca.TCapabilityType.class)
+            convert(node, new YTCapabilityType.Builder(), TCapabilityType.class)
                 .addValidSourceTypes(node.getValidNodeTypes())
                 .build()
         );
     }
 
     @NonNull
-    public Map<String, YTPolicyType> convert(org.eclipse.winery.model.tosca.TPolicyType node) {
-        if (Objects.isNull(node)) return new LinkedHashMap<>();
+    public Map<String, YTPolicyType> convert(TPolicyType node) {
+        if (Objects.isNull(node)) {
+            return new LinkedHashMap<>();
+        }
         YTPolicyType.Builder builder = new YTPolicyType.Builder();
 
         if (node.getAppliesTo() != null) {
@@ -521,13 +542,15 @@ public class FromCanonical {
         String nodeFullName = this.getFullName(node);
         return Collections.singletonMap(
             nodeFullName,
-            convert(node, builder, org.eclipse.winery.model.tosca.TPolicyType.class)
+            convert(node, builder, TPolicyType.class)
                 .build()
         );
     }
 
     public YTSubstitutionMappings convert(TBoundaryDefinitions node) {
-        if (Objects.isNull(node)) return null;
+        if (Objects.isNull(node)) {
+            return null;
+        }
         return new YTSubstitutionMappings.Builder()
             // TODO Convert Boundary definitions
             .build();
@@ -535,7 +558,9 @@ public class FromCanonical {
 
     @NonNull
     public Map<String, YTPolicyDefinition> convert(TPolicy node) {
-        if (Objects.isNull(node)) return new LinkedHashMap<>();
+        if (Objects.isNull(node)) {
+            return new LinkedHashMap<>();
+        }
         return Collections.singletonMap(
             node.getName(),
             new YTPolicyDefinition.Builder(convert(node.getPolicyType(), new PolicyTypeId(node.getPolicyType())))
@@ -557,19 +582,21 @@ public class FromCanonical {
     }
 
     public QName convert(TEntityType.DerivedFrom node, Class<? extends TEntityType> clazz) {
-        if (Objects.isNull(node)) return null;
+        if (Objects.isNull(node)) {
+            return null;
+        }
         DefinitionsChildId id;
-        if (clazz.equals(org.eclipse.winery.model.tosca.TNodeType.class)) {
+        if (clazz.equals(TNodeType.class)) {
             id = new NodeTypeId(node.getTypeRef());
-        } else if (clazz.equals(org.eclipse.winery.model.tosca.TRelationshipType.class)) {
+        } else if (clazz.equals(TRelationshipType.class)) {
             id = new RelationshipTypeId(node.getTypeRef());
         } else if (clazz.equals(TRequirementType.class)) {
             id = new RequirementTypeId(node.getTypeRef());
-        } else if (clazz.equals(org.eclipse.winery.model.tosca.TCapabilityType.class)) {
+        } else if (clazz.equals(TCapabilityType.class)) {
             id = new CapabilityTypeId(node.getTypeRef());
-        } else if (clazz.equals(org.eclipse.winery.model.tosca.TArtifactType.class)) {
+        } else if (clazz.equals(TArtifactType.class)) {
             id = new ArtifactTypeId(node.getTypeRef());
-        } else if (clazz.equals(org.eclipse.winery.model.tosca.TInterfaceType.class)) {
+        } else if (clazz.equals(TInterfaceType.class)) {
             id = new InterfaceTypeId(node.getTypeRef());
         } else {
             id = new PolicyTypeId(node.getTypeRef());
@@ -581,7 +608,9 @@ public class FromCanonical {
     }
 
     public Metadata convert(TTags node) {
-        if (Objects.isNull(node)) return null;
+        if (Objects.isNull(node)) {
+            return null;
+        }
         return node.getTag().stream()
             .filter(Objects::nonNull)
             .collect(Collectors.toMap(
@@ -593,7 +622,9 @@ public class FromCanonical {
 
     @Deprecated
     public Map<String, YTInterfaceDefinition> convert(TInterface node) {
-        if (Objects.isNull(node)) return new LinkedHashMap<>();
+        if (Objects.isNull(node)) {
+            return new LinkedHashMap<>();
+        }
         return Collections.singletonMap(
             node.getName(),
             new YTInterfaceDefinition.Builder<>()
@@ -604,7 +635,9 @@ public class FromCanonical {
 
     @Deprecated
     public Map<String, YTOperationDefinition> convertOperations(List<TOperation> nodes) {
-        if (Objects.isNull(nodes)) return null;
+        if (Objects.isNull(nodes)) {
+            return null;
+        }
         return nodes.stream()
             .filter(Objects::nonNull)
             .flatMap(node -> convert(node)
@@ -616,7 +649,9 @@ public class FromCanonical {
     @NonNull
     @Deprecated
     public Map<String, YTOperationDefinition> convert(TOperation node) {
-        if (Objects.isNull(node)) return new LinkedHashMap<>();
+        if (Objects.isNull(node)) {
+            return new LinkedHashMap<>();
+        }
         return Collections.singletonMap(
             node.getName(),
             new YTOperationDefinition.Builder().build()
@@ -625,7 +660,9 @@ public class FromCanonical {
 
     @Deprecated
     public Map<String, YTInterfaceDefinition> convert(TInterfaces node, TNodeTypeImplementation implementation) {
-        if (Objects.isNull(node)) return null;
+        if (Objects.isNull(node)) {
+            return null;
+        }
         return node.getInterface().stream()
             .filter(Objects::nonNull)
             .map(entry -> convert(
@@ -643,12 +680,16 @@ public class FromCanonical {
     @NonNull
     @Deprecated
     public Map<String, YTInterfaceDefinition> convert(TInterface node, @NonNull List<TImplementationArtifact> impl) {
-        if (Objects.isNull(node)) return new LinkedHashMap<>();
+        if (Objects.isNull(node)) {
+            return new LinkedHashMap<>();
+        }
         return Collections.singletonMap(node.getName(), new YTInterfaceDefinition.Builder<>().build());
     }
 
     public Map<String, YTOperationDefinition> convertOperations(List<TOperation> nodes, @NonNull List<TImplementationArtifact> impl) {
-        if (Objects.isNull(nodes)) return null;
+        if (Objects.isNull(nodes)) {
+            return null;
+        }
         return nodes.stream()
             .filter(Objects::nonNull)
             .flatMap(node -> convert(
@@ -666,7 +707,9 @@ public class FromCanonical {
     @NonNull
     @Deprecated
     public Map<String, YTOperationDefinition> convert(TOperation node, List<TImplementationArtifact> impl) {
-        if (Objects.isNull(node)) return new LinkedHashMap<>();
+        if (Objects.isNull(node)) {
+            return new LinkedHashMap<>();
+        }
         return Collections.singletonMap(
             node.getName(),
             new YTOperationDefinition.Builder().build()
@@ -675,7 +718,9 @@ public class FromCanonical {
 
     @Deprecated
     public YTServiceTemplate convertNodeTypeImplementation(YTServiceTemplate type, TNodeTypeImplementation node) {
-        if (Objects.isNull(node)) return null;
+        if (Objects.isNull(node)) {
+            return null;
+        }
         YTNodeType nodeType = type.getNodeTypes().entrySet().iterator().next().getValue();
         nodeType.setArtifacts(convert(node, nodeType.getArtifacts()));
         nodeType.setInterfaces(convertInterfaces(nodeType.getInterfaces(), node.getImplementationArtifacts()));
@@ -686,7 +731,9 @@ public class FromCanonical {
 
     @Deprecated
     public YTServiceTemplate convertRelationshipTypeImplementation(YTServiceTemplate type, TRelationshipTypeImplementation node) {
-        if (Objects.isNull(node)) return null;
+        if (Objects.isNull(node)) {
+            return null;
+        }
         YTRelationshipType relationshipType = type.getRelationshipTypes().entrySet().iterator().next().getValue();
         // relationshipType.setInterfaces(convertRelationshipInterfaces(relationshipType.getInterfaces(), node.getImplementationArtifacts()));
         type.getRelationshipTypes().entrySet().iterator().next().setValue(relationshipType);
@@ -704,7 +751,7 @@ public class FromCanonical {
         TMapImportDefinition newImports = newImportsList.get(0);
         TMapImportDefinition existingImports = imports.get(0);
         for (Map.Entry<String, YTImportDefinition> newImport : newImports.entrySet()) {
-            Boolean found = false;
+            boolean found = false;
             for (Map.Entry<String, YTImportDefinition> existingImport : existingImports.entrySet()) {
                 if (newImport.getKey().equalsIgnoreCase(existingImport.getKey()) && newImport.getValue().equals(existingImport.getValue())) {
                     found = true;
@@ -734,8 +781,10 @@ public class FromCanonical {
         return interfaces;
     }
 
-    public List<TMapRequirementDefinition> convert(org.eclipse.winery.model.tosca.TNodeType.RequirementDefinitions node) {
-        if (Objects.isNull(node)) return null;
+    public List<TMapRequirementDefinition> convert(TNodeType.RequirementDefinitions node) {
+        if (Objects.isNull(node)) {
+            return null;
+        }
         return node.getRequirementDefinition().stream()
             .filter(Objects::nonNull)
             .map(this::convert)
@@ -744,7 +793,9 @@ public class FromCanonical {
     }
 
     public Map<String, YTArtifactDefinition> convert(TDeploymentArtifacts node) {
-        if (Objects.isNull(node)) return null;
+        if (Objects.isNull(node)) {
+            return null;
+        }
         return node.getDeploymentArtifact().stream()
             .filter(Objects::nonNull)
             .map(ia -> new LinkedHashMap.SimpleEntry<>(ia.getArtifactRef().getLocalPart(), convertArtifactReference(new QName(ia.getArtifactRef().getNamespaceURI(), ia.getArtifactRef().getLocalPart()))))
@@ -754,7 +805,9 @@ public class FromCanonical {
     }
 
     public Map<String, YTArtifactDefinition> convert(TDeploymentArtifacts node, Map<String, YTArtifactDefinition> artifacts) {
-        if (Objects.isNull(node)) return null;
+        if (Objects.isNull(node)) {
+            return null;
+        }
         Map<String, YTArtifactDefinition> output = new LinkedHashMap<>();
         for (TDeploymentArtifact deploymentArtifact : node.getDeploymentArtifact()) {
             if (artifacts.containsKey(deploymentArtifact.getArtifactRef().getLocalPart())) {
@@ -768,7 +821,9 @@ public class FromCanonical {
     }
 
     public Map<String, YTArtifactDefinition> convert(TImplementationArtifacts node, Map<String, YTArtifactDefinition> artifacts) {
-        if (Objects.isNull(node)) return null;
+        if (Objects.isNull(node)) {
+            return null;
+        }
         Map<String, YTArtifactDefinition> output = new LinkedHashMap<>();
         for (TImplementationArtifact implementationArtifact : node.getImplementationArtifact()) {
             if (artifacts.containsKey(implementationArtifact.getArtifactRef().getLocalPart())) {
@@ -781,7 +836,9 @@ public class FromCanonical {
     }
 
     public YTArtifactDefinition convertArtifactReference(QName ref) {
-        if (Objects.isNull(ref)) return null;
+        if (Objects.isNull(ref)) {
+            return null;
+        }
         return convert(new ArtifactTemplateId(ref));
     }
 
@@ -815,6 +872,9 @@ public class FromCanonical {
 
     @Deprecated
     public YTArtifactDefinition convertArtifactTemplate(TArtifactTemplate node) {
+        if (Objects.isNull(node) || Objects.isNull(node.getType())) {
+            return null;
+        }
         List<String> files = new ArrayList<>();
         TArtifactTemplate.ArtifactReferences artifactReferences = node.getArtifactReferences();
         if (artifactReferences != null) {
@@ -825,8 +885,6 @@ public class FromCanonical {
                 }
             }
         }
-        if (Objects.isNull(node) || Objects.isNull(node.getType()))
-            return null;
         return new YTArtifactDefinition.Builder(getQName(
             new ArtifactTypeId(node.getType()),
             node.getType().getNamespaceURI(),
@@ -835,9 +893,10 @@ public class FromCanonical {
             .build();
     }
 
-    public TMapRequirementDefinition convert(org.eclipse.winery.model.tosca.TRequirementDefinition node) {
-        if (Objects.isNull(node))
+    public TMapRequirementDefinition convert(TRequirementDefinition node) {
+        if (Objects.isNull(node)) {
             return null;
+        }
         YTRequirementDefinition.Builder builder = new YTRequirementDefinition.Builder(node.getCapability())
             .setDescription(convertDocumentation(node.getDocumentation()))
             .setOccurrences(node.getLowerBound(), node.getUpperBound())
@@ -863,22 +922,18 @@ public class FromCanonical {
         );
     }
 
-    public Map<String, YTCapabilityDefinition> convert(org.eclipse.winery.model.tosca.TNodeType.CapabilityDefinitions node) {
-        if (Objects.isNull(node) || node.getCapabilityDefinition().isEmpty()) return null;
+    public Map<String, YTCapabilityDefinition> convert(TNodeType.CapabilityDefinitions node) {
+        if (Objects.isNull(node) || node.getCapabilityDefinition().isEmpty()) {
+            return null;
+        }
         return node.getCapabilityDefinition().stream()
             .filter(Objects::nonNull)
-            .collect(Collectors.toMap(
-                org.eclipse.winery.model.tosca.TCapabilityDefinition::getName,
-                this::convert
-            ));
+            .collect(Collectors.toMap(TCapabilityDefinition::getName, this::convert));
     }
 
-    public YTCapabilityDefinition convert(org.eclipse.winery.model.tosca.TCapabilityDefinition node) {
-        return new YTCapabilityDefinition.Builder(
-            convert(
-                node.getCapabilityType(),
-                new CapabilityTypeId(node.getCapabilityType())
-            ))
+    public YTCapabilityDefinition convert(TCapabilityDefinition node) {
+        return new YTCapabilityDefinition.Builder(convert(node.getCapabilityType(),
+                new CapabilityTypeId(node.getCapabilityType())))
             .setValidSourceTypes(node.getValidSourceTypes())
             .setDescription(convertDocumentation(node.getDocumentation()))
             .setOccurrences(node.getLowerBound(), node.getUpperBound())
@@ -886,7 +941,9 @@ public class FromCanonical {
     }
 
     public QName convert(QName node, DefinitionsChildId id) {
-        if (Objects.isNull(node)) return null;
+        if (Objects.isNull(node)) {
+            return null;
+        }
         return getQName(
             id,
             node.getNamespaceURI(),
@@ -895,7 +952,9 @@ public class FromCanonical {
     }
 
     public Map<String, YTInterfaceDefinition> convert(TInterfaces node, String type) {
-        if (Objects.isNull(node)) return null;
+        if (Objects.isNull(node)) {
+            return null;
+        }
         return node.getInterface().stream()
             .filter(Objects::nonNull)
             .collect(Collectors.toMap(
@@ -908,7 +967,9 @@ public class FromCanonical {
     }
 
     public Map<String, YTInterfaceDefinition> convert(TInterfaces node) {
-        if (Objects.isNull(node)) return null;
+        if (Objects.isNull(node)) {
+            return null;
+        }
         return node.getInterface().stream()
             .filter(Objects::nonNull)
             .collect(Collectors.toMap(
@@ -920,7 +981,9 @@ public class FromCanonical {
     }
 
     public Map<String, YTPropertyAssignmentOrDefinition> convert(TOperation.InputParameters node) {
-        if (Objects.isNull(node)) return null;
+        if (Objects.isNull(node)) {
+            return null;
+        }
         return node.getInputParameter().stream()
             .filter(Objects::nonNull)
             .collect(Collectors.toMap(
@@ -932,7 +995,9 @@ public class FromCanonical {
     }
 
     public Map<String, YTPropertyAssignmentOrDefinition> convert(TOperation.OutputParameters node) {
-        if (Objects.isNull(node)) return null;
+        if (Objects.isNull(node)) {
+            return null;
+        }
         return node.getOutputParameter().stream()
             .filter(Objects::nonNull)
             .collect(Collectors.toMap(
@@ -948,11 +1013,13 @@ public class FromCanonical {
     }
 
     public Map<String, YTArtifactDefinition> convert(TArtifacts node) {
-        if (Objects.isNull(node))
+        if (Objects.isNull(node)) {
             return null;
+        }
 
-        if (Objects.isNull(node.getArtifact()))
+        if (Objects.isNull(node.getArtifact())) {
             return new HashMap<>();
+        }
 
         return node.getArtifact().stream()
             .filter(Objects::nonNull)
@@ -963,8 +1030,10 @@ public class FromCanonical {
             .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
-    public Map<String, YTCapabilityAssignment> convert(org.eclipse.winery.model.tosca.TNodeTemplate.Capabilities node) {
-        if (Objects.isNull(node)) return null;
+    public Map<String, YTCapabilityAssignment> convert(TNodeTemplate.Capabilities node) {
+        if (Objects.isNull(node)) {
+            return null;
+        }
         return node.getCapability().stream()
             .filter(Objects::nonNull)
             .map(this::convert)
@@ -975,7 +1044,9 @@ public class FromCanonical {
     }
 
     public Map<String, YTArtifactDefinition> convert(TArtifact node) {
-        if (Objects.isNull(node)) return null;
+        if (Objects.isNull(node)) {
+            return null;
+        }
 
         return Collections.singletonMap(
             node.getName(),
@@ -986,8 +1057,10 @@ public class FromCanonical {
         );
     }
 
-    public Map<String, YTInterfaceType> convert(org.eclipse.winery.model.tosca.TInterfaceType node) {
-        if (Objects.isNull(node)) return null;
+    public Map<String, YTInterfaceType> convert(TInterfaceType node) {
+        if (Objects.isNull(node)) {
+            return null;
+        }
 
         Map<String, YTOperationDefinition> ops = new HashMap<>();
         node.getOperations().forEach((key, value) -> ops.putAll(convert(value)));
@@ -1003,7 +1076,9 @@ public class FromCanonical {
     }
 
     public Map<String, YTCapabilityAssignment> convert(TCapability node) {
-        if (Objects.isNull(node)) return null;
+        if (Objects.isNull(node)) {
+            return null;
+        }
 
         // skip empty capability assignments
         if (node.getProperties() == null) {
@@ -1018,8 +1093,10 @@ public class FromCanonical {
         );
     }
 
-    public List<TMapRequirementAssignment> convert(org.eclipse.winery.model.tosca.TNodeTemplate.Requirements node) {
-        if (Objects.isNull(node)) return null;
+    public List<TMapRequirementAssignment> convert(TNodeTemplate.Requirements node) {
+        if (Objects.isNull(node)) {
+            return null;
+        }
         return node.getRequirement().stream()
             .filter(Objects::nonNull)
             .map(this::convert)
@@ -1028,10 +1105,12 @@ public class FromCanonical {
     }
 
     public TMapRequirementAssignment convert(TRequirement node) {
-        if (Objects.isNull(node)) return null;
+        if (Objects.isNull(node)) {
+            return null;
+        }
         YTRequirementAssignment.Builder builder = new YTRequirementAssignment.Builder();
         // here we assume the assignment to include template names only (no types!)
-        // todo make s more generic TRequirement conversion
+        // todo make a more generic TRequirement conversion
         // todo allow changing occurrences in TRequirement in topology modeler
         // todo allow passing relationship assignment parameters
 
@@ -1054,7 +1133,9 @@ public class FromCanonical {
     }
 
     private Map<String, YTPolicyDefinition> convert(TPolicies node) {
-        if (Objects.isNull(node)) return null;
+        if (Objects.isNull(node)) {
+            return null;
+        }
         return node.getPolicy().stream()
             .filter(Objects::nonNull)
             .map(this::convert)
@@ -1063,36 +1144,38 @@ public class FromCanonical {
     }
 
     private <T, K> Map<String, K> convert(List<T> nodes) {
-        if (Objects.isNull(nodes)) return null;
+        if (Objects.isNull(nodes)) {
+            return null;
+        }
         return nodes.stream()
             .filter(Objects::nonNull)
             .flatMap(node -> {
-                if (node instanceof org.eclipse.winery.model.tosca.TRelationshipTemplate) {
-                    return convert((org.eclipse.winery.model.tosca.TRelationshipTemplate) node).entrySet().stream();
-                } else if (node instanceof org.eclipse.winery.model.tosca.TArtifactType) {
-                    return convert((org.eclipse.winery.model.tosca.TArtifactType) node).entrySet().stream();
-                } else if (node instanceof org.eclipse.winery.model.tosca.TCapabilityType) {
-                    return convert((org.eclipse.winery.model.tosca.TCapabilityType) node).entrySet().stream();
-                } else if (node instanceof org.eclipse.winery.model.tosca.TRelationshipType) {
-                    return convert((org.eclipse.winery.model.tosca.TRelationshipType) node).entrySet().stream();
-                } else if (node instanceof org.eclipse.winery.model.tosca.TNodeType) {
-                    return convert((org.eclipse.winery.model.tosca.TNodeType) node).entrySet().stream();
-                } else if (node instanceof org.eclipse.winery.model.tosca.TPolicyType) {
-                    return convert((org.eclipse.winery.model.tosca.TPolicyType) node).entrySet().stream();
+                if (node instanceof TRelationshipTemplate) {
+                    return convert((TRelationshipTemplate) node).entrySet().stream();
+                } else if (node instanceof TArtifactType) {
+                    return convert((TArtifactType) node).entrySet().stream();
+                } else if (node instanceof TCapabilityType) {
+                    return convert((TCapabilityType) node).entrySet().stream();
+                } else if (node instanceof TRelationshipType) {
+                    return convert((TRelationshipType) node).entrySet().stream();
+                } else if (node instanceof TNodeType) {
+                    return convert((TNodeType) node).entrySet().stream();
+                } else if (node instanceof TPolicyType) {
+                    return convert((TPolicyType) node).entrySet().stream();
                 } else if (node instanceof TPolicy) {
                     return convert((TPolicy) node).entrySet().stream();
                 } else if (node instanceof ParameterDefinition) {
                     return convert((ParameterDefinition) node).entrySet().stream();
-                } else if (node instanceof org.eclipse.winery.model.tosca.TInterfaceDefinition) {
-                    return convert((org.eclipse.winery.model.tosca.TInterfaceDefinition) node).entrySet().stream();
-                } else if (node instanceof org.eclipse.winery.model.tosca.TOperationDefinition) {
-                    return convert((org.eclipse.winery.model.tosca.TOperationDefinition) node).entrySet().stream();
-                } else if (node instanceof org.eclipse.winery.model.tosca.TArtifact) {
-                    return convert((org.eclipse.winery.model.tosca.TArtifact) node).entrySet().stream();
-                } else if (node instanceof org.eclipse.winery.model.tosca.TInterfaceType) {
-                    return convert((org.eclipse.winery.model.tosca.TInterfaceType) node).entrySet().stream();
-                } else if (node instanceof org.eclipse.winery.model.tosca.TDataType) {
-                    return convert((org.eclipse.winery.model.tosca.TDataType) node).entrySet().stream();
+                } else if (node instanceof TInterfaceDefinition) {
+                    return convert((TInterfaceDefinition) node).entrySet().stream();
+                } else if (node instanceof TOperationDefinition) {
+                    return convert((TOperationDefinition) node).entrySet().stream();
+                } else if (node instanceof TArtifact) {
+                    return convert((TArtifact) node).entrySet().stream();
+                } else if (node instanceof TInterfaceType) {
+                    return convert((TInterfaceType) node).entrySet().stream();
+                } else if (node instanceof TDataType) {
+                    return convert((TDataType) node).entrySet().stream();
                 }
                 throw new AssertionError();
             })
@@ -1101,9 +1184,11 @@ public class FromCanonical {
             .collect(Collectors.toMap(Map.Entry::getKey, entry -> (K) entry.getValue()));
     }
     
-    private Map<String, YTDataType> convert(org.eclipse.winery.model.tosca.TDataType node) {
-        if (Objects.isNull(node)) return new HashMap<>();
-        YTDataType.Builder builder = convert(node, new YTDataType.Builder(), org.eclipse.winery.model.tosca.TDataType.class);
+    private Map<String, YTDataType> convert(TDataType node) {
+        if (Objects.isNull(node)) {
+            return new HashMap<>();
+        }
+        YTDataType.Builder builder = convert(node, new YTDataType.Builder(), TDataType.class);
         return Collections.singletonMap(
             node.getIdFromIdOrNameField(),
             builder.setConstraints(convertConstraints(node.getConstraints())).build()
@@ -1111,7 +1196,9 @@ public class FromCanonical {
     }
 
     private Map<String, YTParameterDefinition> convert(ParameterDefinition node) {
-        if (Objects.isNull(node)) return new HashMap<>();
+        if (Objects.isNull(node)) {
+            return new HashMap<>();
+        }
         return Collections.singletonMap(
             node.getKey(),
             new YTParameterDefinition.Builder()
@@ -1124,8 +1211,10 @@ public class FromCanonical {
         );
     }
 
-    private Map<String, YTInterfaceDefinition> convert(org.eclipse.winery.model.tosca.TInterfaceDefinition node) {
-        if (Objects.isNull(node)) return new HashMap<>();
+    private Map<String, YTInterfaceDefinition> convert(TInterfaceDefinition node) {
+        if (Objects.isNull(node)) {
+            return new HashMap<>();
+        }
         return Collections.singletonMap(
             node.getName(),
             new YTInterfaceDefinition.Builder<>()
@@ -1135,8 +1224,10 @@ public class FromCanonical {
                 .build());
     }
 
-    private Map<String, YTOperationDefinition> convert(org.eclipse.winery.model.tosca.TOperationDefinition node) {
-        if (Objects.isNull(node)) return new HashMap<>();
+    private Map<String, YTOperationDefinition> convert(TOperationDefinition node) {
+        if (Objects.isNull(node)) {
+            return new HashMap<>();
+        }
         return Collections.singletonMap(
             node.getName(),
             new YTOperationDefinition.Builder()
@@ -1148,8 +1239,10 @@ public class FromCanonical {
     }
 
     @Nullable
-    private YTImplementation convert(org.eclipse.winery.model.tosca.TImplementation node) {
-        if (Objects.isNull(node)) return null;
+    private YTImplementation convert(TImplementation node) {
+        if (Objects.isNull(node)) {
+            return null;
+        }
         YTImplementation implementation = new YTImplementation();
         implementation.setPrimaryArtifactName(node.getPrimary());
         implementation.setDependencyArtifactNames(node.getDependencies());
@@ -1182,23 +1275,7 @@ public class FromCanonical {
         );
     }
 
-    private TNodeTypeImplementation getNodeTypeImplementation(QName nodeType) {
-        return repository.getAllDefinitionsChildIds(NodeTypeImplementationId.class)
-            .stream()
-            .map(repository::getElement)
-            .filter(entry -> entry.getNodeType().equals(nodeType))
-            .findAny().orElse(new TNodeTypeImplementation());
-    }
-
-    private TRelationshipTypeImplementation getRelationshipTypeImplementation(QName relationshipType) {
-        return repository.getAllDefinitionsChildIds(RelationshipTypeImplementationId.class)
-            .stream()
-            .map(repository::getElement)
-            .filter(entry -> entry.getRelationshipType().equals(relationshipType))
-            .findAny().orElse(new TRelationshipTypeImplementation());
-    }
-
-    private String getFullName(org.eclipse.winery.model.tosca.TEntityType node) {
+    private String getFullName(TEntityType node) {
         String nodeFullName = node.getIdFromIdOrNameField();
         if (node.getTargetNamespace() != null && !nodeFullName.contains(node.getTargetNamespace())) {
             nodeFullName = node.getTargetNamespace().concat(".").concat(node.getIdFromIdOrNameField());

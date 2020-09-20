@@ -75,10 +75,20 @@ import org.eclipse.winery.model.tosca.TServiceTemplate;
 import org.eclipse.winery.model.tosca.TTag;
 import org.eclipse.winery.model.tosca.TTopologyElementInstanceStates;
 import org.eclipse.winery.model.tosca.TTopologyTemplate;
+import org.eclipse.winery.model.tosca.extensions.OTAttributeMapping;
 import org.eclipse.winery.model.tosca.extensions.OTAttributeMappingType;
+import org.eclipse.winery.model.tosca.extensions.OTComplianceRule;
+import org.eclipse.winery.model.tosca.extensions.OTDeploymentArtifactMapping;
+import org.eclipse.winery.model.tosca.extensions.OTPatternRefinementModel;
+import org.eclipse.winery.model.tosca.extensions.OTPermutationMapping;
 import org.eclipse.winery.model.tosca.extensions.OTPrmMapping;
 import org.eclipse.winery.model.tosca.extensions.OTRefinementModel;
 import org.eclipse.winery.model.tosca.extensions.OTRelationDirection;
+import org.eclipse.winery.model.tosca.extensions.OTRelationMapping;
+import org.eclipse.winery.model.tosca.extensions.OTStayMapping;
+import org.eclipse.winery.model.tosca.extensions.OTStringList;
+import org.eclipse.winery.model.tosca.extensions.OTTestRefinementModel;
+import org.eclipse.winery.model.tosca.extensions.OTTopologyFragmentRefinementModel;
 import org.eclipse.winery.model.tosca.extensions.kvproperties.WinerysPropertiesDefinition;
 import org.eclipse.winery.model.tosca.xml.XTBoolean;
 import org.eclipse.winery.model.tosca.xml.XHasId;
@@ -104,7 +114,6 @@ import org.eclipse.winery.model.tosca.xml.XTExportedInterface;
 import org.eclipse.winery.model.tosca.xml.XTExportedOperation;
 import org.eclipse.winery.model.tosca.xml.XTExtensibleElements;
 import org.eclipse.winery.model.tosca.xml.XTExtension;
-import org.eclipse.winery.model.tosca.xml.XTImplementation;
 import org.eclipse.winery.model.tosca.xml.XTImplementationArtifacts;
 import org.eclipse.winery.model.tosca.xml.XTImport;
 import org.eclipse.winery.model.tosca.xml.XTInterface;
@@ -510,15 +519,6 @@ public class ToCanonical {
         }
         fillEntityTypeProperties(builder, xml);
         return builder.build();
-    }
-
-    private TImplementation convert(XTImplementation xml) {
-        TImplementation definition = new TImplementation();
-        definition.setPrimary(xml.getPrimary());
-        definition.setDependencies(xml.getDependencies());
-        definition.setOperationHost(xml.getOperationHost());
-        definition.setTimeout(xml.getTimeout());
-        return definition;
     }
 
     private TArtifact convert(XTArtifact xml) {
@@ -1059,8 +1059,8 @@ public class ToCanonical {
         fillExtensibleElementsProperties(builder, value);
     }
 
-    private org.eclipse.winery.model.tosca.extensions.OTAttributeMapping convert(XOTAttributeMapping xml) {
-        org.eclipse.winery.model.tosca.extensions.OTAttributeMapping.Builder builder = new org.eclipse.winery.model.tosca.extensions.OTAttributeMapping.Builder(xml.getId());
+    private OTAttributeMapping convert(XOTAttributeMapping xml) {
+        OTAttributeMapping.Builder builder = new OTAttributeMapping.Builder(xml.getId());
         builder.setType(OTAttributeMappingType.fromValue(xml.getType().value()));
         builder.setDetectorProperty(xml.getDetectorProperty());
         builder.setRefinementProperty(xml.getRefinementProperty());
@@ -1068,14 +1068,14 @@ public class ToCanonical {
         return builder.build();
     }
 
-    private org.eclipse.winery.model.tosca.extensions.OTDeploymentArtifactMapping convert(XOTDeploymentArtifactMapping xml) {
-        org.eclipse.winery.model.tosca.extensions.OTDeploymentArtifactMapping.Builder builder = new org.eclipse.winery.model.tosca.extensions.OTDeploymentArtifactMapping.Builder(xml.getId());
+    private OTDeploymentArtifactMapping convert(XOTDeploymentArtifactMapping xml) {
+        OTDeploymentArtifactMapping.Builder builder = new OTDeploymentArtifactMapping.Builder(xml.getId());
         builder.setArtifactType(xml.getArtifactType());
         fillOTPrmMappingProperties(builder, xml);
         return builder.build();
     }
 
-    private <Builder extends org.eclipse.winery.model.tosca.extensions.OTTopologyFragmentRefinementModel.RefinementBuilder<Builder>, Value extends XOTTopologyFragmentRefinementModel> void
+    private <Builder extends OTTopologyFragmentRefinementModel.RefinementBuilder<Builder>, Value extends XOTTopologyFragmentRefinementModel> void
     fillOTTopologyFragmentRefinementModelProperties(Builder builder, Value value) {
         builder.setRefinementStructure(convert(value.getRefinementStructure()));
         builder.setDeploymentArtifactMappings(convertList(value.getDeploymentArtifactMappings(), this::convert));
@@ -1095,14 +1095,14 @@ public class ToCanonical {
         fillExtensibleElementsProperties(builder, value);
     }
 
-    private org.eclipse.winery.model.tosca.extensions.OTPatternRefinementModel convert(XOTPatternRefinementModel xml) {
-        org.eclipse.winery.model.tosca.extensions.OTPatternRefinementModel.Builder builder = new org.eclipse.winery.model.tosca.extensions.OTPatternRefinementModel.Builder();
+    private OTPatternRefinementModel convert(XOTPatternRefinementModel xml) {
+        OTPatternRefinementModel.Builder builder = new OTPatternRefinementModel.Builder();
         fillOTTopologyFragmentRefinementModelProperties(builder, xml);
         return builder.build();
     }
 
-    private org.eclipse.winery.model.tosca.extensions.OTRelationMapping convert(XOTRelationMapping xml) {
-        org.eclipse.winery.model.tosca.extensions.OTRelationMapping.Builder builder = new org.eclipse.winery.model.tosca.extensions.OTRelationMapping.Builder(xml.getId());
+    private OTRelationMapping convert(XOTRelationMapping xml) {
+        OTRelationMapping.Builder builder = new OTRelationMapping.Builder(xml.getId());
         builder.setDirection(OTRelationDirection.fromValue(xml.getDirection().value()));
         builder.setRelationType(xml.getRelationType());
         builder.setValidSourceOrTarget(xml.getValidSourceOrTarget());
@@ -1110,25 +1110,25 @@ public class ToCanonical {
         return builder.build();
     }
 
-    private org.eclipse.winery.model.tosca.extensions.OTStayMapping convert(XOTStayMapping xml) {
-        org.eclipse.winery.model.tosca.extensions.OTStayMapping.Builder builder = new org.eclipse.winery.model.tosca.extensions.OTStayMapping.Builder(xml.getId());
+    private OTStayMapping convert(XOTStayMapping xml) {
+        OTStayMapping.Builder builder = new OTStayMapping.Builder(xml.getId());
         fillOTPrmMappingProperties(builder, xml);
         return builder.build();
     }
 
-    private org.eclipse.winery.model.tosca.extensions.OTPermutationMapping convert(XOTPermutationMapping xml) {
-        org.eclipse.winery.model.tosca.extensions.OTPermutationMapping.Builder builder = new org.eclipse.winery.model.tosca.extensions.OTPermutationMapping.Builder(xml.getId());
+    private OTPermutationMapping convert(XOTPermutationMapping xml) {
+        OTPermutationMapping.Builder builder = new OTPermutationMapping.Builder(xml.getId());
         fillOTPrmMappingProperties(builder, xml);
         return builder.build();
     }
 
-    private org.eclipse.winery.model.tosca.extensions.OTStringList convert(XOTStringList xml) {
-        org.eclipse.winery.model.tosca.extensions.OTStringList.Builder builder = new org.eclipse.winery.model.tosca.extensions.OTStringList.Builder(xml.getValues());
+    private OTStringList convert(XOTStringList xml) {
+        OTStringList.Builder builder = new OTStringList.Builder(xml.getValues());
         return builder.build();
     }
 
-    private org.eclipse.winery.model.tosca.extensions.OTComplianceRule convert(XOTComplianceRule xml) {
-        org.eclipse.winery.model.tosca.extensions.OTComplianceRule.Builder builder = new org.eclipse.winery.model.tosca.extensions.OTComplianceRule.Builder(xml.getId());
+    private OTComplianceRule convert(XOTComplianceRule xml) {
+        OTComplianceRule.Builder builder = new OTComplianceRule.Builder(xml.getId());
         builder.setIdentifier(convert(xml.getIdentifier()));
         builder.setName(xml.getName());
         builder.setRequiredStructure(convert(xml.getRequiredStructure()));
@@ -1136,15 +1136,15 @@ public class ToCanonical {
         return builder.build();
     }
 
-    private org.eclipse.winery.model.tosca.extensions.OTTestRefinementModel convert(XOTTestRefinementModel xml) {
-        org.eclipse.winery.model.tosca.extensions.OTTestRefinementModel.Builder builder = new org.eclipse.winery.model.tosca.extensions.OTTestRefinementModel.Builder();
+    private OTTestRefinementModel convert(XOTTestRefinementModel xml) {
+        OTTestRefinementModel.Builder builder = new OTTestRefinementModel.Builder();
         builder.setTestFragment(convert(xml.getTestFragment()));
         fillOTRefinementModelProperties(builder, xml);
         return builder.build();
     }
 
-    private org.eclipse.winery.model.tosca.extensions.OTTopologyFragmentRefinementModel convert(XOTTopologyFragmentRefinementModel xml) {
-        org.eclipse.winery.model.tosca.extensions.OTTopologyFragmentRefinementModel.Builder builder = new org.eclipse.winery.model.tosca.extensions.OTTopologyFragmentRefinementModel.Builder();
+    private OTTopologyFragmentRefinementModel convert(XOTTopologyFragmentRefinementModel xml) {
+        OTTopologyFragmentRefinementModel.Builder builder = new OTTopologyFragmentRefinementModel.Builder();
         fillOTTopologyFragmentRefinementModelProperties(builder, xml);
         return builder.build();
     }
