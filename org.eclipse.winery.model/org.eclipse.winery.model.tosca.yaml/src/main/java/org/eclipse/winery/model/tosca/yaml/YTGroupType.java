@@ -45,6 +45,7 @@ public class YTGroupType extends YTNodeOrGroupType {
     private Map<String, YTCapabilityDefinition> capabilities;
     private Map<String, YTInterfaceDefinition> interfaces;
 
+    @Deprecated
     public YTGroupType() {
     }
 

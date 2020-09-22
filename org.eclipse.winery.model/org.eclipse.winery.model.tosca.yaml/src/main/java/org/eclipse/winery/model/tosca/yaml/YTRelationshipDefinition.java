@@ -43,6 +43,7 @@ public class YTRelationshipDefinition implements VisitorNode {
     private QName type;
     private Map<String, YTInterfaceDefinition> interfaces;
 
+    @Deprecated
     public YTRelationshipDefinition() {
     }
 

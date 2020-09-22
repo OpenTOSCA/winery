@@ -46,12 +46,8 @@ public class YTImportDefinition implements VisitorNode {
     @XmlAttribute(name = "namespace_prefix")
     private String namespacePrefix;
 
+    @Deprecated
     public YTImportDefinition() {
-
-    }
-
-    public YTImportDefinition(String file) {
-        this.file = file;
     }
 
     public YTImportDefinition(Builder builder) {

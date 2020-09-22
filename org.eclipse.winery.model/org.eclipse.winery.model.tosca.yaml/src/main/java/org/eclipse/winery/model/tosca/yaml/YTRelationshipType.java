@@ -42,6 +42,7 @@ public class YTRelationshipType extends YTEntityType {
     private List<QName> validTargetTypes;
     private Map<String, YTInterfaceDefinition> interfaces;
 
+    @Deprecated
     public YTRelationshipType() {
     }
 

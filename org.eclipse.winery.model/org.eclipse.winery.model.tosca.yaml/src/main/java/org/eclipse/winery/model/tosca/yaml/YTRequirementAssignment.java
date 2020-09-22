@@ -47,11 +47,8 @@ public class YTRequirementAssignment implements VisitorNode {
     private YTNodeFilterDefinition nodeFilter;
     private List<String> occurrences;
 
+    @Deprecated
     public YTRequirementAssignment() {
-    }
-
-    public YTRequirementAssignment(QName node) {
-        this.node = node;
     }
 
     public YTRequirementAssignment(Builder builder) {

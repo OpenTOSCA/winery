@@ -747,24 +747,25 @@ public class YamlRepository extends AbstractFileBasedRepository {
     }
 
     private YTServiceTemplate replaceTopologyTemplate(YTServiceTemplate newServiceTemplate, YTServiceTemplate existingServiceTemplate) {
-        if (newServiceTemplate.getTopologyTemplate() != null) {
-            if (existingServiceTemplate.getTopologyTemplate() == null) {
-                existingServiceTemplate.setTopologyTemplate(new YTTopologyTemplateDefinition());
-            }
-            YTTopologyTemplateDefinition newTopologyTemplate = newServiceTemplate.getTopologyTemplate();
-            YTTopologyTemplateDefinition existingTopologyTemplate = existingServiceTemplate.getTopologyTemplate();
-            existingTopologyTemplate.setPolicies(newTopologyTemplate.getPolicies());
-            existingTopologyTemplate.setNodeTemplates(newTopologyTemplate.getNodeTemplates());
-            existingTopologyTemplate.setRelationshipTemplates(newTopologyTemplate.getRelationshipTemplates());
-            if (newTopologyTemplate.getInputs() != null) {
-                existingTopologyTemplate.setInputs(newTopologyTemplate.getInputs());
-            }
-            if (newTopologyTemplate.getOutputs() != null) {
-                existingTopologyTemplate.setOutputs(newTopologyTemplate.getOutputs());
-            }
-            existingTopologyTemplate.setDescription(newTopologyTemplate.getDescription());
-            existingTopologyTemplate.setGroups(newTopologyTemplate.getGroups());
+        if (newServiceTemplate.getTopologyTemplate() == null) {
+            return existingServiceTemplate;
         }
+        if (existingServiceTemplate.getTopologyTemplate() == null) {
+            existingServiceTemplate.setTopologyTemplate(new YTTopologyTemplateDefinition.Builder().build());
+        }
+        YTTopologyTemplateDefinition newTopologyTemplate = newServiceTemplate.getTopologyTemplate();
+        YTTopologyTemplateDefinition existingTopologyTemplate = existingServiceTemplate.getTopologyTemplate();
+        existingTopologyTemplate.setPolicies(newTopologyTemplate.getPolicies());
+        existingTopologyTemplate.setNodeTemplates(newTopologyTemplate.getNodeTemplates());
+        existingTopologyTemplate.setRelationshipTemplates(newTopologyTemplate.getRelationshipTemplates());
+        if (newTopologyTemplate.getInputs() != null) {
+            existingTopologyTemplate.setInputs(newTopologyTemplate.getInputs());
+        }
+        if (newTopologyTemplate.getOutputs() != null) {
+            existingTopologyTemplate.setOutputs(newTopologyTemplate.getOutputs());
+        }
+        existingTopologyTemplate.setDescription(newTopologyTemplate.getDescription());
+        existingTopologyTemplate.setGroups(newTopologyTemplate.getGroups());
         return existingServiceTemplate;
     }
 

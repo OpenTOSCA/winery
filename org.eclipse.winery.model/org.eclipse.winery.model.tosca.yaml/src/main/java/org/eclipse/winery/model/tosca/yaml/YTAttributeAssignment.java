@@ -36,6 +36,7 @@ public class YTAttributeAssignment implements VisitorNode {
     private String description;
     private Object value;
 
+    @Deprecated
     public YTAttributeAssignment() {
     }
 

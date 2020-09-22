@@ -43,8 +43,8 @@ public class YTRepositoryDefinition implements VisitorNode {
     @XmlElement(name = "credential")
     private Credential credential;
 
+    @Deprecated
     public YTRepositoryDefinition() {
-
     }
 
     public YTRepositoryDefinition(Builder builder) {

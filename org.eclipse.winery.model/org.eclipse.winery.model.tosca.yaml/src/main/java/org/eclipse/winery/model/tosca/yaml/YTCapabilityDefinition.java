@@ -55,8 +55,8 @@ public class YTCapabilityDefinition implements VisitorNode {
     private Map<String, YTPropertyDefinition> properties;
     private Map<String, YTAttributeDefinition> attributes;
 
+    @Deprecated
     public YTCapabilityDefinition() {
-
     }
 
     public YTCapabilityDefinition(Builder builder) {

@@ -36,6 +36,7 @@ import org.eclipse.jdt.annotation.NonNull;
 public class YTPropertyFilterDefinition implements VisitorNode {
     private List<YTConstraintClause> constraints;
 
+    @Deprecated
     public YTPropertyFilterDefinition() {
     }
 

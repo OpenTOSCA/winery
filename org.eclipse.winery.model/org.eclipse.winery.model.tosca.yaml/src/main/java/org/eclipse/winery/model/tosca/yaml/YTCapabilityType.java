@@ -38,6 +38,7 @@ public class YTCapabilityType extends YTEntityType {
     @XmlAttribute(name = "valid_source_types")
     private List<QName> validSourceTypes;
 
+    @Deprecated
     public YTCapabilityType() {
     }
 

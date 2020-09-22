@@ -53,6 +53,7 @@ public class YTGroupDefinition implements VisitorNode {
     private List<QName> members;
     private Map<String, YTInterfaceDefinition> interfaces;
 
+    @Deprecated
     public YTGroupDefinition() {
     }
 

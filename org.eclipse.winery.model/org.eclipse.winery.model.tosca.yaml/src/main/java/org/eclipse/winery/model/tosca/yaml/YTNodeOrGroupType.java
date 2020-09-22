@@ -27,6 +27,7 @@ import org.eclipse.winery.model.tosca.yaml.visitor.IVisitor;
 })
 @XmlSeeAlso( {YTNodeType.class, YTGroupType.class})
 public class YTNodeOrGroupType extends YTEntityType {
+    @Deprecated
     public YTNodeOrGroupType() {
     }
 

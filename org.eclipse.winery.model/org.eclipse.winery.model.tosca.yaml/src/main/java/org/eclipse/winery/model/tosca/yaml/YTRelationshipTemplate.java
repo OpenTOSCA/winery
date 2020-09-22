@@ -53,6 +53,7 @@ public class YTRelationshipTemplate implements VisitorNode {
     private Map<String, YTInterfaceDefinition> interfaces;
     private QName copy;
 
+    @Deprecated
     public YTRelationshipTemplate() {
     }
 

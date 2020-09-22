@@ -68,6 +68,7 @@ public class YTNodeTemplate implements VisitorNode {
     private YTNodeFilterDefinition nodeFilter;
     private QName copy;
 
+    @Deprecated
     public YTNodeTemplate() {
     }
 

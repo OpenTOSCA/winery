@@ -50,6 +50,7 @@ public class YTSchemaDefinition implements VisitorNode {
     // type could be list or map
     private YTSchemaDefinition entrySchema;
 
+    @Deprecated
     public YTSchemaDefinition() {
     }
 

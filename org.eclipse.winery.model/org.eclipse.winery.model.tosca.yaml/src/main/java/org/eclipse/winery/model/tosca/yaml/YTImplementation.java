@@ -44,7 +44,15 @@ public class YTImplementation implements VisitorNode {
     private String operationHost;
     private Integer timeout;
 
+    @Deprecated
     public YTImplementation() {
+    }
+    
+    private YTImplementation(Builder builder) {
+        this.primaryArtifactName = builder.primaryArtifactName;
+        this.dependencyArtifactNames = builder.dependencyArtifactNames;
+        this.operationHost = builder.operationHost;
+        this.timeout = builder.timeout;
     }
 
     public YTImplementation(String primaryArtifactName) {
@@ -97,6 +105,37 @@ public class YTImplementation implements VisitorNode {
         return Objects.hash(primaryArtifactName, dependencyArtifactNames);
     }
 
+    public static class Builder {
+        private String primaryArtifactName;
+        private List<String> dependencyArtifactNames;
+        private String operationHost;
+        private Integer timeout;
+
+        public Builder setPrimaryArtifactName(String primaryArtifactName) {
+            this.primaryArtifactName = primaryArtifactName;
+            return this;
+        }
+
+        public Builder setDependencyArtifactNames(List<String> dependencyArtifactNames) {
+            this.dependencyArtifactNames = dependencyArtifactNames;
+            return this;
+        }
+
+        public Builder setOperationHost(String operationHost) {
+            this.operationHost = operationHost;
+            return this;
+        }
+
+        public Builder setTimeout(Integer timeout) {
+            this.timeout = timeout;
+            return this;
+        }
+        
+        public YTImplementation build() {
+            return new YTImplementation(this);
+        }
+    }
+    
     public <R extends AbstractResult<R>, P extends AbstractParameter<P>> R accept(IVisitor<R, P> visitor, P parameter) {
         return visitor.visit(this, parameter);
     }

@@ -53,6 +53,7 @@ public class YTArtifactDefinition implements VisitorNode {
     @Annotations.StandardExtension
     private Map<String, YTPropertyAssignment> properties;
 
+    @Deprecated
     public YTArtifactDefinition() {
     }
 

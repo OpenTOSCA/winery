@@ -33,6 +33,16 @@ public class YTConstraintClause implements VisitorNode {
     private String value;
     private List<String> list;
 
+    @Deprecated
+    public YTConstraintClause() {
+    }
+
+    private YTConstraintClause(Builder builder) {
+        this.key = builder.key;
+        this.value = builder.value;
+        this.list = builder.list;
+    }
+
     public String getKey() {
         return key;
     }
@@ -81,6 +91,31 @@ public class YTConstraintClause implements VisitorNode {
         return Objects.hash(key, value, list);
     }
 
+    public static class Builder {
+        private String key;
+        private String value;
+        private List<String> list;
+
+        public Builder setKey(String key) {
+            this.key = key;
+            return this;
+        }
+
+        public Builder setValue(String value) {
+            this.value = value;
+            return this;
+        }
+
+        public Builder setList(List<String> list) {
+            this.list = list;
+            return this;
+        }
+        
+        public YTConstraintClause build() {
+            return new YTConstraintClause(this);
+        }
+    } 
+    
     public <R extends AbstractResult<R>, P extends AbstractParameter<P>> R accept(IVisitor<R, P> visitor, P parameter) {
         return visitor.visit(this, parameter);
     }

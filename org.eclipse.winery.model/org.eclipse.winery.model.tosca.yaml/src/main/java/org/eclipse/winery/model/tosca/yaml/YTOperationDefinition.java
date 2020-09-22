@@ -46,6 +46,7 @@ public class YTOperationDefinition implements VisitorNode {
     @Annotations.StandardExtension
     private YTImplementation implementation;
 
+    @Deprecated
     public YTOperationDefinition() {
     }
 

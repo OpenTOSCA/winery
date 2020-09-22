@@ -33,6 +33,7 @@ import org.eclipse.jdt.annotation.Nullable;
 public class YTVersion implements VisitorNode {
     private String version;
 
+    @Deprecated
     public YTVersion() {
     }
 

@@ -55,6 +55,7 @@ public class YTTopologyTemplateDefinition implements VisitorNode {
     @XmlAttribute(name = "substitution_mappings")
     private YTSubstitutionMappings substitutionMappings;
 
+    @Deprecated
     public YTTopologyTemplateDefinition() {
     }
 

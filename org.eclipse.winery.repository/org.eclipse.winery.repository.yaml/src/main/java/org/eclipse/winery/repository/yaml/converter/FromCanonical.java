@@ -420,11 +420,11 @@ public class FromCanonical {
 
         List<YTConstraintClause> list = new ArrayList<>();
         constraints.forEach(entry -> {
-            YTConstraintClause clause = new YTConstraintClause();
-            clause.setKey(entry.getKey());
-            clause.setValue(entry.getValue());
-            clause.setList(entry.getList());
-            list.add(clause);
+            YTConstraintClause.Builder builder = new YTConstraintClause.Builder();
+            builder.setKey(entry.getKey());
+            builder.setValue(entry.getValue());
+            builder.setList(entry.getList());
+            list.add(builder.build());
         });
         return list;
     }
@@ -1243,12 +1243,12 @@ public class FromCanonical {
         if (Objects.isNull(node)) {
             return null;
         }
-        YTImplementation implementation = new YTImplementation();
-        implementation.setPrimaryArtifactName(node.getPrimary());
-        implementation.setDependencyArtifactNames(node.getDependencies());
-        implementation.setOperationHost(node.getOperationHost());
-        implementation.setTimeout(node.getTimeout());
-        return implementation;
+        YTImplementation.Builder builder = new YTImplementation.Builder();
+        builder.setPrimaryArtifactName(node.getPrimary());
+        builder.setDependencyArtifactNames(node.getDependencies());
+        builder.setOperationHost(node.getOperationHost());
+        builder.setTimeout(node.getTimeout());
+        return builder.build();
     }
 
     private String getNamespacePrefix(String uri) {

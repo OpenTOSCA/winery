@@ -44,6 +44,7 @@ public class YTInterfaceDefinition implements VisitorNode {
     private Map<String, YTParameterDefinition> inputs;
     private Map<String, YTOperationDefinition> operations;
 
+    @Deprecated
     public YTInterfaceDefinition() {
     }
 

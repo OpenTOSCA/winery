@@ -48,6 +48,7 @@ public class YTSubstitutionMappings implements VisitorNode {
     private Map<String, TListString> capabilities;
     private Map<String, TListString> requirements;
 
+    @Deprecated
     public YTSubstitutionMappings() {
     }
 

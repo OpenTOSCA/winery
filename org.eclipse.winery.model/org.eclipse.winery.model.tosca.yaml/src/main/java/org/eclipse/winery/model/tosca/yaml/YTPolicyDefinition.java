@@ -51,6 +51,7 @@ public class YTPolicyDefinition implements VisitorNode {
     private Map<String, YTPropertyAssignment> properties;
     private List<QName> targets;
 
+    @Deprecated
     public YTPolicyDefinition() {
     }
 

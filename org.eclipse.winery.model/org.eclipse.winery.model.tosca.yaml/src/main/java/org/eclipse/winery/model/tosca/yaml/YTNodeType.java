@@ -46,6 +46,7 @@ public class YTNodeType extends YTNodeOrGroupType {
     private Map<String, YTInterfaceDefinition> interfaces;
     private Map<String, YTArtifactDefinition> artifacts;
 
+    @Deprecated
     public YTNodeType() {
     }
 

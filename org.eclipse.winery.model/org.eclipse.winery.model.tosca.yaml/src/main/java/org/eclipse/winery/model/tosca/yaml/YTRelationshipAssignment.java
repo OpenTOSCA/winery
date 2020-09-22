@@ -45,11 +45,8 @@ public class YTRelationshipAssignment implements VisitorNode {
     private Map<String, YTPropertyAssignment> properties;
     private Map<String, YTInterfaceAssignment> interfaces;
 
+    @Deprecated
     public YTRelationshipAssignment() {
-    }
-
-    public YTRelationshipAssignment(QName type) {
-        this.type = type;
     }
 
     public YTRelationshipAssignment(Builder builder) {

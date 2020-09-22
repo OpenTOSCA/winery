@@ -60,6 +60,7 @@ public class YTParameterDefinition implements VisitorNode {
     private YTSchemaDefinition entrySchema;
     private Object value;
 
+    @Deprecated
     public YTParameterDefinition() {
     }
 

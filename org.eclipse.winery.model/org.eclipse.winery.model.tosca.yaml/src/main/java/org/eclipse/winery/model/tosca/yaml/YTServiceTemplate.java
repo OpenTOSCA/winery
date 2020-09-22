@@ -83,8 +83,8 @@ public class YTServiceTemplate implements VisitorNode {
     @XmlAttribute(name = "topology_template")
     private YTTopologyTemplateDefinition topologyTemplate;
 
+    @Deprecated
     public YTServiceTemplate() {
-
     }
 
     public YTServiceTemplate(Builder builder) {

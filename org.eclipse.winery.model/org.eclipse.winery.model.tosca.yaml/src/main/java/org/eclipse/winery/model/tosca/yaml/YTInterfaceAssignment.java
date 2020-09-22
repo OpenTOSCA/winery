@@ -25,6 +25,7 @@ import org.eclipse.winery.model.tosca.yaml.visitor.IVisitor;
 @XmlType(name = "tInterfaceAssignment", namespace = " http://docs.oasis-open.org/tosca/ns/simple/yaml/1.3")
 public class YTInterfaceAssignment extends YTInterfaceDefinition {
 
+    @Deprecated
     public YTInterfaceAssignment() {
     }
 

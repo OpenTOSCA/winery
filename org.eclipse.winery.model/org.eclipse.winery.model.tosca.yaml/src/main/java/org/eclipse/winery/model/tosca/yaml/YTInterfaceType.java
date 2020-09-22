@@ -37,6 +37,7 @@ public class YTInterfaceType extends YTEntityType {
     private Map<String, YTOperationDefinition> operations;
     private Map<String, YTPropertyDefinition> inputs;
 
+    @Deprecated
     public YTInterfaceType() {
     }
 

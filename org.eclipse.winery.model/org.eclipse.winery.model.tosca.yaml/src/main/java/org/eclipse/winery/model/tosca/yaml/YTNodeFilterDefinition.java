@@ -41,6 +41,7 @@ public class YTNodeFilterDefinition implements VisitorNode {
     private List<TMapPropertyFilterDefinition> properties;
     private List<TMapObject> capabilities;
 
+    @Deprecated
     public YTNodeFilterDefinition() {
     }
 

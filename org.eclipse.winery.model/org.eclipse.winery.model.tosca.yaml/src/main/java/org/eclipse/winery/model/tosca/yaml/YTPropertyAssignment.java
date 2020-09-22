@@ -32,9 +32,11 @@ import org.eclipse.jdt.annotation.Nullable;
 public class YTPropertyAssignment extends YTPropertyAssignmentOrDefinition {
     private Object value;
 
+    @Deprecated
     public YTPropertyAssignment() {
     }
 
+    @Deprecated
     public YTPropertyAssignment(Object value) {
         this.value = value;
     }

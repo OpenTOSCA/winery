@@ -52,6 +52,7 @@ public class YTEntityType implements VisitorNode {
     private Map<String, YTAttributeDefinition> attributes;
     private Metadata metadata;
 
+    @Deprecated
     public YTEntityType() {
     }
 

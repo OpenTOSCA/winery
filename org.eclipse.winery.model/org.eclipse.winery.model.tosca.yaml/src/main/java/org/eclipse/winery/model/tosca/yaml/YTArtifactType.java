@@ -41,6 +41,7 @@ public class YTArtifactType extends YTEntityType {
     @XmlAttribute(name = "file_ext")
     private List<String> fileExt;
 
+    @Deprecated
     public YTArtifactType() {
     }
 

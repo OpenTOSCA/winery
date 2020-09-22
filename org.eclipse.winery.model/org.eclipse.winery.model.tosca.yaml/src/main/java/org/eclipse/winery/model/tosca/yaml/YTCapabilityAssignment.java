@@ -38,6 +38,7 @@ public class YTCapabilityAssignment implements VisitorNode {
     private Map<String, YTPropertyAssignment> properties;
     private Map<String, YTAttributeAssignment> attributes;
 
+    @Deprecated
     public YTCapabilityAssignment() {
     }
 

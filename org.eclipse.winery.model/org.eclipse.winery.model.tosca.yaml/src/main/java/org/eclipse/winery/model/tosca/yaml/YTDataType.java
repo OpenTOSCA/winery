@@ -38,6 +38,7 @@ public class YTDataType extends YTEntityType {
     // metadata were added to all TEntityTypes, so no need to add these explicitly
     // FIXME add key_schema, entry_schema
 
+    @Deprecated
     public YTDataType() {
     }
 

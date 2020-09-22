@@ -113,7 +113,9 @@ public class YamlBuilder {
         this.prefix2Namespace = new LinkedHashMap<>();
         this.prefix2Namespace.put("tosca", Namespaces.TOSCA_YAML_NS);
 
-        if (Objects.isNull(object)) return;
+        if (Objects.isNull(object)) {
+            return;
+        }
 
         @SuppressWarnings("unchecked")
         List<Map<String, Object>> list = (List<Map<String, Object>>) object;
@@ -158,8 +160,9 @@ public class YamlBuilder {
 
     @Nullable
     public YTServiceTemplate buildServiceTemplate(Object object) throws MultiException {
-        if (Objects.isNull(object) || !validate(YTServiceTemplate.class, object, new Parameter<>().addContext("service_template")))
+        if (Objects.isNull(object) || !validate(YTServiceTemplate.class, object, new Parameter<>().addContext("service_template"))) {
             return null;
+        }
         Parameter<Object> parameter = new Parameter<>();
         @SuppressWarnings("unchecked")
         Map<String, Object> map = (Map<String, Object>) object;
@@ -186,13 +189,17 @@ public class YamlBuilder {
             .setTopologyTemplate(buildTopologyTemplate(map.get("topology_template"),
                 parameter.copy().addContext("topology_template")
             ));
-        if (this.exception.hasException()) throw this.exception;
+        if (this.exception.hasException()) {
+            throw this.exception;
+        }
         return builder.build();
     }
 
     @Nullable
     public YTTopologyTemplateDefinition buildTopologyTemplate(Object object, Parameter<Object> parameter) {
-        if (Objects.isNull(object) || !validate(YTTopologyTemplateDefinition.class, object, parameter)) return null;
+        if (Objects.isNull(object) || !validate(YTTopologyTemplateDefinition.class, object, parameter)) {
+            return null;
+        }
         @SuppressWarnings("unchecked")
         Map<String, Object> map = (Map<String, Object>) object;
         return new YTTopologyTemplateDefinition.Builder()
@@ -211,7 +218,9 @@ public class YamlBuilder {
 
     @Nullable
     public Metadata buildMetadata(Object object) {
-        if (Objects.isNull(object)) return null;
+        if (Objects.isNull(object)) {
+            return null;
+        }
         @SuppressWarnings("unchecked")
         Map<String, Object> tmp = (Map<String, Object>) object;
         Metadata metadata = new Metadata();
@@ -230,15 +239,23 @@ public class YamlBuilder {
 
     @Nullable
     public String buildDescription(Object object) {
-        if (Objects.isNull(object)) return "";
+        if (Objects.isNull(object)) {
+            return "";
+        }
         return stringValue(object);
     }
 
     @Nullable
     public YTRepositoryDefinition buildRepositoryDefinition(Object object, Parameter<YTRepositoryDefinition> parameter) {
-        if (Objects.isNull(object)) return new YTRepositoryDefinition();
-        if (object instanceof String) return new YTRepositoryDefinition.Builder(stringValue(object)).build();
-        if (!validate(YTRepositoryDefinition.class, object, parameter)) return null;
+        if (Objects.isNull(object)) {
+            return null;
+        }
+        if (object instanceof String) {
+            return new YTRepositoryDefinition.Builder(stringValue(object)).build();
+        }
+        if (!validate(YTRepositoryDefinition.class, object, parameter)) {
+            return null;
+        }
         @SuppressWarnings("unchecked")
         Map<String, Object> map = (Map<String, Object>) object;
         return new YTRepositoryDefinition.Builder(stringValue(map.get("url")))
@@ -252,8 +269,12 @@ public class YamlBuilder {
     @Nullable
     public Credential buildCredential(Object object, Parameter<Credential> parameter) {
 
-        if (Objects.isNull(object)) return null;
-        if (!validate(Credential.class, object, parameter)) return null;
+        if (Objects.isNull(object)) {
+            return null;
+        }
+        if (!validate(Credential.class, object, parameter)) {
+            return null;
+        }
         @SuppressWarnings("unchecked")
         Map<String, Object> map = (Map<String, Object>) object;
         @SuppressWarnings("unchecked")
@@ -277,9 +298,15 @@ public class YamlBuilder {
 
     @Nullable
     public YTImportDefinition buildImportDefinition(Object object, Parameter<YTImportDefinition> parameter) {
-        if (Objects.isNull(object)) return new YTImportDefinition();
-        if (object instanceof String) return new YTImportDefinition.Builder(stringValue(object)).build();
-        if (!validate(YTImportDefinition.class, object, parameter)) return null;
+        if (Objects.isNull(object)) {
+            return null;
+        }
+        if (object instanceof String) {
+            return new YTImportDefinition.Builder(stringValue(object)).build();
+        }
+        if (!validate(YTImportDefinition.class, object, parameter)) {
+            return null;
+        }
         @SuppressWarnings("unchecked")
         Map<String, Object> map = (Map<String, Object>) object;
         return new YTImportDefinition.Builder(stringValue(map.get("file")))
@@ -311,7 +338,9 @@ public class YamlBuilder {
 
     @Nullable
     public YTArtifactType buildArtifactType(Object object, Parameter<YTArtifactType> parameter) {
-        if (Objects.isNull(object) || !validate(YTArtifactType.class, object, parameter)) return null;
+        if (Objects.isNull(object) || !validate(YTArtifactType.class, object, parameter)) {
+            return null;
+        }
         @SuppressWarnings("unchecked")
         Map<String, Object> map = (Map<String, Object>) object;
         return buildEntityType(object,
@@ -327,7 +356,9 @@ public class YamlBuilder {
 
     @NonNull
     public <T extends YTEntityType.Builder<T>> T buildEntityType(Object object, Parameter<T> parameter) {
-        if (Objects.isNull(object) || !validate(parameter.getClazz(), object, parameter)) return parameter.getBuilder();
+        if (Objects.isNull(object) || !validate(parameter.getClazz(), object, parameter)) {
+            return parameter.getBuilder();
+        }
         @SuppressWarnings("unchecked")
         Map<String, Object> map = (Map<String, Object>) object;
         return parameter.getBuilder()
@@ -347,11 +378,17 @@ public class YamlBuilder {
     @Nullable
     @SuppressWarnings("unchecked")
     public <T> YTPropertyDefinition buildPropertyDefinition(Object object, Parameter<T> parameter) {
-        if (Objects.isNull(object)) return null;
-        if (!validate(parameter.getClazz(), object, parameter)) return null;
+        if (Objects.isNull(object)) {
+            return null;
+        }
+        if (!validate(parameter.getClazz(), object, parameter)) {
+            return null;
+        }
         Map<String, Object> map = (Map<String, Object>) object;
         String type = stringValue(map.get("type"));
-        if (type == null) type = "string";
+        if (type == null) {
+            type = "string";
+        }
         return new YTPropertyDefinition.Builder(buildQName(type))
             .setDescription(buildDescription(map.get("description")))
             .setRequired(buildRequired(map.get("required")))
@@ -368,15 +405,21 @@ public class YamlBuilder {
 
     @Nullable
     public Boolean buildRequired(Object object) {
-        if (Objects.isNull(object)) return true;
-        if (object instanceof String) return "true".equals(object) ? Boolean.TRUE : Boolean.FALSE;
+        if (Objects.isNull(object)) {
+            return true;
+        }
+        if (object instanceof String) {
+            return "true".equals(object) ? Boolean.TRUE : Boolean.FALSE;
+        }
         return object instanceof Boolean ? (Boolean) object : Boolean.FALSE;
     }
 
     @Nullable
     public YTStatusValue buildStatus(Object object) {
         String status = stringValue(object);
-        if (Objects.isNull(status)) return null;
+        if (Objects.isNull(status)) {
+            return null;
+        }
         switch (status) {
             case "supported":
                 return YTStatusValue.supported;
@@ -397,28 +440,32 @@ public class YamlBuilder {
 
     @Nullable
     public YTConstraintClause buildConstraintClause(Object object, Parameter<YTConstraintClause> parameter) {
-        if (Objects.isNull(object)) return null;
-        YTConstraintClause constraintClause = new YTConstraintClause();
-        constraintClause.setKey(parameter.getValue());
+        if (Objects.isNull(object)) {
+            return null;
+        }
+        YTConstraintClause.Builder builder = new YTConstraintClause.Builder();
+        builder.setKey(parameter.getValue());
         switch (parameter.getValue()) {
             case "in_range":
-                constraintClause.setList(buildListString(object,
+                builder.setList(buildListString(object,
                     new Parameter<List<String>>(parameter.getContext()).addContext("in_range")));
                 break;
             case "valid_values":
-                constraintClause.setList(buildListString(object,
+                builder.setList(buildListString(object,
                     new Parameter<List<String>>(parameter.getContext()).addContext("valid_values")));
                 break;
             default:
-                constraintClause.setKey(parameter.getValue());
-                constraintClause.setValue(stringValue(object));
+                builder.setKey(parameter.getValue());
+                builder.setValue(stringValue(object));
         }
-        return constraintClause;
+        return builder.build();
     }
 
     @Nullable
     public List<Object> buildListObject(Object object) {
-        if (Objects.isNull(object)) return null;
+        if (Objects.isNull(object)) {
+            return null;
+        }
         @SuppressWarnings("unchecked")
         List<Object> result = (List<Object>) object;
         return result;
@@ -447,8 +494,12 @@ public class YamlBuilder {
 
     @Nullable
     public <T> YTAttributeDefinition buildAttributeDefinition(Object object, Parameter<T> parameter) {
-        if (Objects.isNull(object)) return new YTAttributeDefinition();
-        if (!validate(YTAttributeDefinition.class, object, parameter)) return null;
+        if (Objects.isNull(object)) {
+            return null;
+        }
+        if (!validate(YTAttributeDefinition.class, object, parameter)) {
+            return null;
+        }
         @SuppressWarnings("unchecked")
         Map<String, Object> map = (Map<String, Object>) object;
         return new YTAttributeDefinition.Builder(buildQName(stringValue(map.get("type"))))
@@ -465,7 +516,9 @@ public class YamlBuilder {
 
     @Nullable
     public List<String> buildListString(Object object, Parameter<List<String>> parameter) {
-        if (Objects.isNull(object)) return null;
+        if (Objects.isNull(object)) {
+            return null;
+        }
         if (!(object instanceof List)) {
             exception.add(new InvalidToscaSyntax(
                 "The value '{}' is invalid. Only arrays of form '[a,b]' are allowed",
@@ -483,7 +536,9 @@ public class YamlBuilder {
 
     @Nullable
     public YTDataType buildDataType(Object object, Parameter<YTDataType> parameter) {
-        if (Objects.isNull(object) || !validate(YTDataType.class, object, parameter)) return null;
+        if (Objects.isNull(object) || !validate(YTDataType.class, object, parameter)) {
+            return null;
+        }
         @SuppressWarnings("unchecked")
         Map<String, Object> map = (Map<String, Object>) object;
         return buildEntityType(object,
@@ -496,7 +551,9 @@ public class YamlBuilder {
 
     @Nullable
     public YTCapabilityType buildCapabilityType(Object object, Parameter<YTCapabilityType> parameter) {
-        if (Objects.isNull(object) || !validate(YTCapabilityType.class, object, parameter)) return null;
+        if (Objects.isNull(object) || !validate(YTCapabilityType.class, object, parameter)) {
+            return null;
+        }
         @SuppressWarnings("unchecked")
         Map<String, Object> map = (Map<String, Object>) object;
         return buildEntityType(object,
@@ -511,7 +568,9 @@ public class YamlBuilder {
 
     @Nullable
     public List<QName> buildListQName(List<String> list) {
-        if (Objects.isNull(list) || list.isEmpty()) return null;
+        if (Objects.isNull(list) || list.isEmpty()) {
+            return null;
+        }
         return list.stream().map(this::buildQName)
             .filter(Objects::nonNull)
             .collect(Collectors.toList());
@@ -519,7 +578,9 @@ public class YamlBuilder {
 
     @Nullable
     public YTInterfaceType buildInterfaceType(Object object, Parameter<YTInterfaceType> parameter) {
-        if (Objects.isNull(object) || !validate(YTInterfaceType.class, object, parameter)) return null;
+        if (Objects.isNull(object) || !validate(YTInterfaceType.class, object, parameter)) {
+            return null;
+        }
         @SuppressWarnings("unchecked")
         Map<String, Object> map = (Map<String, Object>) object;
         return buildEntityType(object,
@@ -539,7 +600,9 @@ public class YamlBuilder {
     }
 
     private Boolean filterInterfaceTypeOperation(Map.Entry<String, Object> entry) {
-        if (Objects.isNull(entry.getKey())) return false;
+        if (Objects.isNull(entry.getKey())) {
+            return false;
+        }
         Set<String> keys = Stream.of("inputs", "description", "version", "derived_from",
             "properties", "attributes", "metadata").collect(Collectors.toSet());
         return !keys.contains(entry.getKey());
@@ -548,32 +611,36 @@ public class YamlBuilder {
     @Nullable
     @SuppressWarnings("unchecked")
     public YTOperationDefinition buildOperationDefinition(Object object, Parameter<YTOperationDefinition> parameter) {
-        if (Objects.isNull(object) || !validate(YTOperationDefinition.class, object, parameter)) return null;
-        if (object instanceof Map) {
-            Map<String, Object> map = (Map<String, Object>) object;
-            String description = buildDescription(map.get("description"));
-            Map<String, YTParameterDefinition> inputs = buildParameterDefinitions(map.get("inputs"),
-                new Parameter<>(parameter.getContext()).addContext("inputs").setValue(parameter.getValue())
-            );
-            Map<String, YTParameterDefinition> outputs = buildParameterDefinitions(map.get("outputs"),
-                new Parameter<>(parameter.getContext()).addContext("outputs").setValue(parameter.getValue())
-            );
-            YTImplementation implementation = buildImplementation(map.get("implementation"),
-                new Parameter<YTImplementation>(parameter.getContext()).addContext("implementation")
-            );
-            return new YTOperationDefinition.Builder()
-                .setDescription(description)
-                .setInputs(inputs)
-                .setOutputs(outputs)
-                .setImplementation(implementation)
-                .build();
+        if (Objects.isNull(object) || !validate(YTOperationDefinition.class, object, parameter)) {
+            return null;
         }
-        return new YTOperationDefinition();
+        if (!(object instanceof Map)) {
+            return null;
+        }
+        Map<String, Object> map = (Map<String, Object>) object;
+        String description = buildDescription(map.get("description"));
+        Map<String, YTParameterDefinition> inputs = buildParameterDefinitions(map.get("inputs"),
+            new Parameter<>(parameter.getContext()).addContext("inputs").setValue(parameter.getValue())
+        );
+        Map<String, YTParameterDefinition> outputs = buildParameterDefinitions(map.get("outputs"),
+            new Parameter<>(parameter.getContext()).addContext("outputs").setValue(parameter.getValue())
+        );
+        YTImplementation implementation = buildImplementation(map.get("implementation"),
+            new Parameter<YTImplementation>(parameter.getContext()).addContext("implementation")
+        );
+        return new YTOperationDefinition.Builder()
+            .setDescription(description)
+            .setInputs(inputs)
+            .setOutputs(outputs)
+            .setImplementation(implementation)
+            .build();
     }
 
     @Nullable
     public Map<String, YTParameterDefinition> buildParameterDefinitions(Object object, Parameter<Object> parameter) {
-        if (Objects.isNull(object)) return null;
+        if (Objects.isNull(object)) {
+            return null;
+        }
         String context = stringValue(parameter.getValue());
         if ("TNodeType".equals(context) ||
             "TRelationshipType".equals(context) ||
@@ -590,7 +657,9 @@ public class YamlBuilder {
 
     @Nullable
     public Map<String, YTPropertyAssignmentOrDefinition> buildPropertyAssignmentOrDefinition(Object object, Parameter<Object> parameter) {
-        if (Objects.isNull(object)) return null;
+        if (Objects.isNull(object)) {
+            return null;
+        }
         String context = stringValue(parameter.getValue());
         if ("TNodeType".equals(context) ||
             "TRelationshipType".equals(context) ||
@@ -615,26 +684,32 @@ public class YamlBuilder {
     @Nullable
     @SuppressWarnings("unchecked")
     public YTImplementation buildImplementation(Object object, Parameter<YTImplementation> parameter) {
-        if (Objects.isNull(object)) return null;
-        if (object instanceof String) return new YTImplementation(stringValue(object));
+        if (Objects.isNull(object)) {
+            return null;
+        }
+        if (object instanceof String) {
+            return new YTImplementation(stringValue(object));
+        }
         if (object instanceof Map) {
             Map<String, Object> map = (Map<String, Object>) object;
-            YTImplementation implementation = new YTImplementation();
-            implementation.setPrimaryArtifactName(stringValue(map.get("primary")));
-            implementation.setDependencyArtifactNames(buildListString(map.get("dependencies"),
+            YTImplementation.Builder builder = new YTImplementation.Builder();
+            builder.setPrimaryArtifactName(stringValue(map.get("primary")));
+            builder.setDependencyArtifactNames(buildListString(map.get("dependencies"),
                 new Parameter<List<String>>(parameter.getContext()).addContext("dependencies")
             ));
-            implementation.setOperationHost(stringValue(map.get("operation_host")));
+            builder.setOperationHost(stringValue(map.get("operation_host")));
             String timeout = stringValue(map.get("timeout"));
-            implementation.setTimeout(timeout == null ? null : Integer.valueOf(timeout));
-            return implementation;
+            builder.setTimeout(timeout == null ? null : Integer.valueOf(timeout));
+            return builder.build();
         }
         return null;
     }
 
     @Nullable
     public YTRelationshipType buildRelationshipType(Object object, Parameter<YTRelationshipType> parameter) {
-        if (Objects.isNull(object) || !validate(YTRelationshipType.class, object, parameter)) return null;
+        if (Objects.isNull(object) || !validate(YTRelationshipType.class, object, parameter)) {
+            return null;
+        }
         @SuppressWarnings("unchecked")
         Map<String, Object> map = (Map<String, Object>) object;
         return buildEntityType(object, new Parameter<YTRelationshipType.Builder>(parameter.getContext())
@@ -654,7 +729,9 @@ public class YamlBuilder {
     @Nullable
     @SuppressWarnings("unchecked")
     public YTInterfaceDefinition buildInterfaceDefinition(Object object, Parameter<YTInterfaceDefinition> parameter) {
-        if (Objects.isNull(object) || !validate(YTInterfaceType.class, object, parameter)) return null;
+        if (Objects.isNull(object) || !validate(YTInterfaceType.class, object, parameter)) {
+            return null;
+        }
         Map<String, Object> map = (Map<String, Object>) object;
         YTInterfaceDefinition.Builder<?> output = new YTInterfaceDefinition.Builder<>()
             .setType(buildQName(stringValue(map.get("type"))))
@@ -675,7 +752,9 @@ public class YamlBuilder {
 
     @Nullable
     public YTNodeType buildNodeType(Object object, Parameter<YTNodeType> parameter) {
-        if (Objects.isNull(object) || !validate(YTNodeType.class, object, parameter)) return null;
+        if (Objects.isNull(object) || !validate(YTNodeType.class, object, parameter)) {
+            return null;
+        }
         @SuppressWarnings("unchecked")
         Map<String, Object> map = (Map<String, Object>) object;
         return buildEntityType(object, new Parameter<YTNodeType.Builder>(parameter.getContext())
@@ -701,10 +780,15 @@ public class YamlBuilder {
 
     @Nullable
     public YTRequirementDefinition buildRequirementDefinition(Object object, Parameter<YTRequirementDefinition> parameter) {
-        if (Objects.isNull(object)) return new YTRequirementDefinition();
-        if (object instanceof String)
+        if (Objects.isNull(object)) {
+            return null;
+        }
+        if (object instanceof String) {
             return new YTRequirementDefinition.Builder(buildQName(stringValue(object))).build();
-        if (!validate(YTRequirementDefinition.class, object, parameter)) return null;
+        }
+        if (!validate(YTRequirementDefinition.class, object, parameter)) {
+            return null;
+        }
         @SuppressWarnings("unchecked")
         Map<String, Object> map = (Map<String, Object>) object;
         return new YTRequirementDefinition.Builder(buildQName(stringValue(map.get("capability"))))
@@ -720,10 +804,15 @@ public class YamlBuilder {
 
     @Nullable
     public YTRelationshipDefinition buildRelationshipDefinition(Object object, Parameter<YTRelationshipDefinition> parameter) {
-        if (Objects.isNull(object)) return new YTRelationshipDefinition();
-        if (object instanceof String)
+        if (Objects.isNull(object)) {
+            return null;
+        }
+        if (object instanceof String) {
             return new YTRelationshipDefinition.Builder(buildQName(stringValue(object))).build();
-        if (!validate(YTRelationshipDefinition.class, object, parameter)) return null;
+        }
+        if (!validate(YTRelationshipDefinition.class, object, parameter)) {
+            return null;
+        }
         @SuppressWarnings("unchecked")
         Map<String, Object> map = (Map<String, Object>) object;
         return new YTRelationshipDefinition.Builder(buildQName(stringValue(map.get("type"))))
@@ -737,10 +826,15 @@ public class YamlBuilder {
 
     @Nullable
     public YTCapabilityDefinition buildCapabilityDefinition(Object object, Parameter<YTCapabilityDefinition> parameter) {
-        if (Objects.isNull(object)) return new YTCapabilityDefinition();
-        if (object instanceof String)
+        if (Objects.isNull(object)) {
+            return null;
+        }
+        if (object instanceof String) {
             return new YTCapabilityDefinition.Builder(buildQName(stringValue(object))).build();
-        if (!validate(YTCapabilityDefinition.class, object, parameter)) return null;
+        }
+        if (!validate(YTCapabilityDefinition.class, object, parameter)) {
+            return null;
+        }
         @SuppressWarnings("unchecked")
         Map<String, Object> map = (Map<String, Object>) object;
         return new YTCapabilityDefinition.Builder(buildQName(stringValue(map.get("type"))))
@@ -762,15 +856,21 @@ public class YamlBuilder {
 
     @Nullable
     public YTArtifactDefinition buildArtifactDefinition(Object object, Parameter<YTArtifactDefinition> parameter) {
-        if (Objects.isNull(object)) return new YTArtifactDefinition();
+        if (Objects.isNull(object)) {
+            return null;
+        }
         if (object instanceof String) {
             String file = stringValue(object);
-            if (Objects.isNull(file)) return null;
+            if (Objects.isNull(file)) {
+                return null;
+            }
             // TODO infer artifact type and mime type from file URI
             String type = file.substring(file.lastIndexOf("."), file.length());
             return new YTArtifactDefinition.Builder(buildQName(type), file).build();
         }
-        if (!validate(YTArtifactDefinition.class, object, parameter)) return null;
+        if (!validate(YTArtifactDefinition.class, object, parameter)) {
+            return null;
+        }
         @SuppressWarnings("unchecked")
         Map<String, Object> map = (Map<String, Object>) object;
 
@@ -794,7 +894,9 @@ public class YamlBuilder {
 
     @Nullable
     public YTGroupType buildGroupType(Object object, Parameter<YTGroupType> parameter) {
-        if (Objects.isNull(object) || !validate(YTGroupType.class, object, parameter)) return null;
+        if (Objects.isNull(object) || !validate(YTGroupType.class, object, parameter)) {
+            return null;
+        }
         @SuppressWarnings("unchecked")
         Map<String, Object> map = (Map<String, Object>) object;
         return buildEntityType(object, new Parameter<YTGroupType.Builder>(parameter.getContext())
@@ -815,7 +917,9 @@ public class YamlBuilder {
 
     @Nullable
     public YTPolicyType buildPolicyType(Object object, Parameter<YTPolicyType> parameter) {
-        if (Objects.isNull(object) || !validate(YTPolicyType.class, object, parameter)) return null;
+        if (Objects.isNull(object) || !validate(YTPolicyType.class, object, parameter)) {
+            return null;
+        }
         @SuppressWarnings("unchecked")
         Map<String, Object> map = (Map<String, Object>) object;
         return buildEntityType(object, new Parameter<YTPolicyType.Builder>(parameter.getContext())
@@ -830,11 +934,15 @@ public class YamlBuilder {
 
     @Nullable
     public YTParameterDefinition buildParameterDefinition(Object object, Parameter<YTParameterDefinition> parameter) {
-        if (Objects.isNull(object) || !validate(YTParameterDefinition.class, object, parameter)) return null;
+        if (Objects.isNull(object) || !validate(YTParameterDefinition.class, object, parameter)) {
+            return null;
+        }
         @SuppressWarnings("unchecked")
         Map<String, Object> map = (Map<String, Object>) object;
         String type = stringValue(map.get("type"));
-        if (type == null) type = "string";
+        if (type == null) {
+            type = "string";
+        }
         return new YTParameterDefinition.Builder()
             .setType(buildQName(type))
             .setDescription(buildDescription(map.get("description")))
@@ -853,7 +961,9 @@ public class YamlBuilder {
 
     @Nullable
     public YTParameterDefinition buildParameterAssignment(Object object, Parameter<YTParameterDefinition> parameter) {
-        if (Objects.isNull(object)) return null;
+        if (Objects.isNull(object)) {
+            return null;
+        }
         return new YTParameterDefinition.Builder()
             .setValue(object)
             .build();
@@ -861,7 +971,9 @@ public class YamlBuilder {
 
     @Nullable
     public YTNodeTemplate buildNodeTemplate(Object object, Parameter<YTNodeTemplate> parameter) {
-        if (Objects.isNull(object)) return new YTNodeTemplate();
+        if (Objects.isNull(object)) {
+            return null;
+        }
         if (!validate(YTNodeTemplate.class, object, parameter)) {
             LOGGER.info("Validation failed when trying to deserialize NodeTemplate");
             return null;
@@ -893,7 +1005,9 @@ public class YamlBuilder {
 
     @Nullable
     public YTAttributeAssignment buildAttributeAssignment(Object object, Parameter<YTAttributeAssignment> parameter) {
-        if (Objects.isNull(object)) return null;
+        if (Objects.isNull(object)) {
+            return null;
+        }
         if (!(object instanceof Map)) {
             // Attribute assignment with simple value
             return new YTAttributeAssignment.Builder().setValue(object).build();
@@ -915,7 +1029,9 @@ public class YamlBuilder {
 
     @Nullable
     public TMapRequirementAssignment buildMapRequirementAssignment(Object object, Parameter<TMapRequirementAssignment> parameter) {
-        if (Objects.isNull(object)) return null;
+        if (Objects.isNull(object)) {
+            return null;
+        }
         TMapRequirementAssignment result = new TMapRequirementAssignment();
         put(result, stringValue(parameter.getValue()), buildRequirementAssignment(object,
             new Parameter<>(parameter.getContext())
@@ -925,9 +1041,15 @@ public class YamlBuilder {
 
     @Nullable
     public YTRequirementAssignment buildRequirementAssignment(Object object, Parameter<YTRequirementAssignment> parameter) {
-        if (Objects.isNull(object)) return null;
-        if (object instanceof String) return new YTRequirementAssignment(buildQName(stringValue(object)));
-        if (!validate(YTRequirementAssignment.class, object, parameter)) return null;
+        if (Objects.isNull(object)) {
+            return null;
+        }
+        if (object instanceof String) {
+            return new YTRequirementAssignment.Builder().setNode(buildQName(stringValue(object))).build();
+        }
+        if (!validate(YTRequirementAssignment.class, object, parameter)) {
+            return null;
+        }
         @SuppressWarnings("unchecked")
         Map<String, Object> map = (Map<String, Object>) object;
         return new YTRequirementAssignment.Builder()
@@ -947,10 +1069,15 @@ public class YamlBuilder {
 
     @Nullable
     public YTRelationshipAssignment buildRelationshipAssignment(Object object, Parameter<YTRelationshipAssignment> parameter) {
-        if (Objects.isNull(object)) return null;
-        if (object instanceof String)
+        if (Objects.isNull(object)) {
+            return null;
+        }
+        if (object instanceof String) {
             return new YTRelationshipAssignment.Builder(buildQName(stringValue(object))).build();
-        if (!validate(YTRelationshipAssignment.class, object, parameter)) return null;
+        }
+        if (!validate(YTRelationshipAssignment.class, object, parameter)) {
+            return null;
+        }
         @SuppressWarnings("unchecked")
         Map<String, Object> map = (Map<String, Object>) object;
         return new YTRelationshipAssignment.Builder(buildQName(stringValue(map.get("type"))))
@@ -962,7 +1089,9 @@ public class YamlBuilder {
     @Nullable
     @SuppressWarnings("unchecked")
     public YTInterfaceAssignment buildInterfaceAssignment(Object object, Parameter<YTInterfaceAssignment> parameter) {
-        if (Objects.isNull(object) || !validate(YTInterfaceAssignment.class, object, parameter)) return null;
+        if (Objects.isNull(object) || !validate(YTInterfaceAssignment.class, object, parameter)) {
+            return null;
+        }
         Map<String, Object> map = (Map<String, Object>) object;
         return new YTInterfaceAssignment.Builder()
             .setType(buildQName(stringValue(map.get("type"))))
@@ -980,14 +1109,18 @@ public class YamlBuilder {
     }
 
     private Boolean filterInterfaceAssignmentOperation(Map.Entry<String, Object> entry) {
-        if (Objects.isNull(entry.getKey())) return false;
+        if (Objects.isNull(entry.getKey())) {
+            return false;
+        }
         Set<String> keys = Stream.of("type", "inputs").collect(Collectors.toSet());
         return !keys.contains(entry.getKey());
     }
 
     @Nullable
     public YTNodeFilterDefinition buildNodeFilterDefinition(Object object, Parameter<YTNodeFilterDefinition> parameter) {
-        if (Objects.isNull(object) || !validate(YTNodeFilterDefinition.class, object, parameter)) return null;
+        if (Objects.isNull(object) || !validate(YTNodeFilterDefinition.class, object, parameter)) {
+            return null;
+        }
         @SuppressWarnings("unchecked")
         Map<String, Object> map = (Map<String, Object>) object;
         return new YTNodeFilterDefinition.Builder()
@@ -998,7 +1131,9 @@ public class YamlBuilder {
 
     @Nullable
     public TMapPropertyFilterDefinition buildMapPropertyDefinition(Object object, Parameter<TMapPropertyFilterDefinition> parameter) {
-        if (Objects.isNull(object)) return null;
+        if (Objects.isNull(object)) {
+            return null;
+        }
         TMapPropertyFilterDefinition result = new TMapPropertyFilterDefinition();
         put(result, stringValue(parameter.getValue()), buildPropertyFilterDefinition(object,
             new Parameter<>(parameter.getContext())));
@@ -1007,7 +1142,9 @@ public class YamlBuilder {
 
     @Nullable
     public YTPropertyFilterDefinition buildPropertyFilterDefinition(Object object, Parameter<YTPropertyFilterDefinition> parameter) {
-        if (Objects.isNull(object) || !validate(YTPropertyFilterDefinition.class, object, parameter)) return null;
+        if (Objects.isNull(object) || !validate(YTPropertyFilterDefinition.class, object, parameter)) {
+            return null;
+        }
         @SuppressWarnings("unchecked")
         Map<String, Object> map = (Map<String, Object>) object;
         return new YTPropertyFilterDefinition.Builder()
@@ -1017,7 +1154,9 @@ public class YamlBuilder {
 
     @Nullable
     public TMapObject buildMapObjectValue(Object object, Parameter<TMapObject> parameter) {
-        if (Objects.isNull(object)) return null;
+        if (Objects.isNull(object)) {
+            return null;
+        }
         TMapObject result = new TMapObject();
         put(result, stringValue(parameter.getValue()), object);
         return result;
@@ -1025,7 +1164,9 @@ public class YamlBuilder {
 
     @Nullable
     public YTCapabilityAssignment buildCapabilityAssignment(Object object, Parameter<YTCapabilityAssignment> parameter) {
-        if (Objects.isNull(object) || !validate(YTCapabilityAssignment.class, object, parameter)) return null;
+        if (Objects.isNull(object) || !validate(YTCapabilityAssignment.class, object, parameter)) {
+            return null;
+        }
         @SuppressWarnings("unchecked")
         Map<String, Object> map = (Map<String, Object>) object;
         return new YTCapabilityAssignment.Builder()
@@ -1036,8 +1177,12 @@ public class YamlBuilder {
 
     @Nullable
     public YTRelationshipTemplate buildRelationshipTemplate(Object object, Parameter<YTRelationshipTemplate> parameter) {
-        if (Objects.isNull(object)) return new YTRelationshipTemplate();
-        if (!validate(YTRelationshipTemplate.class, object, parameter)) return null;
+        if (Objects.isNull(object)) {
+            return null;
+        }
+        if (!validate(YTRelationshipTemplate.class, object, parameter)) {
+            return null;
+        }
         @SuppressWarnings("unchecked")
         Map<String, Object> map = (Map<String, Object>) object;
         return new YTRelationshipTemplate.Builder(buildQName(stringValue(map.get("type"))))
@@ -1056,8 +1201,12 @@ public class YamlBuilder {
 
     @Nullable
     public YTGroupDefinition buildGroupDefinition(Object object, Parameter<YTGroupDefinition> parameter) {
-        if (Objects.isNull(object)) return new YTGroupDefinition();
-        if (!validate(YTGroupDefinition.class, object, parameter)) return null;
+        if (Objects.isNull(object)) {
+            return null;
+        }
+        if (!validate(YTGroupDefinition.class, object, parameter)) {
+            return null;
+        }
         @SuppressWarnings("unchecked")
         Map<String, Object> map = (Map<String, Object>) object;
         return new YTGroupDefinition.Builder(buildQName(stringValue(map.get("type"))))
@@ -1081,8 +1230,12 @@ public class YamlBuilder {
 
     @Nullable
     public YTPolicyDefinition buildPolicyDefinition(Object object, Parameter<YTPolicyDefinition> parameter) {
-        if (Objects.isNull(object)) return new YTPolicyDefinition();
-        if (!validate(YTPolicyDefinition.class, object, parameter)) return null;
+        if (Objects.isNull(object)) {
+            return null;
+        }
+        if (!validate(YTPolicyDefinition.class, object, parameter)) {
+            return null;
+        }
         @SuppressWarnings("unchecked")
         Map<String, Object> map = (Map<String, Object>) object;
         return new YTPolicyDefinition.Builder(buildQName(stringValue(map.get("type"))))
@@ -1097,7 +1250,9 @@ public class YamlBuilder {
 
     @Nullable
     public YTSubstitutionMappings buildSubstitutionMappings(Object object, Parameter<Object> parameter) {
-        if (Objects.isNull(object) || !validate(YTSubstitutionMappings.class, object, parameter)) return null;
+        if (Objects.isNull(object) || !validate(YTSubstitutionMappings.class, object, parameter)) {
+            return null;
+        }
         @SuppressWarnings("unchecked")
         Map<String, Object> map = (Map<String, Object>) object;
         return new YTSubstitutionMappings.Builder()
@@ -1109,7 +1264,9 @@ public class YamlBuilder {
 
     @Nullable
     public TListString buildStringList(Object object, Parameter<TListString> parameter) {
-        if (Objects.isNull(object)) return null;
+        if (Objects.isNull(object)) {
+            return null;
+        }
         @SuppressWarnings("unchecked")
         List<String> tmp = (List<String>) object;
         TListString stringList = new TListString();
@@ -1119,17 +1276,23 @@ public class YamlBuilder {
 
     @Nullable
     private String stringValue(@Nullable Object object) {
-        if (Objects.isNull(object)) return null;
+        if (Objects.isNull(object)) {
+            return null;
+        }
         return String.valueOf(object);
     }
 
     private String stringValue(@Nullable Object object, String defaultValue) {
-        if (Objects.isNull(object)) return defaultValue;
+        if (Objects.isNull(object)) {
+            return defaultValue;
+        }
         return String.valueOf(object);
     }
 
     private <T> void put(Map<String, T> map, String key, T value) {
-        if (Objects.nonNull(map) && Objects.nonNull(key) && Objects.nonNull(value)) map.put(key, value);
+        if (Objects.nonNull(map) && Objects.nonNull(key) && Objects.nonNull(value)) {
+            map.put(key, value);
+        }
     }
 
     private <T> boolean nonNull(Map.Entry<String, T> entry) {
@@ -1159,7 +1322,9 @@ public class YamlBuilder {
     }
 
     private <T> Map<String, T> buildMap(Object object, Parameter<T> parameter) {
-        if (Objects.isNull(object)) return null;
+        if (Objects.isNull(object)) {
+            return null;
+        }
         //if (Objects.isNull(parameter.getFilter())) parameter.setFilter(this::nonNull);
         Map<String, T> output = buildStream(object, parameter)
             .map(entry -> {
@@ -1191,7 +1356,9 @@ public class YamlBuilder {
     }
 
     private <T> List<T> buildList(Object object, Parameter<T> parameter) {
-        if (Objects.isNull(object)) return null;
+        if (Objects.isNull(object)) {
+            return null;
+        }
         @SuppressWarnings("unchecked")
         List<Map<String, Object>> list = (List<Map<String, Object>>) object;
         return list.stream()

@@ -52,8 +52,8 @@ public class YTRequirementDefinition implements VisitorNode {
     @Annotations.StandardExtension
     private String description;
 
+    @Deprecated
     public YTRequirementDefinition() {
-
     }
 
     public YTRequirementDefinition(Builder builder) {

@@ -38,6 +38,7 @@ public class YTPolicyType extends YTEntityType {
     private List<QName> targets;
     private Object triggers;
 
+    @Deprecated
     public YTPolicyType() {
     }
 

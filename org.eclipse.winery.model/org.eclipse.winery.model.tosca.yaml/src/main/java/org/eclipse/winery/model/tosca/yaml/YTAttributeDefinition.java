@@ -53,6 +53,7 @@ public class YTAttributeDefinition implements VisitorNode {
     @XmlAttribute(name = "entry_schema")
     private YTSchemaDefinition entrySchema;
 
+    @Deprecated
     public YTAttributeDefinition() {
     }
 
