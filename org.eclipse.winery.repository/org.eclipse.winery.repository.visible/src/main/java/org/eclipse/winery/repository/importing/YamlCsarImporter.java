@@ -49,7 +49,6 @@ import org.eclipse.winery.repository.backend.IRepository;
 import org.eclipse.winery.repository.backend.RepositoryFactory;
 import org.eclipse.winery.repository.backend.constants.Filename;
 import org.eclipse.winery.repository.backend.filebased.GitBasedRepository;
-import org.eclipse.winery.repository.yaml.YamlRepository;
 import org.eclipse.winery.repository.common.RepositoryFileReference;
 import org.eclipse.winery.repository.common.Util;
 import org.eclipse.winery.repository.converter.reader.YamlReader;
@@ -57,6 +56,7 @@ import org.eclipse.winery.repository.converter.writer.YamlWriter;
 import org.eclipse.winery.repository.datatypes.ids.elements.DirectoryId;
 import org.eclipse.winery.repository.datatypes.ids.elements.GenericDirectoryId;
 import org.eclipse.winery.repository.datatypes.ids.elements.VisualAppearanceId;
+import org.eclipse.winery.repository.yaml.YamlRepository;
 import org.eclipse.winery.repository.yaml.converter.FromCanonical;
 import org.eclipse.winery.repository.yaml.converter.ToCanonical;
 
@@ -67,12 +67,12 @@ public class YamlCsarImporter extends CsarImporter {
     private static final Logger LOGGER = LoggerFactory.getLogger(YamlCsarImporter.class);
 
     private final YamlRepository targetRepository;
-    
+
     public YamlCsarImporter(YamlRepository target) {
         super(target);
         this.targetRepository = target;
     }
-    
+
     /**
      * Parse TOSCA Meta File
      *
@@ -190,7 +190,7 @@ public class YamlCsarImporter extends CsarImporter {
                             .getArtifact()
                             .stream()
                             .map(this::fixForwardSlash)
-                            .filter(a -> this.isImportable(rootPath, a, errors))
+                            .filter(a -> this.isImportable(rootPath, a))
                             .forEach(a -> {
                                 DirectoryId stFilesDir = new GenericDirectoryId(wid, IdNames.FILES_DIRECTORY);
                                 DirectoryId ntFilesDir = new GenericDirectoryId(stFilesDir, node.getId());
@@ -210,7 +210,7 @@ public class YamlCsarImporter extends CsarImporter {
                     .getArtifact()
                     .stream()
                     .map(this::fixForwardSlash)
-                    .filter(a -> this.isImportable(rootPath, a, errors))
+                    .filter(a -> this.isImportable(rootPath, a))
                     .forEach(a -> {
                         DirectoryId typeFilesDir = new GenericDirectoryId(wid, IdNames.FILES_DIRECTORY);
                         DirectoryId artifactDir = new GenericDirectoryId(typeFilesDir, a.getName());
@@ -270,20 +270,24 @@ public class YamlCsarImporter extends CsarImporter {
         }
     }
 
-    private boolean isImportable(Path rootPath, TArtifact a, List<String> errors) {
-        Path path = rootPath.resolve(a.getFile());
-        if (!Files.exists(path)) {
-            errors.add(String.format("Reference %1$s not found", a.getFile()));
+    private boolean isImportable(Path rootPath, TArtifact a) {
+        String filename = a.getFile();
+        if (filename.matches(".*[/\n\r\t\0\f`?*\\\\<>|\":].*")) {
+            LOGGER.debug("Invalid filename ({}), skipping it", filename);
             return false;
         }
-
+        Path path = rootPath.resolve(filename);
+        if (!Files.exists(path)) {
+            LOGGER.warn("Reference {} not found, skipping it", filename);
+            return false;
+        }
         return Files.isRegularFile(path);
     }
 
     private void importArtifact(Path rootPath, TArtifact a, DirectoryId artifactDir, TOSCAMetaFile tmf, final List<String> errors) {
         String fileName = rootPath.resolve(a.getFile()).getFileName().toString();
-        RepositoryFileReference fref = new RepositoryFileReference(artifactDir, fileName);
-        importFile(rootPath.resolve(a.getFile()), fref, tmf, rootPath, errors);
+        RepositoryFileReference ref = new RepositoryFileReference(artifactDir, fileName);
+        importFile(rootPath.resolve(a.getFile()), ref, tmf, rootPath, errors);
     }
 
     /**
