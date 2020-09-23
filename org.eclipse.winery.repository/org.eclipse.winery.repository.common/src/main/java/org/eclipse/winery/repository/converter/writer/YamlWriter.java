@@ -88,7 +88,7 @@ public class YamlWriter extends AbstractVisitor<YamlPrinter, YamlWriter.Paramete
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractVisitor.class);
 
-    private static final String[] PROPERTY_FUNCTIONS = new String[]{
+    private static final String[] PROPERTY_FUNCTIONS = new String[] {
         "get_input", "get_property", "get_attribute", "get_operation_output", "get_nodes_of_type", "get_artifact"
     };
 
@@ -446,8 +446,8 @@ public class YamlWriter extends AbstractVisitor<YamlPrinter, YamlWriter.Paramete
                     } else {
                         functionArg = "[ " + list + " ]";
                     }
-                } else if (rawFunctionArg instanceof TPropertyAssignment) {
-                    functionArg = visit((TPropertyAssignment)rawFunctionArg, new Parameter(0)).toString();
+                } else if (rawFunctionArg instanceof YTPropertyAssignment) {
+                    functionArg = visit((YTPropertyAssignment) rawFunctionArg, new Parameter(0)).toString();
                 } else if (rawFunctionArg instanceof String) {
                     functionArg = (String) rawFunctionArg;
                 } else {
