@@ -76,6 +76,7 @@ export class NodeDetailsSidebarComponent implements OnInit, OnDestroy {
                     type: '',
                     properties: {}
                 },
+                relationshipTemplate: undefined,
                 minInstances: -1,
                 maxInstances: -1,
             }
@@ -137,9 +138,9 @@ export class NodeDetailsSidebarComponent implements OnInit, OnDestroy {
                             type: this.sidebarState.template.type,
                             properties: this.sidebarState.template.properties,
                         },
+                        relationshipTemplate: this.sidebarState.relationshipTemplate,
                         minInstances: Number(this.sidebarState.minInstances),
                         maxInstances: Number(this.sidebarState.maxInstances),
-                        relationshipTemplate : this.sidebarState.relationshipTemplate,
                         source: this.sidebarState.source,
                         target: this.sidebarState.target
                     }
@@ -165,6 +166,7 @@ export class NodeDetailsSidebarComponent implements OnInit, OnDestroy {
                         visible: true,
                         nodeClicked: this.sidebarState.nodeClicked,
                         template: this.sidebarState.template,
+                        relationshipTemplate: this.sidebarState.relationshipTemplate,
                         minInstances: Number(data),
                         maxInstances: this.sidebarState.maxInstances,
                         source: this.sidebarState.source,
@@ -191,9 +193,9 @@ export class NodeDetailsSidebarComponent implements OnInit, OnDestroy {
                         visible: true,
                         nodeClicked: this.sidebarState.nodeClicked,
                         template: this.sidebarState.template,
+                        relationshipTemplate: this.sidebarState.relationshipTemplate,
                         minInstances: this.sidebarState.minInstances,
                         maxInstances: Number(data),
-                        relationshipTemplate : this.sidebarState.relationshipTemplate,
                         source: this.sidebarState.source,
                         target: this.sidebarState.target
                     }
@@ -233,9 +235,9 @@ export class NodeDetailsSidebarComponent implements OnInit, OnDestroy {
                 visible: true,
                 nodeClicked: this.sidebarState.nodeClicked,
                 template: this.sidebarState.template,
+                relationshipTemplate: this.sidebarState.relationshipTemplate,
                 minInstances: this.sidebarState.minInstances,
                 maxInstances: this.sidebarState.maxInstances,
-                relationshipTemplate : this.sidebarState.relationshipTemplate,
                 source: this.sidebarState.source,
                 target: this.sidebarState.target
             }
@@ -293,9 +295,9 @@ export class NodeDetailsSidebarComponent implements OnInit, OnDestroy {
                 visible: true,
                 nodeClicked: this.sidebarState.nodeClicked,
                 template: this.sidebarState.template,
+                relationshipTemplate: this.sidebarState.relationshipTemplate,
                 minInstances: this.sidebarState.minInstances,
                 maxInstances: this.sidebarState.maxInstances,
-                relationshipTemplate : this.sidebarState.relationshipTemplate,
                 source: this.sidebarState.source,
                 target: this.sidebarState.target
             }

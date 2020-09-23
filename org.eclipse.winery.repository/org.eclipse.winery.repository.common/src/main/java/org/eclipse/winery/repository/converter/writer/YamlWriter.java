@@ -446,6 +446,8 @@ public class YamlWriter extends AbstractVisitor<YamlPrinter, YamlWriter.Paramete
                     } else {
                         functionArg = "[ " + list + " ]";
                     }
+                } else if (rawFunctionArg instanceof TPropertyAssignment) {
+                    functionArg = visit((TPropertyAssignment)rawFunctionArg, new Parameter(0)).toString();
                 } else if (rawFunctionArg instanceof String) {
                     functionArg = (String) rawFunctionArg;
                 } else {

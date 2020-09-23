@@ -87,7 +87,7 @@ export class PropertiesComponent implements OnInit, OnChanges, OnDestroy {
             this.skipUpdate = false;
             return;
         }
-        const propertyData = template.properties;
+        const propertyData = template.properties || { propertyDefinitionType: PropertyDefinitionType.NONE, properties: {} };
 
         this.propertyDefinitionType = propertyData.propertyType;
         this.templateType = template.type;

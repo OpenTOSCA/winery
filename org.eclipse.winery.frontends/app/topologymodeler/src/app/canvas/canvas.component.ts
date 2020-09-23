@@ -1548,6 +1548,7 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
                     type: '',
                     properties: '',
                 },
+                relationshipTemplate: undefined,
                 source: '',
                 target: ''
             }
@@ -1967,12 +1968,12 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
         this.clearSelectedNodes();
         this.newJsPlumbInstance.select().removeType('marked');
         const currentRel = this.allRelationshipTemplates.find(con => con.id === conn.id);
-        let name = currentRel.name;
-        if (currentRel.name.startsWith(this.backendService.configuration.relationshipPrefix)) {
-            // Workaround to support old topology templates with the real name
-            name = currentRel.type.substring(currentRel.type.indexOf('}') + 1);
-        }
         if (currentRel) {
+            let name = currentRel.name;
+            if (currentRel.name.startsWith(this.backendService.configuration.relationshipPrefix)) {
+                // Workaround to support old topology templates with the real name
+                name = currentRel.type.substring(currentRel.type.indexOf('}') + 1);
+            }
             this.ngRedux.dispatch(this.actions.openSidebar({
                 sidebarContents: {
                     visible: true,
@@ -2424,7 +2425,7 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
                 this.notify.warning('Duplicate policy name!', 'Policy not Added!');
             } else {
                 const newPolicy = new TPolicy(policyName, undefined, this.selectedNewPolicyType, [],
-                    [], {}, { kvproperties: {} }, []);
+                    [], {}, { properties: { } }, []);
                 const newPolicies = [...this.entityTypes.yamlPolicies, newPolicy];
                 this.ngRedux.dispatch(this.actions.changeYamlPolicies(newPolicies));
                 this.addYamlPolicyModal.hide();
@@ -2452,20 +2453,20 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
 
     handleYamlPolicySelected($event: WineryRowData) {
         this.selectedYamlPolicy = this.entityTypes.yamlPolicies.find(policy => policy.name === (<TPolicy>$event.row).name);
-        this.selectedYamlPolicy.properties = InheritanceUtils.getEffectiveKVPropertiesOfTemplateElement(this.selectedYamlPolicy.properties,
+        this.selectedYamlPolicy.properties = InheritanceUtils.getEffectivePropertiesOfTemplateElement(this.selectedYamlPolicy.properties,
             this.selectedYamlPolicy.policyType, this.entityTypes.policyTypes);
     }
 
     savePolicyProperties(): void {
         this.yamlPolicyProperties.forEach(txtArea => {
             const keyOfChangedTextArea = txtArea.nativeElement.parentElement.innerText.replace(/\s/g, '');
-            this.selectedYamlPolicy.properties.kvproperties[keyOfChangedTextArea] = txtArea.nativeElement.value;
+            this.selectedYamlPolicy.properties.properties[keyOfChangedTextArea] = txtArea.nativeElement.value;
         });
     }
 
     showPropertiesOfSelectedYamlPolicy(): boolean {
-        if (this.selectedYamlPolicy && this.selectedYamlPolicy.properties && this.selectedYamlPolicy.properties.kvproperties) {
-            return Object.keys(this.selectedYamlPolicy.properties.kvproperties).length > 0;
+        if (this.selectedYamlPolicy && this.selectedYamlPolicy.properties && this.selectedYamlPolicy.properties.properties) {
+            return Object.keys(this.selectedYamlPolicy.properties.properties).length > 0;
         }
         return false;
     }

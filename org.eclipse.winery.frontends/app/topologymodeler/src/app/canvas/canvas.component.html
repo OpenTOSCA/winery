@@ -386,7 +386,7 @@
             <div class="form-group" *ngIf="showPropertiesOfSelectedYamlPolicy()">
                 <h5>Properties of {{selectedYamlPolicy.name}}:</h5>
                 <form>
-                    <div *ngFor="let prop of selectedYamlPolicy.properties.kvproperties | keysPipe">
+                    <div *ngFor="let prop of selectedYamlPolicy.properties.properties | keysPipe">
                         <label class="control-label">{{prop.key}}</label>
                         <textarea
                             style="width:100%; overflow-y: scroll;"

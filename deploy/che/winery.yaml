@@ -35,3 +35,5 @@ spec:
               value: "/projects/radon-particles"
             - name: WINERY_CSAR_OUTPUT_PATH
               value: "/projects/radon-csars"
+            - name: CHE_URL_PROTOCOL
+              value: "http"

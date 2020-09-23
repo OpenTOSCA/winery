@@ -46,9 +46,9 @@ export const INITIAL_WINERY_STATE: WineryState = {
             type: '',
             properties: '',
         },
+        relationshipTemplate: undefined,
         minInstances: 1,
         maxInstances: 1,
-        relationshipTemplate: undefined,
         source: '',
         target: ''
     },
