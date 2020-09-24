@@ -20,9 +20,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlType;
 import javax.xml.namespace.QName;
 
 import org.eclipse.winery.model.tosca.yaml.support.TMapRequirementDefinition;
@@ -32,24 +29,13 @@ import org.eclipse.winery.model.tosca.yaml.visitor.IVisitor;
 
 import org.eclipse.jdt.annotation.NonNull;
 
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "tGroupType", namespace = " http://docs.oasis-open.org/tosca/ns/simple/yaml/1.3", propOrder = {
-    "members",
-    "requirements",
-    "capabilities",
-    "interfaces"
-})
 public class YTGroupType extends YTNodeOrGroupType {
     private List<QName> members;
     private List<TMapRequirementDefinition> requirements;
     private Map<String, YTCapabilityDefinition> capabilities;
     private Map<String, YTInterfaceDefinition> interfaces;
 
-    @Deprecated
-    public YTGroupType() {
-    }
-
-    public YTGroupType(Builder builder) {
+    protected YTGroupType(Builder builder) {
         super(builder);
         this.setMembers(builder.members);
         this.setRequirements(builder.requirements);

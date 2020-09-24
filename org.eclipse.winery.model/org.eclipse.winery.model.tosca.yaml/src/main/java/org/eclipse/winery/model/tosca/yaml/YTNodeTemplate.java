@@ -20,10 +20,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlType;
 import javax.xml.namespace.QName;
 
 import org.eclipse.winery.model.tosca.yaml.support.Metadata;
@@ -36,24 +32,8 @@ import org.eclipse.winery.model.tosca.yaml.visitor.VisitorNode;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "tNodeTemplate", namespace = " http://docs.oasis-open.org/tosca/ns/simple/yaml/1.3", propOrder = {
-    "type",
-    "description",
-    "directives",
-    "properties",
-    "attributes",
-    "requirements",
-    "capabilities",
-    "interfaces",
-    "artifacts",
-    "nodeFilter",
-    "copy",
-    "metadata"
-})
 public class YTNodeTemplate implements VisitorNode {
 
-    @XmlAttribute(name = "type", required = true)
     private QName type;
     private String description;
     private Metadata metadata;
@@ -64,15 +44,10 @@ public class YTNodeTemplate implements VisitorNode {
     private Map<String, YTCapabilityAssignment> capabilities;
     private Map<String, YTInterfaceAssignment> interfaces;
     private Map<String, YTArtifactDefinition> artifacts;
-    @XmlAttribute(name = "node_filter")
     private YTNodeFilterDefinition nodeFilter;
     private QName copy;
 
-    @Deprecated
-    public YTNodeTemplate() {
-    }
-
-    public YTNodeTemplate(Builder builder) {
+    protected YTNodeTemplate(Builder builder) {
         this.setType(builder.type);
         this.setDescription(builder.description);
         this.setMetadata(builder.metadata);

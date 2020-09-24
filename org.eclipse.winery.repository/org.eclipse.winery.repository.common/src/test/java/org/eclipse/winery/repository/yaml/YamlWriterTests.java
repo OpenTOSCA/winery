@@ -116,15 +116,15 @@ public class YamlWriterTests {
     static class ConstraintClausesArgumentsProvider implements ArgumentsProvider {
         @Override
         public Stream<? extends Arguments> provideArguments(ExtensionContext context) {
-            final YTConstraintClause simpleClause = new YTConstraintClause();
+            final YTConstraintClause.Builder simpleClause = new YTConstraintClause.Builder();
             simpleClause.setKey("in_range");
             simpleClause.setList(Arrays.asList("512", "2048"));
-            final YTConstraintClause valueClause = new YTConstraintClause();
+            final YTConstraintClause.Builder valueClause = new YTConstraintClause.Builder();
             valueClause.setKey("key");
             valueClause.setValue("value");
             return Stream.of(
-                Arguments.of(simpleClause, "in_range: [ 512, 2048 ]\n"),
-                Arguments.of(valueClause, "key: value\n")
+                Arguments.of(simpleClause.build(), "in_range: [ 512, 2048 ]\n"),
+                Arguments.of(valueClause.build(), "key: value\n")
             );
         }
     }
@@ -133,24 +133,26 @@ public class YamlWriterTests {
 
         @Override
         public Stream<? extends Arguments> provideArguments(ExtensionContext context) {
-            final YTPropertyAssignment baseList = new YTPropertyAssignment(Stream.of("a1", "a2").map(YTPropertyAssignment::new).collect(Collectors.toList()));
+            final YTPropertyAssignment baseList = new YTPropertyAssignment.Builder().setValue(Stream.of("a1", "a2")
+                    .map(v -> new YTPropertyAssignment.Builder().setValue(v).build())
+                    .collect(Collectors.toList()))
+                .build();
             final Map<String, YTPropertyAssignment> nestedMap = new HashMap<>();
             nestedMap.put("pre_activities", baseList);
             nestedMap.put("post_activities", baseList);
-            nestedMap.put("type", new YTPropertyAssignment("sequence"));
+            nestedMap.put("type", new YTPropertyAssignment.Builder().setValue("sequence").build());
             final List<YTPropertyAssignment> multipleMaps = new ArrayList<>();
-            multipleMaps.add(new YTPropertyAssignment(nestedMap));
-            multipleMaps.add(new YTPropertyAssignment(nestedMap));
+            multipleMaps.add(new YTPropertyAssignment.Builder().setValue(nestedMap).build());
+            multipleMaps.add(new YTPropertyAssignment.Builder().setValue(nestedMap).build());
             return Stream.of(
-                Arguments.of(new YTPropertyAssignment(Collections.singletonMap("key", new YTPropertyAssignment("value"))), "root:\n  key: \"value\"\n"),
-                Arguments.of(new YTPropertyAssignment(Collections.singletonMap("key", new YTPropertyAssignment((Object) null))), "root:\n  key: null\n"),
-                // Arguments.of(new TPropertyAssignment(Collections.singletonMap("key", new TPropertyAssignment(""))), "root:\n  key: \"\"\n"),
-                Arguments.of(new YTPropertyAssignment(Collections.singletonMap("key", new YTPropertyAssignment(""))), "root:\n"),
-                Arguments.of(new YTPropertyAssignment(Collections.singletonMap("key", new YTPropertyAssignment(Collections.emptyMap()))), "root:\n  key: {}\n"),
-                Arguments.of(new YTPropertyAssignment(Collections.singletonMap("key", new YTPropertyAssignment(Collections.emptyList()))), "root:\n  key: []\n"),
+                Arguments.of(new YTPropertyAssignment.Builder().setValue(Collections.singletonMap("key", new YTPropertyAssignment.Builder().setValue("value").build())).build(), "root:\n  key: \"value\"\n"),
+                Arguments.of(new YTPropertyAssignment.Builder().setValue(Collections.singletonMap("key", new YTPropertyAssignment.Builder().setValue(null).build())).build(), "root:\n  key: null\n"),
+                Arguments.of(new YTPropertyAssignment.Builder().setValue(Collections.singletonMap("key", new YTPropertyAssignment.Builder().setValue("").build())).build(), "root:\n"),
+                Arguments.of(new YTPropertyAssignment.Builder().setValue(Collections.singletonMap("key", new YTPropertyAssignment.Builder().setValue(Collections.emptyMap()).build())).build(), "root:\n  key: {}\n"),
+                Arguments.of(new YTPropertyAssignment.Builder().setValue(Collections.singletonMap("key", new YTPropertyAssignment.Builder().setValue(Collections.emptyList()).build())).build(), "root:\n  key: []\n"),
                 Arguments.of(baseList, "root:\n  - \"a1\"\n  - \"a2\"\n"),
-                Arguments.of(new YTPropertyAssignment(Collections.singletonMap("entries", baseList)), "root:\n  entries:\n    - \"a1\"\n    - \"a2\"\n"),
-                Arguments.of(new YTPropertyAssignment(multipleMaps), "root:\n  - post_activities:\n      - \"a1\"\n      - \"a2\"\n    pre_activities:\n      - \"a1\"\n      - \"a2\"\n    type: \"sequence\"\n  - post_activities:\n      - \"a1\"\n      - \"a2\"\n    pre_activities:\n      - \"a1\"\n      - \"a2\"\n    type: \"sequence\"\n")
+                Arguments.of(new YTPropertyAssignment.Builder().setValue(Collections.singletonMap("entries", baseList)).build(), "root:\n  entries:\n    - \"a1\"\n    - \"a2\"\n"),
+                Arguments.of(new YTPropertyAssignment.Builder().setValue(multipleMaps).build(), "root:\n  - post_activities:\n      - \"a1\"\n      - \"a2\"\n    pre_activities:\n      - \"a1\"\n      - \"a2\"\n    type: \"sequence\"\n  - post_activities:\n      - \"a1\"\n      - \"a2\"\n    pre_activities:\n      - \"a1\"\n      - \"a2\"\n    type: \"sequence\"\n")
             );
         }
     }
@@ -160,25 +162,25 @@ public class YamlWriterTests {
         public Stream<? extends Arguments> provideArguments(ExtensionContext context) {
             return Stream.of(
                 Arguments.of(
-                    new YTPropertyAssignment(Collections.singletonMap("get_input", new YTPropertyAssignment("value"))),
+                    new YTPropertyAssignment.Builder().setValue(Collections.singletonMap("get_input", new YTPropertyAssignment.Builder().setValue("value").build())).build(),
                     "root: { get_input: value }\n"),
                 Arguments.of(
-                    new YTPropertyAssignment(Collections.singletonMap("get_input", new YTPropertyAssignment(Arrays.asList("hierarchical", "value")))),
+                    new YTPropertyAssignment.Builder().setValue(Collections.singletonMap("get_input", new YTPropertyAssignment.Builder().setValue(Arrays.asList("hierarchical", "value")).build())).build(),
                     "root: { get_input: [ hierarchical, value ] }\n"),
                 Arguments.of(
-                    new YTPropertyAssignment(Collections.singletonMap("get_property", new YTPropertyAssignment(Arrays.asList("entity_name", "prop_name")))),
+                    new YTPropertyAssignment.Builder().setValue(Collections.singletonMap("get_property", new YTPropertyAssignment.Builder().setValue(Arrays.asList("entity_name", "prop_name")).build())).build(),
                     "root: { get_property: [ entity_name, prop_name ] }\n"),
                 Arguments.of(
-                    new YTPropertyAssignment(Collections.singletonMap("get_attribute", new YTPropertyAssignment(Arrays.asList("entity_name", "attribute_name")))),
+                    new YTPropertyAssignment.Builder().setValue(Collections.singletonMap("get_attribute", new YTPropertyAssignment.Builder().setValue(Arrays.asList("entity_name", "attribute_name")).build())).build(),
                     "root: { get_attribute: [ entity_name, attribute_name ] }\n"),
                 Arguments.of(
-                    new YTPropertyAssignment(Collections.singletonMap("get_operation_output", new YTPropertyAssignment(Arrays.asList("entity_name", "interface_name", "operation_name", "output_var_name")))),
+                    new YTPropertyAssignment.Builder().setValue(Collections.singletonMap("get_operation_output", new YTPropertyAssignment.Builder().setValue(Arrays.asList("entity_name", "interface_name", "operation_name", "output_var_name")).build())).build(),
                     "root: { get_operation_output: entity_name, interface_name, operation_name, output_var_name }\n"),
                 Arguments.of(
-                    new YTPropertyAssignment(Collections.singletonMap("get_nodes_of_type", new YTPropertyAssignment("nt_name"))),
+                    new YTPropertyAssignment.Builder().setValue(Collections.singletonMap("get_nodes_of_type", new YTPropertyAssignment.Builder().setValue("nt_name").build())).build(),
                     "root: { get_nodes_of_type: nt_name }\n"),
                 Arguments.of(
-                    new YTPropertyAssignment(Collections.singletonMap("get_artifact", new YTPropertyAssignment(Arrays.asList("e_name", "a_name", "loc", false)))),
+                    new YTPropertyAssignment.Builder().setValue(Collections.singletonMap("get_artifact", new YTPropertyAssignment.Builder().setValue(Arrays.asList("e_name", "a_name", "loc", false)).build())).build(),
                     "root: { get_artifact: [ e_name, a_name, loc, false ] }\n")
             );
         }

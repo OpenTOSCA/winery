@@ -18,10 +18,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlType;
-
 import org.eclipse.winery.model.tosca.yaml.support.Annotations;
 import org.eclipse.winery.model.tosca.yaml.visitor.AbstractParameter;
 import org.eclipse.winery.model.tosca.yaml.visitor.AbstractResult;
@@ -31,12 +27,6 @@ import org.eclipse.winery.model.tosca.yaml.visitor.VisitorNode;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "tOperationDefinition", namespace = " http://docs.oasis-open.org/tosca/ns/simple/yaml/1.3", propOrder = {
-    "description",
-    "inputs",
-    "implementation"
-})
 public class YTOperationDefinition implements VisitorNode {
 
     private String description;
@@ -46,11 +36,7 @@ public class YTOperationDefinition implements VisitorNode {
     @Annotations.StandardExtension
     private YTImplementation implementation;
 
-    @Deprecated
-    public YTOperationDefinition() {
-    }
-
-    public YTOperationDefinition(Builder builder) {
+    protected YTOperationDefinition(Builder builder) {
         this.setDescription(builder.description);
         this.setInputs(builder.inputs);
         this.setOutputs(builder.outputs);

@@ -20,10 +20,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlType;
 import javax.xml.namespace.QName;
 
 import org.eclipse.winery.model.tosca.yaml.visitor.AbstractParameter;
@@ -32,21 +28,11 @@ import org.eclipse.winery.model.tosca.yaml.visitor.IVisitor;
 
 import org.eclipse.jdt.annotation.NonNull;
 
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "tRelationshipType", namespace = " http://docs.oasis-open.org/tosca/ns/simple/yaml/1.3", propOrder = {
-    "validTargetTypes",
-    "interfaces"
-})
 public class YTRelationshipType extends YTEntityType {
-    @XmlAttribute(name = "valid_target_types")
     private List<QName> validTargetTypes;
     private Map<String, YTInterfaceDefinition> interfaces;
 
-    @Deprecated
-    public YTRelationshipType() {
-    }
-
-    public YTRelationshipType(Builder builder) {
+    protected YTRelationshipType(Builder builder) {
         super(builder);
         this.setValidTargetTypes(builder.validTargetTypes);
         this.setInterfaces(builder.interfaces);

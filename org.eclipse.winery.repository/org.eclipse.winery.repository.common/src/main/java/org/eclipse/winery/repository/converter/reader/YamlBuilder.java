@@ -372,7 +372,7 @@ public class YamlBuilder {
 
     @Nullable
     public YTVersion buildVersion(Object object) {
-        return Objects.isNull(object) ? null : new YTVersion(stringValue(object));
+        return Objects.isNull(object) ? null : new YTVersion.Builder().setVersion(stringValue(object)).build();
     }
 
     @Nullable

@@ -15,10 +15,6 @@ package org.eclipse.winery.model.tosca.yaml;
 
 import java.util.Objects;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlType;
-
 import org.eclipse.winery.model.tosca.yaml.visitor.AbstractParameter;
 import org.eclipse.winery.model.tosca.yaml.visitor.AbstractResult;
 import org.eclipse.winery.model.tosca.yaml.visitor.IVisitor;
@@ -26,21 +22,12 @@ import org.eclipse.winery.model.tosca.yaml.visitor.VisitorNode;
 
 import org.eclipse.jdt.annotation.Nullable;
 
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "tAttributeAssignment", namespace = " http://docs.oasis-open.org/tosca/ns/simple/yaml/1.3", propOrder = {
-    "description",
-    "value"
-})
 public class YTAttributeAssignment implements VisitorNode {
 
     private String description;
     private Object value;
 
-    @Deprecated
-    public YTAttributeAssignment() {
-    }
-
-    public YTAttributeAssignment(Builder builder) {
+    protected YTAttributeAssignment(Builder builder) {
         this.setDescription(builder.description);
         this.setValue(builder.value);
     }

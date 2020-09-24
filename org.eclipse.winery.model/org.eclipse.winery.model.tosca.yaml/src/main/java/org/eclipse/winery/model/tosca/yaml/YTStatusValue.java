@@ -15,9 +15,6 @@ package org.eclipse.winery.model.tosca.yaml;
 
 import org.eclipse.jdt.annotation.Nullable;
 
-import javax.xml.bind.annotation.XmlEnum;
-
-@XmlEnum(String.class)
 public enum YTStatusValue {
     supported,
     unsupported,

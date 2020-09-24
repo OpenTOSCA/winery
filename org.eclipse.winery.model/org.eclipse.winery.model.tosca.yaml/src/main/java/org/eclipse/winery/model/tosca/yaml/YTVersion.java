@@ -15,10 +15,6 @@ package org.eclipse.winery.model.tosca.yaml;
 
 import java.util.Objects;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlType;
-
 import org.eclipse.winery.model.tosca.yaml.visitor.AbstractParameter;
 import org.eclipse.winery.model.tosca.yaml.visitor.AbstractResult;
 import org.eclipse.winery.model.tosca.yaml.visitor.IVisitor;
@@ -26,19 +22,11 @@ import org.eclipse.winery.model.tosca.yaml.visitor.VisitorNode;
 
 import org.eclipse.jdt.annotation.Nullable;
 
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "tVersion", namespace = " http://docs.oasis-open.org/tosca/ns/simple/yaml/1.3", propOrder = {
-    "version"
-})
 public class YTVersion implements VisitorNode {
     private String version;
 
-    @Deprecated
-    public YTVersion() {
-    }
-
-    public YTVersion(String version) {
-        this.version = version;
+    public YTVersion(Builder builder) {
+        this.version = builder.version;
     }
 
     @Override
@@ -66,6 +54,19 @@ public class YTVersion implements VisitorNode {
 
     public void setVersion(String version) {
         this.version = version;
+    }
+
+    public static class Builder {
+        private String version;
+
+        public Builder setVersion(String version) {
+            this.version = version;
+            return this;
+        }
+
+        public YTVersion build() {
+            return new YTVersion(this);
+        }
     }
 
     public <R extends AbstractResult<R>, P extends AbstractParameter<P>> R accept(IVisitor<R, P> visitor, P parameter) {

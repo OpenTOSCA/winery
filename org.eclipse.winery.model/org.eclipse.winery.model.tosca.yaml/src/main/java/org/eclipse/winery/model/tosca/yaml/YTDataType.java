@@ -18,31 +18,19 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlType;
-
 import org.eclipse.winery.model.tosca.yaml.visitor.AbstractParameter;
 import org.eclipse.winery.model.tosca.yaml.visitor.AbstractResult;
 import org.eclipse.winery.model.tosca.yaml.visitor.IVisitor;
 
 import org.eclipse.jdt.annotation.NonNull;
 
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "tDataType", namespace = "http://docs.oasis-open.org/tosca/ns/simple/yaml/1.3", propOrder = {
-    "constraints"
-})
 public class YTDataType extends YTEntityType {
     private List<YTConstraintClause> constraints;
     
     // metadata were added to all TEntityTypes, so no need to add these explicitly
     // FIXME add key_schema, entry_schema
 
-    @Deprecated
-    public YTDataType() {
-    }
-
-    public YTDataType(Builder builder) {
+    protected YTDataType(Builder builder) {
         super(builder);
         this.setConstraints(builder.constraints);
     }

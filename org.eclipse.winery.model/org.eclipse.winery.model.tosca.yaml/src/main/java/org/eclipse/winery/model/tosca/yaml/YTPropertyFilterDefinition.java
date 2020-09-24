@@ -18,10 +18,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlType;
-
 import org.eclipse.winery.model.tosca.yaml.visitor.AbstractParameter;
 import org.eclipse.winery.model.tosca.yaml.visitor.AbstractResult;
 import org.eclipse.winery.model.tosca.yaml.visitor.IVisitor;
@@ -29,18 +25,10 @@ import org.eclipse.winery.model.tosca.yaml.visitor.VisitorNode;
 
 import org.eclipse.jdt.annotation.NonNull;
 
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "tPropertyFilterDefinition", namespace = " http://docs.oasis-open.org/tosca/ns/simple/yaml/1.3", propOrder = {
-    "constraints"
-})
 public class YTPropertyFilterDefinition implements VisitorNode {
     private List<YTConstraintClause> constraints;
 
-    @Deprecated
-    public YTPropertyFilterDefinition() {
-    }
-
-    public YTPropertyFilterDefinition(Builder builder) {
+    protected YTPropertyFilterDefinition(Builder builder) {
         this.setConstraints(builder.constraints);
     }
 

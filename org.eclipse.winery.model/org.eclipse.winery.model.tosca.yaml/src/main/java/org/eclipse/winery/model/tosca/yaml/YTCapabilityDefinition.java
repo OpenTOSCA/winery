@@ -22,10 +22,6 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlType;
 import javax.xml.namespace.QName;
 
 import org.eclipse.winery.model.tosca.yaml.visitor.AbstractParameter;
@@ -36,30 +32,15 @@ import org.eclipse.winery.model.tosca.yaml.visitor.VisitorNode;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "tCapabilityDefinition", namespace = " http://docs.oasis-open.org/tosca/ns/simple/yaml/1.3", propOrder = {
-    "description",
-    "occurrences",
-    "validSourceTypes",
-    "type",
-    "properties",
-    "attributes"
-})
 public class YTCapabilityDefinition implements VisitorNode {
     private String description;
     private List<String> occurrences;
-    @XmlAttribute(name = "valid_source_types")
     private List<QName> validSourceTypes;
-    @XmlAttribute(name = "type", required = true)
     private QName type;
     private Map<String, YTPropertyDefinition> properties;
     private Map<String, YTAttributeDefinition> attributes;
 
-    @Deprecated
-    public YTCapabilityDefinition() {
-    }
-
-    public YTCapabilityDefinition(Builder builder) {
+    protected YTCapabilityDefinition(Builder builder) {
         this.setType(builder.type);
         this.setDescription(builder.description);
         this.setOccurrences(builder.occurrences);

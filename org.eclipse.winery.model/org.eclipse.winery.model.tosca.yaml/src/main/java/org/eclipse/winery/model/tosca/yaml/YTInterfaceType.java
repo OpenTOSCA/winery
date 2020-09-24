@@ -18,30 +18,17 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlType;
-
 import org.eclipse.winery.model.tosca.yaml.visitor.AbstractParameter;
 import org.eclipse.winery.model.tosca.yaml.visitor.AbstractResult;
 import org.eclipse.winery.model.tosca.yaml.visitor.IVisitor;
 
 import org.eclipse.jdt.annotation.NonNull;
 
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "tInterfaceType", namespace = " http://docs.oasis-open.org/tosca/ns/simple/yaml/1.3", propOrder = {
-    "operations",
-    "inputs"
-})
 public class YTInterfaceType extends YTEntityType {
     private Map<String, YTOperationDefinition> operations;
     private Map<String, YTPropertyDefinition> inputs;
 
-    @Deprecated
-    public YTInterfaceType() {
-    }
-
-    public YTInterfaceType(Builder builder) {
+    protected YTInterfaceType(Builder builder) {
         super(builder);
         this.setOperations(builder.operations);
         this.setInputs(builder.inputs);

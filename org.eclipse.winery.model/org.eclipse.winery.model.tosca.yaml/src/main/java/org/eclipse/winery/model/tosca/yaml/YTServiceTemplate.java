@@ -20,12 +20,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
-
 import org.eclipse.winery.model.tosca.yaml.support.Metadata;
 import org.eclipse.winery.model.tosca.yaml.support.TMapImportDefinition;
 import org.eclipse.winery.model.tosca.yaml.visitor.AbstractParameter;
@@ -36,58 +30,24 @@ import org.eclipse.winery.model.tosca.yaml.visitor.VisitorNode;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 
-@XmlRootElement
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "tServiceTemplate", namespace = " http://docs.oasis-open.org/tosca/ns/simple/yaml/1.3", propOrder = {
-    "toscaDefinitionsVersion",
-    "metadata",
-    "description",
-    "dslDefinitions",
-    "repositories",
-    "imports",
-    "artifactTypes",
-    "dataTypes",
-    "capabilityTypes",
-    "interfaceTypes",
-    "relationshipTypes",
-    "nodeTypes",
-    "groupTypes",
-    "policyTypes",
-    "topologyTemplate"
-})
 public class YTServiceTemplate implements VisitorNode {
-    @XmlAttribute(name = "tosca_definitions_version", required = true)
     private String toscaDefinitionsVersion;
     private Metadata metadata;
     private String description;
-    @XmlAttribute(name = "dsl_definitions")
     private Map<String, Object> dslDefinitions;
     private Map<String, YTRepositoryDefinition> repositories;
     private List<TMapImportDefinition> imports;
-    @XmlAttribute(name = "artifact_types")
     private Map<String, YTArtifactType> artifactTypes;
-    @XmlAttribute(name = "data_types")
     private Map<String, YTDataType> dataTypes;
-    @XmlAttribute(name = "capability_types")
     private Map<String, YTCapabilityType> capabilityTypes;
-    @XmlAttribute(name = "interface_types")
     private Map<String, YTInterfaceType> interfaceTypes;
-    @XmlAttribute(name = "relationship_types")
     private Map<String, YTRelationshipType> relationshipTypes;
-    @XmlAttribute(name = "node_types")
     private Map<String, YTNodeType> nodeTypes;
-    @XmlAttribute(name = "group_types")
     private Map<String, YTGroupType> groupTypes;
-    @XmlAttribute(name = "policy_types")
     private Map<String, YTPolicyType> policyTypes;
-    @XmlAttribute(name = "topology_template")
     private YTTopologyTemplateDefinition topologyTemplate;
 
-    @Deprecated
-    public YTServiceTemplate() {
-    }
-
-    public YTServiceTemplate(Builder builder) {
+    protected YTServiceTemplate(Builder builder) {
         this.setToscaDefinitionsVersion(builder.toscaDefinitionsVersion);
         this.setMetadata(builder.metadata);
         this.setDescription(builder.description);

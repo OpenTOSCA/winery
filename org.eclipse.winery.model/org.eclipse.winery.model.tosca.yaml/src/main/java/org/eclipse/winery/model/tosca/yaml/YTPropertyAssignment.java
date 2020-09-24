@@ -15,33 +15,16 @@ package org.eclipse.winery.model.tosca.yaml;
 
 import java.util.Objects;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlType;
-
 import org.eclipse.winery.model.tosca.yaml.visitor.AbstractParameter;
 import org.eclipse.winery.model.tosca.yaml.visitor.AbstractResult;
 import org.eclipse.winery.model.tosca.yaml.visitor.IVisitor;
 
 import org.eclipse.jdt.annotation.Nullable;
 
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "tPropertyAssignment", namespace = " http://docs.oasis-open.org/tosca/ns/simple/yaml/1.3", propOrder = {
-    "value"
-})
 public class YTPropertyAssignment extends YTPropertyAssignmentOrDefinition {
     private Object value;
 
-    @Deprecated
-    public YTPropertyAssignment() {
-    }
-
-    @Deprecated
-    public YTPropertyAssignment(Object value) {
-        this.value = value;
-    }
-
-    public YTPropertyAssignment(Builder builder) {
+    protected YTPropertyAssignment(Builder builder) {
         this.setValue(builder.value);
     }
 

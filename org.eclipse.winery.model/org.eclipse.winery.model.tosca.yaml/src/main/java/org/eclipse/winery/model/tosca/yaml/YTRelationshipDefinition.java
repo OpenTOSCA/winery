@@ -18,9 +18,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlType;
 import javax.xml.namespace.QName;
 
 import org.eclipse.winery.model.tosca.yaml.visitor.AbstractParameter;
@@ -34,20 +31,11 @@ import org.eclipse.jdt.annotation.Nullable;
 /**
  * Used in Requirement Definitions
  */
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "tRelationshipDefinition", namespace = " http://docs.oasis-open.org/tosca/ns/simple/yaml/1.3", propOrder = {
-    "type",
-    "interfaces"
-})
 public class YTRelationshipDefinition implements VisitorNode {
     private QName type;
     private Map<String, YTInterfaceDefinition> interfaces;
 
-    @Deprecated
-    public YTRelationshipDefinition() {
-    }
-
-    public YTRelationshipDefinition(Builder builder) {
+    protected YTRelationshipDefinition(Builder builder) {
         this.setType(builder.type);
         this.setInterfaces(builder.interfaces);
     }

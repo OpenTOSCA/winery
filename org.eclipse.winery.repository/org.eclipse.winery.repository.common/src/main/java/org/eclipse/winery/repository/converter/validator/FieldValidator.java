@@ -21,16 +21,21 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 
 import org.eclipse.winery.model.converter.support.exception.InvalidToscaSyntax;
+import org.eclipse.winery.model.tosca.yaml.support.Annotations;
 import org.eclipse.winery.repository.converter.reader.YamlBuilder;
 import org.eclipse.winery.model.tosca.yaml.YTArtifactDefinition;
 
 public class FieldValidator {
+    private static final Pattern UPPERCASE_LETTERS = Pattern.compile("[A-Z]");
+
     private Map<Class, Set<String>> declaredFields;
 
     public FieldValidator() {
@@ -49,17 +54,22 @@ public class FieldValidator {
         if (!parent.equals(Object.class)) {
             this.declaredFields.get(base)
                 .addAll(Arrays.stream(parent.getDeclaredFields()).map(field -> {
-                        XmlAttribute xmlAttribute = field.getAnnotation(XmlAttribute.class);
-                        XmlElement xmlElement = field.getAnnotation(XmlElement.class);
-                        if (Objects.nonNull(xmlAttribute) && !xmlAttribute.name().equals("##default")) {
-                            return xmlAttribute.name();
-                        } else if (Objects.nonNull(xmlElement) && !xmlElement.name().equals("##default")) {
-                            return xmlElement.name();
-                        } else {
-                            return field.getName();
-                        }
+                    XmlAttribute xmlAttribute = field.getAnnotation(XmlAttribute.class);
+                    XmlElement xmlElement = field.getAnnotation(XmlElement.class);
+                    if (Objects.nonNull(xmlAttribute) && !xmlAttribute.name().equals("##default")) {
+                        return xmlAttribute.name();
+                    } else if (Objects.nonNull(xmlElement) && !xmlElement.name().equals("##default")) {
+                        return xmlElement.name();
                     }
-                ).collect(Collectors.toList()));
+                    Annotations.FieldName override = field.getAnnotation(Annotations.FieldName.class);
+                    if (Objects.nonNull(override)) {
+                        return override.value();
+                    }
+                    final String camelCaseFieldName = field.getName();
+                    Matcher matches = UPPERCASE_LETTERS.matcher(camelCaseFieldName);
+                    final String snakeCaseFieldName = matches.replaceAll("_$0").toLowerCase();
+                    return snakeCaseFieldName;
+                }).collect(Collectors.toList()));
             setDeclaredFields(base, parent.getSuperclass());
         }
     }

@@ -18,11 +18,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlType;
-
 import org.eclipse.winery.model.tosca.yaml.visitor.AbstractParameter;
 import org.eclipse.winery.model.tosca.yaml.visitor.AbstractResult;
 import org.eclipse.winery.model.tosca.yaml.visitor.IVisitor;
@@ -31,35 +26,17 @@ import org.eclipse.winery.model.tosca.yaml.visitor.VisitorNode;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "tTopologyTemplate", namespace = " http://docs.oasis-open.org/tosca/ns/simple/yaml/1.3", propOrder = {
-    "description",
-    "inputs",
-    "nodeTemplates",
-    "relationshipTemplates",
-    "groups",
-    "policies",
-    "outputs",
-    "substitutionMappings"
-})
 public class YTTopologyTemplateDefinition implements VisitorNode {
     private String description;
     private Map<String, YTParameterDefinition> inputs;
-    @XmlAttribute(name = "node_templates")
     private Map<String, YTNodeTemplate> nodeTemplates;
-    @XmlAttribute(name = "relationship_templates")
     private Map<String, YTRelationshipTemplate> relationshipTemplates;
     private Map<String, YTGroupDefinition> groups;
     private Map<String, YTPolicyDefinition> policies;
     private Map<String, YTParameterDefinition> outputs;
-    @XmlAttribute(name = "substitution_mappings")
     private YTSubstitutionMappings substitutionMappings;
 
-    @Deprecated
-    public YTTopologyTemplateDefinition() {
-    }
-
-    public YTTopologyTemplateDefinition(Builder builder) {
+    protected YTTopologyTemplateDefinition(Builder builder) {
         this.setDescription(builder.description);
         this.setInputs(builder.inputs);
         this.setNodeTemplates(builder.nodeTemplates);

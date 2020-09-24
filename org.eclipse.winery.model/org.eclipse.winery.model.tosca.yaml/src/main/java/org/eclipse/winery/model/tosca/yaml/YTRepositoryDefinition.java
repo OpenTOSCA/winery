@@ -15,12 +15,6 @@ package org.eclipse.winery.model.tosca.yaml;
 
 import java.util.Objects;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlType;
-
 import org.eclipse.winery.model.tosca.yaml.tosca.datatypes.Credential;
 import org.eclipse.winery.model.tosca.yaml.visitor.AbstractParameter;
 import org.eclipse.winery.model.tosca.yaml.visitor.AbstractResult;
@@ -30,24 +24,12 @@ import org.eclipse.winery.model.tosca.yaml.visitor.VisitorNode;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "tRepositoryDefinition", namespace = " http://docs.oasis-open.org/tosca/ns/simple/yaml/1.3", propOrder = {
-    "description",
-    "url",
-    "credential"
-})
 public class YTRepositoryDefinition implements VisitorNode {
     private String description;
-    @XmlAttribute(name = "url", required = true)
     private String url;
-    @XmlElement(name = "credential")
     private Credential credential;
 
-    @Deprecated
-    public YTRepositoryDefinition() {
-    }
-
-    public YTRepositoryDefinition(Builder builder) {
+    protected YTRepositoryDefinition(Builder builder) {
         this.setUrl(builder.url);
         this.setDescription(builder.description);
         this.setCredential(builder.credential);

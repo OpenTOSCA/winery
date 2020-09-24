@@ -15,13 +15,9 @@ package org.eclipse.winery.model.tosca.yaml;
 
 import java.util.Objects;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlType;
 import javax.xml.namespace.QName;
 
+import org.eclipse.winery.model.tosca.yaml.support.Annotations;
 import org.eclipse.winery.model.tosca.yaml.visitor.AbstractParameter;
 import org.eclipse.winery.model.tosca.yaml.visitor.AbstractResult;
 import org.eclipse.winery.model.tosca.yaml.visitor.IVisitor;
@@ -30,34 +26,18 @@ import org.eclipse.winery.model.tosca.yaml.visitor.VisitorNode;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "tAttributeDefinition", namespace = " http://docs.oasis-open.org/tosca/ns/simple/yaml/1.3", propOrder = {
-    "description",
-    "type",
-    "defaultValue",
-    "status",
-    "keySchema",
-    "entrySchema"
-})
 public class YTAttributeDefinition implements VisitorNode {
 
     private String description;
-    @XmlAttribute(name = "type", required = true)
     @NonNull
     private QName type;
-    @XmlElement(name = "default")
+    @Annotations.FieldName("default")
     private Object defaultValue;
     private YTStatusValue status;
-    @XmlAttribute(name = "key_schema")
     private YTSchemaDefinition keySchema;
-    @XmlAttribute(name = "entry_schema")
     private YTSchemaDefinition entrySchema;
 
-    @Deprecated
-    public YTAttributeDefinition() {
-    }
-
-    public YTAttributeDefinition(Builder builder) {
+    protected YTAttributeDefinition(Builder builder) {
         this.type = builder.type;
         this.description = builder.description;
         this.defaultValue = builder.defaultValue;

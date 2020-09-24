@@ -18,10 +18,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlType;
 import javax.xml.namespace.QName;
 
 import org.eclipse.winery.model.tosca.yaml.visitor.AbstractParameter;
@@ -30,19 +26,10 @@ import org.eclipse.winery.model.tosca.yaml.visitor.IVisitor;
 
 import org.eclipse.jdt.annotation.NonNull;
 
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "tCapabilityType", namespace = " http://docs.oasis-open.org/tosca/ns/simple/yaml/1.3", propOrder = {
-    "validSourceTypes"
-})
 public class YTCapabilityType extends YTEntityType {
-    @XmlAttribute(name = "valid_source_types")
     private List<QName> validSourceTypes;
 
-    @Deprecated
-    public YTCapabilityType() {
-    }
-
-    public YTCapabilityType(Builder builder) {
+    protected YTCapabilityType(Builder builder) {
         super(builder);
         this.setValidSourceTypes(builder.validSourceTypes);
     }

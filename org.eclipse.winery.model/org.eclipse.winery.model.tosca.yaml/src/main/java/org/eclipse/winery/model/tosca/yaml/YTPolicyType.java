@@ -18,9 +18,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlType;
 import javax.xml.namespace.QName;
 
 import org.eclipse.winery.model.tosca.yaml.visitor.AbstractParameter;
@@ -29,20 +26,11 @@ import org.eclipse.winery.model.tosca.yaml.visitor.IVisitor;
 
 import org.eclipse.jdt.annotation.NonNull;
 
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "tPolicyType", namespace = " http://docs.oasis-open.org/tosca/ns/simple/yaml/1.3", propOrder = {
-    "targets",
-    "triggers"
-})
 public class YTPolicyType extends YTEntityType {
     private List<QName> targets;
     private Object triggers;
 
-    @Deprecated
-    public YTPolicyType() {
-    }
-
-    public YTPolicyType(Builder builder) {
+    protected YTPolicyType(Builder builder) {
         super(builder);
         this.setTargets(builder.targets);
         this.setTriggers(builder.triggers);

@@ -18,9 +18,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlType;
 import javax.xml.namespace.QName;
 
 import org.eclipse.winery.model.tosca.yaml.visitor.AbstractParameter;
@@ -32,23 +29,13 @@ import io.github.adr.embedded.ADR;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "tInterfaceDefinition", namespace = " http://docs.oasis-open.org/tosca/ns/simple/yaml/1.3", propOrder = {
-    "type",
-    "inputs",
-    "operations"
-})
 public class YTInterfaceDefinition implements VisitorNode {
 
     private QName type;
     private Map<String, YTParameterDefinition> inputs;
     private Map<String, YTOperationDefinition> operations;
 
-    @Deprecated
-    public YTInterfaceDefinition() {
-    }
-
-    public YTInterfaceDefinition(Builder<?> builder) {
+    protected YTInterfaceDefinition(Builder<?> builder) {
         this.setType(builder.type);
         this.setInputs(builder.inputs);
         this.setOperations(builder.operations);

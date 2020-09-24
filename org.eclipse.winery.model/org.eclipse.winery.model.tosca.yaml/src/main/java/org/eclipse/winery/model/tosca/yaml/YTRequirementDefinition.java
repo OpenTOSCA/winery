@@ -20,10 +20,6 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlType;
 import javax.xml.namespace.QName;
 
 import org.eclipse.winery.model.tosca.yaml.support.Annotations;
@@ -35,15 +31,7 @@ import org.eclipse.winery.model.tosca.yaml.visitor.VisitorNode;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "tRequirementDefinition", namespace = " http://docs.oasis-open.org/tosca/ns/simple/yaml/1.3", propOrder = {
-    "occurrences",
-    "capability",
-    "node",
-    "relationship"
-})
 public class YTRequirementDefinition implements VisitorNode {
-    @XmlAttribute(name = "capability", required = true)
     private QName capability;
     private QName node;
     private YTRelationshipDefinition relationship;
@@ -52,11 +40,7 @@ public class YTRequirementDefinition implements VisitorNode {
     @Annotations.StandardExtension
     private String description;
 
-    @Deprecated
-    public YTRequirementDefinition() {
-    }
-
-    public YTRequirementDefinition(Builder builder) {
+    protected YTRequirementDefinition(Builder builder) {
         this.setCapability(builder.capability);
         this.setOccurrences(builder.occurrences);
         this.setNode(builder.node);

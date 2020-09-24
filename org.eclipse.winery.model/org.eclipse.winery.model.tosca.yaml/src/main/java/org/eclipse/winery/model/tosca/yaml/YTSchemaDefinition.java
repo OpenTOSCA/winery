@@ -18,9 +18,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlType;
 import javax.xml.namespace.QName;
 
 import org.eclipse.winery.model.tosca.yaml.visitor.AbstractParameter;
@@ -31,14 +28,6 @@ import org.eclipse.winery.model.tosca.yaml.visitor.VisitorNode;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "tSchemaDefinition", namespace = " http://docs.oasis-open.org/tosca/ns/simple/yaml/1.3", propOrder = {
-    "type",
-    "description",
-    "constraints",
-    "keySchema",
-    "entrySchema"
-})
 public class YTSchemaDefinition implements VisitorNode {
     @NonNull
     private QName type;
@@ -50,11 +39,7 @@ public class YTSchemaDefinition implements VisitorNode {
     // type could be list or map
     private YTSchemaDefinition entrySchema;
 
-    @Deprecated
-    public YTSchemaDefinition() {
-    }
-
-    public YTSchemaDefinition(Builder builder) {
+    protected YTSchemaDefinition(Builder builder) {
         this.type = builder.type;
         this.description = builder.description;
         this.constraints = builder.constraints;

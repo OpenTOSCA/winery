@@ -18,13 +18,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlType;
 import javax.xml.namespace.QName;
 
+import org.eclipse.winery.model.tosca.yaml.support.Annotations;
 import org.eclipse.winery.model.tosca.yaml.visitor.AbstractParameter;
 import org.eclipse.winery.model.tosca.yaml.visitor.AbstractResult;
 import org.eclipse.winery.model.tosca.yaml.visitor.IVisitor;
@@ -32,39 +28,19 @@ import org.eclipse.winery.model.tosca.yaml.visitor.VisitorNode;
 
 import org.eclipse.jdt.annotation.Nullable;
 
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "tParameterDefinition", namespace = " http://docs.oasis-open.org/tosca/ns/simple/yaml/1.3", propOrder = {
-    "type",
-    "description",
-    "required",
-    "defaultValue",
-    "status",
-    "constraints",
-    "keySchema",
-    "entrySchema",
-    "value"
-})
 public class YTParameterDefinition implements VisitorNode {
-    @XmlAttribute(name = "type")
     private QName type;
     private String description;
     private Boolean required;
-    @XmlElement(name = "default")
+    @Annotations.FieldName("default")
     private Object defaultValue;
     private YTStatusValue status;
-    @XmlElement
     private List<YTConstraintClause> constraints;
-    @XmlAttribute(name = "key_schema")
     private YTSchemaDefinition keySchema;
-    @XmlAttribute(name = "entry_schema")
     private YTSchemaDefinition entrySchema;
     private Object value;
 
-    @Deprecated
-    public YTParameterDefinition() {
-    }
-
-    public YTParameterDefinition(Builder builder) {
+    protected YTParameterDefinition(Builder builder) {
         this.type = builder.type;
         this.description = builder.description;
         this.required = builder.required;

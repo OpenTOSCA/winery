@@ -18,11 +18,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlType;
-
 import org.eclipse.winery.model.tosca.yaml.visitor.AbstractParameter;
 import org.eclipse.winery.model.tosca.yaml.visitor.AbstractResult;
 import org.eclipse.winery.model.tosca.yaml.visitor.IVisitor;
@@ -30,22 +25,11 @@ import org.eclipse.winery.model.tosca.yaml.visitor.IVisitor;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "tArtifactType", namespace = " http://docs.oasis-open.org/tosca/ns/simple/yaml/1.3", propOrder = {
-    "mimeType",
-    "fileExt"
-})
 public class YTArtifactType extends YTEntityType {
-    @XmlAttribute(name = "mime_type")
     private String mimeType;
-    @XmlAttribute(name = "file_ext")
     private List<String> fileExt;
 
-    @Deprecated
-    public YTArtifactType() {
-    }
-
-    public YTArtifactType(Builder builder) {
+    protected YTArtifactType(Builder builder) {
         super(builder);
         this.setMimeType(builder.mimeType);
         this.setFileExt(builder.fileExt);

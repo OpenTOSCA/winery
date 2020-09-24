@@ -52,7 +52,6 @@ import org.eclipse.winery.repository.export.ToscaExportUtil;
 import org.eclipse.winery.repository.export.entries.RemoteRefBasedCsarEntry;
 import org.eclipse.winery.repository.yaml.export.entries.YAMLDefinitionsBasedCsarEntry;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.UrlValidator;

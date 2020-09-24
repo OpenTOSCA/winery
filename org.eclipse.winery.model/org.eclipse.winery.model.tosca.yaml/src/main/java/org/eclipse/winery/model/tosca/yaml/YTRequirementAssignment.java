@@ -17,10 +17,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlType;
 import javax.xml.namespace.QName;
 
 import org.eclipse.winery.model.tosca.yaml.visitor.AbstractParameter;
@@ -31,27 +27,14 @@ import org.eclipse.winery.model.tosca.yaml.visitor.VisitorNode;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "tRequirementAssignment", namespace = " http://docs.oasis-open.org/tosca/ns/simple/yaml/1.3", propOrder = {
-    "capability",
-    "node",
-    "relationship",
-    "nodeFilter",
-    "occurrences"
-})
 public class YTRequirementAssignment implements VisitorNode {
     private QName node;
     private YTRelationshipAssignment relationship;
     private QName capability;
-    @XmlAttribute(name = "node_filter")
     private YTNodeFilterDefinition nodeFilter;
     private List<String> occurrences;
 
-    @Deprecated
-    public YTRequirementAssignment() {
-    }
-
-    public YTRequirementAssignment(Builder builder) {
+    protected YTRequirementAssignment(Builder builder) {
         this.setCapability(builder.capability);
         this.setNode(builder.node);
         this.setRelationship(builder.relationship);

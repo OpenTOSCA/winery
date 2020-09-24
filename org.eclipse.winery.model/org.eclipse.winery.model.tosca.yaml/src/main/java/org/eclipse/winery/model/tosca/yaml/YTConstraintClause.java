@@ -16,28 +16,18 @@ package org.eclipse.winery.model.tosca.yaml;
 import java.util.List;
 import java.util.Objects;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlType;
-
 import org.eclipse.winery.model.tosca.yaml.visitor.AbstractParameter;
 import org.eclipse.winery.model.tosca.yaml.visitor.AbstractResult;
 import org.eclipse.winery.model.tosca.yaml.visitor.IVisitor;
 import org.eclipse.winery.model.tosca.yaml.visitor.VisitorNode;
 
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "tConstraintClause", namespace = " http://docs.oasis-open.org/tosca/ns/simple/yaml/1.3")
 public class YTConstraintClause implements VisitorNode {
     
     private String key;
     private String value;
     private List<String> list;
 
-    @Deprecated
-    public YTConstraintClause() {
-    }
-
-    private YTConstraintClause(Builder builder) {
+    protected YTConstraintClause(Builder builder) {
         this.key = builder.key;
         this.value = builder.value;
         this.list = builder.list;

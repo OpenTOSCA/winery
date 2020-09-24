@@ -18,10 +18,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlType;
 import javax.xml.namespace.QName;
 
 import org.eclipse.winery.model.tosca.yaml.support.Metadata;
@@ -34,29 +30,15 @@ import io.github.adr.embedded.ADR;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "tEntityType", namespace = " http://docs.oasis-open.org/tosca/ns/simple/yaml/1.3", propOrder = {
-    "description",
-    "version",
-    "derivedFrom",
-    "properties",
-    "attributes",
-    "metadata"
-})
 public class YTEntityType implements VisitorNode {
     private String description;
     private YTVersion version;
-    @XmlAttribute(name = "derived_from")
     private QName derivedFrom;
     private Map<String, YTPropertyDefinition> properties;
     private Map<String, YTAttributeDefinition> attributes;
     private Metadata metadata;
 
-    @Deprecated
-    public YTEntityType() {
-    }
-
-    public YTEntityType(Builder builder) {
+    protected YTEntityType(Builder builder) {
         this.setDescription(builder.description);
         this.setVersion(builder.version);
         this.setDerivedFrom(builder.derivedFrom);
@@ -114,7 +96,7 @@ public class YTEntityType implements VisitorNode {
     }
 
     public void setVersion(String version) {
-        YTVersion tmp = new YTVersion(version);
+        YTVersion tmp = new YTVersion.Builder().setVersion(version).build();
         setVersion(tmp);
     }
 

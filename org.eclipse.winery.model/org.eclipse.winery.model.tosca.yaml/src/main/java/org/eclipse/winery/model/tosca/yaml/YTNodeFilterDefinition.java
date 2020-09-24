@@ -19,10 +19,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlType;
-
 import org.eclipse.winery.model.tosca.yaml.support.TMapObject;
 import org.eclipse.winery.model.tosca.yaml.support.TMapPropertyFilterDefinition;
 import org.eclipse.winery.model.tosca.yaml.visitor.AbstractParameter;
@@ -32,20 +28,11 @@ import org.eclipse.winery.model.tosca.yaml.visitor.VisitorNode;
 
 import org.eclipse.jdt.annotation.NonNull;
 
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "tNodeFilter", namespace = " http://docs.oasis-open.org/tosca/ns/simple/yaml/1.3", propOrder = {
-    "properties",
-    "capabilities"
-})
 public class YTNodeFilterDefinition implements VisitorNode {
     private List<TMapPropertyFilterDefinition> properties;
     private List<TMapObject> capabilities;
 
-    @Deprecated
-    public YTNodeFilterDefinition() {
-    }
-
-    public YTNodeFilterDefinition(Builder builder) {
+    protected YTNodeFilterDefinition(Builder builder) {
         this.setProperties(builder.properties);
         this.setCapabilities(builder.capabilities);
     }

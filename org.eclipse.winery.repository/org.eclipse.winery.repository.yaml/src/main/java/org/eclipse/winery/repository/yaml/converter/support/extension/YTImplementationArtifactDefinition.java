@@ -21,11 +21,7 @@ public class YTImplementationArtifactDefinition extends YTArtifactDefinition {
     private String interfaceName;
     private String operationName;
 
-    public YTImplementationArtifactDefinition() {
-
-    }
-
-    public YTImplementationArtifactDefinition(Builder builder) {
+    protected YTImplementationArtifactDefinition(Builder builder) {
         super(builder);
         this.interfaceName = builder.interfaceName;
         this.operationName = builder.operationName;

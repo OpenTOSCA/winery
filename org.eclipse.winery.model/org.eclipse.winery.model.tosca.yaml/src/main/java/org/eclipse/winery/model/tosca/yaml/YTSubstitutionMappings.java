@@ -18,10 +18,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlType;
 import javax.xml.namespace.QName;
 
 import org.eclipse.winery.model.tosca.yaml.support.TListString;
@@ -36,23 +32,12 @@ import org.eclipse.jdt.annotation.Nullable;
 /**
  * Used in Topology Template Definition
  */
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "tSubstitutionMapping", namespace = " http://docs.oasis-open.org/tosca/ns/simple/yaml/1.3", propOrder = {
-    "nodeType",
-    "capabilities",
-    "requirements"
-})
 public class YTSubstitutionMappings implements VisitorNode {
-    @XmlAttribute(name = "node_type")
     private QName nodeType;
     private Map<String, TListString> capabilities;
     private Map<String, TListString> requirements;
 
-    @Deprecated
-    public YTSubstitutionMappings() {
-    }
-
-    public YTSubstitutionMappings(Builder builder) {
+    protected YTSubstitutionMappings(Builder builder) {
         this.setNodeType(builder.nodeType);
         this.setCapabilities(builder.capabilities);
         this.setRequirements(builder.requirements);

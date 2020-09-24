@@ -13,23 +13,11 @@
  *******************************************************************************/
 package org.eclipse.winery.model.tosca.yaml;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlSeeAlso;
-import javax.xml.bind.annotation.XmlType;
-
 import org.eclipse.winery.model.tosca.yaml.visitor.AbstractParameter;
 import org.eclipse.winery.model.tosca.yaml.visitor.AbstractResult;
 import org.eclipse.winery.model.tosca.yaml.visitor.IVisitor;
 
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "tNodeOrGroupType", namespace = " http://docs.oasis-open.org/tosca/ns/simple/yaml/1.3", propOrder = {
-})
-@XmlSeeAlso( {YTNodeType.class, YTGroupType.class})
 public class YTNodeOrGroupType extends YTEntityType {
-    @Deprecated
-    public YTNodeOrGroupType() {
-    }
 
     public YTNodeOrGroupType(Builder builder) {
         super(builder);
