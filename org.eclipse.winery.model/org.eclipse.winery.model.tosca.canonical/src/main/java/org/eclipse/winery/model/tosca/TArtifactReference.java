@@ -48,9 +48,8 @@ public class TArtifactReference implements Serializable {
     @XmlSchemaType(name = "anyURI")
     protected String reference;
 
-    public TArtifactReference() {
-
-    }
+    @Deprecated // used for XML deserialization of API request content
+    public TArtifactReference() { }
 
     public TArtifactReference(Builder builder) {
         this.includeOrExclude = builder.includeOrExclude;

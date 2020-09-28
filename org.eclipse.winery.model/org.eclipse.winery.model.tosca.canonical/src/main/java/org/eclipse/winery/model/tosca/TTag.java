@@ -37,9 +37,8 @@ public class TTag implements Serializable {
     @XmlAttribute(name = "value", required = true)
     protected String value;
 
-    public TTag() {
-
-    }
+    @Deprecated // used for XML deserialization of API request content
+    public TTag() { }
 
     public TTag(Builder builder) {
         this.name = Objects.requireNonNull(builder.name);

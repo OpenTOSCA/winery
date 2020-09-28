@@ -41,6 +41,9 @@ public class TPropertyDefinition implements HasName, Serializable {
     private List<ParameterDefinition> inputs;
     private List<ParameterDefinition> outputs;
 
+    @Deprecated // used for XML deserialization of API request content
+    public TPropertyDefinition() { }
+
     public String getType() {
         return type;
     }

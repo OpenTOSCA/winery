@@ -60,8 +60,8 @@ public class TTopologyTemplate extends TExtensibleElements {
     @JsonProperty("outputs")
     protected List<ParameterDefinition> outputs;
 
-    public TTopologyTemplate() {
-    }
+    @Deprecated // used for XML deserialization of API request content
+    public TTopologyTemplate() { }
 
     public TTopologyTemplate(Builder builder) {
         super(builder);

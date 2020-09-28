@@ -109,14 +109,15 @@ public class AbstractRefinementTest {
                        # (4) #
                        #######
          */
-        topology = new TTopologyTemplate();
-        topology.addNodeTemplate(nt1);
-        topology.addNodeTemplate(nt2);
-        topology.addNodeTemplate(nt3);
-        topology.addNodeTemplate(nt4);
-        topology.addRelationshipTemplate(rt21);
-        topology.addRelationshipTemplate(rt32);
-        topology.addRelationshipTemplate(rt24);
+        topology = new TTopologyTemplate.Builder()
+            .addNodeTemplates(nt1)
+            .addNodeTemplates(nt2)
+            .addNodeTemplates(nt3)
+            .addNodeTemplates(nt4)
+            .addRelationshipTemplate(rt21)
+            .addRelationshipTemplate(rt32)
+            .addRelationshipTemplate(rt24)
+            .build();
         // endregion
 
         // region *** topology2 ***
@@ -130,12 +131,13 @@ public class AbstractRefinementTest {
                        # (4) #
                        #######
          */
-        topology2 = new TTopologyTemplate();
-        topology2.addNodeTemplate(nt1);
-        topology2.addNodeTemplate(nt2);
-        topology2.addNodeTemplate(nt4);
-        topology2.addRelationshipTemplate(rt21);
-        topology2.addRelationshipTemplate(rt24);
+        topology2 = new TTopologyTemplate.Builder()
+            .addNodeTemplates(nt1)
+            .addNodeTemplates(nt2)
+            .addNodeTemplates(nt4)
+            .addRelationshipTemplate(rt21)
+            .addRelationshipTemplate(rt24)
+            .build();
         // endregion
 
         // region *** topology 3 ***
@@ -171,12 +173,13 @@ public class AbstractRefinementTest {
         das.getDeploymentArtifact().add(da);
         nt30.setDeploymentArtifacts(das);
 
-        topology3 = new TTopologyTemplate();
-        topology3.addNodeTemplate(nt1);
-        topology3.addNodeTemplate(nt2);
-        topology3.addNodeTemplate(nt30);
-        topology3.addRelationshipTemplate(rt21);
-        topology3.addRelationshipTemplate(rt230);
+        topology3 = new TTopologyTemplate.Builder()
+            .addNodeTemplates(nt1)
+            .addNodeTemplates(nt2)
+            .addNodeTemplates(nt30)
+            .addRelationshipTemplate(rt21)
+            .addRelationshipTemplate(rt230)
+            .build();
         // endregion
 
         // region *** topology4 ***
@@ -196,14 +199,15 @@ public class AbstractRefinementTest {
         # (1) # -----># (4) #
         #######       #######
         */
-        topology4 = new TTopologyTemplate();
-        topology4.addNodeTemplate(nt1);
-        topology4.addNodeTemplate(nt2);
-        topology4.addNodeTemplate(nt3);
-        topology4.addNodeTemplate(nt4);
-        topology4.addRelationshipTemplate(rt32);
-        topology4.addRelationshipTemplate(rt14);
-        topology4.addRelationshipTemplate(rt24);
+        topology4 = new TTopologyTemplate.Builder()
+            .addNodeTemplates(nt1)
+            .addNodeTemplates(nt2)
+            .addNodeTemplates(nt3)
+            .addNodeTemplates(nt4)
+            .addRelationshipTemplate(rt32)
+            .addRelationshipTemplate(rt14)
+            .addRelationshipTemplate(rt24)
+            .build();
         // endregion
 
         // region *** matching PRM ***
@@ -232,10 +236,11 @@ public class AbstractRefinementTest {
         # (4) #
         #######
          */
-        TTopologyTemplate detector = new TTopologyTemplate();
-        detector.addNodeTemplate(nt7);
-        detector.addNodeTemplate(nt8);
-        detector.addRelationshipTemplate(rt78);
+        TTopologyTemplate detector = new TTopologyTemplate.Builder()
+            .addNodeTemplates(nt7)
+            .addNodeTemplates(nt8)
+            .addRelationshipTemplate(rt78)
+            .build();
         // endregion
 
         // region *** refinement structure
@@ -297,14 +302,15 @@ public class AbstractRefinementTest {
                 # (13) #
                 ########
          */
-        TTopologyTemplate refinementStructure = new TTopologyTemplate();
-        refinementStructure.addNodeTemplate(nt10);
-        refinementStructure.addNodeTemplate(nt11);
-        refinementStructure.addNodeTemplate(nt12);
-        refinementStructure.addNodeTemplate(nt13);
-        refinementStructure.addRelationshipTemplate(rt1012);
-        refinementStructure.addRelationshipTemplate(rt1112);
-        refinementStructure.addRelationshipTemplate(rt1213);
+        TTopologyTemplate refinementStructure = new TTopologyTemplate.Builder()
+            .addNodeTemplates(nt10)
+            .addNodeTemplates(nt11)
+            .addNodeTemplates(nt12)
+            .addNodeTemplates(nt13)
+            .addRelationshipTemplate(rt1012)
+            .addRelationshipTemplate(rt1112)
+            .addRelationshipTemplate(rt1213)
+            .build();
         // endregion
 
         // region *** relation mapping ***

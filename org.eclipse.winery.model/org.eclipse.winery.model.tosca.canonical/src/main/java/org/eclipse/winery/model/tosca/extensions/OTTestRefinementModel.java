@@ -32,7 +32,7 @@ public class OTTestRefinementModel extends OTRefinementModel {
     @XmlElement(name = "TestFragment")
     private TTopologyTemplate testFragment;
 
-    @Deprecated
+    @Deprecated // used for XML deserialization of API request content
     public OTTestRefinementModel() { }
 
     public OTTestRefinementModel(Builder builder) {

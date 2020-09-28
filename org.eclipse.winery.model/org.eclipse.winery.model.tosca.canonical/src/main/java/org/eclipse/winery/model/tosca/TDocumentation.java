@@ -51,6 +51,9 @@ public class TDocumentation implements Serializable {
     @XmlAttribute(name = "lang", namespace = Namespaces.W3C_NAMESPACE_URI)
     protected String lang;
 
+    @Deprecated // used for XML deserialization of API request content
+    public TDocumentation() { }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

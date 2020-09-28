@@ -39,8 +39,8 @@ public class TDeploymentArtifact extends TExtensibleElements implements HasName,
     @XmlAttribute(name = "artifactRef")
     protected QName artifactRef;
 
-    public TDeploymentArtifact() {
-    }
+    @Deprecated // used for XML deserialization of API request content
+    public TDeploymentArtifact() { }
 
     public TDeploymentArtifact(Builder builder) {
         super(builder);

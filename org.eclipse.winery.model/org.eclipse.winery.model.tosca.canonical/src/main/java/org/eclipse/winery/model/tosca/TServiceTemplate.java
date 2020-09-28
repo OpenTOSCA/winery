@@ -61,8 +61,8 @@ public class TServiceTemplate extends HasId implements HasName, HasTargetNamespa
     @XmlAttribute(name = "substitutableNodeType")
     protected QName substitutableNodeType;
 
-    public TServiceTemplate() {
-    }
+    @Deprecated // used for XML deserialization of API request content
+    public TServiceTemplate() { }
 
     public TServiceTemplate(Builder builder) {
         super(builder);

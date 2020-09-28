@@ -36,6 +36,9 @@ public class TExtensions extends TExtensibleElements {
     @XmlElement(name = "Extension", required = true)
     protected List<TExtension> extension;
 
+    @Deprecated // used for XML deserialization of API request content
+    public TExtensions() { }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

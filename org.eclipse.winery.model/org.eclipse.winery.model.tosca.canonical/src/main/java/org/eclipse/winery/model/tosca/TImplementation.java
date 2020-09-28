@@ -37,8 +37,8 @@ public class TImplementation implements Serializable {
     private String operationHost;
     private Integer timeout = 0;
 
-    public TImplementation() {
-    }
+    @Deprecated // used for XML deserialization of API request content
+    public TImplementation() { }
 
     public String getPrimary() {
         return primary;

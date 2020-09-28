@@ -35,8 +35,8 @@ public class TArtifact extends TEntityTemplate {
     private String file;
     private String deployPath;
 
-    public TArtifact() {
-    }
+    @Deprecated // used for XML deserialization of API request content
+    public TArtifact() { }
 
     public TArtifact(Builder builder) {
         super(builder);

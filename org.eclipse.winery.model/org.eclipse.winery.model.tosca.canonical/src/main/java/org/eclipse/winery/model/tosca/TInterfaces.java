@@ -34,6 +34,9 @@ public class TInterfaces {
     @XmlElement(name = "Interface", required = true)
     protected List<TInterface> _interface;
 
+    @Deprecated // used for XML deserialization of API request content
+    public TInterfaces() { }
+
     @NonNull
     public List<TInterface> getInterface() {
         if (_interface == null) {

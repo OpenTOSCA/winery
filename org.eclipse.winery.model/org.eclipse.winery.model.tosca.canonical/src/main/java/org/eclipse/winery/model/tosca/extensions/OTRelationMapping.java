@@ -35,9 +35,8 @@ public class OTRelationMapping extends OTPrmMapping {
     @XmlAttribute(name = "validSourceOrTarget")
     private QName validSourceOrTarget;
 
-    @Deprecated
-    public OTRelationMapping() {
-    }
+    @Deprecated // used for XML deserialization of API request content
+    public OTRelationMapping() { }
 
     public OTRelationMapping(Builder builder) {
         super(builder);

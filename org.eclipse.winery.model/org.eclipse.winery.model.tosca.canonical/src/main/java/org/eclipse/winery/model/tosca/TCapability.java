@@ -39,8 +39,8 @@ public class TCapability extends RelationshipSourceOrTarget {
     @XmlAttribute(name = "name", required = true)
     protected String name;
 
-    public TCapability() {
-    }
+    @Deprecated // used for XML deserialization of API request content
+    public TCapability() { }
 
     public TCapability(Builder builder) {
         super(builder);

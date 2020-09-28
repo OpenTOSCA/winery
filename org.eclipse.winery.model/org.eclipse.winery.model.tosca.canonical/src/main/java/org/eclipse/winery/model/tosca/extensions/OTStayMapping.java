@@ -25,9 +25,8 @@ import org.eclipse.winery.model.tosca.visitor.Visitor;
 @XmlType(name = "otStayMapping")
 public class OTStayMapping extends OTPrmMapping {
 
-    @Deprecated
-    public OTStayMapping() {
-    }
+    @Deprecated // used for XML deserialization of API request content
+    public OTStayMapping() { }
 
     public OTStayMapping(Builder builder) {
         super(builder);

@@ -74,6 +74,7 @@ public abstract class TEntityTemplate extends HasId implements HasType, HasName 
     @XmlAttribute(name = "type")
     protected QName type;
 
+    @Deprecated // used for XML deserialization of API request content
     public TEntityTemplate() {
         super();
     }

@@ -63,6 +63,7 @@ public class TRelationshipTemplate extends TEntityTemplate implements HasPolicie
     @XmlAttribute(name = "name")
     protected String name;
 
+    @Deprecated // used for XML deserialization of API request content
     public TRelationshipTemplate() {
         super();
     }

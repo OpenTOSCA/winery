@@ -53,8 +53,8 @@ public class TNodeType extends TEntityType {
     // added to support TOSCA YAML
     protected List<TInterfaceDefinition> interfaceDefinitions;
 
-    public TNodeType() {
-    }
+    @Deprecated // used for XML deserialization of API request content
+    public TNodeType() { }
 
     public TNodeType(Builder builder) {
         super(builder);

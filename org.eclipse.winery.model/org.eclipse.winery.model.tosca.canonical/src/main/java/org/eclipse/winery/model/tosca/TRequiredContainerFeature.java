@@ -48,6 +48,9 @@ public class TRequiredContainerFeature implements Serializable {
     @XmlSchemaType(name = "anyURI")
     protected String feature;
 
+    @Deprecated // used for XML deserialization of API request content
+    public TRequiredContainerFeature() { }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

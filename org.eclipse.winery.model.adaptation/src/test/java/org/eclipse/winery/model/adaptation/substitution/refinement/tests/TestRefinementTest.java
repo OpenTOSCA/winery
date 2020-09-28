@@ -65,20 +65,22 @@ public class TestRefinementTest {
         webShopToDatabase.setSourceNodeTemplate(webShop);
         webShopToDatabase.setType("{ns}connectsTo");
 
-        TTopologyTemplate topologyTemplate = new TTopologyTemplate();
-        topologyTemplate.addNodeTemplate(tomcat);
-        topologyTemplate.addNodeTemplate(webShop);
-        topologyTemplate.addNodeTemplate(database);
-        topologyTemplate.addRelationshipTemplate(webShopOnTomcat);
-        topologyTemplate.addRelationshipTemplate(webShopToDatabase);
+        TTopologyTemplate topologyTemplate = new TTopologyTemplate.Builder()
+            .addNodeTemplates(tomcat)
+            .addNodeTemplates(webShop)
+            .addNodeTemplates(database)
+            .addRelationshipTemplate(webShopOnTomcat)
+            .addRelationshipTemplate(webShopToDatabase)
+            .build();
         // endregion
 
         // region *** refinement model ***
         TNodeTemplate mySqlConnectorTest = new TNodeTemplate();
         mySqlConnectorTest.setId("sqlConnectorTest");
         mySqlConnectorTest.setType("{ns}sqlConnectorTest");
-        TTopologyTemplate refinementTopology = new TTopologyTemplate();
-        refinementTopology.addNodeTemplate(mySqlConnectorTest);
+        TTopologyTemplate refinementTopology = new TTopologyTemplate.Builder()
+            .addNodeTemplates(mySqlConnectorTest)
+            .build();
 
         OTRelationMapping testHostedOn = new OTRelationMapping(new OTRelationMapping.Builder()
             .setDirection(OTRelationDirection.OUTGOING)

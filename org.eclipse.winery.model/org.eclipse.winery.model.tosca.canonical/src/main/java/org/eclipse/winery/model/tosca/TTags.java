@@ -52,8 +52,8 @@ public class TTags implements Serializable {
     @XmlElement(name = "Tag", required = true)
     protected List<TTag> tag;
 
-    public TTags() {
-    }
+    @Deprecated // used for XML deserialization of API request content
+    public TTags() { }
 
     public TTags(Builder builder) {
         this.tag = builder.tag;

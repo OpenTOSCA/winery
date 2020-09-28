@@ -32,9 +32,8 @@ public class TPolicyTemplate extends TEntityTemplate {
     @XmlAttribute(name = "name")
     protected String name;
 
-    public TPolicyTemplate() {
-
-    }
+    @Deprecated // used for XML deserialization of API request content
+    public TPolicyTemplate() { }
 
     public TPolicyTemplate(Builder builder) {
         super(builder);

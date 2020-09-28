@@ -42,9 +42,8 @@ public class TRelationshipTypeImplementation extends TEntityTypeImplementation {
     @XmlElement(name = "DerivedFrom")
     protected TRelationshipTypeImplementation.DerivedFrom derivedFrom;
 
-    public TRelationshipTypeImplementation() {
-
-    }
+    @Deprecated // used for XML deserialization of API request content
+    public TRelationshipTypeImplementation() { }
 
     public TRelationshipTypeImplementation(Builder builder) {
         super(builder);

@@ -33,9 +33,8 @@ public class TArtifacts implements Serializable {
     @XmlElement(name = "Artifact", required = true)
     List<TArtifact> artifact;
 
-    public TArtifacts() {
-
-    }
+    @Deprecated // used for XML deserialization of API request content
+    public TArtifacts() { }
 
     public TArtifacts(List<TArtifact> artifacts) {
         this.artifact = artifacts;

@@ -23,9 +23,8 @@ import org.eclipse.winery.model.tosca.constants.Namespaces;
 @XmlType(name = "otPatternRefinementModel", namespace = Namespaces.TOSCA_WINERY_EXTENSIONS_NAMESPACE)
 public class OTPatternRefinementModel extends OTTopologyFragmentRefinementModel {
 
-    @Deprecated
-    public OTPatternRefinementModel() {
-    }
+    @Deprecated // used for XML deserialization of API request content
+    public OTPatternRefinementModel() { }
 
     public OTPatternRefinementModel(Builder builder) {
         super(builder);

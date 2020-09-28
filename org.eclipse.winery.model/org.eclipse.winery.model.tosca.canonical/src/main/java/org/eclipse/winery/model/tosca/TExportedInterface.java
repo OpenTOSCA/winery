@@ -44,6 +44,9 @@ public class TExportedInterface implements HasName, Serializable {
     @NonNull
     protected String name;
 
+    @Deprecated // used for XML deserialization of API request content
+    public TExportedInterface() { }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

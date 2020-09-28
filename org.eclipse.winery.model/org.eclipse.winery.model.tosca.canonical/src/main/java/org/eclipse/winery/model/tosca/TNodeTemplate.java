@@ -70,6 +70,7 @@ public class TNodeTemplate extends RelationshipSourceOrTarget implements HasPoli
     @XmlElement(name = "Artifacts", required = false)
     protected TArtifacts artifacts;
 
+    @Deprecated // used for XML deserialization of API request content
     public TNodeTemplate() {
         super();
     }

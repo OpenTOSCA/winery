@@ -37,9 +37,8 @@ public class TAppliesTo implements Serializable {
     @XmlElement(name = "NodeTypeReference", required = true)
     protected List<NodeTypeReference> nodeTypeReference;
 
-    public TAppliesTo() {
-
-    }
+    @Deprecated // used for XML deserialization of API request content
+    public TAppliesTo() { }
 
     @Override
     public boolean equals(Object o) {

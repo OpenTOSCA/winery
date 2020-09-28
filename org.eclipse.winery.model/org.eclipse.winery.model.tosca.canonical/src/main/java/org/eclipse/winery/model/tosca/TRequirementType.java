@@ -32,8 +32,8 @@ public class TRequirementType extends TEntityType {
     @XmlAttribute(name = "requiredCapabilityType")
     protected QName requiredCapabilityType;
 
-    public TRequirementType() {
-    }
+    @Deprecated // used for XML deserialization of API request content
+    public TRequirementType() { }
 
     public TRequirementType(Builder builder) {
         super(builder);

@@ -38,9 +38,8 @@ public class TPolicyType extends TEntityType {
     @XmlSchemaType(name = "anyURI")
     protected String policyLanguage;
 
-    public TPolicyType() {
-
-    }
+    @Deprecated // used for XML deserialization of API request content
+    public TPolicyType() { }
 
     public TPolicyType(Builder builder) {
         super(builder);

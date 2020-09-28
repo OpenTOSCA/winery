@@ -59,6 +59,9 @@ public class TPlans implements Serializable {
     @XmlSchemaType(name = "anyURI")
     protected String targetNamespace;
 
+    @Deprecated // used for XML deserialization of API request content
+    public TPlans() { }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

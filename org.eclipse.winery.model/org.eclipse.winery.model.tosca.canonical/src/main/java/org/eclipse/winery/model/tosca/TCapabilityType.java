@@ -31,8 +31,8 @@ public class TCapabilityType extends TEntityType {
     // java.lang.Object, org.eclipse.winery.repository.common.RepositoryFileReference, org.apache.tika.mime.MediaType)
     private List<QName> validNodeTypes;
 
-    public TCapabilityType() {
-    }
+    @Deprecated // used for XML deserialization of API request content
+    public TCapabilityType() { }
 
     public TCapabilityType(Builder builder) {
         super(builder);

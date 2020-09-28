@@ -39,9 +39,8 @@ public class TImport extends TExtensibleElements {
     @XmlAttribute(name = "importType", required = true)
     protected String importType;
 
-    public TImport() {
-
-    }
+    @Deprecated // used for XML deserialization of API request content
+    public TImport() { }
 
     public TImport(Builder builder) {
         super(builder);

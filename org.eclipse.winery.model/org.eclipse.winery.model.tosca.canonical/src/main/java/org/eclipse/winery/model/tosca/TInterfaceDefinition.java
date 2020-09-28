@@ -41,8 +41,8 @@ public class TInterfaceDefinition implements HasName, HasType, Serializable {
     private List<ParameterDefinition> inputs;
     private List<TOperationDefinition> operations;
 
-    public TInterfaceDefinition() {
-    }
+    @Deprecated // used for XML deserialization of API request content
+    public TInterfaceDefinition() { }
 
     public TInterfaceDefinition(String name) {
         this.name = name;

@@ -44,9 +44,8 @@ public abstract class OTPrmMapping extends HasId implements Serializable {
     @NonNull
     private TEntityTemplate refinementElement;
 
-    @Deprecated
-    public OTPrmMapping() {
-    }
+    @Deprecated // used for XML deserialization of API request content
+    public OTPrmMapping() { }
 
     public OTPrmMapping(Builder builder) {
         super(builder);

@@ -87,6 +87,7 @@ public class TNodeTypeImplementation extends TEntityTypeImplementation {
     @XmlElement(name = "DerivedFrom")
     protected TNodeTypeImplementation.DerivedFrom derivedFrom;
 
+    @Deprecated // used for XML deserialization of API request content
     public TNodeTypeImplementation() {
         super();
     }

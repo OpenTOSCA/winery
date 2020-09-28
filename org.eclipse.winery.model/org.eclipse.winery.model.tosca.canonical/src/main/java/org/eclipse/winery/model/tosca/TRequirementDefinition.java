@@ -54,9 +54,8 @@ public class TRequirementDefinition extends TExtensibleElements {
     @XmlAttribute(name = "relationship")
     private QName relationship;
 
-    public TRequirementDefinition() {
-
-    }
+    @Deprecated // used for XML deserialization of API request content
+    public TRequirementDefinition() { }
 
     public TRequirementDefinition(Builder builder) {
         super(builder);

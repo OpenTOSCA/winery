@@ -34,6 +34,7 @@ public class PropertyDefinitionKV implements Serializable {
     @JsonProperty("constraint")
     private List<ConstraintClauseKV> constraintList;
 
+    @Deprecated // used for XML deserialization of API request content
     public PropertyDefinitionKV() {
         super();
     }

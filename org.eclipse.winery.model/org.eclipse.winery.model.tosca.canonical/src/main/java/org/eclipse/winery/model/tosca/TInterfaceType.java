@@ -41,8 +41,8 @@ public class TInterfaceType extends TEntityType {
     //private Map<String, TPropertyDefinition> inputs;
     private Map<String, TOperationDefinition> operations;
 
-    public TInterfaceType() {
-    }
+    @Deprecated // used for XML deserialization of API request content
+    public TInterfaceType() {  }
 
     public TInterfaceType(Builder builder) {
         super(builder);

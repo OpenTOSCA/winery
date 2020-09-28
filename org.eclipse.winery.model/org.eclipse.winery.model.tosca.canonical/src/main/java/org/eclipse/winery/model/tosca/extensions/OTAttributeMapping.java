@@ -38,9 +38,8 @@ public class OTAttributeMapping extends OTPrmMapping {
     @Nullable
     private String refinementProperty;
 
-    @Deprecated
-    public OTAttributeMapping() {
-    }
+    @Deprecated // used for XML deserialization of API request content
+    public OTAttributeMapping() { }
 
     public OTAttributeMapping(Builder builder) {
         super(builder);

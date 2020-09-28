@@ -38,18 +38,18 @@ public class TRequirement extends RelationshipSourceOrTarget {
 
     @XmlAttribute(name = "name", required = true)
     protected String name;
-    
+
     @XmlAttribute(name = "capability")
     protected String capability;
-    
+
     @XmlAttribute(name = "node")
     protected String node;
-    
+
     @XmlAttribute(name = "relationship")
     protected String relationship;
 
-    public TRequirement() {
-    }
+    @Deprecated // used for XML deserialization of API request content
+    public TRequirement() { }
 
     public TRequirement(Builder builder) {
         super(builder);

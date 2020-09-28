@@ -40,6 +40,9 @@ public class TCapabilityRef implements Serializable {
     @XmlSchemaType(name = "IDREF")
     protected TCapability ref;
 
+    @Deprecated // used for XML deserialization of API request content
+    public TCapabilityRef() { }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

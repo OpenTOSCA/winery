@@ -62,6 +62,9 @@ public class TTopologyElementInstanceStates implements Serializable {
     @XmlElement(name = "InstanceState", required = true)
     protected List<InstanceState> instanceState;
 
+    @Deprecated // used for XML deserialization of API request content
+    public TTopologyElementInstanceStates() { }
+    
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -96,7 +99,7 @@ public class TTopologyElementInstanceStates implements Serializable {
     @NonNull
     public List<InstanceState> getInstanceState() {
         if (instanceState == null) {
-            instanceState = new ArrayList<InstanceState>();
+            instanceState = new ArrayList<>();
         }
         return this.instanceState;
     }

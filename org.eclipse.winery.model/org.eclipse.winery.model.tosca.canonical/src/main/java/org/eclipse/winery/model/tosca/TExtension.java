@@ -36,8 +36,8 @@ public class TExtension extends TExtensibleElements {
     @XmlAttribute(name = "mustUnderstand")
     protected boolean mustUnderstand;
 
-    public TExtension() {
-    }
+    @Deprecated // used for XML deserialization of API request content
+    public TExtension() { }
 
     public TExtension(Builder builder) {
         super(builder);

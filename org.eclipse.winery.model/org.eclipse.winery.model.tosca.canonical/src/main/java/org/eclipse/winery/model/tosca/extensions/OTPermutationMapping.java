@@ -22,9 +22,8 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "otPermutationMapping")
 public class OTPermutationMapping extends OTPrmMapping {
 
-    @Deprecated
-    public OTPermutationMapping() {
-    }
+    @Deprecated // used for XML deserialization of API request content
+    public OTPermutationMapping() { }
 
     public OTPermutationMapping(Builder builder) {
         super(builder);

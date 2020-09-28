@@ -35,6 +35,7 @@ import io.github.adr.embedded.ADR;
 })
 public abstract class RelationshipSourceOrTarget extends TEntityTemplate {
 
+    @Deprecated // used for XML deserialization of API request content
     public RelationshipSourceOrTarget() {
         super();
     }

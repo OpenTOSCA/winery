@@ -83,6 +83,7 @@ public abstract class TEntityTypeImplementation extends TExtensibleElements impl
     @XmlTransient
     protected QName implementedType;
 
+    @Deprecated // used for XML deserialization of API request content
     public TEntityTypeImplementation() {
         super();
     }

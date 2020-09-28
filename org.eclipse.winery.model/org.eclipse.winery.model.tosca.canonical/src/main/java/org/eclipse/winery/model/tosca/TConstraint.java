@@ -43,6 +43,9 @@ public class TConstraint implements Serializable {
     @XmlSchemaType(name = "anyURI")
     protected String constraintType;
 
+    @Deprecated // used for XML deserialization of API request content
+    public TConstraint() { }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

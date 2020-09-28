@@ -48,8 +48,8 @@ public class TOperation extends TExtensibleElements {
     @XmlSchemaType(name = "NCName")
     protected String name;
 
-    public TOperation() {
-    }
+    @Deprecated // used for XML deserialization of API request content
+    public TOperation() { }
 
     public TOperation(Builder builder) {
         super(builder);

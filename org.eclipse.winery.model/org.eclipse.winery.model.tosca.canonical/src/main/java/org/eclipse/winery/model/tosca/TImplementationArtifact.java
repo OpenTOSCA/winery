@@ -53,9 +53,8 @@ public class TImplementationArtifact extends TExtensibleElements implements HasN
     @XmlAttribute(name = "artifactRef")
     protected QName artifactRef;
 
-    public TImplementationArtifact() {
-
-    }
+    @Deprecated // used for XML deserialization of API request content
+    public TImplementationArtifact() { }
 
     public TImplementationArtifact(Builder builder) {
         super(builder);

@@ -36,8 +36,8 @@ public class TDataType extends TEntityType {
     // metadata were added to all TEntityTypes, so no need to add these explicitly
     // FIXME add key_schema, entry_schema
 
-    public TDataType() {
-    }
+    @Deprecated // used for XML deserialization of API request content
+    public TDataType() { }
 
     public TDataType(Builder builder) {
         super(builder);

@@ -40,6 +40,9 @@ public class TRequirementRef implements Serializable {
     @XmlSchemaType(name = "IDREF")
     protected TRequirement ref;
 
+    @Deprecated // used for XML deserialization of API request content
+    public TRequirementRef() { }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

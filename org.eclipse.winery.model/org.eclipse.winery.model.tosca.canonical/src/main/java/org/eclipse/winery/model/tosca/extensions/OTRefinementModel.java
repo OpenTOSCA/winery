@@ -49,9 +49,8 @@ public abstract class OTRefinementModel extends TExtensibleElements implements H
     @XmlElement(name = "PermutationMapping")
     protected List<OTPermutationMapping> permutationMappings;
 
-    @Deprecated
-    public OTRefinementModel() {
-    }
+    @Deprecated // used for XML deserialization of API request content
+    public OTRefinementModel() { }
 
     @SuppressWarnings("unchecked")
     public OTRefinementModel(Builder builder) {

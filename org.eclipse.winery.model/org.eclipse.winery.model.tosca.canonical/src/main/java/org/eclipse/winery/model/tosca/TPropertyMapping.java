@@ -49,6 +49,9 @@ public class TPropertyMapping implements Serializable {
     @NonNull
     protected String targetPropertyRef;
 
+    @Deprecated // used for XML deserialization of API request content
+    public TPropertyMapping() { }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

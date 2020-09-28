@@ -102,8 +102,8 @@ public class TDefinitions extends HasId implements HasName, HasTargetNamespace {
     @XmlTransient
     protected Map<String, QName> importDefinitions = new HashMap<>();
 
-    public TDefinitions() {
-    }
+    @Deprecated // used for XML deserialization of API request content
+    public TDefinitions() { }
 
     public TDefinitions(Builder builder) {
         super(builder);

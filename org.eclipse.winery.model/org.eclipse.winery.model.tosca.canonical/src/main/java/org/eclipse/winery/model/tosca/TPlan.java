@@ -72,9 +72,8 @@ public class TPlan extends TExtensibleElements {
     @XmlSchemaType(name = "anyURI")
     protected String planLanguage;
 
-    public TPlan() {
-
-    }
+    @Deprecated // used for XML deserialization of API request content
+    public TPlan() { }
 
     public TPlan(Builder builder) {
         super(builder);

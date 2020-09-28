@@ -49,8 +49,8 @@ public class TCapabilityDefinition extends TExtensibleElements {
     @XmlAttribute(name = "validSourceTypes")
     protected List<QName> validSourceTypes;
 
-    public TCapabilityDefinition() {
-    }
+    @Deprecated // used for XML deserialization of API request content
+    public TCapabilityDefinition() { }
 
     public TCapabilityDefinition(Builder builder) {
         super(builder);

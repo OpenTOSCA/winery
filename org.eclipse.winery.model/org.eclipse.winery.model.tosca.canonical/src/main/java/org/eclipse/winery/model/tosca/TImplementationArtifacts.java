@@ -61,9 +61,8 @@ public class TImplementationArtifacts implements Serializable {
     @XmlElement(name = "ImplementationArtifact", required = true)
     protected List<ImplementationArtifact> implementationArtifact;
 
-    public TImplementationArtifacts() {
-
-    }
+    @Deprecated // used for XML deserialization of API request content
+    public TImplementationArtifacts() { }
 
     public TImplementationArtifacts(Builder builder) {
         this.implementationArtifact = builder.implementationArtifact;

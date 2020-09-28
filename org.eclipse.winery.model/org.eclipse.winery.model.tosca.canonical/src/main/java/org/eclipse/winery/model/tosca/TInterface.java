@@ -58,8 +58,8 @@ public class TInterface implements HasName, Serializable {
     @XmlSchemaType(name = "anyURI")
     protected String name;
 
-    public TInterface() {
-    }
+    @Deprecated // used for XML deserialization of API request content
+    public TInterface() { }
 
     public TInterface(Builder builder) {
         this.operation = builder.operation;

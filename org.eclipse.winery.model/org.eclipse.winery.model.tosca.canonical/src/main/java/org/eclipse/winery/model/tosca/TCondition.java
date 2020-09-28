@@ -42,6 +42,9 @@ public class TCondition implements Serializable {
     @XmlSchemaType(name = "anyURI")
     protected String expressionLanguage;
 
+    @Deprecated // used for XML deserialization of API request content
+    public TCondition() { }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

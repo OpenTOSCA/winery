@@ -52,9 +52,8 @@ public class OTComplianceRule extends HasId implements HasName, HasTargetNamespa
     @XmlElement(name = "Tags")
     protected TTags tags;
 
-    @Deprecated
-    public OTComplianceRule() {
-    }
+    @Deprecated // used for XML deserialization of API request content
+    public OTComplianceRule() { }
 
     public OTComplianceRule(Builder builder) {
         super(builder);

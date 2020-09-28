@@ -58,8 +58,8 @@ public class TRelationshipType extends TEntityType {
     @XmlElement(name = "ValidTarget")
     protected TRelationshipType.ValidTarget validTarget;
 
-    public TRelationshipType() {
-    }
+    @Deprecated // used for XML deserialization of API request content
+    public TRelationshipType() { }
 
     public TRelationshipType(Builder builder) {
         super(builder);

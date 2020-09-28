@@ -33,9 +33,9 @@ public class TArtifactType extends TEntityType {
     private String mimeType;
     @XmlAttribute(name = "fileextensions", required = false)
     private List<String> fileExtensions;
-    
-    public TArtifactType() {
-    }
+
+    @Deprecated // used for XML deserialization of API request content
+    public TArtifactType() { }
 
     public TArtifactType(Builder builder) {
         super(builder);

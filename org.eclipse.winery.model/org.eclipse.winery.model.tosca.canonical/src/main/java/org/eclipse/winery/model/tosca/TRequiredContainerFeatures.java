@@ -53,6 +53,9 @@ public class TRequiredContainerFeatures implements Serializable {
     @XmlElement(name = "RequiredContainerFeature", required = true)
     protected List<TRequiredContainerFeature> requiredContainerFeature;
 
+    @Deprecated // used for XML deserialization of API request content
+    public TRequiredContainerFeatures() { }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

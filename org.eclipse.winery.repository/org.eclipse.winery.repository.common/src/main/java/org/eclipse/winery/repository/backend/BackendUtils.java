@@ -523,6 +523,7 @@ public class BackendUtils {
      * @return Copy od topologyTemplate
      */
     public static TTopologyTemplate clone(TTopologyTemplate topologyTemplate) {
+        @SuppressWarnings("deprecated")
         TTopologyTemplate topologyTemplateClone = new TTopologyTemplate();
         List<TEntityTemplate> entityTemplate = topologyTemplate.getNodeTemplateOrRelationshipTemplate();
         topologyTemplateClone.getNodeTemplateOrRelationshipTemplate().addAll(entityTemplate);
@@ -1473,6 +1474,7 @@ public class BackendUtils {
         Objects.requireNonNull(topologyTemplateA);
         Objects.requireNonNull(topologyTemplateB);
 
+        @SuppressWarnings("deprecated")
         TTopologyTemplate topologyTemplateToBeMerged = new TTopologyTemplate();
         Map<String, String> idMapping = new HashMap<>();
 

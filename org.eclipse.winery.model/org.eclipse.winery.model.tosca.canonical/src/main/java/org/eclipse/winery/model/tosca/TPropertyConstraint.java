@@ -32,6 +32,9 @@ public class TPropertyConstraint extends TConstraint {
     @XmlAttribute(name = "property", required = true)
     protected String property;
 
+    @Deprecated // used for XML deserialization of API request content
+    public TPropertyConstraint() { }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

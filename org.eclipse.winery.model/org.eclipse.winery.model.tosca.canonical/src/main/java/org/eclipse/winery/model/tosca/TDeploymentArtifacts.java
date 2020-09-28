@@ -54,9 +54,8 @@ public class TDeploymentArtifacts implements Serializable {
     @XmlElement(name = "DeploymentArtifact", required = true)
     protected List<TDeploymentArtifact> deploymentArtifact;
 
-    public TDeploymentArtifacts() {
-
-    }
+    @Deprecated // used for XML deserialization of API request content
+    public TDeploymentArtifacts() { }
 
     public TDeploymentArtifacts(Builder builder) {
         this.deploymentArtifact = builder.deploymentArtifact;

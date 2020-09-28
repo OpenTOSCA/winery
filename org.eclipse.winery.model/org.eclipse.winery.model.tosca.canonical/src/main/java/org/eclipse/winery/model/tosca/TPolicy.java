@@ -52,8 +52,8 @@ public class TPolicy extends TExtensibleElements implements HasName {
     @Nullable
     protected List<QName> targets;
 
-    public TPolicy() {
-    }
+    @Deprecated // used for XML deserialization of API request content
+    public TPolicy() { }
 
     public TPolicy(Builder builder) {
         super(builder);

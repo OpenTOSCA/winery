@@ -41,7 +41,7 @@ public class XTRequirementRef implements Serializable {
     protected XTRequirement ref;
 
     @Deprecated // required for XML deserialization
-    public XTRequirementRef() {}
+    public XTRequirementRef() { }
 
     private XTRequirementRef(Builder builder) {
         this.name = builder.name;

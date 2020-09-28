@@ -102,8 +102,8 @@ public abstract class TEntityType extends TExtensibleElements implements HasName
     // added to support conversion from/to YAML
     protected List<AttributeDefinition> attributeDefinitions;
 
-    public TEntityType() {
-    }
+    @Deprecated // used for XML deserialization of API request content
+    public TEntityType() { }
 
     public TEntityType(Builder builder) {
         super(builder);

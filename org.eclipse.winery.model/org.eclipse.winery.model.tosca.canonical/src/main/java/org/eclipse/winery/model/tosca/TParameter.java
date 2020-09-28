@@ -42,13 +42,12 @@ public class TParameter implements Serializable {
     protected String type;
 
     @XmlAttribute(name = "required")
-//    @XmlJavaTypeAdapter(BooleanToYesNo.class)
     @JsonSerialize(using = YesNo.Serializer.class)
     @JsonDeserialize(using = YesNo.Deserializer.class)
     protected boolean required;
 
-    public TParameter() {
-    }
+    @Deprecated // used for XML deserialization of API request content
+    public TParameter() { }
 
     public TParameter(Builder builder) {
         this.name = builder.name;

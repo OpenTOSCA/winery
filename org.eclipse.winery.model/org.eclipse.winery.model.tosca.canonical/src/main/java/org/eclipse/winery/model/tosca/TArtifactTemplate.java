@@ -42,8 +42,8 @@ public class TArtifactTemplate extends TEntityTemplate {
     @XmlAttribute(name = "name")
     protected String name;
 
-    public TArtifactTemplate() {
-    }
+    @Deprecated // used for XML deserialization of API request content
+    public TArtifactTemplate() { }
 
     public TArtifactTemplate(Builder builder) {
         super(builder);

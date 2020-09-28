@@ -27,9 +27,8 @@ public class OTDeploymentArtifactMapping extends OTPrmMapping {
     @XmlAttribute(name = "artifactType", required = true)
     private QName artifactType;
 
-    @Deprecated
-    public OTDeploymentArtifactMapping() {
-    }
+    @Deprecated // used for XML deserialization of API request content
+    public OTDeploymentArtifactMapping() { }
 
     public OTDeploymentArtifactMapping(Builder builder) {
         super(builder);

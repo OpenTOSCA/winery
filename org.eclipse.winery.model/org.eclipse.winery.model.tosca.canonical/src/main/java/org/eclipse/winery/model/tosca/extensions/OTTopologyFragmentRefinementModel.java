@@ -57,9 +57,8 @@ public class OTTopologyFragmentRefinementModel extends OTRefinementModel {
     @XmlElement(name = "ComponentSet")
     protected List<OTStringList> componentSets;
 
-    @Deprecated
-    public OTTopologyFragmentRefinementModel() {
-    }
+    @Deprecated // used for XML deserialization of API request content
+    public OTTopologyFragmentRefinementModel() { }
 
     public OTTopologyFragmentRefinementModel(RefinementBuilder<? extends RefinementBuilder<?>> builder) {
         super(builder);

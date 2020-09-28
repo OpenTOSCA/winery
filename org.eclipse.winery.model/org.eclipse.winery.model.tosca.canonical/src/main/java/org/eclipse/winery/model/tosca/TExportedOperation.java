@@ -52,6 +52,9 @@ public class TExportedOperation implements HasName, Serializable {
     @XmlSchemaType(name = "NCName")
     protected String name;
 
+    @Deprecated // used for XML deserialization of API request content
+    public TExportedOperation() { }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

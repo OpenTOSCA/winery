@@ -54,9 +54,8 @@ public class TBoundaryDefinitions implements Serializable {
     @XmlElement(name = "Interfaces")
     protected TBoundaryDefinitions.Interfaces interfaces;
 
-    public TBoundaryDefinitions() {
-
-    }
+    @Deprecated // used for XML deserialization of API request content
+    public TBoundaryDefinitions() { }
 
     public TBoundaryDefinitions(Builder builder) {
         this.properties = builder.properties;

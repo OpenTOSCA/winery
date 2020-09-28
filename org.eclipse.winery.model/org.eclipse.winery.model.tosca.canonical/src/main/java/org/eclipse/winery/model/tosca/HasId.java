@@ -33,8 +33,8 @@ public abstract class HasId extends TExtensibleElements implements HasIdInIdOrNa
     @XmlSchemaType(name = "ID")
     private String id;
 
-    public HasId() {
-    }
+    @Deprecated // used for XML deserialization of API request content
+    public HasId() { }
 
     public HasId(String id) {
         this.setId(id);
