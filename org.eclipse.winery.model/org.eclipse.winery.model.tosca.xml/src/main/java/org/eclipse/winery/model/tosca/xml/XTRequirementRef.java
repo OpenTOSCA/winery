@@ -40,6 +40,14 @@ public class XTRequirementRef implements Serializable {
     @XmlSchemaType(name = "IDREF")
     protected XTRequirement ref;
 
+    @Deprecated // required for XML deserialization
+    public XTRequirementRef() {}
+
+    private XTRequirementRef(Builder builder) {
+        this.name = builder.name;
+        this.ref = builder.ref;
+    }
+    
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -73,6 +81,25 @@ public class XTRequirementRef implements Serializable {
         this.ref = value;
     }
 
+    public static class Builder {
+        private String name;
+        private XTRequirement ref;
+
+        public Builder setName(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public Builder setRef(XTRequirement ref) {
+            this.ref = ref;
+            return this;
+        }
+
+        public XTRequirementRef build() {
+            return new XTRequirementRef(this);
+        }
+    }
+    
     public void accept(Visitor visitor) {
         visitor.visit(this);
     }

@@ -39,9 +39,8 @@ public class XTPolicyType extends XTEntityType {
     @XmlSchemaType(name = "anyURI")
     protected String policyLanguage;
 
-    public XTPolicyType() {
-
-    }
+    @Deprecated // required for XML deserialization
+    public XTPolicyType() { }
 
     public XTPolicyType(Builder builder) {
         super(builder);

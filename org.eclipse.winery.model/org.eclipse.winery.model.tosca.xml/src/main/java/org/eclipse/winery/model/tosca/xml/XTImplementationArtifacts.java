@@ -61,9 +61,8 @@ public class XTImplementationArtifacts implements Serializable {
     @XmlElement(name = "ImplementationArtifact", required = true)
     protected List<XTImplementationArtifacts.ImplementationArtifact> implementationArtifact;
 
-    public XTImplementationArtifacts() {
-
-    }
+    @Deprecated // required for XML deserialization
+    public XTImplementationArtifacts() { }
 
     public XTImplementationArtifacts(Builder builder) {
         this.implementationArtifact = builder.implementationArtifact;
@@ -127,9 +126,9 @@ public class XTImplementationArtifacts implements Serializable {
     @XmlAccessorType(XmlAccessType.FIELD)
     @XmlType(name = "")
     public static class ImplementationArtifact extends XTImplementationArtifact {
-        public ImplementationArtifact() {
 
-        }
+        @Deprecated // required for XML deserialization
+        public ImplementationArtifact() { }
 
         public ImplementationArtifact(Builder builder) {
             super(builder);

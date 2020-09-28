@@ -66,6 +66,7 @@ public abstract class XTEntityTypeImplementation extends XTExtensibleElements im
     @XmlTransient
     protected QName implementedType;
 
+    @Deprecated // required for XML deserialization
     public XTEntityTypeImplementation() {
         super();
     }

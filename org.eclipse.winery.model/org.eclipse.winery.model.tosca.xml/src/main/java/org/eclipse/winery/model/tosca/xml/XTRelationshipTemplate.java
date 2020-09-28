@@ -58,6 +58,7 @@ public class XTRelationshipTemplate extends XTEntityTemplate implements XHasPoli
     @XmlAttribute(name = "name")
     protected String name;
 
+    @Deprecated // required for XML deserialization
     public XTRelationshipTemplate() {
         super();
     }

@@ -55,9 +55,8 @@ public class XTDeploymentArtifacts implements Serializable {
     @XmlElement(name = "DeploymentArtifact", required = true)
     protected List<XTDeploymentArtifact> deploymentArtifact;
 
-    public XTDeploymentArtifacts() {
-
-    }
+    @Deprecated // required for XML deserialization
+    public XTDeploymentArtifacts() { }
 
     public XTDeploymentArtifacts(Builder builder) {
         this.deploymentArtifact = builder.deploymentArtifact;

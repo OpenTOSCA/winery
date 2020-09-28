@@ -20,7 +20,7 @@ import java.util.Objects;
 
 import javax.xml.namespace.QName;
 
-import org.eclipse.winery.model.tosca.yaml.support.TListString;
+import org.eclipse.winery.model.tosca.yaml.support.YTListString;
 import org.eclipse.winery.model.tosca.yaml.visitor.AbstractParameter;
 import org.eclipse.winery.model.tosca.yaml.visitor.AbstractResult;
 import org.eclipse.winery.model.tosca.yaml.visitor.IVisitor;
@@ -34,8 +34,8 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 public class YTSubstitutionMappings implements VisitorNode {
     private QName nodeType;
-    private Map<String, TListString> capabilities;
-    private Map<String, TListString> requirements;
+    private Map<String, YTListString> capabilities;
+    private Map<String, YTListString> requirements;
 
     protected YTSubstitutionMappings(Builder builder) {
         this.setNodeType(builder.nodeType);
@@ -77,7 +77,7 @@ public class YTSubstitutionMappings implements VisitorNode {
     }
 
     @NonNull
-    public Map<String, TListString> getCapabilities() {
+    public Map<String, YTListString> getCapabilities() {
         if (this.capabilities == null) {
             this.capabilities = new LinkedHashMap<>();
         }
@@ -85,12 +85,12 @@ public class YTSubstitutionMappings implements VisitorNode {
         return capabilities;
     }
 
-    public void setCapabilities(Map<String, TListString> capabilities) {
+    public void setCapabilities(Map<String, YTListString> capabilities) {
         this.capabilities = capabilities;
     }
 
     @NonNull
-    public Map<String, TListString> getRequirements() {
+    public Map<String, YTListString> getRequirements() {
         if (this.requirements == null) {
             this.requirements = new LinkedHashMap<>();
         }
@@ -98,7 +98,7 @@ public class YTSubstitutionMappings implements VisitorNode {
         return requirements;
     }
 
-    public void setRequirements(Map<String, TListString> requirements) {
+    public void setRequirements(Map<String, YTListString> requirements) {
         this.requirements = requirements;
     }
 
@@ -108,25 +108,25 @@ public class YTSubstitutionMappings implements VisitorNode {
 
     public static class Builder {
         private QName nodeType;
-        private Map<String, TListString> capabilities;
-        private Map<String, TListString> requirements;
+        private Map<String, YTListString> capabilities;
+        private Map<String, YTListString> requirements;
 
         public Builder setNodeType(QName nodeType) {
             this.nodeType = nodeType;
             return this;
         }
 
-        public Builder setCapabilities(Map<String, TListString> capabilities) {
+        public Builder setCapabilities(Map<String, YTListString> capabilities) {
             this.capabilities = capabilities;
             return this;
         }
 
-        public Builder setRequirements(Map<String, TListString> requirements) {
+        public Builder setRequirements(Map<String, YTListString> requirements) {
             this.requirements = requirements;
             return this;
         }
 
-        public Builder addCapabilities(Map<String, TListString> capabilities) {
+        public Builder addCapabilities(Map<String, YTListString> capabilities) {
             if (capabilities == null || capabilities.isEmpty()) {
                 return this;
             }
@@ -140,7 +140,7 @@ public class YTSubstitutionMappings implements VisitorNode {
             return this;
         }
 
-        public Builder addCapabilities(String name, TListString capability) {
+        public Builder addCapabilities(String name, YTListString capability) {
             if (name == null || name.isEmpty()) {
                 return this;
             }
@@ -148,7 +148,7 @@ public class YTSubstitutionMappings implements VisitorNode {
             return addCapabilities(Collections.singletonMap(name, capability));
         }
 
-        public Builder addRequirements(Map<String, TListString> requirements) {
+        public Builder addRequirements(Map<String, YTListString> requirements) {
             if (requirements == null || requirements.isEmpty()) {
                 return this;
             }
@@ -162,7 +162,7 @@ public class YTSubstitutionMappings implements VisitorNode {
             return this;
         }
 
-        public Builder addRequirements(String name, TListString requirement) {
+        public Builder addRequirements(String name, YTListString requirement) {
             if (name == null || name.isEmpty()) {
                 return this;
             }

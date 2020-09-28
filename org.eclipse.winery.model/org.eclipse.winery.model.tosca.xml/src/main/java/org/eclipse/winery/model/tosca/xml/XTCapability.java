@@ -36,8 +36,8 @@ public class XTCapability extends XRelationshipSourceOrTarget {
     @XmlAttribute(name = "validSourceTypes")
     protected List<QName> validSourceTypes;
 
-    public XTCapability() {
-    }
+    @Deprecated // required for XML deserialization
+    public XTCapability() { }
 
     public XTCapability(Builder builder) {
         super(builder);

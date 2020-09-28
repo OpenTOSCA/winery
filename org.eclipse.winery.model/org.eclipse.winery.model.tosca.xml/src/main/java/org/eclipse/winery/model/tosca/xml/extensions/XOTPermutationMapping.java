@@ -24,9 +24,8 @@ import org.eclipse.winery.model.tosca.xml.visitor.Visitor;
 @XmlType(name = "otPermutationMapping")
 public class XOTPermutationMapping extends XOTPrmMapping {
 
-    @Deprecated
-    public XOTPermutationMapping() {
-    }
+    @Deprecated // required for XML deserialization
+    public XOTPermutationMapping() { }
 
     public XOTPermutationMapping(Builder builder) {
         super(builder);

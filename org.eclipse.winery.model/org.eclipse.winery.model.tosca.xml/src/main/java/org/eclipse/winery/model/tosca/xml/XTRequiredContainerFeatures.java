@@ -54,6 +54,9 @@ public class XTRequiredContainerFeatures implements Serializable {
     @XmlElement(name = "RequiredContainerFeature", required = true)
     protected List<XTRequiredContainerFeature> requiredContainerFeature;
 
+    @Deprecated // required for XML deserialization
+    public XTRequiredContainerFeatures() { }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

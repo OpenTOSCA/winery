@@ -21,7 +21,7 @@ import org.eclipse.winery.model.ids.definitions.DefinitionsChildId;
 import org.eclipse.winery.model.ids.definitions.ServiceTemplateId;
 import org.eclipse.winery.model.tosca.yaml.YTNodeTemplate;
 import org.eclipse.winery.model.tosca.yaml.YTServiceTemplate;
-import org.eclipse.winery.model.tosca.yaml.support.TMapImportDefinition;
+import org.eclipse.winery.model.tosca.yaml.support.YTMapImportDefinition;
 import org.eclipse.winery.repository.yaml.export.entries.YAMLDefinitionsBasedCsarEntry;
 
 public class YamlExportAdjustmentsBuilder {
@@ -39,7 +39,7 @@ public class YamlExportAdjustmentsBuilder {
      */
     public YamlExportAdjustmentsBuilder removeNormativeTypeImports() {
         // prevents imports of TOSCA normative types
-        for (TMapImportDefinition map : this.definitions.getImports()) {
+        for (YTMapImportDefinition map : this.definitions.getImports()) {
             map.values().removeIf(val -> val.getNamespaceUri().startsWith("tosca"));
         }
         return this;

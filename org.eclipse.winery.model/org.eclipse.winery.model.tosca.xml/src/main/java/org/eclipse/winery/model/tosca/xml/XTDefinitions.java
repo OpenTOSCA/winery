@@ -88,8 +88,8 @@ public class XTDefinitions extends XHasId implements XHasName, XHasTargetNamespa
     @XmlSchemaType(name = "anyURI")
     protected String targetNamespace;
 
-    public XTDefinitions() {
-    }
+    @Deprecated // required for XML deserialization
+    public XTDefinitions() { }
 
     public XTDefinitions(Builder builder) {
         super(builder);

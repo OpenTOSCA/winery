@@ -23,7 +23,7 @@ import java.util.Objects;
 import javax.xml.namespace.QName;
 
 import org.eclipse.winery.model.tosca.yaml.support.Metadata;
-import org.eclipse.winery.model.tosca.yaml.support.TMapRequirementAssignment;
+import org.eclipse.winery.model.tosca.yaml.support.YTMapRequirementAssignment;
 import org.eclipse.winery.model.tosca.yaml.visitor.AbstractParameter;
 import org.eclipse.winery.model.tosca.yaml.visitor.AbstractResult;
 import org.eclipse.winery.model.tosca.yaml.visitor.IVisitor;
@@ -40,7 +40,7 @@ public class YTNodeTemplate implements VisitorNode {
     private List<String> directives;
     private Map<String, YTPropertyAssignment> properties;
     private Map<String, YTAttributeAssignment> attributes;
-    private List<TMapRequirementAssignment> requirements;
+    private List<YTMapRequirementAssignment> requirements;
     private Map<String, YTCapabilityAssignment> capabilities;
     private Map<String, YTInterfaceAssignment> interfaces;
     private Map<String, YTArtifactDefinition> artifacts;
@@ -176,7 +176,7 @@ public class YTNodeTemplate implements VisitorNode {
     }
 
     @NonNull
-    public List<TMapRequirementAssignment> getRequirements() {
+    public List<YTMapRequirementAssignment> getRequirements() {
         if (this.requirements == null) {
             this.requirements = new ArrayList<>();
         }
@@ -184,7 +184,7 @@ public class YTNodeTemplate implements VisitorNode {
         return requirements;
     }
 
-    public void setRequirements(List<TMapRequirementAssignment> requirements) {
+    public void setRequirements(List<YTMapRequirementAssignment> requirements) {
         this.requirements = requirements;
     }
 
@@ -256,7 +256,7 @@ public class YTNodeTemplate implements VisitorNode {
         private List<String> directives;
         private Map<String, YTPropertyAssignment> properties;
         private Map<String, YTAttributeAssignment> attributes;
-        private List<TMapRequirementAssignment> requirements;
+        private List<YTMapRequirementAssignment> requirements;
         private Map<String, YTCapabilityAssignment> capabilities;
         private Map<String, YTInterfaceAssignment> interfaces;
         private Map<String, YTArtifactDefinition> artifacts;
@@ -294,7 +294,7 @@ public class YTNodeTemplate implements VisitorNode {
             return this;
         }
 
-        public Builder setRequirements(List<TMapRequirementAssignment> requirements) {
+        public Builder setRequirements(List<YTMapRequirementAssignment> requirements) {
             this.requirements = requirements;
             return this;
         }
@@ -390,7 +390,7 @@ public class YTNodeTemplate implements VisitorNode {
             return this.addAttributes(Collections.singletonMap(name, attribute));
         }
 
-        public Builder addRequirements(List<TMapRequirementAssignment> requirements) {
+        public Builder addRequirements(List<YTMapRequirementAssignment> requirements) {
             if (requirements == null || requirements.isEmpty()) {
                 return this;
             }
@@ -404,7 +404,7 @@ public class YTNodeTemplate implements VisitorNode {
             return this;
         }
 
-        public Builder addRequirements(TMapRequirementAssignment requirement) {
+        public Builder addRequirements(YTMapRequirementAssignment requirement) {
             if (requirement == null || requirement.isEmpty()) {
                 return this;
             }
@@ -418,7 +418,7 @@ public class YTNodeTemplate implements VisitorNode {
             }
 
             requirements.forEach((key, value) -> {
-                TMapRequirementAssignment tmp = new TMapRequirementAssignment();
+                YTMapRequirementAssignment tmp = new YTMapRequirementAssignment();
                 tmp.put(key, value);
                 addRequirements(tmp);
             });

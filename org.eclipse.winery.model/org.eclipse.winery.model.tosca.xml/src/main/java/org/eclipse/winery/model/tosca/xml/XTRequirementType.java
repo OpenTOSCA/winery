@@ -32,8 +32,8 @@ public class XTRequirementType extends XTEntityType {
     @XmlAttribute(name = "requiredCapabilityType")
     protected QName requiredCapabilityType;
 
-    public XTRequirementType() {
-    }
+    @Deprecated // required for XML deserialization
+    public XTRequirementType() { }
 
     public XTRequirementType(Builder builder) {
         super(builder);

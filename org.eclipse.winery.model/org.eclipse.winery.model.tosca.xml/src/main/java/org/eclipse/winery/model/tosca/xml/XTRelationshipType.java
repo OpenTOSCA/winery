@@ -55,8 +55,8 @@ public class XTRelationshipType extends XTEntityType {
     @XmlElement(name = "ValidTarget")
     protected XTRelationshipType.ValidTarget validTarget;
 
-    public XTRelationshipType() {
-    }
+    @Deprecated // required for XML deserialization
+    public XTRelationshipType() { }
 
     public XTRelationshipType(Builder builder) {
         super(builder);

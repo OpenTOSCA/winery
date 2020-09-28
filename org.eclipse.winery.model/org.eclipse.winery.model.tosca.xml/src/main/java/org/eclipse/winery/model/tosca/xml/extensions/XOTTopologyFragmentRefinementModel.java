@@ -59,9 +59,8 @@ public class XOTTopologyFragmentRefinementModel extends XOTRefinementModel {
     @XmlElement(name = "ComponentSet")
     protected List<XOTStringList> componentSets;
 
-    @Deprecated
-    public XOTTopologyFragmentRefinementModel() {
-    }
+    @Deprecated // required for XML deserialization
+    public XOTTopologyFragmentRefinementModel() { }
 
     public XOTTopologyFragmentRefinementModel(Builder builder) {
         super(builder);

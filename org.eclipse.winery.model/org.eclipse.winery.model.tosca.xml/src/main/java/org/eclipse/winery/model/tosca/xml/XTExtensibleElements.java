@@ -69,8 +69,8 @@ public abstract class XTExtensibleElements implements Serializable {
     @NonNull
     private Map<QName, String> otherAttributes = new HashMap<>();
 
-    public XTExtensibleElements() {
-    }
+    @Deprecated // required for XML deserialization
+    public XTExtensibleElements() { }
 
     public XTExtensibleElements(Builder builder) {
         this.documentation = builder.documentation;
@@ -100,7 +100,7 @@ public abstract class XTExtensibleElements implements Serializable {
     @NonNull
     public List<XTDocumentation> getDocumentation() {
         if (documentation == null) {
-            documentation = new ArrayList<XTDocumentation>();
+            documentation = new ArrayList<>();
         }
         return this.documentation;
     }
@@ -108,7 +108,7 @@ public abstract class XTExtensibleElements implements Serializable {
     @NonNull
     public List<Object> getAny() {
         if (any == null) {
-            any = new ArrayList<Object>();
+            any = new ArrayList<>();
         }
         return this.any;
     }

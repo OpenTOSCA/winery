@@ -40,6 +40,14 @@ public class XTCapabilityRef implements Serializable {
     @XmlSchemaType(name = "IDREF")
     protected XTCapability ref;
 
+    @Deprecated // required for XML deserialization
+    public XTCapabilityRef() { }
+
+    public XTCapabilityRef(Builder builder) {
+        this.name = builder.name;
+        this.ref = builder.ref;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -71,6 +79,23 @@ public class XTCapabilityRef implements Serializable {
     public void setRef(@NonNull XTCapability value) {
         Objects.requireNonNull(value);
         this.ref = value;
+    }
+
+    public static class Builder {
+        private String name;
+        private XTCapability ref;
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public void setRef(XTCapability ref) {
+            this.ref = ref;
+        }
+
+        public XTCapabilityRef build() {
+            return new XTCapabilityRef(this);
+        }
     }
 
     public void accept(Visitor visitor) {

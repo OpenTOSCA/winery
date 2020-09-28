@@ -52,8 +52,8 @@ public class XTTags implements Serializable {
     @XmlElement(name = "Tag", required = true)
     protected List<XTTag> tag;
 
-    public XTTags() {
-    }
+    @Deprecated // required for XML deserialization
+    public XTTags() { }
 
     public XTTags(Builder builder) {
         this.tag = builder.tag;

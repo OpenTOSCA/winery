@@ -30,7 +30,7 @@ import org.eclipse.winery.model.converter.support.Namespaces;
 import org.eclipse.winery.model.converter.support.exception.MultiException;
 import org.eclipse.winery.model.ids.EncodingUtil;
 import org.eclipse.winery.model.tosca.yaml.*;
-import org.eclipse.winery.model.tosca.yaml.support.TMapImportDefinition;
+import org.eclipse.winery.model.tosca.yaml.support.YTMapImportDefinition;
 import org.eclipse.winery.repository.converter.reader.YamlReader;
 import org.eclipse.winery.repository.converter.validator.support.ExceptionVisitor;
 import org.eclipse.winery.repository.converter.validator.support.Result;
@@ -83,7 +83,7 @@ public class SchemaVisitor extends ExceptionVisitor<Result, Parameter> {
     }
 
     public Map<QName, Map<String, QName>> visit(YTServiceTemplate node, Path path, Path outpath, String namespace) {
-        for (TMapImportDefinition map : node.getImports()) {
+        for (YTMapImportDefinition map : node.getImports()) {
             for (Map.Entry<String, YTImportDefinition> entry : map.entrySet()) {
                 YamlReader reader = new YamlReader();
                 try {
@@ -103,7 +103,7 @@ public class SchemaVisitor extends ExceptionVisitor<Result, Parameter> {
 
         Map<String, YTDataType> tmpDataTypes = this.data_types;
         this.data_types = node.getDataTypes();
-        for (TMapImportDefinition map : node.getImports()) {
+        for (YTMapImportDefinition map : node.getImports()) {
             for (Map.Entry<String, YTImportDefinition> entry : map.entrySet()) {
                 addImport(entry.getValue().getNamespaceUri(), new AbstractMap.SimpleEntry<>(entry));
             }

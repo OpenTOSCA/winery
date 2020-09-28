@@ -35,7 +35,7 @@ public class XOTRelationMapping extends XOTPrmMapping {
     @XmlAttribute(name = "validSourceOrTarget")
     private QName validSourceOrTarget;
 
-    @Deprecated
+    @Deprecated // required for XML deserialization
     public XOTRelationMapping() { }
 
     public XOTRelationMapping(Builder builder) {

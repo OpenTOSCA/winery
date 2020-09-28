@@ -54,9 +54,8 @@ public class XTBoundaryDefinitions implements Serializable {
     @XmlElement(name = "Interfaces")
     protected XTBoundaryDefinitions.Interfaces interfaces;
 
-    public XTBoundaryDefinitions() {
-
-    }
+    @Deprecated // required for XML deserialization
+    public XTBoundaryDefinitions() { }
 
     public XTBoundaryDefinitions(Builder builder) {
         this.properties = builder.properties;

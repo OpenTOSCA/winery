@@ -37,9 +37,8 @@ public class XTAppliesTo implements Serializable {
     @XmlElement(name = "NodeTypeReference", required = true)
     protected List<XTAppliesTo.NodeTypeReference> nodeTypeReference;
 
-    public XTAppliesTo() {
-
-    }
+    @Deprecated // required for XML deserialization
+    public XTAppliesTo() { }
 
     @Override
     public boolean equals(Object o) {
@@ -75,7 +74,7 @@ public class XTAppliesTo implements Serializable {
     @NonNull
     public List<XTAppliesTo.NodeTypeReference> getNodeTypeReference() {
         if (nodeTypeReference == null) {
-            nodeTypeReference = new ArrayList<XTAppliesTo.NodeTypeReference>();
+            nodeTypeReference = new ArrayList<>();
         }
         return this.nodeTypeReference;
     }

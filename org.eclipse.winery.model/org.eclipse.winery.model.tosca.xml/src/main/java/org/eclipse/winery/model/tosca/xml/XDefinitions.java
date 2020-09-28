@@ -31,8 +31,8 @@ public class XDefinitions extends XTDefinitions {
     @XmlTransient
     protected Map<String, QName> importDefinitions = new HashMap<>();
 
-    public XDefinitions() {
-    }
+    @Deprecated // required for XML deserialization
+    public XDefinitions() { }
 
     public XDefinitions(Builder builder) {
         super(builder);

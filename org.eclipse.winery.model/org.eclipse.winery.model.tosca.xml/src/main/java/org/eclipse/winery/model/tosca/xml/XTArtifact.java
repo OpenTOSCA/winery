@@ -35,8 +35,8 @@ public class XTArtifact extends XTEntityTemplate {
     private String file;
     private String deployPath;
 
-    public XTArtifact() {
-    }
+    @Deprecated // required for XML deserialization
+    public XTArtifact() { }
 
     public XTArtifact(Builder builder) {
         super(builder);

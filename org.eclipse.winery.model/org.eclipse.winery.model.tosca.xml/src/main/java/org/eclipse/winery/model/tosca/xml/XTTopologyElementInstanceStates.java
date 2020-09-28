@@ -62,6 +62,13 @@ public class XTTopologyElementInstanceStates implements Serializable {
     @XmlElement(name = "InstanceState", required = true)
     protected List<XTTopologyElementInstanceStates.InstanceState> instanceState;
 
+    @Deprecated // required for XML deserialization
+    public XTTopologyElementInstanceStates() { }
+
+    public XTTopologyElementInstanceStates(List<InstanceState> states) {
+        this.instanceState = states;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

@@ -69,9 +69,8 @@ public class XTPlan extends XTExtensibleElements {
     @XmlSchemaType(name = "anyURI")
     protected String planLanguage;
 
-    public XTPlan() {
-
-    }
+    @Deprecated // required for XML deserialization
+    public XTPlan() { }
 
     public XTPlan(Builder builder) {
         super(builder);

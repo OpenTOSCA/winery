@@ -52,8 +52,8 @@ public class XTPolicy extends XTExtensibleElements implements XHasName {
     @Nullable
     protected List<QName> targets;
 
-    public XTPolicy() {
-    }
+    @Deprecated // required for XML deserialization
+    public XTPolicy() { }
 
     public XTPolicy(Builder builder) {
         super(builder);

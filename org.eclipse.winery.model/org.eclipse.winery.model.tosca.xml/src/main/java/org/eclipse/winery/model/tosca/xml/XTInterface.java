@@ -54,8 +54,8 @@ public class XTInterface implements XHasName, Serializable {
     @XmlSchemaType(name = "anyURI")
     protected String name;
 
-    public XTInterface() {
-    }
+    @Deprecated // required for XML deserialization
+    public XTInterface() { }
 
     public XTInterface(Builder builder) {
         this.operation = builder.operation;

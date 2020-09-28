@@ -109,7 +109,7 @@ import org.eclipse.winery.model.tosca.yaml.YTPropertyDefinition;
 import org.eclipse.winery.model.tosca.yaml.YTRequirementAssignment;
 import org.eclipse.winery.model.tosca.yaml.YTTopologyTemplateDefinition;
 import org.eclipse.winery.model.tosca.yaml.support.Metadata;
-import org.eclipse.winery.model.tosca.yaml.support.TMapRequirementAssignment;
+import org.eclipse.winery.model.tosca.yaml.support.YTMapRequirementAssignment;
 import org.eclipse.winery.model.tosca.yaml.support.ValueHelper;
 import org.eclipse.winery.model.converter.support.Defaults;
 import org.eclipse.winery.model.converter.support.Namespaces;
@@ -756,11 +756,11 @@ public class ToCanonical {
             return;
         }
         nodeTemplates.forEach((id, nt) -> {
-            @NonNull List<TMapRequirementAssignment> reqs = nt.getRequirements();
+            @NonNull List<YTMapRequirementAssignment> reqs = nt.getRequirements();
             if (reqs.isEmpty()) {
                 return;
             }
-            for (TMapRequirementAssignment map : reqs) {
+            for (YTMapRequirementAssignment map : reqs) {
                 for (Map.Entry<String, YTRequirementAssignment> data : map.getMap().entrySet()) {
                     final YTRequirementAssignment req = data.getValue();
                     TRelationshipTemplate relationship = topology.getRelationshipTemplate(req.getRelationship().getType().toString());

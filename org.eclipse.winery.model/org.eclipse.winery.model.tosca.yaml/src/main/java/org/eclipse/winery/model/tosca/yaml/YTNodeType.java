@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import org.eclipse.winery.model.tosca.yaml.support.TMapRequirementDefinition;
+import org.eclipse.winery.model.tosca.yaml.support.YTMapRequirementDefinition;
 import org.eclipse.winery.model.tosca.yaml.visitor.AbstractParameter;
 import org.eclipse.winery.model.tosca.yaml.visitor.AbstractResult;
 import org.eclipse.winery.model.tosca.yaml.visitor.IVisitor;
@@ -29,7 +29,7 @@ import org.eclipse.jdt.annotation.NonNull;
 
 public class YTNodeType extends YTNodeOrGroupType {
     private Map<String, YTAttributeDefinition> attributes;
-    private List<TMapRequirementDefinition> requirements;
+    private List<YTMapRequirementDefinition> requirements;
     private Map<String, YTCapabilityDefinition> capabilities;
     private Map<String, YTInterfaceDefinition> interfaces;
     private Map<String, YTArtifactDefinition> artifacts;
@@ -85,7 +85,7 @@ public class YTNodeType extends YTNodeOrGroupType {
     }
 
     @NonNull
-    public List<TMapRequirementDefinition> getRequirements() {
+    public List<YTMapRequirementDefinition> getRequirements() {
         if (requirements == null) {
             requirements = new ArrayList<>();
         }
@@ -93,7 +93,7 @@ public class YTNodeType extends YTNodeOrGroupType {
         return requirements;
     }
 
-    public void setRequirements(List<TMapRequirementDefinition> requirements) {
+    public void setRequirements(List<YTMapRequirementDefinition> requirements) {
         this.requirements = requirements;
     }
 
@@ -148,7 +148,7 @@ public class YTNodeType extends YTNodeOrGroupType {
 
     public static class Builder extends YTEntityType.Builder<Builder> {
         private Map<String, YTAttributeDefinition> attributes;
-        private List<TMapRequirementDefinition> requirements;
+        private List<YTMapRequirementDefinition> requirements;
         private Map<String, YTCapabilityDefinition> capabilities;
         private Map<String, YTInterfaceDefinition> interfaces;
         private Map<String, YTArtifactDefinition> artifacts;
@@ -166,7 +166,7 @@ public class YTNodeType extends YTNodeOrGroupType {
             return this;
         }
 
-        public Builder setRequirements(List<TMapRequirementDefinition> requirements) {
+        public Builder setRequirements(List<YTMapRequirementDefinition> requirements) {
             this.requirements = requirements;
             return this;
         }
@@ -213,7 +213,7 @@ public class YTNodeType extends YTNodeOrGroupType {
             return this;
         }
 
-        public Builder addRequirements(List<TMapRequirementDefinition> requirements) {
+        public Builder addRequirements(List<YTMapRequirementDefinition> requirements) {
             if (requirements == null || requirements.isEmpty()) {
                 return this;
             }
@@ -227,7 +227,7 @@ public class YTNodeType extends YTNodeOrGroupType {
             return this;
         }
 
-        public Builder addRequirements(TMapRequirementDefinition requirement) {
+        public Builder addRequirements(YTMapRequirementDefinition requirement) {
             if (requirement == null || requirement.isEmpty()) {
                 return this;
             }
@@ -241,7 +241,7 @@ public class YTNodeType extends YTNodeOrGroupType {
             }
 
             requirements.forEach((key, value) -> {
-                TMapRequirementDefinition tmp = new TMapRequirementDefinition();
+                YTMapRequirementDefinition tmp = new YTMapRequirementDefinition();
                 tmp.put(key, value);
                 addRequirements(tmp);
             });

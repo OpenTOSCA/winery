@@ -32,9 +32,8 @@ public class XTPolicyTemplate extends XTEntityTemplate {
     @XmlAttribute(name = "name")
     protected String name;
 
-    public XTPolicyTemplate() {
-
-    }
+    @Deprecated // required for XML deserialization
+    public XTPolicyTemplate() { }
 
     public XTPolicyTemplate(Builder builder) {
         super(builder);

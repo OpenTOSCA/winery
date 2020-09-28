@@ -32,6 +32,16 @@ public class XTPropertyConstraint extends XTConstraint {
     @XmlAttribute(name = "property", required = true)
     protected String property;
 
+    @Deprecated // required for XML deserialization
+    public XTPropertyConstraint() {
+        super();
+    }
+
+    public XTPropertyConstraint(Builder builder) {
+        super(builder);
+        this.property = builder.property;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -53,6 +63,24 @@ public class XTPropertyConstraint extends XTConstraint {
 
     public void setProperty(@NonNull String value) {
         this.property = value;
+    }
+
+    public static class Builder extends XTConstraint.Builder<Builder> {
+        private String property;
+
+        public Builder setProperty(String property) {
+            this.property = property;
+            return self();
+        }
+
+        @Override
+        public Builder self() {
+            return this;
+        }
+
+        public XTPropertyConstraint build() {
+            return new XTPropertyConstraint(this);
+        }
     }
 
     public void accept(Visitor visitor) {

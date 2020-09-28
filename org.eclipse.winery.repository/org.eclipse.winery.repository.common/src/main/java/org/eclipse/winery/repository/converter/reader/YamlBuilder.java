@@ -76,13 +76,13 @@ import org.eclipse.winery.model.tosca.yaml.YTSubstitutionMappings;
 import org.eclipse.winery.model.tosca.yaml.YTTopologyTemplateDefinition;
 import org.eclipse.winery.model.tosca.yaml.YTVersion;
 import org.eclipse.winery.model.tosca.yaml.support.Metadata;
-import org.eclipse.winery.model.tosca.yaml.support.TListString;
-import org.eclipse.winery.model.tosca.yaml.support.TMapImportDefinition;
-import org.eclipse.winery.model.tosca.yaml.support.TMapObject;
-import org.eclipse.winery.model.tosca.yaml.support.TMapPolicyDefinition;
-import org.eclipse.winery.model.tosca.yaml.support.TMapPropertyFilterDefinition;
-import org.eclipse.winery.model.tosca.yaml.support.TMapRequirementAssignment;
-import org.eclipse.winery.model.tosca.yaml.support.TMapRequirementDefinition;
+import org.eclipse.winery.model.tosca.yaml.support.YTListString;
+import org.eclipse.winery.model.tosca.yaml.support.YTMapImportDefinition;
+import org.eclipse.winery.model.tosca.yaml.support.YTMapObject;
+import org.eclipse.winery.model.tosca.yaml.support.YTMapPolicyDefinition;
+import org.eclipse.winery.model.tosca.yaml.support.YTMapPropertyFilterDefinition;
+import org.eclipse.winery.model.tosca.yaml.support.YTMapRequirementAssignment;
+import org.eclipse.winery.model.tosca.yaml.support.YTMapRequirementDefinition;
 import org.eclipse.winery.model.tosca.yaml.tosca.datatypes.Credential;
 import org.eclipse.winery.model.converter.support.exception.InvalidToscaSyntax;
 import org.eclipse.winery.model.converter.support.exception.MultiException;
@@ -288,8 +288,8 @@ public class YamlBuilder {
     }
 
     @Nullable
-    public TMapImportDefinition buildMapImportDefinition(Object object, Parameter<TMapImportDefinition> parameter) {
-        TMapImportDefinition mapImportDefinition = new TMapImportDefinition();
+    public YTMapImportDefinition buildMapImportDefinition(Object object, Parameter<YTMapImportDefinition> parameter) {
+        YTMapImportDefinition mapImportDefinition = new YTMapImportDefinition();
         mapImportDefinition.put(stringValue(parameter.getValue()), buildImportDefinition(object,
             new Parameter<>(parameter.getContext())
         ));
@@ -772,8 +772,8 @@ public class YamlBuilder {
     }
 
     @Nullable
-    public TMapRequirementDefinition buildMapRequirementDefinition(Object object, Parameter<TMapRequirementDefinition> parameter) {
-        TMapRequirementDefinition result = new TMapRequirementDefinition();
+    public YTMapRequirementDefinition buildMapRequirementDefinition(Object object, Parameter<YTMapRequirementDefinition> parameter) {
+        YTMapRequirementDefinition result = new YTMapRequirementDefinition();
         put(result, parameter.getValue(), buildRequirementDefinition(object, new Parameter<>(parameter.getContext())));
         return result;
     }
@@ -1028,11 +1028,11 @@ public class YamlBuilder {
     }
 
     @Nullable
-    public TMapRequirementAssignment buildMapRequirementAssignment(Object object, Parameter<TMapRequirementAssignment> parameter) {
+    public YTMapRequirementAssignment buildMapRequirementAssignment(Object object, Parameter<YTMapRequirementAssignment> parameter) {
         if (Objects.isNull(object)) {
             return null;
         }
-        TMapRequirementAssignment result = new TMapRequirementAssignment();
+        YTMapRequirementAssignment result = new YTMapRequirementAssignment();
         put(result, stringValue(parameter.getValue()), buildRequirementAssignment(object,
             new Parameter<>(parameter.getContext())
         ));
@@ -1130,11 +1130,11 @@ public class YamlBuilder {
     }
 
     @Nullable
-    public TMapPropertyFilterDefinition buildMapPropertyDefinition(Object object, Parameter<TMapPropertyFilterDefinition> parameter) {
+    public YTMapPropertyFilterDefinition buildMapPropertyDefinition(Object object, Parameter<YTMapPropertyFilterDefinition> parameter) {
         if (Objects.isNull(object)) {
             return null;
         }
-        TMapPropertyFilterDefinition result = new TMapPropertyFilterDefinition();
+        YTMapPropertyFilterDefinition result = new YTMapPropertyFilterDefinition();
         put(result, stringValue(parameter.getValue()), buildPropertyFilterDefinition(object,
             new Parameter<>(parameter.getContext())));
         return result;
@@ -1153,11 +1153,11 @@ public class YamlBuilder {
     }
 
     @Nullable
-    public TMapObject buildMapObjectValue(Object object, Parameter<TMapObject> parameter) {
+    public YTMapObject buildMapObjectValue(Object object, Parameter<YTMapObject> parameter) {
         if (Objects.isNull(object)) {
             return null;
         }
-        TMapObject result = new TMapObject();
+        YTMapObject result = new YTMapObject();
         put(result, stringValue(parameter.getValue()), object);
         return result;
     }
@@ -1222,8 +1222,8 @@ public class YamlBuilder {
     }
 
     @Nullable
-    public TMapPolicyDefinition buildMapPolicyDefinition(Object object, Parameter<TMapPolicyDefinition> parameter) {
-        TMapPolicyDefinition result = new TMapPolicyDefinition();
+    public YTMapPolicyDefinition buildMapPolicyDefinition(Object object, Parameter<YTMapPolicyDefinition> parameter) {
+        YTMapPolicyDefinition result = new YTMapPolicyDefinition();
         put(result, parameter.getValue(), buildPolicyDefinition(object, new Parameter<>(parameter.getContext())));
         return result;
     }
@@ -1263,13 +1263,13 @@ public class YamlBuilder {
     }
 
     @Nullable
-    public TListString buildStringList(Object object, Parameter<TListString> parameter) {
+    public YTListString buildStringList(Object object, Parameter<YTListString> parameter) {
         if (Objects.isNull(object)) {
             return null;
         }
         @SuppressWarnings("unchecked")
         List<String> tmp = (List<String>) object;
-        TListString stringList = new TListString();
+        YTListString stringList = new YTListString();
         stringList.addAll(tmp);
         return stringList;
     }

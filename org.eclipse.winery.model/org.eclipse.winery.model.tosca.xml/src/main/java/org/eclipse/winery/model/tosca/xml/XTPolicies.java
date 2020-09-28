@@ -35,8 +35,8 @@ public class XTPolicies implements Serializable {
     @XmlElement(name = "Policy", required = true)
     protected List<XTPolicy> policy;
 
-    public XTPolicies() {
-    }
+    @Deprecated // required for XML deserialization
+    public XTPolicies() { }
 
     public XTPolicies(List<XTPolicy> policies) {
         this.policy = policies;

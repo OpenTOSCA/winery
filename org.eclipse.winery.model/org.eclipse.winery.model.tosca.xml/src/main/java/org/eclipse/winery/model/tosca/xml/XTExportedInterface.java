@@ -39,6 +39,14 @@ public class XTExportedInterface implements XHasName, Serializable {
     @NonNull
     protected String name;
 
+    @Deprecated // required for XML deserialization
+    public XTExportedInterface() { }
+
+    public XTExportedInterface(Builder builder) {
+        this.name = builder.name;
+        this.operation = builder.operation;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -56,7 +64,7 @@ public class XTExportedInterface implements XHasName, Serializable {
     @NonNull
     public List<XTExportedOperation> getOperation() {
         if (operation == null) {
-            operation = new ArrayList<XTExportedOperation>();
+            operation = new ArrayList<>();
         }
         return this.operation;
     }
@@ -71,6 +79,25 @@ public class XTExportedInterface implements XHasName, Serializable {
     public void setName(@NonNull String value) {
         Objects.requireNonNull(value);
         this.name = value;
+    }
+
+    public static class Builder {
+        private List<XTExportedOperation> operation;
+        private String name;
+
+        public Builder setOperation(List<XTExportedOperation> operation) {
+            this.operation = operation;
+            return this;
+        }
+
+        public Builder setName(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public XTExportedInterface build() {
+            return new XTExportedInterface(this);
+        }
     }
 
     public void accept(Visitor visitor) {

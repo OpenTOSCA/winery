@@ -480,21 +480,17 @@ public class ModelUtilities {
      */
     public static XTNodeTemplate instantiateNodeTemplate(XTNodeType nodeType) {
 
-        XTNodeTemplate nodeTemplate = new XTNodeTemplate();
+        XTNodeTemplate.Builder nodeTemplate = new XTNodeTemplate.Builder(UUID.randomUUID().toString(), new QName(nodeType.getTargetNamespace(), nodeType.getName()));
 
-        nodeTemplate.setId(UUID.randomUUID().toString());
         nodeTemplate.setName(nodeType.getName());
-        nodeTemplate.setType(new QName(nodeType.getTargetNamespace(), nodeType.getName()));
 
         // add capabilities to the NodeTemplate
         if (nodeType.getCapabilityDefinitions() != null) {
             for (XTCapabilityDefinition cd : nodeType.getCapabilityDefinitions().getCapabilityDefinition()) {
-                XTCapability capa = new XTCapability();
-                capa.setId(UUID.randomUUID().toString());
-                capa.setName(cd.getCapabilityType().getLocalPart());
-                capa.setType(new QName(cd.getCapabilityType().getNamespaceURI(), cd.getCapabilityType().getLocalPart()));
+                XTCapability.Builder capa = new XTCapability.Builder(UUID.randomUUID().toString(),
+                    new QName(cd.getCapabilityType().getNamespaceURI(), cd.getCapabilityType().getLocalPart()), cd.getCapabilityType().getLocalPart());
                 nodeTemplate.setCapabilities(new XTNodeTemplate.Capabilities());
-                nodeTemplate.getCapabilities().getCapability().add(capa);
+                nodeTemplate.addCapabilities(capa.build());
             }
         }
 
@@ -503,15 +499,12 @@ public class ModelUtilities {
             XTNodeTemplate.Requirements requirementsNode = new XTNodeTemplate.Requirements();
             nodeTemplate.setRequirements(requirementsNode);
             for (XTRequirementDefinition definition : nodeType.getRequirementDefinitions().getRequirementDefinition()) {
-                XTRequirement newRequirement = new XTRequirement();
-                newRequirement.setName(definition.getName());
-                newRequirement.setId(definition.getName());
-                newRequirement.setType(definition.getRequirementType());
-                nodeTemplate.getRequirements().getRequirement().add(newRequirement);
+                XTRequirement.Builder newRequirement = new XTRequirement.Builder(definition.getName(), definition.getRequirementType());
+                nodeTemplate.addRequirements(newRequirement.build());
             }
         }
 
-        return nodeTemplate;
+        return nodeTemplate.build();
     }
 
     /**
@@ -525,19 +518,13 @@ public class ModelUtilities {
      */
     public static XTRelationshipTemplate instantiateRelationshipTemplate(XTRelationshipType relationshipType, XTNodeTemplate sourceNodeTemplate, XTNodeTemplate targetNodeTemplate) {
 
-        XTRelationshipTemplate relationshipTemplate = new XTRelationshipTemplate();
-        relationshipTemplate.setId(UUID.randomUUID().toString());
-        relationshipTemplate.setName(relationshipType.getName());
-        relationshipTemplate.setType(new QName(relationshipType.getTargetNamespace(), relationshipType.getName()));
-
         // connect the NodeTemplates
         XTRelationshipTemplate.SourceOrTargetElement source = new XTRelationshipTemplate.SourceOrTargetElement();
         source.setRef(sourceNodeTemplate);
-        relationshipTemplate.setSourceElement(source);
         XTRelationshipTemplate.SourceOrTargetElement target = new XTRelationshipTemplate.SourceOrTargetElement();
         target.setRef(targetNodeTemplate);
-        relationshipTemplate.setTargetElement(target);
 
+        XTRelationshipTemplate relationshipTemplate = new XTRelationshipTemplate.Builder(UUID.randomUUID().toString(), new QName(relationshipType.getTargetNamespace(), relationshipType.getName()), source, target).build();
         return relationshipTemplate;
     }
 
@@ -866,13 +853,14 @@ public class ModelUtilities {
     }
 
     public static XTRelationshipTemplate createRelationshipTemplate(XTNodeTemplate sourceNode, XTNodeTemplate targetNode, QName type, String connectionDescription) {
-        XTRelationshipTemplate rel = new XTRelationshipTemplate();
-        rel.setType(type);
+        XTRelationshipTemplate.SourceOrTargetElement sourceRef = new XTRelationshipTemplate.SourceOrTargetElement();
+        sourceRef.setRef(sourceNode);
+        XTRelationshipTemplate.SourceOrTargetElement targetRef = new XTRelationshipTemplate.SourceOrTargetElement();
+        targetRef.setRef(targetNode);
+
+        XTRelationshipTemplate.Builder rel = new XTRelationshipTemplate.Builder(sourceNode.getId() + "-" + connectionDescription + "-" + targetNode.getId(), type, sourceRef, targetRef);
         rel.setName(type.getLocalPart());
-        rel.setId(sourceNode.getId() + "-" + connectionDescription + "-" + targetNode.getId());
-        rel.setSourceNodeTemplate(sourceNode);
-        rel.setTargetNodeTemplate(targetNode);
-        return rel;
+        return rel.build();
     }
 
     public static XTRelationshipTemplate createRelationshipTemplateAndAddToTopology(XTNodeTemplate sourceNode, XTNodeTemplate targetNode, QName type,
@@ -900,11 +888,10 @@ public class ModelUtilities {
             node.setPolicies(policies);
         }
 
-        XTPolicy policy = new XTPolicy();
-        policy.setPolicyType(policyType);
+        XTPolicy.Builder policy = new XTPolicy.Builder(policyType);
         policy.setName(name);
         policies.getPolicy()
-            .add(policy);
+            .add(policy.build());
     }
 
     public static boolean containsPolicyType(XTNodeTemplate node, QName policyType) {

@@ -21,35 +21,27 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Objects;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlType;
-
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "TListString", namespace = " http://docs.oasis-open.org/tosca/ns/simple/yaml/1.3", propOrder = {
-    "list"
-})
-public class TListString implements List<String> {
+public class YTListString implements List<String> {
     private List<String> list;
 
-    public TListString() {
+    public YTListString() {
         this.list = new ArrayList<>();
     }
 
-    public TListString(String str) {
+    public YTListString(String str) {
         this.list = new ArrayList<>();
         this.list.add(str);
     }
 
-    public TListString(String... str) {
+    public YTListString(String... str) {
         this.list = new ArrayList<>(Arrays.asList(str));
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof TListString)) return false;
-        TListString strings = (TListString) o;
+        if (!(o instanceof YTListString)) return false;
+        YTListString strings = (YTListString) o;
         return Objects.equals(getList(), strings.getList());
     }
 

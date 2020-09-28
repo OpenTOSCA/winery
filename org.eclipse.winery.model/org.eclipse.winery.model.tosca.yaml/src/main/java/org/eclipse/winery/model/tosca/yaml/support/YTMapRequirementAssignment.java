@@ -19,45 +19,40 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlType;
+import org.eclipse.winery.model.tosca.yaml.YTRequirementAssignment;
 
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "tMapObject", namespace = " http://docs.oasis-open.org/tosca/ns/simple/yaml/1.3", propOrder = {
-    "map"
-})
-public class TMapObject implements Map<String, Object> {
-    private Map<String, Object> map;
+public class YTMapRequirementAssignment implements Map<String, YTRequirementAssignment> {
+    private Map<String, YTRequirementAssignment> map;
 
-    public TMapObject() {
+    public YTMapRequirementAssignment() {
         this.map = new LinkedHashMap<>();
+    }
+
+    public Map<String, YTRequirementAssignment> getMap() {
+        return map;
+    }
+
+    public YTMapRequirementAssignment setMap(Map<String, YTRequirementAssignment> map) {
+        this.map = new LinkedHashMap<>(map);
+        return this;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof TMapObject)) return false;
-        TMapObject that = (TMapObject) o;
-        return Objects.equals(getMap(), that.getMap());
+        if (!(o instanceof YTMapRequirementAssignment)) return false;
+        YTMapRequirementAssignment that = (YTMapRequirementAssignment) o;
+        return Objects.equals(map, that.map);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getMap());
+        return Objects.hash(map);
     }
 
     @Override
     public String toString() {
         return map.toString();
-    }
-
-    public Map<String, Object> getMap() {
-        return map;
-    }
-
-    public void setMap(Map<String, Object> map) {
-        this.map = map;
     }
 
     @Override
@@ -81,22 +76,22 @@ public class TMapObject implements Map<String, Object> {
     }
 
     @Override
-    public Object get(Object o) {
+    public YTRequirementAssignment get(Object o) {
         return this.map.get(o);
     }
 
     @Override
-    public Object put(String s, Object object) {
-        return this.map.put(s, object);
+    public YTRequirementAssignment put(String s, YTRequirementAssignment requirementAssignment) {
+        return this.map.put(s, requirementAssignment);
     }
 
     @Override
-    public Object remove(Object o) {
+    public YTRequirementAssignment remove(Object o) {
         return this.map.remove(o);
     }
 
     @Override
-    public void putAll(Map<? extends String, ? extends Object> map) {
+    public void putAll(Map<? extends String, ? extends YTRequirementAssignment> map) {
         this.map.putAll(map);
     }
 
@@ -111,12 +106,12 @@ public class TMapObject implements Map<String, Object> {
     }
 
     @Override
-    public Collection<Object> values() {
+    public Collection<YTRequirementAssignment> values() {
         return this.map.values();
     }
 
     @Override
-    public Set<Entry<String, Object>> entrySet() {
+    public Set<Entry<String, YTRequirementAssignment>> entrySet() {
         return this.map.entrySet();
     }
 }

@@ -25,7 +25,7 @@ import org.eclipse.winery.model.tosca.yaml.YTArtifactType;
 import org.eclipse.winery.model.tosca.yaml.YTEntityType;
 import org.eclipse.winery.model.tosca.yaml.YTImportDefinition;
 import org.eclipse.winery.model.tosca.yaml.YTServiceTemplate;
-import org.eclipse.winery.model.tosca.yaml.support.TMapImportDefinition;
+import org.eclipse.winery.model.tosca.yaml.support.YTMapImportDefinition;
 import org.eclipse.winery.model.tosca.yaml.visitor.AbstractParameter;
 import org.eclipse.winery.model.tosca.yaml.visitor.AbstractResult;
 import org.eclipse.winery.model.converter.support.Namespaces;
@@ -92,7 +92,7 @@ public class ReferenceVisitor extends ExceptionVisitor<ReferenceVisitor.Result, 
             return node.getArtifactTypes().get(parameter.reference.getLocalPart()).accept(this, parameter.copy());
         }
 
-        for (TMapImportDefinition map : node.getImports()) {
+        for (YTMapImportDefinition map : node.getImports()) {
             for (Map.Entry<String, YTImportDefinition> entry : map.entrySet()) {
                 result = entry.getValue().accept(this, parameter);
                 if (result != null) {

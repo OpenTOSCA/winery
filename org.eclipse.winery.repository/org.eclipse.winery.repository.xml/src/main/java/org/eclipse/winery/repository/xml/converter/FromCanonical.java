@@ -302,8 +302,7 @@ public class FromCanonical {
     }
 
     private XTRequiredContainerFeature convert(TRequiredContainerFeature canonical) {
-        XTRequiredContainerFeature result = new XTRequiredContainerFeature();
-        result.setFeature(canonical.getFeature());
+        XTRequiredContainerFeature result = new XTRequiredContainerFeature(canonical.getFeature());
         return result;
     }
 
@@ -487,10 +486,10 @@ public class FromCanonical {
     }
 
     private XTConstraint convert(TConstraint canonical) {
-        XTConstraint constraint = new XTConstraint();
+        XTConstraint.Builder constraint = new XTConstraint.Builder();
         constraint.setAny(canonical.getAny());
         constraint.setConstraintType(canonical.getConstraintType());
-        return constraint;
+        return constraint.build();
     }
 
     private XTCapability convert(TCapability canonical) {
@@ -534,11 +533,11 @@ public class FromCanonical {
     }
 
     private XTPropertyConstraint convert(TPropertyConstraint canonical) {
-        XTPropertyConstraint constraint = new XTPropertyConstraint();
+        XTPropertyConstraint.Builder constraint = new XTPropertyConstraint.Builder();
         constraint.setAny(canonical.getAny());
         constraint.setConstraintType(canonical.getConstraintType());
         constraint.setProperty(canonical.getProperty());
-        return constraint;
+        return constraint.build();
     }
 
     private XTExtension convert(TExtension canonical) {
@@ -549,11 +548,11 @@ public class FromCanonical {
     }
 
     private XTDocumentation convert(TDocumentation canonical) {
-        XTDocumentation xml = new XTDocumentation();
-        xml.getContent().addAll(canonical.getContent());
+        XTDocumentation.Builder xml = new XTDocumentation.Builder();
+        xml.setContent(canonical.getContent());
         xml.setSource(canonical.getSource());
         xml.setLang(canonical.getLang());
-        return xml;
+        return xml.build();
     }
 
     private XTCapabilityType convert(TCapabilityType canonical) {
@@ -726,7 +725,7 @@ public class FromCanonical {
     }
 
     private XTExportedOperation convert(TExportedOperation canonical) {
-        XTExportedOperation xml = new XTExportedOperation();
+        XTExportedOperation.Builder xml = new XTExportedOperation.Builder();
         xml.setName(canonical.getName());
         if (canonical.getNodeOperation() != null) {
             xml.setNodeOperation(convert(canonical.getNodeOperation()));
@@ -743,7 +742,7 @@ public class FromCanonical {
             }
             xml.setPlan(plan);
         }
-        return xml;
+        return xml.build();
     }
 
     private XTExportedOperation.RelationshipOperation convert(TExportedOperation.RelationshipOperation canonical) {
@@ -782,17 +781,17 @@ public class FromCanonical {
     }
 
     private XTCapabilityRef convert(TCapabilityRef canonical) {
-        XTCapabilityRef xml = new XTCapabilityRef();
+        XTCapabilityRef.Builder xml = new XTCapabilityRef.Builder();
         xml.setName(canonical.getName());
         xml.setRef(convert(canonical.getRef()));
-        return xml;
+        return xml.build();
     }
 
     private XTRequirementRef convert(TRequirementRef canonical) {
-        XTRequirementRef xml = new XTRequirementRef();
-        xml.setName(canonical.getName());
-        xml.setRef(convert(canonical.getRef()));
-        return xml;
+        XTRequirementRef.Builder builder = new XTRequirementRef.Builder();
+        builder.setName(canonical.getName());
+        builder.setRef(convert(canonical.getRef()));
+        return builder.build();
     }
 
     private XTRequirement convert(TRequirement canonical) {

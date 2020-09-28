@@ -119,9 +119,9 @@ import org.eclipse.winery.model.tosca.yaml.YTTopologyTemplateDefinition;
 import org.eclipse.winery.model.tosca.yaml.YTEntityType;
 import org.eclipse.winery.model.tosca.yaml.support.Defaults;
 import org.eclipse.winery.model.tosca.yaml.support.Metadata;
-import org.eclipse.winery.model.tosca.yaml.support.TMapImportDefinition;
-import org.eclipse.winery.model.tosca.yaml.support.TMapRequirementAssignment;
-import org.eclipse.winery.model.tosca.yaml.support.TMapRequirementDefinition;
+import org.eclipse.winery.model.tosca.yaml.support.YTMapImportDefinition;
+import org.eclipse.winery.model.tosca.yaml.support.YTMapRequirementAssignment;
+import org.eclipse.winery.model.tosca.yaml.support.YTMapRequirementDefinition;
 import org.eclipse.winery.repository.yaml.YamlRepository;
 import org.eclipse.winery.model.converter.support.Namespaces;
 import org.eclipse.winery.model.converter.support.xml.TypeConverter;
@@ -175,8 +175,8 @@ public class FromCanonical {
         }
 
         if (convertImports) {
-            List<TMapImportDefinition> imports = convertImports();
-            TMapImportDefinition existingImports = prepareExistingImports(node.getImportDefinitions());
+            List<YTMapImportDefinition> imports = convertImports();
+            YTMapImportDefinition existingImports = prepareExistingImports(node.getImportDefinitions());
             if (Objects.nonNull(imports)) {
                 imports.stream().findFirst().ifPresent(def -> def.putAll(existingImports));
             } else if (!existingImports.isEmpty()) {
@@ -189,8 +189,8 @@ public class FromCanonical {
         return builder.build();
     }
 
-    private TMapImportDefinition prepareExistingImports(Map<String, QName> importDefinitions) {
-        TMapImportDefinition tMapImportDefinition = new TMapImportDefinition();
+    private YTMapImportDefinition prepareExistingImports(Map<String, QName> importDefinitions) {
+        YTMapImportDefinition tMapImportDefinition = new YTMapImportDefinition();
         importDefinitions.forEach((key, value) -> {
             YTImportDefinition tImportDefinition =
                 new YTImportDefinition.Builder(key)
@@ -203,9 +203,9 @@ public class FromCanonical {
         return tMapImportDefinition;
     }
 
-    public List<TMapImportDefinition> convertImports() {
-        List<TMapImportDefinition> imports = new ArrayList<>();
-        TMapImportDefinition tMapImportDefinition = new TMapImportDefinition();
+    public List<YTMapImportDefinition> convertImports() {
+        List<YTMapImportDefinition> imports = new ArrayList<>();
+        YTMapImportDefinition tMapImportDefinition = new YTMapImportDefinition();
         for (Map.Entry<DefinitionsChildId, TDefinitions> importDefinition : importDefinitions.entrySet()) {
             YTImportDefinition tImportDefinition =
                 new YTImportDefinition.Builder(YamlExporter.getDefinitionsName(repository, importDefinition.getKey())
@@ -740,16 +740,16 @@ public class FromCanonical {
         return type;
     }
 
-    private List<TMapImportDefinition> addNewImports(List<TMapImportDefinition> imports) {
-        List<TMapImportDefinition> newImportsList = convertImports();
+    private List<YTMapImportDefinition> addNewImports(List<YTMapImportDefinition> imports) {
+        List<YTMapImportDefinition> newImportsList = convertImports();
         if (newImportsList.isEmpty()) {
             return imports;
         }
         if (imports.isEmpty()) {
             return newImportsList;
         }
-        TMapImportDefinition newImports = newImportsList.get(0);
-        TMapImportDefinition existingImports = imports.get(0);
+        YTMapImportDefinition newImports = newImportsList.get(0);
+        YTMapImportDefinition existingImports = imports.get(0);
         for (Map.Entry<String, YTImportDefinition> newImport : newImports.entrySet()) {
             boolean found = false;
             for (Map.Entry<String, YTImportDefinition> existingImport : existingImports.entrySet()) {
@@ -781,7 +781,7 @@ public class FromCanonical {
         return interfaces;
     }
 
-    public List<TMapRequirementDefinition> convert(TNodeType.RequirementDefinitions node) {
+    public List<YTMapRequirementDefinition> convert(TNodeType.RequirementDefinitions node) {
         if (Objects.isNull(node)) {
             return null;
         }
@@ -893,7 +893,7 @@ public class FromCanonical {
             .build();
     }
 
-    public TMapRequirementDefinition convert(TRequirementDefinition node) {
+    public YTMapRequirementDefinition convert(TRequirementDefinition node) {
         if (Objects.isNull(node)) {
             return null;
         }
@@ -907,7 +907,7 @@ public class FromCanonical {
             builder = builder.setRelationship(relationshipDefBuilder.build());
         }
 
-        return new TMapRequirementDefinition().setMap(
+        return new YTMapRequirementDefinition().setMap(
             Collections.singletonMap(
                 node.getName(),
                 builder.build()
@@ -1093,7 +1093,7 @@ public class FromCanonical {
         );
     }
 
-    public List<TMapRequirementAssignment> convert(TNodeTemplate.Requirements node) {
+    public List<YTMapRequirementAssignment> convert(TNodeTemplate.Requirements node) {
         if (Objects.isNull(node)) {
             return null;
         }
@@ -1104,7 +1104,7 @@ public class FromCanonical {
             .collect(Collectors.toList());
     }
 
-    public TMapRequirementAssignment convert(TRequirement node) {
+    public YTMapRequirementAssignment convert(TRequirement node) {
         if (Objects.isNull(node)) {
             return null;
         }
@@ -1126,7 +1126,7 @@ public class FromCanonical {
             builder = builder.setRelationship(new YTRelationshipAssignment.Builder(QName.valueOf(node.getRelationship())).build());
         }
 
-        return new TMapRequirementAssignment().setMap(Collections.singletonMap(
+        return new YTMapRequirementAssignment().setMap(Collections.singletonMap(
             node.getName(),
             builder.build()
         ));

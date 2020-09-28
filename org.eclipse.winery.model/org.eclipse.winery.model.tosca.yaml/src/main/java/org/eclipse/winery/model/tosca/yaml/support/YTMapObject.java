@@ -19,28 +19,18 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlType;
+public class YTMapObject implements Map<String, Object> {
+    private Map<String, Object> map;
 
-import org.eclipse.winery.model.tosca.yaml.YTRequirementDefinition;
-
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "tMapRequirementDefinition", namespace = " http://docs.oasis-open.org/tosca/ns/simple/yaml/1.3", propOrder = {
-    "map"
-})
-public class TMapRequirementDefinition implements Map<String, YTRequirementDefinition> {
-    private Map<String, YTRequirementDefinition> map;
-
-    public TMapRequirementDefinition() {
+    public YTMapObject() {
         this.map = new LinkedHashMap<>();
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof TMapRequirementDefinition)) return false;
-        TMapRequirementDefinition that = (TMapRequirementDefinition) o;
+        if (!(o instanceof YTMapObject)) return false;
+        YTMapObject that = (YTMapObject) o;
         return Objects.equals(getMap(), that.getMap());
     }
 
@@ -54,13 +44,12 @@ public class TMapRequirementDefinition implements Map<String, YTRequirementDefin
         return map.toString();
     }
 
-    public Map<String, YTRequirementDefinition> getMap() {
+    public Map<String, Object> getMap() {
         return map;
     }
 
-    public TMapRequirementDefinition setMap(Map<String, YTRequirementDefinition> map) {
-        this.map = new LinkedHashMap<>(map);
-        return this;
+    public void setMap(Map<String, Object> map) {
+        this.map = map;
     }
 
     @Override
@@ -84,22 +73,22 @@ public class TMapRequirementDefinition implements Map<String, YTRequirementDefin
     }
 
     @Override
-    public YTRequirementDefinition get(Object o) {
+    public Object get(Object o) {
         return this.map.get(o);
     }
 
     @Override
-    public YTRequirementDefinition put(String s, YTRequirementDefinition requirementDefinition) {
-        return this.map.put(s, requirementDefinition);
+    public Object put(String s, Object object) {
+        return this.map.put(s, object);
     }
 
     @Override
-    public YTRequirementDefinition remove(Object o) {
+    public Object remove(Object o) {
         return this.map.remove(o);
     }
 
     @Override
-    public void putAll(Map<? extends String, ? extends YTRequirementDefinition> map) {
+    public void putAll(Map<? extends String, ? extends Object> map) {
         this.map.putAll(map);
     }
 
@@ -114,12 +103,12 @@ public class TMapRequirementDefinition implements Map<String, YTRequirementDefin
     }
 
     @Override
-    public Collection<YTRequirementDefinition> values() {
+    public Collection<Object> values() {
         return this.map.values();
     }
 
     @Override
-    public Set<Entry<String, YTRequirementDefinition>> entrySet() {
+    public Set<Entry<String, Object>> entrySet() {
         return this.map.entrySet();
     }
 }

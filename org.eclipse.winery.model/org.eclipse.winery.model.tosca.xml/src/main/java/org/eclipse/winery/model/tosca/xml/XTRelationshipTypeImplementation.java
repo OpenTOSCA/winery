@@ -38,9 +38,8 @@ public class XTRelationshipTypeImplementation extends XTEntityTypeImplementation
     @XmlElement(name = "DerivedFrom")
     protected XTRelationshipTypeImplementation.DerivedFrom derivedFrom;
 
-    public XTRelationshipTypeImplementation() {
-
-    }
+    @Deprecated // required for XML deserialization
+    public XTRelationshipTypeImplementation() { }
 
     public XTRelationshipTypeImplementation(Builder builder) {
         super(builder);

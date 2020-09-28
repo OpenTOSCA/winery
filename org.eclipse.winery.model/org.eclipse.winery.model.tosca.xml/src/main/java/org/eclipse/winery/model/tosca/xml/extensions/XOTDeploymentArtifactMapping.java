@@ -27,7 +27,7 @@ public class XOTDeploymentArtifactMapping extends XOTPrmMapping {
     @XmlAttribute(name = "artifactType", required = true)
     private QName artifactType;
 
-    @Deprecated
+    @Deprecated // required for XML deserialization
     public XOTDeploymentArtifactMapping() { }
 
     public XOTDeploymentArtifactMapping(Builder builder) {

@@ -39,8 +39,8 @@ public class XTDeploymentArtifact extends XTExtensibleElements implements XHasNa
     @XmlAttribute(name = "artifactRef")
     protected QName artifactRef;
 
-    public XTDeploymentArtifact() {
-    }
+    @Deprecated // required for XML deserialization
+    public XTDeploymentArtifact() { }
 
     public XTDeploymentArtifact(Builder builder) {
         super(builder);

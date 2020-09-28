@@ -48,8 +48,8 @@ public class XTOperation extends XTExtensibleElements {
     @XmlSchemaType(name = "NCName")
     protected String name;
 
-    public XTOperation() {
-    }
+    @Deprecated // required for XML deserialization
+    public XTOperation() { }
 
     public XTOperation(Builder builder) {
         super(builder);

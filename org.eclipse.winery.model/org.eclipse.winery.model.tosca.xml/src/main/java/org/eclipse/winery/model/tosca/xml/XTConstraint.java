@@ -43,6 +43,14 @@ public class XTConstraint implements Serializable {
     @XmlSchemaType(name = "anyURI")
     protected String constraintType;
 
+    @Deprecated // required for XML deserialization
+    public XTConstraint() { }
+
+    protected XTConstraint(Builder builder) {
+        this.any = builder.any;
+        this.constraintType = builder.constraintType;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -73,5 +81,28 @@ public class XTConstraint implements Serializable {
 
     public void setConstraintType(String value) {
         this.constraintType = Objects.requireNonNull(value);
+    }
+
+    public static class Builder<T extends Builder<T>> {
+        private Object any;
+        private String constraintType;
+
+        public T setAny(Object any) {
+            this.any = any;
+            return self();
+        }
+
+        public T setConstraintType(String constraintType) {
+            this.constraintType = constraintType;
+            return self();
+        }
+
+        public T self() {
+            return (T) this;
+        }
+
+        public XTConstraint build() {
+            return new XTConstraint(this);
+        }
     }
 }

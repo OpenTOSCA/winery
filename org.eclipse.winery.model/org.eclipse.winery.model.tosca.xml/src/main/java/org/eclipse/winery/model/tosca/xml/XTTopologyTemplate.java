@@ -43,6 +43,7 @@ public class XTTopologyTemplate extends XTExtensibleElements {
     })
     protected List<XTEntityTemplate> nodeTemplateOrRelationshipTemplate;
 
+    @Deprecated // required for XML deserialization
     public XTTopologyTemplate() {
     }
 

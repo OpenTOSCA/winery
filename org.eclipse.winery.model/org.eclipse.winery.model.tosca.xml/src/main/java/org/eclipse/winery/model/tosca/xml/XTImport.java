@@ -39,9 +39,8 @@ public class XTImport extends XTExtensibleElements {
     @XmlAttribute(name = "importType", required = true)
     protected String importType;
 
-    public XTImport() {
-
-    }
+    @Deprecated // required for XML deserialization
+    public XTImport() { }
 
     public XTImport(Builder builder) {
         super(builder);

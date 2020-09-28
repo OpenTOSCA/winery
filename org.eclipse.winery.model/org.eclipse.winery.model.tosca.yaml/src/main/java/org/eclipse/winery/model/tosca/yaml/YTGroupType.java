@@ -22,7 +22,7 @@ import java.util.Objects;
 
 import javax.xml.namespace.QName;
 
-import org.eclipse.winery.model.tosca.yaml.support.TMapRequirementDefinition;
+import org.eclipse.winery.model.tosca.yaml.support.YTMapRequirementDefinition;
 import org.eclipse.winery.model.tosca.yaml.visitor.AbstractParameter;
 import org.eclipse.winery.model.tosca.yaml.visitor.AbstractResult;
 import org.eclipse.winery.model.tosca.yaml.visitor.IVisitor;
@@ -31,7 +31,7 @@ import org.eclipse.jdt.annotation.NonNull;
 
 public class YTGroupType extends YTNodeOrGroupType {
     private List<QName> members;
-    private List<TMapRequirementDefinition> requirements;
+    private List<YTMapRequirementDefinition> requirements;
     private Map<String, YTCapabilityDefinition> capabilities;
     private Map<String, YTInterfaceDefinition> interfaces;
 
@@ -84,7 +84,7 @@ public class YTGroupType extends YTNodeOrGroupType {
     }
 
     @NonNull
-    public List<TMapRequirementDefinition> getRequirements() {
+    public List<YTMapRequirementDefinition> getRequirements() {
         if (this.requirements == null) {
             this.requirements = new ArrayList<>();
         }
@@ -92,7 +92,7 @@ public class YTGroupType extends YTNodeOrGroupType {
         return requirements;
     }
 
-    public void setRequirements(List<TMapRequirementDefinition> requirements) {
+    public void setRequirements(List<YTMapRequirementDefinition> requirements) {
         this.requirements = requirements;
     }
 
@@ -134,7 +134,7 @@ public class YTGroupType extends YTNodeOrGroupType {
 
     public static class Builder extends YTEntityType.Builder<Builder> {
         private List<QName> members;
-        private List<TMapRequirementDefinition> requirements;
+        private List<YTMapRequirementDefinition> requirements;
         private Map<String, YTCapabilityDefinition> capabilities;
         private Map<String, YTInterfaceDefinition> interfaces;
 
@@ -156,7 +156,7 @@ public class YTGroupType extends YTNodeOrGroupType {
             return this;
         }
 
-        public Builder setRequirements(List<TMapRequirementDefinition> requirements) {
+        public Builder setRequirements(List<YTMapRequirementDefinition> requirements) {
             this.requirements = requirements;
             return this;
         }
@@ -193,7 +193,7 @@ public class YTGroupType extends YTNodeOrGroupType {
             return addMembers(Collections.singletonList(member));
         }
 
-        public Builder addRequirements(List<TMapRequirementDefinition> requirements) {
+        public Builder addRequirements(List<YTMapRequirementDefinition> requirements) {
             if (requirements == null || requirements.isEmpty()) {
                 return this;
             }
@@ -207,7 +207,7 @@ public class YTGroupType extends YTNodeOrGroupType {
             return this;
         }
 
-        public Builder addRequirements(TMapRequirementDefinition requirement) {
+        public Builder addRequirements(YTMapRequirementDefinition requirement) {
             if (requirement == null || requirement.isEmpty()) {
                 return this;
             }
@@ -222,7 +222,7 @@ public class YTGroupType extends YTNodeOrGroupType {
 
             // TOSCA YAML syntax: one RequirementDefinition per MapRequirementDefinition
             requirements.forEach((key, value) -> {
-                TMapRequirementDefinition tmp = new TMapRequirementDefinition();
+                YTMapRequirementDefinition tmp = new YTMapRequirementDefinition();
                 tmp.put(key, value);
                 addRequirements(tmp);
             });

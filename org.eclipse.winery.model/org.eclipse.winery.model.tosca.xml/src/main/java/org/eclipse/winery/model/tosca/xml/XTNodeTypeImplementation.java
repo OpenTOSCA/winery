@@ -83,6 +83,7 @@ public class XTNodeTypeImplementation extends XTEntityTypeImplementation {
     @XmlElement(name = "DerivedFrom")
     protected XTNodeTypeImplementation.DerivedFrom derivedFrom;
 
+    @Deprecated // required for XML deserialization
     public XTNodeTypeImplementation() {
         super();
     }

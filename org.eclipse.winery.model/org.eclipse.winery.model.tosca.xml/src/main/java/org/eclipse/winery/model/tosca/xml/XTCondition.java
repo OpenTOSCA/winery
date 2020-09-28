@@ -42,6 +42,14 @@ public class XTCondition implements Serializable {
     @XmlSchemaType(name = "anyURI")
     protected String expressionLanguage;
 
+    @Deprecated // required for XML deserialization
+    public XTCondition() { }
+
+    public XTCondition(Builder builder) {
+        this.any = builder.any;
+        this.expressionLanguage = builder.expressionLanguage;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -59,7 +67,7 @@ public class XTCondition implements Serializable {
     @NonNull
     public List<Object> getAny() {
         if (any == null) {
-            any = new ArrayList<Object>();
+            any = new ArrayList<>();
         }
         return this.any;
     }
@@ -72,6 +80,25 @@ public class XTCondition implements Serializable {
     public void setExpressionLanguage(@NonNull String value) {
         Objects.requireNonNull(value);
         this.expressionLanguage = value;
+    }
+
+    public static class Builder {
+        private List<Object> any;
+        private String expressionLanguage;
+
+        public Builder setAny(List<Object> any) {
+            this.any = any;
+            return this;
+        }
+
+        public Builder setExpressionLanguage(String expressionLanguage) {
+            this.expressionLanguage = expressionLanguage;
+            return this;
+        }
+
+        public XTCondition build() {
+            return new XTCondition(this);
+        }
     }
 
     public void accept(Visitor visitor) {

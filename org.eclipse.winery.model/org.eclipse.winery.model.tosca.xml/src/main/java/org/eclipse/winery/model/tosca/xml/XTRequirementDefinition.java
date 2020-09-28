@@ -54,9 +54,8 @@ public class XTRequirementDefinition extends XTExtensibleElements {
     @XmlAttribute(name = "relationship")
     private QName relationship;
 
-    public XTRequirementDefinition() {
-
-    }
+    @Deprecated // required for XML deserialization
+    public XTRequirementDefinition() { }
 
     public XTRequirementDefinition(Builder builder) {
         super(builder);

@@ -52,7 +52,7 @@ public class XOTComplianceRule extends XHasId implements XHasName, XHasTargetNam
     @XmlElement(name = "Tags")
     protected XTTags tags;
 
-    @Deprecated
+    @Deprecated // required for XML deserialization
     public XOTComplianceRule() { }
 
     private XOTComplianceRule(Builder builder) {

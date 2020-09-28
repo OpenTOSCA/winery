@@ -42,8 +42,8 @@ public class XTArtifactTemplate extends XTEntityTemplate {
     @XmlAttribute(name = "name")
     protected String name;
 
-    public XTArtifactTemplate() {
-    }
+    @Deprecated // required for XML deserialization
+    public XTArtifactTemplate() { }
 
     public XTArtifactTemplate(Builder builder) {
         super(builder);

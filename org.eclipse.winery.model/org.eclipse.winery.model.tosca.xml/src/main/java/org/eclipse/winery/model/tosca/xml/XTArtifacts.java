@@ -32,9 +32,8 @@ public class XTArtifacts {
     @XmlElement(name = "Artifact", required = true)
     List<XTArtifact> artifact;
 
-    public XTArtifacts() {
-
-    }
+    @Deprecated // required for XML deserialization
+    public XTArtifacts() { }
 
     public XTArtifacts(List<XTArtifact> artifacts) {
         this.artifact = artifacts;

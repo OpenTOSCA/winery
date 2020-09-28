@@ -31,8 +31,8 @@ public class XTCapabilityType extends XTEntityType {
     // java.lang.Object, org.eclipse.winery.common.RepositoryFileReference, org.apache.tika.mime.MediaType)
     private List<QName> validNodeTypes;
 
-    public XTCapabilityType() {
-    }
+    @Deprecated // required for XML deserialization
+    public XTCapabilityType() { }
 
     public XTCapabilityType(Builder builder) {
         super(builder);

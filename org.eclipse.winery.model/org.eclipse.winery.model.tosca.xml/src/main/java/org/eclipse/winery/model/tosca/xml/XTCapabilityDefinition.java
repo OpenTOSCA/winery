@@ -49,8 +49,8 @@ public class XTCapabilityDefinition extends XTExtensibleElements {
     @XmlAttribute(name = "validSourceTypes")
     protected List<QName> validSourceTypes;
 
-    public XTCapabilityDefinition() {
-    }
+    @Deprecated // required for XML deserialization
+    public XTCapabilityDefinition() { }
 
     public XTCapabilityDefinition(Builder builder) {
         super(builder);

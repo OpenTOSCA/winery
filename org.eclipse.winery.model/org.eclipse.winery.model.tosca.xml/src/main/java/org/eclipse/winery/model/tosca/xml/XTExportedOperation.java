@@ -49,6 +49,16 @@ public class XTExportedOperation implements XHasName, Serializable {
     @XmlSchemaType(name = "NCName")
     protected String name;
 
+    @Deprecated // required for XML deserialization
+    public XTExportedOperation() { }
+
+    public XTExportedOperation(Builder builder) {
+        this.nodeOperation = builder.nodeOperation;
+        this.relationshipOperation = builder.relationshipOperation;
+        this.plan = builder.plan;
+        this.name = builder.name;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -367,6 +377,37 @@ public class XTExportedOperation implements XHasName, Serializable {
          */
         public void setOperationName(String value) {
             this.operationName = value;
+        }
+    }
+
+    public static class Builder {
+        private XTExportedOperation.NodeOperation nodeOperation;
+        private XTExportedOperation.RelationshipOperation relationshipOperation;
+        private Plan plan;
+        private String name;
+
+        public Builder setNodeOperation(NodeOperation nodeOperation) {
+            this.nodeOperation = nodeOperation;
+            return this;
+        }
+
+        public Builder setRelationshipOperation(RelationshipOperation relationshipOperation) {
+            this.relationshipOperation = relationshipOperation;
+            return this;
+        }
+
+        public Builder setPlan(Plan plan) {
+            this.plan = plan;
+            return this;
+        }
+
+        public Builder setName(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public XTExportedOperation build() {
+            return new XTExportedOperation(this);
         }
     }
 }

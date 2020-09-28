@@ -33,9 +33,10 @@ public abstract class XHasId extends XTExtensibleElements implements XHasIdInIdO
     @XmlSchemaType(name = "ID")
     private String id;
 
-    public XHasId() {
-    }
+    @Deprecated // required for XML deserialization
+    public XHasId() { }
 
+    @Deprecated // required for XML deserialization
     public XHasId(String id) {
         this.setId(id);
     }

@@ -56,9 +56,8 @@ public abstract class XOTRefinementModel extends XTExtensibleElements implements
     @XmlElement(name = "PermutationMapping")
     protected List<XOTPermutationMapping> permutationMappings;
 
-    @Deprecated
-    public XOTRefinementModel() {
-    }
+    @Deprecated // required for XML deserialization
+    public XOTRefinementModel() { }
 
     public XOTRefinementModel(Builder<? extends Builder<?>> builder) {
         super(builder);

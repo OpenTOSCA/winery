@@ -69,8 +69,8 @@ public abstract class XTEntityType extends XTExtensibleElements implements XHasN
     @XmlSchemaType(name = "anyURI")
     protected String targetNamespace;
 
-    public XTEntityType() {
-    }
+    @Deprecated // required for XML deserialization
+    public XTEntityType() { }
 
     public XTEntityType(Builder builder) {
         super(builder);

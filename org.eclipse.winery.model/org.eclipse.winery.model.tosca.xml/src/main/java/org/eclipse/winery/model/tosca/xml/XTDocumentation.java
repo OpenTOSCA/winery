@@ -51,6 +51,15 @@ public class XTDocumentation implements Serializable {
     @XmlAttribute(name = "lang", namespace = Namespaces.W3C_NAMESPACE_URI)
     protected String lang;
 
+    @Deprecated // required for XML deserialization
+    public XTDocumentation() { }
+
+    public XTDocumentation(Builder builder) {
+        this.content = builder.content;
+        this.source = builder.source;
+        this.lang = builder.lang;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -69,7 +78,7 @@ public class XTDocumentation implements Serializable {
     @NonNull
     public List<Object> getContent() {
         if (content == null) {
-            content = new ArrayList<Object>();
+            content = new ArrayList<>();
         }
         return this.content;
     }
@@ -94,5 +103,30 @@ public class XTDocumentation implements Serializable {
 
     public void accept(Visitor visitor) {
         visitor.visit(this);
+    }
+
+    public static class Builder {
+        private List<Object> content;
+        private String source;
+        private String lang;
+
+        public Builder setContent(List<Object> content) {
+            this.content = content;
+            return this;
+        }
+
+        public Builder setSource(String source) {
+            this.source = source;
+            return this;
+        }
+
+        public Builder setLang(String lang) {
+            this.lang = lang;
+            return this;
+        }
+
+        public XTDocumentation build() {
+            return new XTDocumentation(this);
+        }
     }
 }

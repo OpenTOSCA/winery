@@ -45,6 +45,13 @@ public class XTRequiredContainerFeature implements Serializable {
     @XmlSchemaType(name = "anyURI")
     protected String feature;
 
+    @Deprecated // required for XML deserialization
+    public XTRequiredContainerFeature() { }
+
+    public XTRequiredContainerFeature(String feature) {
+        this.feature = feature;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

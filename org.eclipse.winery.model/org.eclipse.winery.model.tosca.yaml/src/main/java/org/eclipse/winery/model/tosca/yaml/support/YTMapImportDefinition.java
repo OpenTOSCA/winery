@@ -14,28 +14,25 @@
 package org.eclipse.winery.model.tosca.yaml.support;
 
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlType;
+import org.eclipse.winery.model.tosca.yaml.YTImportDefinition;
 
-import org.eclipse.winery.model.tosca.yaml.YTPropertyFilterDefinition;
+public class YTMapImportDefinition implements Map<String, YTImportDefinition> {
+    private Map<String, YTImportDefinition> map;
 
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "tMapPropertyFilterDefinition", namespace = " http://docs.oasis-open.org/tosca/ns/simple/yaml/1.3", propOrder = {
-    "map"
-})
-public class TMapPropertyFilterDefinition implements Map<String, YTPropertyFilterDefinition> {
-    private Map<String, YTPropertyFilterDefinition> map;
+    public YTMapImportDefinition() {
+        this.map = new LinkedHashMap<>();
+    }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof TMapPropertyFilterDefinition)) return false;
-        TMapPropertyFilterDefinition that = (TMapPropertyFilterDefinition) o;
+        if (!(o instanceof YTMapImportDefinition)) return false;
+        YTMapImportDefinition that = (YTMapImportDefinition) o;
         return Objects.equals(getMap(), that.getMap());
     }
 
@@ -49,11 +46,11 @@ public class TMapPropertyFilterDefinition implements Map<String, YTPropertyFilte
         return map.toString();
     }
 
-    public Map<String, YTPropertyFilterDefinition> getMap() {
+    public Map<String, YTImportDefinition> getMap() {
         return map;
     }
 
-    public void setMap(Map<String, YTPropertyFilterDefinition> map) {
+    public void setMap(Map<String, YTImportDefinition> map) {
         this.map = map;
     }
 
@@ -78,22 +75,22 @@ public class TMapPropertyFilterDefinition implements Map<String, YTPropertyFilte
     }
 
     @Override
-    public YTPropertyFilterDefinition get(Object o) {
+    public YTImportDefinition get(Object o) {
         return this.map.get(o);
     }
 
     @Override
-    public YTPropertyFilterDefinition put(String s, YTPropertyFilterDefinition propertyFilterDefinition) {
-        return this.map.put(s, propertyFilterDefinition);
+    public YTImportDefinition put(String s, YTImportDefinition importDefinition) {
+        return this.map.put(s, importDefinition);
     }
 
     @Override
-    public YTPropertyFilterDefinition remove(Object o) {
+    public YTImportDefinition remove(Object o) {
         return this.map.remove(o);
     }
 
     @Override
-    public void putAll(Map<? extends String, ? extends YTPropertyFilterDefinition> map) {
+    public void putAll(Map<? extends String, ? extends YTImportDefinition> map) {
         this.map.putAll(map);
     }
 
@@ -108,12 +105,12 @@ public class TMapPropertyFilterDefinition implements Map<String, YTPropertyFilte
     }
 
     @Override
-    public Collection<YTPropertyFilterDefinition> values() {
+    public Collection<YTImportDefinition> values() {
         return this.map.values();
     }
 
     @Override
-    public Set<Entry<String, YTPropertyFilterDefinition>> entrySet() {
+    public Set<Entry<String, YTImportDefinition>> entrySet() {
         return this.map.entrySet();
     }
 }

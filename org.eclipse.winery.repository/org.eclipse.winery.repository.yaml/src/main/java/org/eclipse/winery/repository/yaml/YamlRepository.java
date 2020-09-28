@@ -66,7 +66,7 @@ import org.eclipse.winery.model.tosca.yaml.YTRelationshipType;
 import org.eclipse.winery.model.tosca.yaml.YTServiceTemplate;
 import org.eclipse.winery.model.tosca.yaml.YTTopologyTemplateDefinition;
 import org.eclipse.winery.model.tosca.yaml.support.Defaults;
-import org.eclipse.winery.model.tosca.yaml.support.TMapImportDefinition;
+import org.eclipse.winery.model.tosca.yaml.support.YTMapImportDefinition;
 import org.eclipse.winery.repository.JAXBSupport;
 import org.eclipse.winery.repository.backend.BackendUtils;
 import org.eclipse.winery.repository.backend.constants.MediaTypes;
@@ -712,7 +712,7 @@ public class YamlRepository extends AbstractFileBasedRepository {
             ArtifactTemplateId id = (ArtifactTemplateId) existing.getParent();
             TArtifactTemplate artifactTemplate = definitions.getArtifactTemplates().get(0);
             YTArtifactDefinition artifact = converter.convertArtifactTemplate(artifactTemplate);
-            List<TMapImportDefinition> imports = converter.convertImports();
+            List<YTMapImportDefinition> imports = converter.convertImports();
             Path targetPath = ref2AbsolutePath(existing);
             if (Files.exists(targetPath)) {
                 serviceTemplate = readServiceTemplate(targetPath);
@@ -829,7 +829,7 @@ public class YamlRepository extends AbstractFileBasedRepository {
      * @param newImport  new import
      * @return edited imports
      **/
-    private List<TMapImportDefinition> addImports(List<TMapImportDefinition> oldImports, List<TMapImportDefinition> newImport) {
+    private List<YTMapImportDefinition> addImports(List<YTMapImportDefinition> oldImports, List<YTMapImportDefinition> newImport) {
         if (newImport.isEmpty()) {
             return oldImports;
         }
@@ -837,7 +837,7 @@ public class YamlRepository extends AbstractFileBasedRepository {
             return oldImports;
         }
         Map.Entry<String, YTImportDefinition> targetImport = newImport.get(0).entrySet().iterator().next();
-        for (TMapImportDefinition tMapImportDefinition : oldImports) {
+        for (YTMapImportDefinition tMapImportDefinition : oldImports) {
             for (Map.Entry<String, YTImportDefinition> tImportDefinitionEntry : tMapImportDefinition.entrySet()) {
                 if (tImportDefinitionEntry.getKey().equalsIgnoreCase(targetImport.getKey())) {
                     if (tImportDefinitionEntry.getValue().equals(targetImport.getValue())) {
@@ -859,7 +859,7 @@ public class YamlRepository extends AbstractFileBasedRepository {
      * @param imports          imports
      * @return new yaml service template
      **/
-    private YTServiceTemplate createNewCacheNodeTypeWithArtifact(RepositoryFileReference ref, TArtifactTemplate artifactTemplate, YTArtifactDefinition artifact, List<TMapImportDefinition> imports) {
+    private YTServiceTemplate createNewCacheNodeTypeWithArtifact(RepositoryFileReference ref, TArtifactTemplate artifactTemplate, YTArtifactDefinition artifact, List<YTMapImportDefinition> imports) {
         YTServiceTemplate serviceTemplate = createEmptyCacheNodeType(((ArtifactTemplateId) ref.getParent()).getQName().getNamespaceURI());
         Map<String, YTArtifactDefinition> artifacts = new LinkedHashMap<>();
         artifacts.put(artifactTemplate.getIdFromIdOrNameField(), artifact);

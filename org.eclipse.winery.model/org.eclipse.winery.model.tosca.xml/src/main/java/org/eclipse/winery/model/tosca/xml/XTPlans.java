@@ -55,6 +55,9 @@ public class XTPlans implements Serializable {
     @XmlSchemaType(name = "anyURI")
     protected String targetNamespace;
 
+    @Deprecated // required for XML deserialization
+    public XTPlans() { }
+    
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

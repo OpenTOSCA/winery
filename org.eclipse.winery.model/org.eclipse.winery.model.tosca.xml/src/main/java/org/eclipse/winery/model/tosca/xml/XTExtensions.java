@@ -36,6 +36,9 @@ public class XTExtensions extends XTExtensibleElements {
     @XmlElement(name = "Extension", required = true)
     protected List<XTExtension> extension;
 
+    @Deprecated // required for XML deserialization
+    public XTExtensions() { }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

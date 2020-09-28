@@ -37,9 +37,8 @@ public class XTTag implements Serializable {
     @XmlAttribute(name = "value", required = true)
     protected String value;
 
-    public XTTag() {
-
-    }
+    @Deprecated // required for XML deserialization
+    public XTTag() { }
 
     public XTTag(Builder builder) {
         this.name = Objects.requireNonNull(builder.name);

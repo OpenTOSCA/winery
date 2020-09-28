@@ -61,8 +61,8 @@ public class XTServiceTemplate extends XHasId implements XHasName, XHasTargetNam
     @XmlAttribute(name = "substitutableNodeType")
     protected QName substitutableNodeType;
 
-    public XTServiceTemplate() {
-    }
+    @Deprecated // required for XML deserialization
+    public XTServiceTemplate() { }
 
     public XTServiceTemplate(Builder builder) {
         super(builder);

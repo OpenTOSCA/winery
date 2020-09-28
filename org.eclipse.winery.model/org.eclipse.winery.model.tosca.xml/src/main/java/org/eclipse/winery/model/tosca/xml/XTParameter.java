@@ -41,8 +41,8 @@ public class XTParameter implements Serializable {
     @XmlAttribute(name = "required")
     protected XTBoolean required;
 
-    public XTParameter() {
-    }
+    @Deprecated // required for XML deserialization
+    public XTParameter() { }
 
     public XTParameter(Builder builder) {
         this.name = builder.name;

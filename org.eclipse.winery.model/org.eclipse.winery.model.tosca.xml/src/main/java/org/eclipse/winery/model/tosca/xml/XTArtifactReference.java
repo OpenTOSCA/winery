@@ -45,9 +45,8 @@ public class XTArtifactReference implements Serializable {
     @XmlSchemaType(name = "anyURI")
     protected String reference;
 
-    public XTArtifactReference() {
-
-    }
+    @Deprecated // required for XML deserialization
+    public XTArtifactReference() { }
 
     public XTArtifactReference(Builder builder) {
         this.includeOrExclude = builder.includeOrExclude;

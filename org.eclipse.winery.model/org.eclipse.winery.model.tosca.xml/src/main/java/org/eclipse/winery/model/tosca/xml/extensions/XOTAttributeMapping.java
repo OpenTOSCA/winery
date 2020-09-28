@@ -38,7 +38,7 @@ public class XOTAttributeMapping extends XOTPrmMapping {
     @Nullable
     private String refinementProperty;
 
-    @Deprecated
+    @Deprecated // required for XML deserialization
     public XOTAttributeMapping() { }
 
     public XOTAttributeMapping(Builder builder) {

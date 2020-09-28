@@ -24,7 +24,7 @@ import org.eclipse.winery.model.tosca.xml.visitor.Visitor;
 @XmlType(name = "otStayMapping")
 public class XOTStayMapping extends XOTPrmMapping {
 
-    @Deprecated
+    @Deprecated // required for XML deserialization
     public XOTStayMapping() {
     }
 

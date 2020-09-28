@@ -36,8 +36,8 @@ public class XTExtension extends XTExtensibleElements {
     @XmlAttribute(name = "mustUnderstand")
     protected XTBoolean mustUnderstand;
 
-    public XTExtension() {
-    }
+    @Deprecated // required for XML deserialization
+    public XTExtension() { }
 
     public XTExtension(Builder builder) {
         super(builder);

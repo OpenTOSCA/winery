@@ -21,7 +21,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import org.eclipse.winery.model.tosca.yaml.support.Metadata;
-import org.eclipse.winery.model.tosca.yaml.support.TMapImportDefinition;
+import org.eclipse.winery.model.tosca.yaml.support.YTMapImportDefinition;
 import org.eclipse.winery.model.tosca.yaml.visitor.AbstractParameter;
 import org.eclipse.winery.model.tosca.yaml.visitor.AbstractResult;
 import org.eclipse.winery.model.tosca.yaml.visitor.IVisitor;
@@ -36,7 +36,7 @@ public class YTServiceTemplate implements VisitorNode {
     private String description;
     private Map<String, Object> dslDefinitions;
     private Map<String, YTRepositoryDefinition> repositories;
-    private List<TMapImportDefinition> imports;
+    private List<YTMapImportDefinition> imports;
     private Map<String, YTArtifactType> artifactTypes;
     private Map<String, YTDataType> dataTypes;
     private Map<String, YTCapabilityType> capabilityTypes;
@@ -171,7 +171,7 @@ public class YTServiceTemplate implements VisitorNode {
     }
 
     @NonNull
-    public List<TMapImportDefinition> getImports() {
+    public List<YTMapImportDefinition> getImports() {
         if (this.imports == null) {
             this.imports = new ArrayList<>();
         }
@@ -179,7 +179,7 @@ public class YTServiceTemplate implements VisitorNode {
         return imports;
     }
 
-    public void setImports(List<TMapImportDefinition> imports) {
+    public void setImports(List<YTMapImportDefinition> imports) {
         this.imports = imports;
     }
 
@@ -305,7 +305,7 @@ public class YTServiceTemplate implements VisitorNode {
         private String description;
         private Map<String, Object> dslDefinitions;
         private Map<String, YTRepositoryDefinition> repositories;
-        private List<TMapImportDefinition> imports;
+        private List<YTMapImportDefinition> imports;
         private Map<String, YTArtifactType> artifactTypes;
         private Map<String, YTDataType> dataTypes;
         private Map<String, YTCapabilityType> capabilityTypes;
@@ -340,7 +340,7 @@ public class YTServiceTemplate implements VisitorNode {
             return this;
         }
 
-        public Builder setImports(List<TMapImportDefinition> imports) {
+        public Builder setImports(List<YTMapImportDefinition> imports) {
             this.imports = imports;
             return this;
         }
@@ -442,7 +442,7 @@ public class YTServiceTemplate implements VisitorNode {
             return addRepositories(Collections.singletonMap(name, repository));
         }
 
-        public Builder addImports(List<TMapImportDefinition> imports) {
+        public Builder addImports(List<YTMapImportDefinition> imports) {
             if (imports == null || imports.isEmpty()) {
                 return this;
             }
@@ -456,7 +456,7 @@ public class YTServiceTemplate implements VisitorNode {
             return this;
         }
 
-        public Builder addImports(TMapImportDefinition importDefinition) {
+        public Builder addImports(YTMapImportDefinition importDefinition) {
             if (importDefinition == null | importDefinition.isEmpty()) {
                 return this;
             }
@@ -470,7 +470,7 @@ public class YTServiceTemplate implements VisitorNode {
             }
 
             imports.forEach((key, value) -> {
-                TMapImportDefinition tmp = new TMapImportDefinition();
+                YTMapImportDefinition tmp = new YTMapImportDefinition();
                 tmp.put(key, value);
                 addImports(tmp);
             });

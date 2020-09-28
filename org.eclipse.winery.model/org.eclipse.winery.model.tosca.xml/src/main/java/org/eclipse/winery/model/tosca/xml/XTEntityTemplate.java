@@ -74,6 +74,7 @@ public abstract class XTEntityTemplate extends XHasId implements XHasType, XHasN
     @NonNull
     protected QName type;
 
+    @Deprecated // required for XML deserialization
     public XTEntityTemplate() {
         super();
     }

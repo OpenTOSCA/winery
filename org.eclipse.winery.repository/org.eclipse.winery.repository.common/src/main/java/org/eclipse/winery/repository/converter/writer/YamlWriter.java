@@ -69,12 +69,12 @@ import org.eclipse.winery.model.tosca.yaml.YTSubstitutionMappings;
 import org.eclipse.winery.model.tosca.yaml.YTTopologyTemplateDefinition;
 import org.eclipse.winery.model.tosca.yaml.YTVersion;
 import org.eclipse.winery.model.tosca.yaml.support.Metadata;
-import org.eclipse.winery.model.tosca.yaml.support.TListString;
-import org.eclipse.winery.model.tosca.yaml.support.TMapImportDefinition;
-import org.eclipse.winery.model.tosca.yaml.support.TMapObject;
-import org.eclipse.winery.model.tosca.yaml.support.TMapPropertyFilterDefinition;
-import org.eclipse.winery.model.tosca.yaml.support.TMapRequirementAssignment;
-import org.eclipse.winery.model.tosca.yaml.support.TMapRequirementDefinition;
+import org.eclipse.winery.model.tosca.yaml.support.YTListString;
+import org.eclipse.winery.model.tosca.yaml.support.YTMapImportDefinition;
+import org.eclipse.winery.model.tosca.yaml.support.YTMapObject;
+import org.eclipse.winery.model.tosca.yaml.support.YTMapPropertyFilterDefinition;
+import org.eclipse.winery.model.tosca.yaml.support.YTMapRequirementAssignment;
+import org.eclipse.winery.model.tosca.yaml.support.YTMapRequirementDefinition;
 import org.eclipse.winery.model.tosca.yaml.tosca.datatypes.Credential;
 import org.eclipse.winery.model.tosca.yaml.visitor.AbstractParameter;
 import org.eclipse.winery.model.tosca.yaml.visitor.AbstractVisitor;
@@ -141,7 +141,7 @@ public class YamlWriter extends AbstractVisitor<YamlPrinter, YamlWriter.Paramete
             .printNewLine()
             .print(node.getMetadata().accept(this, parameter))
             .print(printList("imports",
-                node.getImports().stream().map(TMapImportDefinition::values).flatMap(Collection::stream).collect(Collectors.toList()),
+                node.getImports().stream().map(YTMapImportDefinition::values).flatMap(Collection::stream).collect(Collectors.toList()),
                 parameter))
             // .printKeyValue("description", node.getDescription())
             .print(printMapObject("dsl_definitions", node.getDslDefinitions(), parameter))
@@ -327,7 +327,7 @@ public class YamlWriter extends AbstractVisitor<YamlPrinter, YamlWriter.Paramete
 
     public YamlPrinter visit(YTNodeType node, Parameter parameter) {
         return new YamlPrinter(parameter.getIndent())
-            .print(printListMap("requirements", node.getRequirements().stream().map(TMapRequirementDefinition::getMap).collect(Collectors.toList()), parameter))
+            .print(printListMap("requirements", node.getRequirements().stream().map(YTMapRequirementDefinition::getMap).collect(Collectors.toList()), parameter))
             .print(printMap("capabilities", node.getCapabilities(), parameter))
             .print(printMap("interfaces", node.getInterfaces(), parameter))
             .print(printMap("artifacts", node.getArtifacts(), parameter));
@@ -374,7 +374,7 @@ public class YamlWriter extends AbstractVisitor<YamlPrinter, YamlWriter.Paramete
     public YamlPrinter visit(YTGroupType node, Parameter parameter) {
         return new YamlPrinter(parameter.getIndent())
             .printKeyValue("members", node.getMembers())
-            .print(printListMap("requirements", node.getRequirements().stream().map(TMapRequirementDefinition::getMap).collect(Collectors.toList()), parameter))
+            .print(printListMap("requirements", node.getRequirements().stream().map(YTMapRequirementDefinition::getMap).collect(Collectors.toList()), parameter))
             .print(printMap("capabilities", node.getCapabilities(), parameter))
             .print(printMap("interfaces", node.getInterfaces(), parameter));
     }
@@ -398,7 +398,7 @@ public class YamlWriter extends AbstractVisitor<YamlPrinter, YamlWriter.Paramete
             .printKeyValue("directives", node.getDirectives())
             .print(printMap("properties", node.getProperties(), parameter))
             .print(printMap("attributes", node.getAttributes(), parameter))
-            .print(printListMap("requirements", node.getRequirements().stream().map(TMapRequirementAssignment::getMap).collect(Collectors.toList()), parameter))
+            .print(printListMap("requirements", node.getRequirements().stream().map(YTMapRequirementAssignment::getMap).collect(Collectors.toList()), parameter))
             .print(printMap("capabilities", node.getCapabilities(), parameter))
             .print(printMap("interfaces", node.getInterfaces(), parameter))
             .print(printMap("artifacts", node.getArtifacts(), parameter))
@@ -524,11 +524,11 @@ public class YamlWriter extends AbstractVisitor<YamlPrinter, YamlWriter.Paramete
     public YamlPrinter visit(YTNodeFilterDefinition node, Parameter parameter) {
         return new YamlPrinter(parameter.getIndent())
             .print(printListMap("properties",
-                node.getProperties().stream().map(TMapPropertyFilterDefinition::getMap).collect(Collectors.toList()),
+                node.getProperties().stream().map(YTMapPropertyFilterDefinition::getMap).collect(Collectors.toList()),
                 parameter)
             )
             .print(printListMap("capabilities",
-                node.getCapabilities().stream().map(TMapObject::getMap).collect(Collectors.toList()),
+                node.getCapabilities().stream().map(YTMapObject::getMap).collect(Collectors.toList()),
                 parameter)
             );
     }
@@ -654,7 +654,7 @@ public class YamlWriter extends AbstractVisitor<YamlPrinter, YamlWriter.Paramete
         return printer;
     }
 
-    private YamlPrinter printMapInlineStringList(String keyValue, Map<String, TListString> map, Parameter parameter) {
+    private YamlPrinter printMapInlineStringList(String keyValue, Map<String, YTListString> map, Parameter parameter) {
         YamlPrinter printer = new YamlPrinter(parameter.getIndent());
         if (!map.isEmpty()) {
             printer.printKey(keyValue)

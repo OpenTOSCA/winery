@@ -42,8 +42,8 @@ public class XTRequirement extends XRelationshipSourceOrTarget {
     @XmlAttribute(name = "relationship")
     protected String relationship;
 
-    public XTRequirement() {
-    }
+    @Deprecated // required for XML deserialization
+    public XTRequirement() { }
 
     public XTRequirement(Builder builder) {
         super(builder);

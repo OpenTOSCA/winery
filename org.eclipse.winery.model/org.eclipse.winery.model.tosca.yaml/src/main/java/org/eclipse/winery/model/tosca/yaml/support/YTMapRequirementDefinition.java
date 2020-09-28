@@ -19,28 +19,20 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlType;
+import org.eclipse.winery.model.tosca.yaml.YTRequirementDefinition;
 
-import org.eclipse.winery.model.tosca.yaml.YTImportDefinition;
+public class YTMapRequirementDefinition implements Map<String, YTRequirementDefinition> {
+    private Map<String, YTRequirementDefinition> map;
 
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "tMapImportDefinition", namespace = "http://docs.oasis-open.org/tosca/ns/simple/yaml/1.3", propOrder = {
-    "map"
-})
-public class TMapImportDefinition implements Map<String, YTImportDefinition> {
-    private Map<String, YTImportDefinition> map;
-
-    public TMapImportDefinition() {
+    public YTMapRequirementDefinition() {
         this.map = new LinkedHashMap<>();
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof TMapImportDefinition)) return false;
-        TMapImportDefinition that = (TMapImportDefinition) o;
+        if (!(o instanceof YTMapRequirementDefinition)) return false;
+        YTMapRequirementDefinition that = (YTMapRequirementDefinition) o;
         return Objects.equals(getMap(), that.getMap());
     }
 
@@ -54,12 +46,13 @@ public class TMapImportDefinition implements Map<String, YTImportDefinition> {
         return map.toString();
     }
 
-    public Map<String, YTImportDefinition> getMap() {
+    public Map<String, YTRequirementDefinition> getMap() {
         return map;
     }
 
-    public void setMap(Map<String, YTImportDefinition> map) {
-        this.map = map;
+    public YTMapRequirementDefinition setMap(Map<String, YTRequirementDefinition> map) {
+        this.map = new LinkedHashMap<>(map);
+        return this;
     }
 
     @Override
@@ -83,22 +76,22 @@ public class TMapImportDefinition implements Map<String, YTImportDefinition> {
     }
 
     @Override
-    public YTImportDefinition get(Object o) {
+    public YTRequirementDefinition get(Object o) {
         return this.map.get(o);
     }
 
     @Override
-    public YTImportDefinition put(String s, YTImportDefinition importDefinition) {
-        return this.map.put(s, importDefinition);
+    public YTRequirementDefinition put(String s, YTRequirementDefinition requirementDefinition) {
+        return this.map.put(s, requirementDefinition);
     }
 
     @Override
-    public YTImportDefinition remove(Object o) {
+    public YTRequirementDefinition remove(Object o) {
         return this.map.remove(o);
     }
 
     @Override
-    public void putAll(Map<? extends String, ? extends YTImportDefinition> map) {
+    public void putAll(Map<? extends String, ? extends YTRequirementDefinition> map) {
         this.map.putAll(map);
     }
 
@@ -113,12 +106,12 @@ public class TMapImportDefinition implements Map<String, YTImportDefinition> {
     }
 
     @Override
-    public Collection<YTImportDefinition> values() {
+    public Collection<YTRequirementDefinition> values() {
         return this.map.values();
     }
 
     @Override
-    public Set<Entry<String, YTImportDefinition>> entrySet() {
+    public Set<Entry<String, YTRequirementDefinition>> entrySet() {
         return this.map.entrySet();
     }
 }

@@ -58,6 +58,7 @@ public class XTNodeTemplate extends XRelationshipSourceOrTarget implements XHasP
     @XmlAttribute(name = "maxInstances")
     protected String maxInstances;
 
+    @Deprecated // required for XML deserialization
     public XTNodeTemplate() {
         super();
     }

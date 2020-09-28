@@ -19,8 +19,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import org.eclipse.winery.model.tosca.yaml.support.TMapObject;
-import org.eclipse.winery.model.tosca.yaml.support.TMapPropertyFilterDefinition;
+import org.eclipse.winery.model.tosca.yaml.support.YTMapObject;
+import org.eclipse.winery.model.tosca.yaml.support.YTMapPropertyFilterDefinition;
 import org.eclipse.winery.model.tosca.yaml.visitor.AbstractParameter;
 import org.eclipse.winery.model.tosca.yaml.visitor.AbstractResult;
 import org.eclipse.winery.model.tosca.yaml.visitor.IVisitor;
@@ -29,8 +29,8 @@ import org.eclipse.winery.model.tosca.yaml.visitor.VisitorNode;
 import org.eclipse.jdt.annotation.NonNull;
 
 public class YTNodeFilterDefinition implements VisitorNode {
-    private List<TMapPropertyFilterDefinition> properties;
-    private List<TMapObject> capabilities;
+    private List<YTMapPropertyFilterDefinition> properties;
+    private List<YTMapObject> capabilities;
 
     protected YTNodeFilterDefinition(Builder builder) {
         this.setProperties(builder.properties);
@@ -60,7 +60,7 @@ public class YTNodeFilterDefinition implements VisitorNode {
     }
 
     @NonNull
-    public List<TMapPropertyFilterDefinition> getProperties() {
+    public List<YTMapPropertyFilterDefinition> getProperties() {
         if (this.properties == null) {
             this.properties = new ArrayList<>();
         }
@@ -68,12 +68,12 @@ public class YTNodeFilterDefinition implements VisitorNode {
         return properties;
     }
 
-    public void setProperties(List<TMapPropertyFilterDefinition> properties) {
+    public void setProperties(List<YTMapPropertyFilterDefinition> properties) {
         this.properties = properties;
     }
 
     @NonNull
-    public List<TMapObject> getCapabilities() {
+    public List<YTMapObject> getCapabilities() {
         if (this.capabilities == null) {
             this.capabilities = new ArrayList<>();
         }
@@ -81,7 +81,7 @@ public class YTNodeFilterDefinition implements VisitorNode {
         return capabilities;
     }
 
-    public void setCapabilities(List<TMapObject> capabilities) {
+    public void setCapabilities(List<YTMapObject> capabilities) {
         this.capabilities = capabilities;
     }
 
@@ -90,20 +90,20 @@ public class YTNodeFilterDefinition implements VisitorNode {
     }
 
     public static class Builder {
-        private List<TMapPropertyFilterDefinition> properties;
-        private List<TMapObject> capabilities;
+        private List<YTMapPropertyFilterDefinition> properties;
+        private List<YTMapObject> capabilities;
 
-        public Builder setProperties(List<TMapPropertyFilterDefinition> properties) {
+        public Builder setProperties(List<YTMapPropertyFilterDefinition> properties) {
             this.properties = properties;
             return this;
         }
 
-        public Builder setCapabilities(List<TMapObject> capabilities) {
+        public Builder setCapabilities(List<YTMapObject> capabilities) {
             this.capabilities = capabilities;
             return this;
         }
 
-        public Builder addProperties(List<TMapPropertyFilterDefinition> properties) {
+        public Builder addProperties(List<YTMapPropertyFilterDefinition> properties) {
             if (properties == null || properties.isEmpty()) {
                 return this;
             }
@@ -117,7 +117,7 @@ public class YTNodeFilterDefinition implements VisitorNode {
             return this;
         }
 
-        public Builder addProperties(TMapPropertyFilterDefinition property) {
+        public Builder addProperties(YTMapPropertyFilterDefinition property) {
             if (property == null || property.isEmpty()) {
                 return this;
             }
@@ -131,7 +131,7 @@ public class YTNodeFilterDefinition implements VisitorNode {
             }
 
             properties.forEach((key, value) -> {
-                TMapPropertyFilterDefinition tmp = new TMapPropertyFilterDefinition();
+                YTMapPropertyFilterDefinition tmp = new YTMapPropertyFilterDefinition();
                 tmp.put(key, value);
                 addProperties(tmp);
             });
@@ -147,7 +147,7 @@ public class YTNodeFilterDefinition implements VisitorNode {
             return addProperties(Collections.singletonMap(name, property));
         }
 
-        public Builder addCapabilities(List<TMapObject> capabilities) {
+        public Builder addCapabilities(List<YTMapObject> capabilities) {
             if (capabilities == null || capabilities.isEmpty()) {
                 return this;
             }
@@ -161,7 +161,7 @@ public class YTNodeFilterDefinition implements VisitorNode {
             return this;
         }
 
-        public Builder addCapabilities(TMapObject capability) {
+        public Builder addCapabilities(YTMapObject capability) {
             if (capability == null || capability.isEmpty()) {
                 return this;
             }
@@ -175,7 +175,7 @@ public class YTNodeFilterDefinition implements VisitorNode {
             }
 
             capabilities.forEach((key, value) -> {
-                TMapObject tmp = new TMapObject();
+                YTMapObject tmp = new YTMapObject();
                 tmp.put(key, value);
                 addCapabilities(tmp);
             });

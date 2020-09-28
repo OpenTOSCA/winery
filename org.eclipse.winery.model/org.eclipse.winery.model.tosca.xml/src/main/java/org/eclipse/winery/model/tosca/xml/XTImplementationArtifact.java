@@ -53,9 +53,8 @@ public class XTImplementationArtifact extends XTExtensibleElements implements XH
     @XmlAttribute(name = "artifactRef")
     protected QName artifactRef;
 
-    public XTImplementationArtifact() {
-
-    }
+    @Deprecated // required for XML deserialization
+    public XTImplementationArtifact() { }
 
     public XTImplementationArtifact(Builder builder) {
         super(builder);

@@ -34,8 +34,8 @@ public class XTArtifactType extends XTEntityType {
     @XmlAttribute(name = "fileextensions", required = false)
     private List<String> fileExtensions;
 
-    public XTArtifactType() {
-    }
+    @Deprecated // required for XML deserialization
+    public XTArtifactType() { }
 
     public XTArtifactType(Builder builder) {
         super(builder);

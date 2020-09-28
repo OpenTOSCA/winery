@@ -30,7 +30,7 @@ public class XOTTestRefinementModel extends XOTRefinementModel {
 
     private XTTopologyTemplate testFragment;
 
-    @Deprecated
+    @Deprecated // required for XML deserialization
     public XOTTestRefinementModel() { }
 
     public XOTTestRefinementModel(Builder builder) {

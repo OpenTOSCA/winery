@@ -21,7 +21,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "otPatternRefinementModel")
 public class XOTPatternRefinementModel extends XOTTopologyFragmentRefinementModel {
 
-    @Deprecated
+    @Deprecated // required for XML deserialization
     public XOTPatternRefinementModel() { }
 
     public XOTPatternRefinementModel(Builder builder) {

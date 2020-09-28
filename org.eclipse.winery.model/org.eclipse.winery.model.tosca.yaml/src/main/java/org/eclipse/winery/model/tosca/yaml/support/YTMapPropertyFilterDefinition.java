@@ -14,53 +14,39 @@
 package org.eclipse.winery.model.tosca.yaml.support;
 
 import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlType;
+import org.eclipse.winery.model.tosca.yaml.YTPropertyFilterDefinition;
 
-import org.eclipse.winery.model.tosca.yaml.YTRequirementAssignment;
-
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "tMapRequirementAssignment", namespace = " http://docs.oasis-open.org/tosca/ns/simple/yaml/1.3", propOrder = {
-    "map"
-})
-public class TMapRequirementAssignment implements Map<String, YTRequirementAssignment> {
-    private Map<String, YTRequirementAssignment> map;
-
-    public TMapRequirementAssignment() {
-        this.map = new LinkedHashMap<>();
-    }
-
-    public Map<String, YTRequirementAssignment> getMap() {
-        return map;
-    }
-
-    public TMapRequirementAssignment setMap(Map<String, YTRequirementAssignment> map) {
-        this.map = new LinkedHashMap<>(map);
-        return this;
-    }
+public class YTMapPropertyFilterDefinition implements Map<String, YTPropertyFilterDefinition> {
+    private Map<String, YTPropertyFilterDefinition> map;
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof TMapRequirementAssignment)) return false;
-        TMapRequirementAssignment that = (TMapRequirementAssignment) o;
-        return Objects.equals(map, that.map);
+        if (!(o instanceof YTMapPropertyFilterDefinition)) return false;
+        YTMapPropertyFilterDefinition that = (YTMapPropertyFilterDefinition) o;
+        return Objects.equals(getMap(), that.getMap());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(map);
+        return Objects.hash(getMap());
     }
 
     @Override
     public String toString() {
         return map.toString();
+    }
+
+    public Map<String, YTPropertyFilterDefinition> getMap() {
+        return map;
+    }
+
+    public void setMap(Map<String, YTPropertyFilterDefinition> map) {
+        this.map = map;
     }
 
     @Override
@@ -84,22 +70,22 @@ public class TMapRequirementAssignment implements Map<String, YTRequirementAssig
     }
 
     @Override
-    public YTRequirementAssignment get(Object o) {
+    public YTPropertyFilterDefinition get(Object o) {
         return this.map.get(o);
     }
 
     @Override
-    public YTRequirementAssignment put(String s, YTRequirementAssignment requirementAssignment) {
-        return this.map.put(s, requirementAssignment);
+    public YTPropertyFilterDefinition put(String s, YTPropertyFilterDefinition propertyFilterDefinition) {
+        return this.map.put(s, propertyFilterDefinition);
     }
 
     @Override
-    public YTRequirementAssignment remove(Object o) {
+    public YTPropertyFilterDefinition remove(Object o) {
         return this.map.remove(o);
     }
 
     @Override
-    public void putAll(Map<? extends String, ? extends YTRequirementAssignment> map) {
+    public void putAll(Map<? extends String, ? extends YTPropertyFilterDefinition> map) {
         this.map.putAll(map);
     }
 
@@ -114,12 +100,12 @@ public class TMapRequirementAssignment implements Map<String, YTRequirementAssig
     }
 
     @Override
-    public Collection<YTRequirementAssignment> values() {
+    public Collection<YTPropertyFilterDefinition> values() {
         return this.map.values();
     }
 
     @Override
-    public Set<Entry<String, YTRequirementAssignment>> entrySet() {
+    public Set<Entry<String, YTPropertyFilterDefinition>> entrySet() {
         return this.map.entrySet();
     }
 }

@@ -19,6 +19,7 @@ import javax.xml.namespace.QName;
 
 public abstract class XRelationshipSourceOrTarget extends XTEntityTemplate {
 
+    @Deprecated // required for XML deserialization
     public XRelationshipSourceOrTarget() {
         super();
     }

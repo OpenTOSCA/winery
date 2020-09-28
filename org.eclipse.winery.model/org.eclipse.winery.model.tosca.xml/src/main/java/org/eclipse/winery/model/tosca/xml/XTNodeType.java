@@ -46,8 +46,8 @@ public class XTNodeType extends XTEntityType {
     @XmlElement(name = "Interfaces")
     protected XTInterfaces interfaces;
 
-    public XTNodeType() {
-    }
+    @Deprecated // required for XML deserialization
+    public XTNodeType() { }
 
     public XTNodeType(Builder builder) {
         super(builder);

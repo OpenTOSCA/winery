@@ -29,8 +29,8 @@ public class XOTStringList implements Serializable {
     @XmlList
     protected List<String> values;
 
-    public XOTStringList() {
-    }
+    @Deprecated // required for XML deserialization
+    public XOTStringList() { }
 
     public XOTStringList(Builder builder) {
         this.values = builder.values;

@@ -34,6 +34,9 @@ public class XTInterfaces {
     @XmlElement(name = "Interface", required = true)
     protected List<XTInterface> _interface;
 
+    @Deprecated // required for XML deserialization
+    public XTInterfaces() { }
+
     @NonNull
     public List<XTInterface> getInterface() {
         if (_interface == null) {
