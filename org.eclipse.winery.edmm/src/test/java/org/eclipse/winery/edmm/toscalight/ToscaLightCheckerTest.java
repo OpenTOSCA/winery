@@ -37,17 +37,17 @@ class ToscaLightCheckerTest extends EdmmDependantTest {
     @Test
     void checkValidServiceTemplate() throws Exception {
         // region *** build the TopologyTemplate ***
-        TTopologyTemplate topology = new TTopologyTemplate();
-        topology.addNodeTemplate(nodeTemplates.get("test_node_1"));
-        topology.addNodeTemplate(nodeTemplates.get("test_node_2"));
-        topology.addNodeTemplate(nodeTemplates.get("test_node_3"));
-        topology.addNodeTemplate(nodeTemplates.get("test_node_4"));
+        TTopologyTemplate.Builder topology = new TTopologyTemplate.Builder();
+        topology.addNodeTemplates(nodeTemplates.get("test_node_1"));
+        topology.addNodeTemplates(nodeTemplates.get("test_node_2"));
+        topology.addNodeTemplates(nodeTemplates.get("test_node_3"));
+        topology.addNodeTemplates(nodeTemplates.get("test_node_4"));
         topology.addRelationshipTemplate(relationshipTemplates.get("1_hosted_on_3"));
         topology.addRelationshipTemplate(relationshipTemplates.get("2_hosted_on_3"));
         topology.addRelationshipTemplate(relationshipTemplates.get("4_hosted_on_1"));
         topology.addRelationshipTemplate(relationshipTemplates.get("1_connects_to_2"));
         TServiceTemplate serviceTemplate = new TServiceTemplate();
-        serviceTemplate.setTopologyTemplate(topology);
+        serviceTemplate.setTopologyTemplate(topology.build());
         serviceTemplate.setName("MyTestServiceTemplate");
         serviceTemplate.setId(serviceTemplate.getName());
         serviceTemplate.setTargetNamespace(this.NAMESPACE);

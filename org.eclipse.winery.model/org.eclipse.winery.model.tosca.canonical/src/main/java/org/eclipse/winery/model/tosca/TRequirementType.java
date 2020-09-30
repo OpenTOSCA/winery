@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019 Contributors to the Eclipse Foundation
+ * Copyright (c) 2020 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -32,8 +32,8 @@ public class TRequirementType extends TEntityType {
     @XmlAttribute(name = "requiredCapabilityType")
     protected QName requiredCapabilityType;
 
-    public TRequirementType() {
-    }
+    @Deprecated // used for XML deserialization of API request content
+    public TRequirementType() { }
 
     public TRequirementType(Builder builder) {
         super(builder);

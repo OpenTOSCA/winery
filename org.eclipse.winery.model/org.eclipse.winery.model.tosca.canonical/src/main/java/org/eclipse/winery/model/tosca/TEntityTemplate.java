@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019 Contributors to the Eclipse Foundation
+ * Copyright (c) 2020 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -74,6 +74,7 @@ public abstract class TEntityTemplate extends HasId implements HasType, HasName 
     @XmlAttribute(name = "type")
     protected QName type;
 
+    @Deprecated // used for XML deserialization of API request content
     public TEntityTemplate() {
         super();
     }

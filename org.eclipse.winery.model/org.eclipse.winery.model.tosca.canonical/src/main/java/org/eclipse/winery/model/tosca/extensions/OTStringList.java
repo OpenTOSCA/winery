@@ -28,9 +28,8 @@ public class OTStringList {
     @XmlList
     protected List<String> values;
 
-    @Deprecated
-    public OTStringList() {
-    }
+    @Deprecated // used for XML deserialization of API request content
+    public OTStringList() { }
 
     public OTStringList(List<String> options) {
         this.values = options;

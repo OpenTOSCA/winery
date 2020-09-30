@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019 Contributors to the Eclipse Foundation
+ * Copyright (c) 2020 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -54,9 +54,8 @@ public class TRequirementDefinition extends TExtensibleElements {
     @XmlAttribute(name = "relationship")
     private QName relationship;
 
-    public TRequirementDefinition() {
-
-    }
+    @Deprecated // used for XML deserialization of API request content
+    public TRequirementDefinition() { }
 
     public TRequirementDefinition(Builder builder) {
         super(builder);

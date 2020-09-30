@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019 Contributors to the Eclipse Foundation
+ * Copyright (c) 2020 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -37,9 +37,8 @@ public class TTag implements Serializable {
     @XmlAttribute(name = "value", required = true)
     protected String value;
 
-    public TTag() {
-
-    }
+    @Deprecated // used for XML deserialization of API request content
+    public TTag() { }
 
     public TTag(Builder builder) {
         this.name = Objects.requireNonNull(builder.name);

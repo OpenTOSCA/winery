@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019 Contributors to the Eclipse Foundation
+ * Copyright (c) 2020 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -32,9 +32,8 @@ public class TPolicyTemplate extends TEntityTemplate {
     @XmlAttribute(name = "name")
     protected String name;
 
-    public TPolicyTemplate() {
-
-    }
+    @Deprecated // used for XML deserialization of API request content
+    public TPolicyTemplate() { }
 
     public TPolicyTemplate(Builder builder) {
         super(builder);

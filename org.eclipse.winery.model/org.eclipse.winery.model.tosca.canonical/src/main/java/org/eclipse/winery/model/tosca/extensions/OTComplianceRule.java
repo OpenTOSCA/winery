@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019-2020 Contributors to the Eclipse Foundation
+ * Copyright (c) 2020 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -52,9 +52,8 @@ public class OTComplianceRule extends HasId implements HasName, HasTargetNamespa
     @XmlElement(name = "Tags")
     protected TTags tags;
 
-    @Deprecated
-    public OTComplianceRule() {
-    }
+    @Deprecated // used for XML deserialization of API request content
+    public OTComplianceRule() { }
 
     public OTComplianceRule(Builder builder) {
         super(builder);

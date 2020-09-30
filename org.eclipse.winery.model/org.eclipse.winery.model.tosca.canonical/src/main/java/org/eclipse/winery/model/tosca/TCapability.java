@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019 Contributors to the Eclipse Foundation
+ * Copyright (c) 2020 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -39,8 +39,8 @@ public class TCapability extends RelationshipSourceOrTarget {
     @XmlAttribute(name = "name", required = true)
     protected String name;
 
-    public TCapability() {
-    }
+    @Deprecated // used for XML deserialization of API request content
+    public TCapability() { }
 
     public TCapability(Builder builder) {
         super(builder);

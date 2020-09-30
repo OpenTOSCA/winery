@@ -19,15 +19,15 @@ import java.util.Map;
 
 import org.eclipse.winery.model.ids.definitions.DefinitionsChildId;
 import org.eclipse.winery.model.ids.definitions.ServiceTemplateId;
-import org.eclipse.winery.model.tosca.yaml.TNodeTemplate;
-import org.eclipse.winery.model.tosca.yaml.TServiceTemplate;
-import org.eclipse.winery.model.tosca.yaml.support.TMapImportDefinition;
+import org.eclipse.winery.model.tosca.yaml.YTNodeTemplate;
+import org.eclipse.winery.model.tosca.yaml.YTServiceTemplate;
+import org.eclipse.winery.model.tosca.yaml.support.YTMapImportDefinition;
 import org.eclipse.winery.repository.yaml.export.entries.YAMLDefinitionsBasedCsarEntry;
 
 public class YamlExportAdjustmentsBuilder {
 
     private YAMLDefinitionsBasedCsarEntry entry;
-    private TServiceTemplate definitions;
+    private YTServiceTemplate definitions;
 
     public YamlExportAdjustmentsBuilder(YAMLDefinitionsBasedCsarEntry entry) {
         this.entry = entry;
@@ -39,7 +39,7 @@ public class YamlExportAdjustmentsBuilder {
      */
     public YamlExportAdjustmentsBuilder removeNormativeTypeImports() {
         // prevents imports of TOSCA normative types
-        for (TMapImportDefinition map : this.definitions.getImports()) {
+        for (YTMapImportDefinition map : this.definitions.getImports()) {
             map.values().removeIf(val -> val.getNamespaceUri().startsWith("tosca"));
         }
         return this;
@@ -53,8 +53,8 @@ public class YamlExportAdjustmentsBuilder {
      */
     public YamlExportAdjustmentsBuilder setKeysToDisplayName() {
         if (this.definitions.getTopologyTemplate() != null) {
-            Map<String, TNodeTemplate> newMap = new HashMap<>();
-            Map<String, TNodeTemplate> oldMap = this.definitions.getTopologyTemplate().getNodeTemplates();
+            Map<String, YTNodeTemplate> newMap = new HashMap<>();
+            Map<String, YTNodeTemplate> oldMap = this.definitions.getTopologyTemplate().getNodeTemplates();
             for (String key : oldMap.keySet()) {
                 newMap.put(oldMap.get(key).getMetadata().get("displayName"), oldMap.get(key));
             }

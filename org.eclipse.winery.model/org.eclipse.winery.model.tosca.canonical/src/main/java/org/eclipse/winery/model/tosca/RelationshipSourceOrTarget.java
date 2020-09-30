@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019 Contributors to the Eclipse Foundation
+ * Copyright (c) 2020 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -35,6 +35,7 @@ import io.github.adr.embedded.ADR;
 })
 public abstract class RelationshipSourceOrTarget extends TEntityTemplate {
 
+    @Deprecated // used for XML deserialization of API request content
     public RelationshipSourceOrTarget() {
         super();
     }

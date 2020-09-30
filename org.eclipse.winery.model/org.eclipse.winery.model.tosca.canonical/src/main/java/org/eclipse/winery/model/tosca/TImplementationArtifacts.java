@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019 Contributors to the Eclipse Foundation
+ * Copyright (c) 2020 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -61,9 +61,8 @@ public class TImplementationArtifacts implements Serializable {
     @XmlElement(name = "ImplementationArtifact", required = true)
     protected List<ImplementationArtifact> implementationArtifact;
 
-    public TImplementationArtifacts() {
-
-    }
+    @Deprecated // used for XML deserialization of API request content
+    public TImplementationArtifacts() { }
 
     public TImplementationArtifacts(Builder builder) {
         this.implementationArtifact = builder.implementationArtifact;

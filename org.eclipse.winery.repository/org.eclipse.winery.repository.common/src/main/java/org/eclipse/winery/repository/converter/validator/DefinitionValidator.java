@@ -28,9 +28,9 @@ import org.eclipse.winery.model.converter.support.exception.UndefinedFile;
 import org.eclipse.winery.repository.converter.validator.support.ExceptionVisitor;
 import org.eclipse.winery.repository.converter.validator.support.Parameter;
 import org.eclipse.winery.repository.converter.validator.support.Result;
-import org.eclipse.winery.model.tosca.yaml.TArtifactDefinition;
-import org.eclipse.winery.model.tosca.yaml.TImportDefinition;
-import org.eclipse.winery.model.tosca.yaml.TServiceTemplate;
+import org.eclipse.winery.model.tosca.yaml.YTArtifactDefinition;
+import org.eclipse.winery.model.tosca.yaml.YTImportDefinition;
+import org.eclipse.winery.model.tosca.yaml.YTServiceTemplate;
 
 public class DefinitionValidator extends ExceptionVisitor<Result, Parameter> {
     public final Path path;
@@ -41,7 +41,7 @@ public class DefinitionValidator extends ExceptionVisitor<Result, Parameter> {
         this.path = path;
     }
 
-    public void validate(TServiceTemplate serviceTemplate) throws MultiException {
+    public void validate(YTServiceTemplate serviceTemplate) throws MultiException {
         serviceTemplate.accept(definitionsVisitor, new Parameter());
         serviceTemplate.accept(this, new Parameter());
         if (hasExceptions()) {
@@ -50,7 +50,7 @@ public class DefinitionValidator extends ExceptionVisitor<Result, Parameter> {
     }
 
     @Override
-    public Result visit(TImportDefinition node, Parameter parameter) {
+    public Result visit(YTImportDefinition node, Parameter parameter) {
         if (!isDefined(node.getRepository(), definitionsVisitor.getRepositoryDefinitions())) {
             setException(new UndefinedField(
                     "Repository definition '{}' is undefined",
@@ -62,7 +62,7 @@ public class DefinitionValidator extends ExceptionVisitor<Result, Parameter> {
     }
 
     @Override
-    public Result visit(TArtifactDefinition node, Parameter parameter) {
+    public Result visit(YTArtifactDefinition node, Parameter parameter) {
         String file = node.getFile();
         if (!Files.exists(path.resolve(file))) {
             setException(new UndefinedFile(

@@ -197,6 +197,7 @@ public class ServiceTemplateResource extends AbstractComponentInstanceResourceCo
      * sub-resources
      **/
     @Path("topologytemplate/")
+    @SuppressWarnings("deprecated")
     public TopologyTemplateResource getTopologyTemplateResource() {
         if (this.getServiceTemplate().getTopologyTemplate() == null) {
             // the main service template resource exists
@@ -468,6 +469,7 @@ public class ServiceTemplateResource extends AbstractComponentInstanceResourceCo
     }
 
     @Path("parameters")
+    @SuppressWarnings("deprecated")
     public ParameterResource getParameterResource() {
         if (this.getServiceTemplate().getTopologyTemplate() == null) {
             this.getServiceTemplate().setTopologyTemplate(new TTopologyTemplate());

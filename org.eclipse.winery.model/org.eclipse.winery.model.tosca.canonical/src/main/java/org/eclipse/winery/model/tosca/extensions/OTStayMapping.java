@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019-2020 Contributors to the Eclipse Foundation
+ * Copyright (c) 2020 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -25,9 +25,8 @@ import org.eclipse.winery.model.tosca.visitor.Visitor;
 @XmlType(name = "otStayMapping")
 public class OTStayMapping extends OTPrmMapping {
 
-    @Deprecated
-    public OTStayMapping() {
-    }
+    @Deprecated // used for XML deserialization of API request content
+    public OTStayMapping() { }
 
     public OTStayMapping(Builder builder) {
         super(builder);

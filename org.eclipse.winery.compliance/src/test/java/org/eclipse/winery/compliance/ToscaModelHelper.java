@@ -44,10 +44,10 @@ public class ToscaModelHelper {
     }
 
     public static TTopologyTemplate createTTopologyTemplate(List<TNodeTemplate> nodeTemplates, List<TRelationshipTemplate> relationshipTemplates) {
-        TTopologyTemplate template = new TTopologyTemplate();
-        template.setNodeTemplates(nodeTemplates);
-        template.setRelationshipTemplates(relationshipTemplates);
-        return template;
+        return new TTopologyTemplate.Builder()
+            .addNodeTemplates(nodeTemplates)
+            .addRelationshipTemplates(relationshipTemplates)
+            .build();
     }
 
     public static TNodeType createTNodeType(NodeTypeId nodeTypeIdAbstractA) {

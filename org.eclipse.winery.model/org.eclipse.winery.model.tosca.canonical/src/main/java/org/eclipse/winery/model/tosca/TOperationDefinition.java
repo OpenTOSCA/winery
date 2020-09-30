@@ -41,8 +41,8 @@ public class TOperationDefinition implements HasName, Serializable {
     private List<ParameterDefinition> outputs;
     private TImplementation implementation;
 
-    public TOperationDefinition() {
-    }
+    @Deprecated // used for XML deserialization of API request content
+    public TOperationDefinition() { }
 
     @Override
     public String getName() {

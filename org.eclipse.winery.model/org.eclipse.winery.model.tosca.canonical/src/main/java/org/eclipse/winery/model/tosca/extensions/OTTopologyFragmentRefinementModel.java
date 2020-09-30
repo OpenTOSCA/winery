@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2018-2020 Contributors to the Eclipse Foundation
+ * Copyright (c) 2020 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -57,9 +57,8 @@ public class OTTopologyFragmentRefinementModel extends OTRefinementModel {
     @XmlElement(name = "ComponentSet")
     protected List<OTStringList> componentSets;
 
-    @Deprecated
-    public OTTopologyFragmentRefinementModel() {
-    }
+    @Deprecated // used for XML deserialization of API request content
+    public OTTopologyFragmentRefinementModel() { }
 
     public OTTopologyFragmentRefinementModel(RefinementBuilder<? extends RefinementBuilder<?>> builder) {
         super(builder);

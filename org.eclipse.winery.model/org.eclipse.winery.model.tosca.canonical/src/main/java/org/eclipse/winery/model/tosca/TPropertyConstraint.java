@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019 Contributors to the Eclipse Foundation
+ * Copyright (c) 2020 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -31,6 +31,9 @@ public class TPropertyConstraint extends TConstraint {
 
     @XmlAttribute(name = "property", required = true)
     protected String property;
+
+    @Deprecated // used for XML deserialization of API request content
+    public TPropertyConstraint() { }
 
     @Override
     public boolean equals(Object o) {

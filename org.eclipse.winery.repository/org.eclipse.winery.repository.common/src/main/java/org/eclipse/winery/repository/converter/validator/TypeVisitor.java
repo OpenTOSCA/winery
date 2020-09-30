@@ -24,14 +24,14 @@ import java.util.Map;
 import org.eclipse.winery.model.converter.support.Namespaces;
 import org.eclipse.winery.repository.converter.validator.support.Parameter;
 import org.eclipse.winery.repository.converter.validator.support.Result;
-import org.eclipse.winery.model.tosca.yaml.TArtifactType;
-import org.eclipse.winery.model.tosca.yaml.TCapabilityType;
-import org.eclipse.winery.model.tosca.yaml.TDataType;
-import org.eclipse.winery.model.tosca.yaml.TGroupType;
-import org.eclipse.winery.model.tosca.yaml.TInterfaceType;
-import org.eclipse.winery.model.tosca.yaml.TNodeType;
-import org.eclipse.winery.model.tosca.yaml.TPolicyType;
-import org.eclipse.winery.model.tosca.yaml.TRelationshipType;
+import org.eclipse.winery.model.tosca.yaml.YTArtifactType;
+import org.eclipse.winery.model.tosca.yaml.YTCapabilityType;
+import org.eclipse.winery.model.tosca.yaml.YTDataType;
+import org.eclipse.winery.model.tosca.yaml.YTGroupType;
+import org.eclipse.winery.model.tosca.yaml.YTInterfaceType;
+import org.eclipse.winery.model.tosca.yaml.YTNodeType;
+import org.eclipse.winery.model.tosca.yaml.YTPolicyType;
+import org.eclipse.winery.model.tosca.yaml.YTRelationshipType;
 import org.eclipse.winery.model.tosca.yaml.support.Metadata;
 
 public class TypeVisitor extends ImportVisitor {
@@ -57,7 +57,7 @@ public class TypeVisitor extends ImportVisitor {
     }
 
     @Override
-    public Result visit(TArtifactType node, Parameter parameter) {
+    public Result visit(YTArtifactType node, Parameter parameter) {
         this.setArtifactTypes(namespace, parameter.getKey());
         setNormativeTypes(parameter.getKey(), node.getMetadata(), artifactTypes);
         super.visit(node, parameter);
@@ -65,7 +65,7 @@ public class TypeVisitor extends ImportVisitor {
     }
 
     @Override
-    public Result visit(TDataType node, Parameter parameter) {
+    public Result visit(YTDataType node, Parameter parameter) {
         this.setDataTypes(namespace, parameter.getKey());
         setNormativeTypes(parameter.getKey(), node.getMetadata(), dataTypes);
         super.visit(node, parameter);
@@ -73,7 +73,7 @@ public class TypeVisitor extends ImportVisitor {
     }
 
     @Override
-    public Result visit(TCapabilityType node, Parameter parameter) {
+    public Result visit(YTCapabilityType node, Parameter parameter) {
         this.setCapabilityTypes(namespace, parameter.getKey());
         setNormativeTypes(parameter.getKey(), node.getMetadata(), capabilityTypes);
         super.visit(node, parameter);
@@ -81,7 +81,7 @@ public class TypeVisitor extends ImportVisitor {
     }
 
     @Override
-    public Result visit(TInterfaceType node, Parameter parameter) {
+    public Result visit(YTInterfaceType node, Parameter parameter) {
         this.setInterfaceTypes(namespace, parameter.getKey());
         setNormativeTypes(parameter.getKey(), node.getMetadata(), interfaceTypes);
         super.visit(node, parameter);
@@ -89,7 +89,7 @@ public class TypeVisitor extends ImportVisitor {
     }
 
     @Override
-    public Result visit(TRelationshipType node, Parameter parameter) {
+    public Result visit(YTRelationshipType node, Parameter parameter) {
         this.setRelationshipTypes(namespace, parameter.getKey());
         setNormativeTypes(parameter.getKey(), node.getMetadata(), relationshipTypes);
         super.visit(node, parameter);
@@ -97,7 +97,7 @@ public class TypeVisitor extends ImportVisitor {
     }
 
     @Override
-    public Result visit(TNodeType node, Parameter parameter) {
+    public Result visit(YTNodeType node, Parameter parameter) {
         this.setNodeTypes(namespace, parameter.getKey());
         setNormativeTypes(parameter.getKey(), node.getMetadata(), nodeTypes);
         super.visit(node, parameter);
@@ -105,7 +105,7 @@ public class TypeVisitor extends ImportVisitor {
     }
 
     @Override
-    public Result visit(TGroupType node, Parameter parameter) {
+    public Result visit(YTGroupType node, Parameter parameter) {
         this.setGroupTypes(namespace, parameter.getKey());
         setNormativeTypes(parameter.getKey(), node.getMetadata(), groupTypes);
         super.visit(node, parameter);
@@ -113,7 +113,7 @@ public class TypeVisitor extends ImportVisitor {
     }
 
     @Override
-    public Result visit(TPolicyType node, Parameter parameter) {
+    public Result visit(YTPolicyType node, Parameter parameter) {
         this.setPolicyTypes(namespace, parameter.getKey());
         setNormativeTypes(parameter.getKey(), node.getMetadata(), policyTypes);
         super.visit(node, parameter);

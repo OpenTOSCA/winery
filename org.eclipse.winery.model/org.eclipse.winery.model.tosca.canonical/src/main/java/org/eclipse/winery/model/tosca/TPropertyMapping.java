@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019 Contributors to the Eclipse Foundation
+ * Copyright (c) 2020 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -48,6 +48,9 @@ public class TPropertyMapping implements Serializable {
     @XmlAttribute(name = "targetPropertyRef", required = true)
     @NonNull
     protected String targetPropertyRef;
+
+    @Deprecated // used for XML deserialization of API request content
+    public TPropertyMapping() { }
 
     @Override
     public boolean equals(Object o) {

@@ -36,8 +36,8 @@ public class ParameterDefinition implements Serializable {
     private List<ConstraintClauseKV> constraintList;
     private String value;
 
-    public ParameterDefinition() {
-    }
+    @Deprecated // used for XML deserialization of API request content
+    public ParameterDefinition() { }
 
     public ParameterDefinition(String key, QName type) {
         this.key = key;

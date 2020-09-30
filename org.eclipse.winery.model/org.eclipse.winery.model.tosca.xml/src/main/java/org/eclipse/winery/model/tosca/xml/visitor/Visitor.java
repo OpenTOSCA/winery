@@ -19,36 +19,36 @@ import java.util.Objects;
 
 import javax.xml.namespace.QName;
 
-import org.eclipse.winery.model.tosca.xml.HasId;
-import org.eclipse.winery.model.tosca.xml.RelationshipSourceOrTarget;
-import org.eclipse.winery.model.tosca.xml.TBoundaryDefinitions;
-import org.eclipse.winery.model.tosca.xml.TCapability;
-import org.eclipse.winery.model.tosca.xml.TCapabilityRef;
-import org.eclipse.winery.model.tosca.xml.TCondition;
-import org.eclipse.winery.model.tosca.xml.TDocumentation;
-import org.eclipse.winery.model.tosca.xml.TEntityTemplate;
-import org.eclipse.winery.model.tosca.xml.TEntityType;
-import org.eclipse.winery.model.tosca.xml.TExportedInterface;
-import org.eclipse.winery.model.tosca.xml.TExtensibleElements;
-import org.eclipse.winery.model.tosca.xml.TImplementationArtifact;
-import org.eclipse.winery.model.tosca.xml.TNodeTemplate;
-import org.eclipse.winery.model.tosca.xml.TParameter;
-import org.eclipse.winery.model.tosca.xml.TPlan;
-import org.eclipse.winery.model.tosca.xml.TPlans;
-import org.eclipse.winery.model.tosca.xml.TPolicies;
-import org.eclipse.winery.model.tosca.xml.TPolicy;
-import org.eclipse.winery.model.tosca.xml.TPropertyConstraint;
-import org.eclipse.winery.model.tosca.xml.TPropertyMapping;
-import org.eclipse.winery.model.tosca.xml.TRelationshipTemplate;
-import org.eclipse.winery.model.tosca.xml.TRequirementRef;
-import org.eclipse.winery.model.tosca.xml.TServiceTemplate;
-import org.eclipse.winery.model.tosca.xml.TTag;
-import org.eclipse.winery.model.tosca.xml.TTags;
-import org.eclipse.winery.model.tosca.xml.TDeploymentArtifact;
-import org.eclipse.winery.model.tosca.xml.TDeploymentArtifacts;
-import org.eclipse.winery.model.tosca.xml.TRequirement;
-import org.eclipse.winery.model.tosca.xml.TTopologyTemplate;
-import org.eclipse.winery.model.tosca.xml.extensions.OTStringList;
+import org.eclipse.winery.model.tosca.xml.XHasId;
+import org.eclipse.winery.model.tosca.xml.XRelationshipSourceOrTarget;
+import org.eclipse.winery.model.tosca.xml.XTBoundaryDefinitions;
+import org.eclipse.winery.model.tosca.xml.XTCapability;
+import org.eclipse.winery.model.tosca.xml.XTCapabilityRef;
+import org.eclipse.winery.model.tosca.xml.XTCondition;
+import org.eclipse.winery.model.tosca.xml.XTDocumentation;
+import org.eclipse.winery.model.tosca.xml.XTEntityTemplate;
+import org.eclipse.winery.model.tosca.xml.XTEntityType;
+import org.eclipse.winery.model.tosca.xml.XTExportedInterface;
+import org.eclipse.winery.model.tosca.xml.XTExtensibleElements;
+import org.eclipse.winery.model.tosca.xml.XTImplementationArtifact;
+import org.eclipse.winery.model.tosca.xml.XTNodeTemplate;
+import org.eclipse.winery.model.tosca.xml.XTParameter;
+import org.eclipse.winery.model.tosca.xml.XTPlan;
+import org.eclipse.winery.model.tosca.xml.XTPlans;
+import org.eclipse.winery.model.tosca.xml.XTPolicies;
+import org.eclipse.winery.model.tosca.xml.XTPolicy;
+import org.eclipse.winery.model.tosca.xml.XTPropertyConstraint;
+import org.eclipse.winery.model.tosca.xml.XTPropertyMapping;
+import org.eclipse.winery.model.tosca.xml.XTRelationshipTemplate;
+import org.eclipse.winery.model.tosca.xml.XTRequirementRef;
+import org.eclipse.winery.model.tosca.xml.XTServiceTemplate;
+import org.eclipse.winery.model.tosca.xml.XTTag;
+import org.eclipse.winery.model.tosca.xml.XTTags;
+import org.eclipse.winery.model.tosca.xml.XTDeploymentArtifact;
+import org.eclipse.winery.model.tosca.xml.XTDeploymentArtifacts;
+import org.eclipse.winery.model.tosca.xml.XTRequirement;
+import org.eclipse.winery.model.tosca.xml.XTTopologyTemplate;
+import org.eclipse.winery.model.tosca.xml.extensions.XOTStringList;
 
 import org.eclipse.jdt.annotation.NonNull;
 
@@ -71,77 +71,77 @@ import org.eclipse.jdt.annotation.NonNull;
  */
 public abstract class Visitor {
 
-    public void visit(TServiceTemplate serviceTemplate) {
+    public void visit(XTServiceTemplate serviceTemplate) {
         Objects.requireNonNull(serviceTemplate);
-        visit((TExtensibleElements) serviceTemplate);
+        visit((XTExtensibleElements) serviceTemplate);
 
-        final TTopologyTemplate topologyTemplate = serviceTemplate.getTopologyTemplate();
+        final XTTopologyTemplate topologyTemplate = serviceTemplate.getTopologyTemplate();
         if (topologyTemplate != null) {
             topologyTemplate.accept(this);
         }
 
-        final TTags tags = serviceTemplate.getTags();
+        final XTTags tags = serviceTemplate.getTags();
         if (tags != null) {
-            for (TTag tag : tags.getTag()) {
+            for (XTTag tag : tags.getTag()) {
                 tag.accept(this);
             }
         }
 
-        final TPlans plans = serviceTemplate.getPlans();
+        final XTPlans plans = serviceTemplate.getPlans();
         if (plans != null) {
-            for (TPlan plan : plans.getPlan()) {
+            for (XTPlan plan : plans.getPlan()) {
                 plan.accept(this);
             }
         }
 
-        final TBoundaryDefinitions boundaryDefinitions = serviceTemplate.getBoundaryDefinitions();
+        final XTBoundaryDefinitions boundaryDefinitions = serviceTemplate.getBoundaryDefinitions();
         if (boundaryDefinitions != null) {
             boundaryDefinitions.accept(this);
         }
     }
 
-    public void visit(TPlan plan) {
+    public void visit(XTPlan plan) {
         Objects.requireNonNull(plan);
-        visit((TExtensibleElements) plan);
+        visit((XTExtensibleElements) plan);
 
-        final TCondition precondition = plan.getPrecondition();
+        final XTCondition precondition = plan.getPrecondition();
         if (precondition != null) {
             precondition.accept(this);
         }
-        final TPlan.InputParameters inputParameters = plan.getInputParameters();
+        final XTPlan.InputParameters inputParameters = plan.getInputParameters();
         if (inputParameters != null) {
-            for (TParameter parameter : inputParameters.getInputParameter()) {
+            for (XTParameter parameter : inputParameters.getInputParameter()) {
                 parameter.accept(this);
             }
         }
         plan.getOutputParameters();
     }
 
-    public void visit(TTopologyTemplate topologyTemplate) {
+    public void visit(XTTopologyTemplate topologyTemplate) {
         Objects.requireNonNull(topologyTemplate);
-        visit((TExtensibleElements) topologyTemplate);
+        visit((XTExtensibleElements) topologyTemplate);
 
-        for (TNodeTemplate nodeTemplate : topologyTemplate.getNodeTemplates()) {
+        for (XTNodeTemplate nodeTemplate : topologyTemplate.getNodeTemplates()) {
             nodeTemplate.accept(this);
         }
-        for (TRelationshipTemplate relationshipTemplate : topologyTemplate.getRelationshipTemplates()) {
+        for (XTRelationshipTemplate relationshipTemplate : topologyTemplate.getRelationshipTemplates()) {
             relationshipTemplate.accept(this);
         }
         // meta model does not offer more children
     }
 
-    public void visit(TExtensibleElements extensibleElement) {
+    public void visit(XTExtensibleElements extensibleElement) {
         this.visitOtherAttributes(extensibleElement.getOtherAttributes());
-        for (TDocumentation documentation : extensibleElement.getDocumentation()) {
+        for (XTDocumentation documentation : extensibleElement.getDocumentation()) {
             documentation.accept(this);
         }
         // meta model does not offer more children
     }
 
-    public void visit(TEntityType entityType) {
+    public void visit(XTEntityType entityType) {
         Objects.requireNonNull(entityType);
-        visit((TExtensibleElements) entityType);
-        final TEntityType.PropertiesDefinition propertiesDefinition = entityType.getPropertiesDefinition();
+        visit((XTExtensibleElements) entityType);
+        final XTEntityType.PropertiesDefinition propertiesDefinition = entityType.getPropertiesDefinition();
         if (propertiesDefinition != null) {
             propertiesDefinition.accept(this);
         }
@@ -151,109 +151,109 @@ public abstract class Visitor {
         // this is a leaf, so no action to take
     }
 
-    public void visit(TEntityTemplate entityTemplate) {
-        this.visit((HasId) entityTemplate);
-        final TEntityTemplate.Properties properties = entityTemplate.getProperties();
+    public void visit(XTEntityTemplate entityTemplate) {
+        this.visit((XHasId) entityTemplate);
+        final XTEntityTemplate.Properties properties = entityTemplate.getProperties();
         if (properties != null) {
             properties.accept(this);
         }
-        final TEntityTemplate.PropertyConstraints propertyConstraints = entityTemplate.getPropertyConstraints();
+        final XTEntityTemplate.PropertyConstraints propertyConstraints = entityTemplate.getPropertyConstraints();
         if (propertyConstraints != null) {
             propertyConstraints.accept(this);
         }
         // meta model does not offer more children
     }
 
-    public void visit(TNodeTemplate nodeTemplate) {
-        this.visit((RelationshipSourceOrTarget) nodeTemplate);
-        final TNodeTemplate.Requirements requirements = nodeTemplate.getRequirements();
+    public void visit(XTNodeTemplate nodeTemplate) {
+        this.visit((XRelationshipSourceOrTarget) nodeTemplate);
+        final XTNodeTemplate.Requirements requirements = nodeTemplate.getRequirements();
         if (requirements != null) {
             requirements.accept(this);
         }
-        final TNodeTemplate.Capabilities capabilities = nodeTemplate.getCapabilities();
+        final XTNodeTemplate.Capabilities capabilities = nodeTemplate.getCapabilities();
         if (capabilities != null) {
             capabilities.accept(this);
         }
-        final TDeploymentArtifacts deploymentArtifacts = nodeTemplate.getDeploymentArtifacts();
+        final XTDeploymentArtifacts deploymentArtifacts = nodeTemplate.getDeploymentArtifacts();
         if (deploymentArtifacts != null) {
-            for (TDeploymentArtifact deploymentArtifact : deploymentArtifacts.getDeploymentArtifact()) {
+            for (XTDeploymentArtifact deploymentArtifact : deploymentArtifacts.getDeploymentArtifact()) {
                 deploymentArtifact.accept(this);
             }
         }
-        final TPolicies policies = nodeTemplate.getPolicies();
+        final XTPolicies policies = nodeTemplate.getPolicies();
         if (policies != null) {
-            for (TPolicy policy : policies.getPolicy()) {
+            for (XTPolicy policy : policies.getPolicy()) {
                 policy.accept(this);
             }
         }
         // meta model does not offer more children
     }
 
-    public void visit(TRelationshipTemplate relationshipTemplate) {
-        this.visit((TEntityTemplate) relationshipTemplate);
-        final TRelationshipTemplate.RelationshipConstraints relationshipConstraints = relationshipTemplate.getRelationshipConstraints();
+    public void visit(XTRelationshipTemplate relationshipTemplate) {
+        this.visit((XTEntityTemplate) relationshipTemplate);
+        final XTRelationshipTemplate.RelationshipConstraints relationshipConstraints = relationshipTemplate.getRelationshipConstraints();
         if (relationshipConstraints != null) {
-            for (TRelationshipTemplate.RelationshipConstraints.RelationshipConstraint relationshipConstraint : relationshipConstraints.getRelationshipConstraint()) {
+            for (XTRelationshipTemplate.RelationshipConstraints.RelationshipConstraint relationshipConstraint : relationshipConstraints.getRelationshipConstraint()) {
                 relationshipConstraint.accept(this);
             }
         }
         // meta model does not offer more children
     }
 
-    public void visit(TEntityTemplate.Properties properties) {
+    public void visit(XTEntityTemplate.Properties properties) {
         // this is a leaf because the xml model just has an "any" here
     }
 
-    public void visit(TEntityTemplate.PropertyConstraints propertyConstraints) {
-        for (TPropertyConstraint propertyConstraint : propertyConstraints.getPropertyConstraint()) {
+    public void visit(XTEntityTemplate.PropertyConstraints propertyConstraints) {
+        for (XTPropertyConstraint propertyConstraint : propertyConstraints.getPropertyConstraint()) {
             propertyConstraint.accept(this);
         }
         // meta model does not offer more children
     }
 
-    public void visit(TRelationshipTemplate.RelationshipConstraints.RelationshipConstraint relationshipConstraint) {
+    public void visit(XTRelationshipTemplate.RelationshipConstraints.RelationshipConstraint relationshipConstraint) {
         // this is a leaf, so no action to take
     }
 
-    public void visit(TNodeTemplate.Capabilities capabilities) {
-        for (TCapability capability : capabilities.getCapability()) {
+    public void visit(XTNodeTemplate.Capabilities capabilities) {
+        for (XTCapability capability : capabilities.getCapability()) {
             capability.accept(this);
         }
         // meta model does not offer more children
     }
 
-    public void visit(TNodeTemplate.Requirements requirements) {
-        for (TRequirement requirement : requirements.getRequirement()) {
+    public void visit(XTNodeTemplate.Requirements requirements) {
+        for (XTRequirement requirement : requirements.getRequirement()) {
             requirement.accept(this);
         }
         // meta model does not offer more children
     }
 
-    public void visit(TRequirement requirement) {
-        final TEntityTemplate.Properties properties = requirement.getProperties();
+    public void visit(XTRequirement requirement) {
+        final XTEntityTemplate.Properties properties = requirement.getProperties();
         if (properties != null) {
             properties.accept(this);
         }
-        final TEntityTemplate.PropertyConstraints propertyConstraints = requirement.getPropertyConstraints();
+        final XTEntityTemplate.PropertyConstraints propertyConstraints = requirement.getPropertyConstraints();
         if (propertyConstraints != null) {
             propertyConstraints.accept(this);
         }
         // meta model does not offer more children
     }
 
-    public void accept(TTag tag) {
+    public void accept(XTTag tag) {
         // this is a leaf, so no action to take
     }
 
-    public void accept(TCondition condition) {
+    public void accept(XTCondition condition) {
         // this is a leaf, so no action to take
     }
 
-    public void visit(TParameter parameter) {
+    public void visit(XTParameter parameter) {
         // this is a leaf, so no action to take
     }
 
-    public void visit(@NonNull TBoundaryDefinitions boundaryDefinitions) {
+    public void visit(@NonNull XTBoundaryDefinitions boundaryDefinitions) {
         this.acceptBoundaryDefinitionsProperties(boundaryDefinitions);
         this.acceptBoundaryDefinitionsPropertyConstraints(boundaryDefinitions);
         this.acceptBoundaryDefinitionsPolicies(boundaryDefinitions);
@@ -262,104 +262,104 @@ public abstract class Visitor {
         this.acceptBoundaryDefinitionsInterfaces(boundaryDefinitions);
     }
 
-    private void acceptBoundaryDefinitionsInterfaces(@NonNull TBoundaryDefinitions boundaryDefinitions) {
-        final TBoundaryDefinitions.Interfaces interfaces = boundaryDefinitions.getInterfaces();
+    private void acceptBoundaryDefinitionsInterfaces(@NonNull XTBoundaryDefinitions boundaryDefinitions) {
+        final XTBoundaryDefinitions.Interfaces interfaces = boundaryDefinitions.getInterfaces();
         if (interfaces != null) {
-            for (TExportedInterface exportedInterface : interfaces.getInterface()) {
+            for (XTExportedInterface exportedInterface : interfaces.getInterface()) {
                 exportedInterface.accept(this);
             }
         }
     }
 
-    private void acceptBoundaryDefinitionsCapabilities(@NonNull TBoundaryDefinitions boundaryDefinitions) {
-        final TBoundaryDefinitions.Capabilities capabilities = boundaryDefinitions.getCapabilities();
+    private void acceptBoundaryDefinitionsCapabilities(@NonNull XTBoundaryDefinitions boundaryDefinitions) {
+        final XTBoundaryDefinitions.Capabilities capabilities = boundaryDefinitions.getCapabilities();
         if (capabilities != null) {
-            for (TCapabilityRef capabilityRef : capabilities.getCapability()) {
+            for (XTCapabilityRef capabilityRef : capabilities.getCapability()) {
                 capabilityRef.accept(this);
             }
         }
     }
 
-    private void acceptBoundaryDefinitionsRequirements(@NonNull TBoundaryDefinitions boundaryDefinitions) {
-        final TBoundaryDefinitions.Requirements requirements = boundaryDefinitions.getRequirements();
+    private void acceptBoundaryDefinitionsRequirements(@NonNull XTBoundaryDefinitions boundaryDefinitions) {
+        final XTBoundaryDefinitions.Requirements requirements = boundaryDefinitions.getRequirements();
         if (requirements != null) {
-            for (TRequirementRef requirementRef : requirements.getRequirement()) {
+            for (XTRequirementRef requirementRef : requirements.getRequirement()) {
                 requirementRef.accept(this);
             }
         }
     }
 
-    private void acceptBoundaryDefinitionsPolicies(@NonNull TBoundaryDefinitions boundaryDefinitions) {
-        final TPolicies policies = boundaryDefinitions.getPolicies();
+    private void acceptBoundaryDefinitionsPolicies(@NonNull XTBoundaryDefinitions boundaryDefinitions) {
+        final XTPolicies policies = boundaryDefinitions.getPolicies();
         if (policies != null) {
-            for (TPolicy policy : policies.getPolicy()) {
+            for (XTPolicy policy : policies.getPolicy()) {
                 policy.accept(this);
             }
         }
     }
 
-    private void acceptBoundaryDefinitionsPropertyConstraints(@NonNull TBoundaryDefinitions boundaryDefinitions) {
-        final TBoundaryDefinitions.PropertyConstraints propertyConstraints = boundaryDefinitions.getPropertyConstraints();
+    private void acceptBoundaryDefinitionsPropertyConstraints(@NonNull XTBoundaryDefinitions boundaryDefinitions) {
+        final XTBoundaryDefinitions.PropertyConstraints propertyConstraints = boundaryDefinitions.getPropertyConstraints();
         if (propertyConstraints != null) {
-            for (TPropertyConstraint propertyConstraint : propertyConstraints.getPropertyConstraint()) {
+            for (XTPropertyConstraint propertyConstraint : propertyConstraints.getPropertyConstraint()) {
                 propertyConstraint.accept(this);
             }
         }
     }
 
-    private void acceptBoundaryDefinitionsProperties(@NonNull TBoundaryDefinitions boundaryDefinitions) {
-        final TBoundaryDefinitions.Properties properties = boundaryDefinitions.getProperties();
+    private void acceptBoundaryDefinitionsProperties(@NonNull XTBoundaryDefinitions boundaryDefinitions) {
+        final XTBoundaryDefinitions.Properties properties = boundaryDefinitions.getProperties();
         if (properties != null) {
             properties.accept(this);
         }
     }
 
-    public void visit(TBoundaryDefinitions.Properties properties) {
-        final TBoundaryDefinitions.Properties.PropertyMappings propertyMappings = properties.getPropertyMappings();
+    public void visit(XTBoundaryDefinitions.Properties properties) {
+        final XTBoundaryDefinitions.Properties.PropertyMappings propertyMappings = properties.getPropertyMappings();
         if (propertyMappings != null) {
-            for (TPropertyMapping propertyMapping : propertyMappings.getPropertyMapping()) {
+            for (XTPropertyMapping propertyMapping : propertyMappings.getPropertyMapping()) {
                 propertyMapping.accept(this);
             }
         }
     }
 
-    public void visit(TPropertyMapping propertyMapping) {
+    public void visit(XTPropertyMapping propertyMapping) {
         // this is a leaf, so no action to take
     }
 
-    public void visit(TCapabilityRef capabilityRef) {
+    public void visit(XTCapabilityRef capabilityRef) {
         // this is a leaf, so no action to take
     }
 
-    public void visit(TRequirementRef requirementRef) {
+    public void visit(XTRequirementRef requirementRef) {
         // this is a leaf, so no action to take
     }
 
-    public void accept(TExportedInterface exportedInterface) {
+    public void accept(XTExportedInterface exportedInterface) {
         // this is a leaf, so no action to take
     }
 
-    public void visit(TPropertyConstraint propertyConstraint) {
+    public void visit(XTPropertyConstraint propertyConstraint) {
         // this is a leaf, so no action to take
     }
 
-    public void visit(TDocumentation documentation) {
+    public void visit(XTDocumentation documentation) {
         // this is a leaf, so no action to take
     }
 
-    public void visit(TEntityType.PropertiesDefinition propertiesDefinition) {
+    public void visit(XTEntityType.PropertiesDefinition propertiesDefinition) {
         // this is a leaf, so no action to take
     }
 
-    public void visit(TDeploymentArtifact artifact) {
+    public void visit(XTDeploymentArtifact artifact) {
         // this is a leaf, so no action to take
     }
 
-    public void visit(TImplementationArtifact artifact) {
+    public void visit(XTImplementationArtifact artifact) {
         // this is a leaf, so no action to take
     }
 
-    public void accept(OTStringList otStringList) {
+    public void accept(XOTStringList otStringList) {
         // this is a leaf, so no action to take
     }
 }

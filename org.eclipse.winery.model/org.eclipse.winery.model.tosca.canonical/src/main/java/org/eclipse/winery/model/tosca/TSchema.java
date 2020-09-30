@@ -37,6 +37,7 @@ public class TSchema {
     private TSchema keySchema;
     private TSchema entrySchema;
 
+    @Deprecated // used for XML deserialization of API request content
     public TSchema() { }
 
     public TSchema(Builder builder) {

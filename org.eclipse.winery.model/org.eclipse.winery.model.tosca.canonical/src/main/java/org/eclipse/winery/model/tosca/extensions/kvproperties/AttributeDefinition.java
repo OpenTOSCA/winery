@@ -30,8 +30,8 @@ public class AttributeDefinition implements Serializable {
     private String description;
     private String defaultValue;
 
-    public AttributeDefinition() {
-    }
+    @Deprecated // used for XML deserialization of API request content
+    public AttributeDefinition() { }
 
     public AttributeDefinition(String key, QName type) {
         this.key = key;

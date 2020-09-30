@@ -21,11 +21,11 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
-import org.eclipse.winery.model.tosca.yaml.TArtifactType;
-import org.eclipse.winery.model.tosca.yaml.TEntityType;
-import org.eclipse.winery.model.tosca.yaml.TImportDefinition;
-import org.eclipse.winery.model.tosca.yaml.TServiceTemplate;
-import org.eclipse.winery.model.tosca.yaml.support.TMapImportDefinition;
+import org.eclipse.winery.model.tosca.yaml.YTArtifactType;
+import org.eclipse.winery.model.tosca.yaml.YTEntityType;
+import org.eclipse.winery.model.tosca.yaml.YTImportDefinition;
+import org.eclipse.winery.model.tosca.yaml.YTServiceTemplate;
+import org.eclipse.winery.model.tosca.yaml.support.YTMapImportDefinition;
 import org.eclipse.winery.model.tosca.yaml.visitor.AbstractParameter;
 import org.eclipse.winery.model.tosca.yaml.visitor.AbstractResult;
 import org.eclipse.winery.model.converter.support.Namespaces;
@@ -34,15 +34,15 @@ import org.eclipse.winery.repository.converter.reader.YamlReader;
 import org.eclipse.winery.repository.converter.validator.support.ExceptionVisitor;
 
 public class ReferenceVisitor extends ExceptionVisitor<ReferenceVisitor.Result, ReferenceVisitor.Parameter> {
-    private final TServiceTemplate serviceTemplate;
+    private final YTServiceTemplate serviceTemplate;
     private final String namespace;
     private final YamlReader reader;
     private final Path path;
 
-    private Map<TImportDefinition, ReferenceVisitor> visitors;
-    private Map<TImportDefinition, TServiceTemplate> serviceTemplates;
+    private Map<YTImportDefinition, ReferenceVisitor> visitors;
+    private Map<YTImportDefinition, YTServiceTemplate> serviceTemplates;
 
-    public ReferenceVisitor(TServiceTemplate serviceTemplate, String namespace, Path path) {
+    public ReferenceVisitor(YTServiceTemplate serviceTemplate, String namespace, Path path) {
         this.serviceTemplate = serviceTemplate;
         this.namespace = namespace;
         this.reader = new YamlReader();
@@ -56,7 +56,7 @@ public class ReferenceVisitor extends ExceptionVisitor<ReferenceVisitor.Result, 
     }
 
     @Override
-    public Result visit(TImportDefinition node, Parameter parameter) {
+    public Result visit(YTImportDefinition node, Parameter parameter) {
         if (node.getNamespaceUri() == null && !parameter.reference.getNamespaceURI().equals(Namespaces.DEFAULT_YAML_NS)) {
             return null;
         }
@@ -75,7 +75,7 @@ public class ReferenceVisitor extends ExceptionVisitor<ReferenceVisitor.Result, 
     }
 
     @Override
-    public Result visit(TEntityType node, Parameter parameter) {
+    public Result visit(YTEntityType node, Parameter parameter) {
         if (node.getDerivedFrom() != null) {
             return serviceTemplate.accept(this, new Parameter(node.getDerivedFrom(), parameter.entityClass)).copy(node, node.getDerivedFrom());
         }
@@ -83,7 +83,7 @@ public class ReferenceVisitor extends ExceptionVisitor<ReferenceVisitor.Result, 
     }
 
     @Override
-    public Result visit(TServiceTemplate node, Parameter parameter) {
+    public Result visit(YTServiceTemplate node, Parameter parameter) {
         Result result;
         if (parameter.reference.getNamespaceURI().equals(this.namespace)
             && "TArtifactType".equals(parameter.entityClass)
@@ -91,8 +91,8 @@ public class ReferenceVisitor extends ExceptionVisitor<ReferenceVisitor.Result, 
             return node.getArtifactTypes().get(parameter.reference.getLocalPart()).accept(this, parameter.copy());
         }
 
-        for (TMapImportDefinition map : node.getImports()) {
-            for (Map.Entry<String, TImportDefinition> entry : map.entrySet()) {
+        for (YTMapImportDefinition map : node.getImports()) {
+            for (Map.Entry<String, YTImportDefinition> entry : map.entrySet()) {
                 result = entry.getValue().accept(this, parameter);
                 if (result != null) {
                     return result;
@@ -104,7 +104,7 @@ public class ReferenceVisitor extends ExceptionVisitor<ReferenceVisitor.Result, 
     }
 
     @Override
-    public Result visit(TArtifactType node, Parameter parameter) {
+    public Result visit(YTArtifactType node, Parameter parameter) {
         return null;
     }
 

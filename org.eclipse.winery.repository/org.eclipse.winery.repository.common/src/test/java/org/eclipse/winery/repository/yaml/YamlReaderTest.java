@@ -20,9 +20,9 @@ import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import org.eclipse.winery.model.tosca.yaml.TInterfaceDefinition;
-import org.eclipse.winery.model.tosca.yaml.TNodeType;
-import org.eclipse.winery.model.tosca.yaml.TServiceTemplate;
+import org.eclipse.winery.model.tosca.yaml.YTInterfaceDefinition;
+import org.eclipse.winery.model.tosca.yaml.YTNodeType;
+import org.eclipse.winery.model.tosca.yaml.YTServiceTemplate;
 import org.eclipse.winery.repository.converter.AbstractConverterTest;
 import org.eclipse.winery.repository.converter.reader.YamlReader;
 
@@ -53,11 +53,11 @@ public class YamlReaderTest extends AbstractConverterTest {
     public void testSupportedInterfaceDefinitions() throws Exception {
         YamlReader reader = new YamlReader();
         InputStream is = getClass().getClassLoader().getResourceAsStream("yaml/supported_interfaces.yml");
-        TServiceTemplate template = reader.parse(is);
+        YTServiceTemplate template = reader.parse(is);
         Assertions.assertNotNull(template);
-        TNodeType server = template.getNodeTypes().get("server");
+        YTNodeType server = template.getNodeTypes().get("server");
         Assertions.assertEquals(2, server.getArtifacts().size());
-        TInterfaceDefinition standard = server.getInterfaces().get("Standard");
+        YTInterfaceDefinition standard = server.getInterfaces().get("Standard");
         Assertions.assertEquals(2, standard.getOperations().size());
         Assertions.assertEquals(1, standard.getInputs().size());
     }
@@ -66,7 +66,7 @@ public class YamlReaderTest extends AbstractConverterTest {
     public void testPropertyFunctionReading() throws Exception {
         YamlReader reader = new YamlReader();
         InputStream is = getClass().getClassLoader().getResourceAsStream("yaml/property_functions.yml");
-        TServiceTemplate template = reader.parse(is);
+        YTServiceTemplate template = reader.parse(is);
         Assertions.assertNotNull(template);
     }
 }

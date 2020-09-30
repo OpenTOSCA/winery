@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019-2020 Contributors to the Eclipse Foundation
+ * Copyright (c) 2020 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -35,9 +35,8 @@ public class OTRelationMapping extends OTPrmMapping {
     @XmlAttribute(name = "validSourceOrTarget")
     private QName validSourceOrTarget;
 
-    @Deprecated
-    public OTRelationMapping() {
-    }
+    @Deprecated // used for XML deserialization of API request content
+    public OTRelationMapping() { }
 
     public OTRelationMapping(Builder builder) {
         super(builder);

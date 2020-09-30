@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019 Contributors to the Eclipse Foundation
+ * Copyright (c) 2020 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -49,8 +49,8 @@ public class TCapabilityDefinition extends TExtensibleElements {
     @XmlAttribute(name = "validSourceTypes")
     protected List<QName> validSourceTypes;
 
-    public TCapabilityDefinition() {
-    }
+    @Deprecated // used for XML deserialization of API request content
+    public TCapabilityDefinition() { }
 
     public TCapabilityDefinition(Builder builder) {
         super(builder);

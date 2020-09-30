@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019-2020 Contributors to the Eclipse Foundation
+ * Copyright (c) 2020 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -49,9 +49,8 @@ public abstract class OTRefinementModel extends TExtensibleElements implements H
     @XmlElement(name = "PermutationMapping")
     protected List<OTPermutationMapping> permutationMappings;
 
-    @Deprecated
-    public OTRefinementModel() {
-    }
+    @Deprecated // used for XML deserialization of API request content
+    public OTRefinementModel() { }
 
     @SuppressWarnings("unchecked")
     public OTRefinementModel(Builder builder) {

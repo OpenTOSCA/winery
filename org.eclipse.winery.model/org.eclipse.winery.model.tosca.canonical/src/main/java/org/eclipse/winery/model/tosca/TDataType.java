@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2017-2020 Contributors to the Eclipse Foundation
+ * Copyright (c) 2020 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -36,8 +36,8 @@ public class TDataType extends TEntityType {
     // metadata were added to all TEntityTypes, so no need to add these explicitly
     // FIXME add key_schema, entry_schema
 
-    public TDataType() {
-    }
+    @Deprecated // used for XML deserialization of API request content
+    public TDataType() { }
 
     public TDataType(Builder builder) {
         super(builder);

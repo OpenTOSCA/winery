@@ -27,11 +27,11 @@ import org.eclipse.winery.model.converter.support.exception.UndefinedToscaVersio
 import org.eclipse.winery.repository.converter.validator.support.ExceptionVisitor;
 import org.eclipse.winery.repository.converter.validator.support.Parameter;
 import org.eclipse.winery.repository.converter.validator.support.Result;
-import org.eclipse.winery.model.tosca.yaml.TImportDefinition;
-import org.eclipse.winery.model.tosca.yaml.TInterfaceType;
-import org.eclipse.winery.model.tosca.yaml.TOperationDefinition;
-import org.eclipse.winery.model.tosca.yaml.TRepositoryDefinition;
-import org.eclipse.winery.model.tosca.yaml.TServiceTemplate;
+import org.eclipse.winery.model.tosca.yaml.YTImportDefinition;
+import org.eclipse.winery.model.tosca.yaml.YTInterfaceType;
+import org.eclipse.winery.model.tosca.yaml.YTOperationDefinition;
+import org.eclipse.winery.model.tosca.yaml.YTRepositoryDefinition;
+import org.eclipse.winery.model.tosca.yaml.YTServiceTemplate;
 import org.eclipse.winery.model.tosca.yaml.support.Metadata;
 import org.eclipse.winery.model.tosca.yaml.tosca.datatypes.Credential;
 
@@ -42,7 +42,7 @@ public class Validator extends ExceptionVisitor<Result, Parameter> {
         this.path = path;
     }
 
-    public void validate(TServiceTemplate serviceTemplate, String namespace) throws MultiException {
+    public void validate(YTServiceTemplate serviceTemplate, String namespace) throws MultiException {
         if (Objects.isNull(serviceTemplate)) return;
 
         TypeValidator typeValidator = new TypeValidator(path, namespace);
@@ -57,9 +57,9 @@ public class Validator extends ExceptionVisitor<Result, Parameter> {
     }
 
     @Override
-    public Result visit(TInterfaceType node, Parameter parameter) {
+    public Result visit(YTInterfaceType node, Parameter parameter) {
         if (Objects.nonNull(node.getOperations())) {
-            for (Map.Entry<String, TOperationDefinition> entry : node.getOperations().entrySet()) {
+            for (Map.Entry<String, YTOperationDefinition> entry : node.getOperations().entrySet()) {
                 if (Objects.nonNull(entry.getValue().getImplementation())) {
                     setException(new InvalidToscaSyntax(
                             "The InterfaceType '{}' MUST NOT include any implementations for defined operations",
@@ -73,7 +73,7 @@ public class Validator extends ExceptionVisitor<Result, Parameter> {
     }
 
     @Override
-    public Result visit(TImportDefinition node, Parameter parameter) {
+    public Result visit(YTImportDefinition node, Parameter parameter) {
         if (Objects.isNull(node.getFile()) || node.getFile().isEmpty()) {
             setException(new UndefinedFile("Field 'file' is undefined")
                 .setContext(parameter.getContext())
@@ -83,7 +83,7 @@ public class Validator extends ExceptionVisitor<Result, Parameter> {
     }
 
     @Override
-    public Result visit(TServiceTemplate node, Parameter parameter) {
+    public Result visit(YTServiceTemplate node, Parameter parameter) {
         if (Objects.isNull(node.getToscaDefinitionsVersion())) {
             setException(new UndefinedToscaVersion(
                     "The field 'tosca_definition_version' is undefined"
@@ -103,7 +103,7 @@ public class Validator extends ExceptionVisitor<Result, Parameter> {
     }
 
     @Override
-    public Result visit(TRepositoryDefinition node, Parameter parameter) {
+    public Result visit(YTRepositoryDefinition node, Parameter parameter) {
         if (Objects.isNull(node)) return null;
 
         if (Objects.isNull(node.getUrl()) || node.getUrl().isEmpty()) {

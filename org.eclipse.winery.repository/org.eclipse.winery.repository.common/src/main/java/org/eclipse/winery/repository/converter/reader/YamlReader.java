@@ -33,8 +33,8 @@ import java.util.stream.Collectors;
 import org.eclipse.winery.model.converter.support.Namespaces;
 import org.eclipse.winery.repository.converter.support.Utils;
 import org.eclipse.winery.repository.converter.validator.support.ExceptionInterpreter;
-import org.eclipse.winery.model.tosca.yaml.TImportDefinition;
-import org.eclipse.winery.model.tosca.yaml.TServiceTemplate;
+import org.eclipse.winery.model.tosca.yaml.YTImportDefinition;
+import org.eclipse.winery.model.tosca.yaml.YTServiceTemplate;
 import org.eclipse.winery.model.tosca.yaml.support.Metadata;
 import org.eclipse.winery.model.converter.support.exception.InvalidToscaSyntax;
 import org.eclipse.winery.model.converter.support.exception.MultiException;
@@ -57,7 +57,7 @@ public class YamlReader {
     private Yaml yaml;
 
     private Map<Path, byte[]> hashBuffer = new HashMap<>();
-    private Map<Path, TServiceTemplate> serviceTemplateBuffer = new HashMap<>();
+    private Map<Path, YTServiceTemplate> serviceTemplateBuffer = new HashMap<>();
     private Map<Path, MultiException> exceptionBuffer = new HashMap<>();
 
     /**
@@ -69,19 +69,19 @@ public class YamlReader {
         this.yaml = new Yaml(new SafeConstructor());
     }
 
-    public TServiceTemplate parse(InputStream inputStream) throws MultiException {
+    public YTServiceTemplate parse(InputStream inputStream) throws MultiException {
         return this.readServiceTemplate(inputStream, Namespaces.DEFAULT_YAML_NS);
     }
 
-    public TServiceTemplate parse(InputStream inputStream, String namespace) throws MultiException {
+    public YTServiceTemplate parse(InputStream inputStream, String namespace) throws MultiException {
         return this.readServiceTemplate(inputStream, namespace);
     }
 
-    public TServiceTemplate parse(TImportDefinition definition, Path path, String namespace) throws MultiException {
+    public YTServiceTemplate parse(YTImportDefinition definition, Path path, String namespace) throws MultiException {
         return this.readImportDefinition(definition, path, namespace);
     }
 
-    public TServiceTemplate parseSkipTest(Path uri, String namespace) throws MultiException {
+    public YTServiceTemplate parseSkipTest(Path uri, String namespace) throws MultiException {
         return this.readServiceTemplateSkipTest(uri, namespace);
     }
 
@@ -95,7 +95,7 @@ public class YamlReader {
         return getMetadata(path, file).getOrDefault("targetNamespace", Namespaces.DEFAULT_YAML_NS);
     }
 
-    private TServiceTemplate readServiceTemplateSkipTest(Path filePath, String namespace) throws MultiException {
+    private YTServiceTemplate readServiceTemplateSkipTest(Path filePath, String namespace) throws MultiException {
         Object object = readObject(filePath);
         return buildServiceTemplate(object, namespace);
     }
@@ -103,10 +103,10 @@ public class YamlReader {
     @NonNull
     private Metadata readServiceTemplateMetadataSkipTest(Path filePath, String namespace) throws MultiException {
         Object object = readMetadataObject(filePath);
-        return Optional.ofNullable(buildServiceTemplate(object, namespace)).map(TServiceTemplate::getMetadata).orElse(new Metadata());
+        return Optional.ofNullable(buildServiceTemplate(object, namespace)).map(YTServiceTemplate::getMetadata).orElse(new Metadata());
     }
 
-    private TServiceTemplate buildServiceTemplate(Object object, String namespace) throws MultiException {
+    private YTServiceTemplate buildServiceTemplate(Object object, String namespace) throws MultiException {
         YamlBuilder builder = new YamlBuilder(namespace);
         return builder.buildServiceTemplate(object);
     }
@@ -204,7 +204,7 @@ public class YamlReader {
      * @return ServiceTemplate
      * @throws MultiException the ServiceTemplate or the file is invalid.
      */
-    private TServiceTemplate readServiceTemplate(InputStream inputStream, String namespace) throws MultiException {
+    private YTServiceTemplate readServiceTemplate(InputStream inputStream, String namespace) throws MultiException {
         Object object = null;
         // pre parse checking
         try {
@@ -224,7 +224,7 @@ public class YamlReader {
         return buildServiceTemplate(object, namespace);
     }
 
-    private TServiceTemplate readServiceTemplate(Path path, Path file, String namespace) throws MultiException {
+    private YTServiceTemplate readServiceTemplate(Path path, Path file, String namespace) throws MultiException {
         Path filePath;
         if (Objects.isNull(path)) {
             filePath = file;
@@ -257,7 +257,7 @@ public class YamlReader {
             }
 
             // parse checking
-            TServiceTemplate result = buildServiceTemplate(readObject(filePath), namespace);
+            YTServiceTemplate result = buildServiceTemplate(readObject(filePath), namespace);
 
             // post parse checking
             Validator validator = new Validator(path);
@@ -271,7 +271,7 @@ public class YamlReader {
         }
     }
 
-    public TServiceTemplate readImportDefinition(TImportDefinition definition, Path path, String namespace) throws MultiException {
+    public YTServiceTemplate readImportDefinition(YTImportDefinition definition, Path path, String namespace) throws MultiException {
         if (Objects.isNull(definition) || Objects.isNull(definition.getFile())) return null;
         String importNamespace = definition.getNamespaceUri() == null ? namespace : definition.getNamespaceUri();
         if (Objects.nonNull(definition.getRepository())) {

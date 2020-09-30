@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019 Contributors to the Eclipse Foundation
+ * Copyright (c) 2020 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -33,9 +33,9 @@ public class TArtifactType extends TEntityType {
     private String mimeType;
     @XmlAttribute(name = "fileextensions", required = false)
     private List<String> fileExtensions;
-    
-    public TArtifactType() {
-    }
+
+    @Deprecated // used for XML deserialization of API request content
+    public TArtifactType() { }
 
     public TArtifactType(Builder builder) {
         super(builder);

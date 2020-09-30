@@ -74,13 +74,14 @@ public class TopologyMappingsWrapperTest extends TestWithGitBackedRepository {
 
     @Test
     public void removeNT() {
-        TTopologyTemplate topologyTemplate = new TTopologyTemplate();
         TNodeTemplate one = new TNodeTemplate("id1");
         TNodeTemplate two = new TNodeTemplate("id2");
         TNodeTemplate three = new TNodeTemplate("id3");
-        topologyTemplate.addNodeTemplate(one);
-        topologyTemplate.addNodeTemplate(two);
-        topologyTemplate.addNodeTemplate(three);
+        TTopologyTemplate topologyTemplate = new TTopologyTemplate.Builder()
+            .addNodeTemplates(one)
+            .addNodeTemplates(two)
+            .addNodeTemplates(three)
+            .build();
         assertEquals(3, topologyTemplate.getNodeTemplates().size());
         TopologyWrapper topology = new TopologyWrapper(topologyTemplate);
         topology.removeNT(one);
@@ -89,13 +90,14 @@ public class TopologyMappingsWrapperTest extends TestWithGitBackedRepository {
 
     @Test
     public void removeAllNTs() {
-        TTopologyTemplate topologyTemplate = new TTopologyTemplate();
         TNodeTemplate one = new TNodeTemplate("id1");
         TNodeTemplate two = new TNodeTemplate("id2");
         TNodeTemplate three = new TNodeTemplate("id3");
-        topologyTemplate.addNodeTemplate(one);
-        topologyTemplate.addNodeTemplate(two);
-        topologyTemplate.addNodeTemplate(three);
+        TTopologyTemplate topologyTemplate = new TTopologyTemplate.Builder()
+            .addNodeTemplates(one)
+            .addNodeTemplates(two)
+            .addNodeTemplates(three)
+            .build();
         assertEquals(3, topologyTemplate.getNodeTemplates().size());
         TopologyWrapper topology = new TopologyWrapper(topologyTemplate);
         topology.removeAllNTs(Arrays.asList(one, two));
@@ -104,13 +106,14 @@ public class TopologyMappingsWrapperTest extends TestWithGitBackedRepository {
 
     @Test
     public void removeRT() {
-        TTopologyTemplate topologyTemplate = new TTopologyTemplate();
         TRelationshipTemplate one = new TRelationshipTemplate("1");
         TRelationshipTemplate two = new TRelationshipTemplate("2");
         TRelationshipTemplate three = new TRelationshipTemplate("3");
-        topologyTemplate.addRelationshipTemplate(one);
-        topologyTemplate.addRelationshipTemplate(two);
-        topologyTemplate.addRelationshipTemplate(three);
+        TTopologyTemplate topologyTemplate = new TTopologyTemplate.Builder()
+            .addRelationshipTemplate(one)
+            .addRelationshipTemplate(two)
+            .addRelationshipTemplate(three)
+            .build();
         assertEquals(3, topologyTemplate.getRelationshipTemplates().size());
 
         TopologyWrapper topology = new TopologyWrapper(topologyTemplate);
@@ -120,13 +123,14 @@ public class TopologyMappingsWrapperTest extends TestWithGitBackedRepository {
 
     @Test
     public void removeAllRTs() {
-        TTopologyTemplate topologyTemplate = new TTopologyTemplate();
         TRelationshipTemplate one = new TRelationshipTemplate("1");
         TRelationshipTemplate two = new TRelationshipTemplate("2");
         TRelationshipTemplate three = new TRelationshipTemplate("3");
-        topologyTemplate.addRelationshipTemplate(one);
-        topologyTemplate.addRelationshipTemplate(two);
-        topologyTemplate.addRelationshipTemplate(three);
+        TTopologyTemplate topologyTemplate = new TTopologyTemplate.Builder()
+            .addRelationshipTemplate(one)
+            .addRelationshipTemplate(two)
+            .addRelationshipTemplate(three)
+            .build();
         assertEquals(3, topologyTemplate.getRelationshipTemplates().size());
 
         TopologyWrapper topology = new TopologyWrapper(topologyTemplate);

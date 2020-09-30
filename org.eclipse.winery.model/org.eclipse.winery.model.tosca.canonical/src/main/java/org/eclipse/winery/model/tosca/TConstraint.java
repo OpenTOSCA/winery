@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019 Contributors to the Eclipse Foundation
+ * Copyright (c) 2020 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -42,6 +42,9 @@ public class TConstraint implements Serializable {
     @XmlAttribute(name = "constraintType", required = true)
     @XmlSchemaType(name = "anyURI")
     protected String constraintType;
+
+    @Deprecated // used for XML deserialization of API request content
+    public TConstraint() { }
 
     @Override
     public boolean equals(Object o) {

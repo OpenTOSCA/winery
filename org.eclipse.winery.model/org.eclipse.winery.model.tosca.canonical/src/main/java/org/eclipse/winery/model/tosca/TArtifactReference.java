@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019 Contributors to the Eclipse Foundation
+ * Copyright (c) 2020 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -48,9 +48,8 @@ public class TArtifactReference implements Serializable {
     @XmlSchemaType(name = "anyURI")
     protected String reference;
 
-    public TArtifactReference() {
-
-    }
+    @Deprecated // used for XML deserialization of API request content
+    public TArtifactReference() { }
 
     public TArtifactReference(Builder builder) {
         this.includeOrExclude = builder.includeOrExclude;

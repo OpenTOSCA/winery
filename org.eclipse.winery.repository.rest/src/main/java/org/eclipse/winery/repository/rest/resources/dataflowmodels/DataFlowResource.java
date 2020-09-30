@@ -106,6 +106,7 @@ public class DataFlowResource {
                 .build();
         }
 
+        @SuppressWarnings("deprecated")
         TTopologyTemplate topology = serviceTemplate.getTopologyTemplate();
         if (Objects.isNull(topology)) {
             topology = new TTopologyTemplate();

@@ -42,12 +42,12 @@ public class EdmmConverterTest extends EdmmDependantTest {
     @Test
     void transformOneNodeTemplate() {
         // region *** build the TopologyTemplate ***
-        TTopologyTemplate topology = new TTopologyTemplate();
-        topology.addNodeTemplate(nodeTemplates.get("test_node_1"));
+        TTopologyTemplate.Builder topology = new TTopologyTemplate.Builder();
+        topology.addNodeTemplates(nodeTemplates.get("test_node_1"));
         // endregion
 
         TServiceTemplate serviceTemplate = new TServiceTemplate();
-        serviceTemplate.setTopologyTemplate(topology);
+        serviceTemplate.setTopologyTemplate(topology.build());
 
         EdmmConverter edmmConverter = new EdmmConverter(nodeTypes, relationshipTypes, nodeTypeImplementations,
             relationshipTypeImplementations, artifactTemplates, edmmTypeExtendsMapping, edmm1to1Mapping);
@@ -60,12 +60,12 @@ public class EdmmConverterTest extends EdmmDependantTest {
     @Test
     void transformDerivedFrom() {
         // region *** build the TopologyTemplate ***
-        TTopologyTemplate topology = new TTopologyTemplate();
-        topology.addNodeTemplate(nodeTemplates.get("test_node_2"));
+        TTopologyTemplate.Builder topology = new TTopologyTemplate.Builder();
+        topology.addNodeTemplates(nodeTemplates.get("test_node_2"));
         // endregion
 
         TServiceTemplate serviceTemplate = new TServiceTemplate();
-        serviceTemplate.setTopologyTemplate(topology);
+        serviceTemplate.setTopologyTemplate(topology.build());
 
         EdmmConverter edmmConverter = new EdmmConverter(nodeTypes, relationshipTypes, nodeTypeImplementations,
             relationshipTypeImplementations, artifactTemplates, edmmTypeExtendsMapping, edmm1to1Mapping);
@@ -82,12 +82,12 @@ public class EdmmConverterTest extends EdmmDependantTest {
     @Test
     void transformProperties() {
         // region *** build the TopologyTemplate ***
-        TTopologyTemplate topology = new TTopologyTemplate();
-        topology.addNodeTemplate(nodeTemplates.get("test_node_3"));
+        TTopologyTemplate.Builder topology = new TTopologyTemplate.Builder();
+        topology.addNodeTemplates(nodeTemplates.get("test_node_3"));
         // endregion
 
         TServiceTemplate serviceTemplate = new TServiceTemplate();
-        serviceTemplate.setTopologyTemplate(topology);
+        serviceTemplate.setTopologyTemplate(topology.build());
 
         EdmmConverter edmmConverter = new EdmmConverter(nodeTypes, relationshipTypes, nodeTypeImplementations,
             relationshipTypeImplementations, artifactTemplates, edmmTypeExtendsMapping, edmm1to1Mapping);
@@ -122,17 +122,17 @@ public class EdmmConverterTest extends EdmmDependantTest {
     @Test
     void transformTopologyWithRelationsAndRelationTypes() {
         // region *** build the TopologyTemplate ***
-        TTopologyTemplate topology = new TTopologyTemplate();
-        topology.addNodeTemplate(nodeTemplates.get("test_node_1"));
-        topology.addNodeTemplate(nodeTemplates.get("test_node_2"));
-        topology.addNodeTemplate(nodeTemplates.get("test_node_3"));
+        TTopologyTemplate.Builder topology = new TTopologyTemplate.Builder();
+        topology.addNodeTemplates(nodeTemplates.get("test_node_1"));
+        topology.addNodeTemplates(nodeTemplates.get("test_node_2"));
+        topology.addNodeTemplates(nodeTemplates.get("test_node_3"));
         topology.addRelationshipTemplate(relationshipTemplates.get("1_hosted_on_3"));
         topology.addRelationshipTemplate(relationshipTemplates.get("2_hosted_on_3"));
         topology.addRelationshipTemplate(relationshipTemplates.get("1_connects_to_2"));
         // endregion
 
         TServiceTemplate serviceTemplate = new TServiceTemplate();
-        serviceTemplate.setTopologyTemplate(topology);
+        serviceTemplate.setTopologyTemplate(topology.build());
 
         EdmmConverter edmmConverter = new EdmmConverter(nodeTypes, relationshipTypes, nodeTypeImplementations,
             relationshipTypeImplementations, artifactTemplates, edmmTypeExtendsMapping, edmm1to1Mapping);
@@ -159,12 +159,12 @@ public class EdmmConverterTest extends EdmmDependantTest {
     @Test
     void transformTopologyWithOperations() {
         // region *** build the TopologyTemplate ***
-        TTopologyTemplate topology = new TTopologyTemplate();
-        topology.addNodeTemplate(nodeTemplates.get("test_node_4"));
+        TTopologyTemplate.Builder topology = new TTopologyTemplate.Builder();
+        topology.addNodeTemplates(nodeTemplates.get("test_node_4"));
         // endregion
 
         TServiceTemplate serviceTemplate = new TServiceTemplate();
-        serviceTemplate.setTopologyTemplate(topology);
+        serviceTemplate.setTopologyTemplate(topology.build());
 
         EdmmConverter edmmConverter = new EdmmConverter(nodeTypes, relationshipTypes, nodeTypeImplementations,
             relationshipTypeImplementations, artifactTemplates, edmmTypeExtendsMapping, edmm1to1Mapping, false);
@@ -188,17 +188,17 @@ public class EdmmConverterTest extends EdmmDependantTest {
     @Test
     void transformTopology() {
         // region *** build the TopologyTemplate ***
-        TTopologyTemplate topology = new TTopologyTemplate();
-        topology.addNodeTemplate(nodeTemplates.get("test_node_1"));
-        topology.addNodeTemplate(nodeTemplates.get("test_node_2"));
-        topology.addNodeTemplate(nodeTemplates.get("test_node_3"));
-        topology.addNodeTemplate(nodeTemplates.get("test_node_4"));
+        TTopologyTemplate.Builder topology = new TTopologyTemplate.Builder();
+        topology.addNodeTemplates(nodeTemplates.get("test_node_1"));
+        topology.addNodeTemplates(nodeTemplates.get("test_node_2"));
+        topology.addNodeTemplates(nodeTemplates.get("test_node_3"));
+        topology.addNodeTemplates(nodeTemplates.get("test_node_4"));
         topology.addRelationshipTemplate(relationshipTemplates.get("1_hosted_on_3"));
         topology.addRelationshipTemplate(relationshipTemplates.get("2_hosted_on_3"));
         topology.addRelationshipTemplate(relationshipTemplates.get("4_hosted_on_1"));
         topology.addRelationshipTemplate(relationshipTemplates.get("1_connects_to_2"));
         TServiceTemplate serviceTemplate = new TServiceTemplate();
-        serviceTemplate.setTopologyTemplate(topology);
+        serviceTemplate.setTopologyTemplate(topology.build());
         // endregion
 
         EdmmConverter edmmConverter = new EdmmConverter(nodeTypes, relationshipTypes, nodeTypeImplementations,

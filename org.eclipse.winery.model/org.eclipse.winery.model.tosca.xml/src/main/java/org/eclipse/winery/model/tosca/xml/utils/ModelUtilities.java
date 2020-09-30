@@ -32,30 +32,30 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.eclipse.winery.model.tosca.xml.HasId;
-import org.eclipse.winery.model.tosca.xml.RelationshipSourceOrTarget;
-import org.eclipse.winery.model.tosca.xml.TBoundaryDefinitions;
-import org.eclipse.winery.model.tosca.xml.TCapability;
-import org.eclipse.winery.model.tosca.xml.TEntityTemplate;
-import org.eclipse.winery.model.tosca.xml.TEntityType;
-import org.eclipse.winery.model.tosca.xml.TExtensibleElements;
-import org.eclipse.winery.model.tosca.xml.TNodeTemplate;
-import org.eclipse.winery.model.tosca.xml.TNodeType;
-import org.eclipse.winery.model.tosca.xml.TPlan;
-import org.eclipse.winery.model.tosca.xml.TPlans;
-import org.eclipse.winery.model.tosca.xml.TPolicies;
-import org.eclipse.winery.model.tosca.xml.TPolicy;
-import org.eclipse.winery.model.tosca.xml.TRelationshipTemplate;
-import org.eclipse.winery.model.tosca.xml.TRelationshipType;
-import org.eclipse.winery.model.tosca.xml.TRequirementDefinition;
-import org.eclipse.winery.model.tosca.xml.TServiceTemplate;
-import org.eclipse.winery.model.tosca.xml.TTag;
+import org.eclipse.winery.model.tosca.xml.XHasId;
+import org.eclipse.winery.model.tosca.xml.XRelationshipSourceOrTarget;
+import org.eclipse.winery.model.tosca.xml.XTBoundaryDefinitions;
+import org.eclipse.winery.model.tosca.xml.XTCapability;
+import org.eclipse.winery.model.tosca.xml.XTEntityTemplate;
+import org.eclipse.winery.model.tosca.xml.XTEntityType;
+import org.eclipse.winery.model.tosca.xml.XTExtensibleElements;
+import org.eclipse.winery.model.tosca.xml.XTNodeTemplate;
+import org.eclipse.winery.model.tosca.xml.XTNodeType;
+import org.eclipse.winery.model.tosca.xml.XTPlan;
+import org.eclipse.winery.model.tosca.xml.XTPlans;
+import org.eclipse.winery.model.tosca.xml.XTPolicies;
+import org.eclipse.winery.model.tosca.xml.XTPolicy;
+import org.eclipse.winery.model.tosca.xml.XTRelationshipTemplate;
+import org.eclipse.winery.model.tosca.xml.XTRelationshipType;
+import org.eclipse.winery.model.tosca.xml.XTRequirementDefinition;
+import org.eclipse.winery.model.tosca.xml.XTServiceTemplate;
+import org.eclipse.winery.model.tosca.xml.XTTag;
 import org.eclipse.winery.model.tosca.xml.constants.Namespaces;
 import org.eclipse.winery.model.tosca.xml.constants.QNames;
 import org.eclipse.winery.model.tosca.xml.constants.ToscaBaseTypes;
-import org.eclipse.winery.model.tosca.xml.TCapabilityDefinition;
-import org.eclipse.winery.model.tosca.xml.TRequirement;
-import org.eclipse.winery.model.tosca.xml.TTopologyTemplate;
+import org.eclipse.winery.model.tosca.xml.XTCapabilityDefinition;
+import org.eclipse.winery.model.tosca.xml.XTRequirement;
+import org.eclipse.winery.model.tosca.xml.XTTopologyTemplate;
 
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -185,7 +185,7 @@ public class ModelUtilities {
         return String.format("#%06x", hash);
     }
 
-    public static String getBorderColor(TNodeType nt) {
+    public static String getBorderColor(XTNodeType nt) {
         String borderColor = nt.getOtherAttributes().get(QNames.QNAME_BORDER_COLOR);
         if (borderColor == null) {
             borderColor = getColor(nt.getName());
@@ -193,7 +193,7 @@ public class ModelUtilities {
         return borderColor;
     }
 
-    public static String getColor(TRelationshipType rt) {
+    public static String getColor(XTRelationshipType rt) {
         String color = rt.getOtherAttributes().get(QNames.QNAME_COLOR);
         if (color == null) {
             color = getColor(rt.getName());
@@ -204,10 +204,10 @@ public class ModelUtilities {
     /**
      * Returns the Properties. If no properties exist, the element is created
      */
-    public static TBoundaryDefinitions.Properties getProperties(TBoundaryDefinitions defs) {
-        TBoundaryDefinitions.Properties properties = defs.getProperties();
+    public static XTBoundaryDefinitions.Properties getProperties(XTBoundaryDefinitions defs) {
+        XTBoundaryDefinitions.Properties properties = defs.getProperties();
         if (properties == null) {
-            properties = new TBoundaryDefinitions.Properties();
+            properties = new XTBoundaryDefinitions.Properties();
             defs.setProperties(properties);
         }
         return properties;
@@ -222,7 +222,7 @@ public class ModelUtilities {
      * @return the name of the extensible element
      * @throws IllegalStateException if e does not offer the method "getName"
      */
-    public static String getName(TExtensibleElements e) {
+    public static String getName(XTExtensibleElements e) {
         Method method;
         Object res;
         try {
@@ -241,7 +241,7 @@ public class ModelUtilities {
      *
      * @return the name if there is a name field, if not, the id is returned. In case there is a Name field,
      */
-    public static String getNameWithIdFallBack(TExtensibleElements ci) {
+    public static String getNameWithIdFallBack(XTExtensibleElements ci) {
         Method method;
         String res = null;
         //noinspection EmptyCatchBlock
@@ -269,7 +269,7 @@ public class ModelUtilities {
      * @param name the new name
      * @throws IllegalStateException if e does not offer the method "getName"
      */
-    public static void setName(TExtensibleElements e, String name) {
+    public static void setName(XTExtensibleElements e, String name) {
         Method method;
         try {
             method = e.getClass().getMethod("setName", String.class);
@@ -295,7 +295,7 @@ public class ModelUtilities {
 //        return valid;
 //    }
 
-    public static Optional<Integer> getLeft(TNodeTemplate nodeTemplate) {
+    public static Optional<Integer> getLeft(XTNodeTemplate nodeTemplate) {
         Map<QName, String> otherAttributes = nodeTemplate.getOtherAttributes();
         String x = otherAttributes.get(new QName(Namespaces.TOSCA_WINERY_EXTENSIONS_NAMESPACE, "x"));
         if (x == null) {
@@ -314,7 +314,7 @@ public class ModelUtilities {
     /**
      * @return null if no explicit left is set
      */
-    public static String getTop(TNodeTemplate nodeTemplate) {
+    public static String getTop(XTNodeTemplate nodeTemplate) {
         Map<QName, String> otherAttributes = nodeTemplate.getOtherAttributes();
         return otherAttributes.get(new QName(Namespaces.TOSCA_WINERY_EXTENSIONS_NAMESPACE, "y"));
     }
@@ -326,35 +326,35 @@ public class ModelUtilities {
      * @param targetObjectRef  the object ref as String
      * @return null if not found, otherwise the entity template in the topology
      */
-    public static TEntityTemplate findNodeTemplateOrRequirementOfNodeTemplateOrCapabilityOfNodeTemplateOrRelationshipTemplate(TTopologyTemplate topologyTemplate, String targetObjectRef) {
+    public static XTEntityTemplate findNodeTemplateOrRequirementOfNodeTemplateOrCapabilityOfNodeTemplateOrRelationshipTemplate(XTTopologyTemplate topologyTemplate, String targetObjectRef) {
         // We cannot use XMLs id pointing capabilities as we work on the Java model
         // Other option: modify the stored XML directly. This is more error prune than walking through the whole topology
-        for (TEntityTemplate t : topologyTemplate.getNodeTemplateOrRelationshipTemplate()) {
-            if (t instanceof TNodeTemplate) {
+        for (XTEntityTemplate t : topologyTemplate.getNodeTemplateOrRelationshipTemplate()) {
+            if (t instanceof XTNodeTemplate) {
                 if (t.getId().equals(targetObjectRef)) {
                     return t;
                 }
-                TNodeTemplate nt = (TNodeTemplate) t;
+                XTNodeTemplate nt = (XTNodeTemplate) t;
 
-                TNodeTemplate.Requirements requirements = nt.getRequirements();
+                XTNodeTemplate.Requirements requirements = nt.getRequirements();
                 if (requirements != null) {
-                    for (TRequirement req : requirements.getRequirement()) {
+                    for (XTRequirement req : requirements.getRequirement()) {
                         if (req.getId().equals(targetObjectRef)) {
                             return req;
                         }
                     }
                 }
 
-                TNodeTemplate.Capabilities capabilities = nt.getCapabilities();
+                XTNodeTemplate.Capabilities capabilities = nt.getCapabilities();
                 if (capabilities != null) {
-                    for (TCapability cap : capabilities.getCapability()) {
+                    for (XTCapability cap : capabilities.getCapability()) {
                         if (cap.getId().equals(targetObjectRef)) {
                             return cap;
                         }
                     }
                 }
             } else {
-                assert (t instanceof TRelationshipTemplate);
+                assert (t instanceof XTRelationshipTemplate);
                 if (t.getId().equals(targetObjectRef)) {
                     return t;
                 }
@@ -373,7 +373,7 @@ public class ModelUtilities {
      * <p>
      * This method abstracts from that fact.
      */
-    public static String getId(TExtensibleElements ci) {
+    public static String getId(XTExtensibleElements ci) {
         Method method;
         Object res;
         try {
@@ -396,14 +396,14 @@ public class ModelUtilities {
      *
      * @return null if not found
      */
-    public static TRequirement resolveRequirement(TServiceTemplate serviceTemplate, String reference) {
-        TRequirement resolved = null;
-        for (TEntityTemplate tmpl : serviceTemplate.getTopologyTemplate().getNodeTemplateOrRelationshipTemplate()) {
-            if (tmpl instanceof TNodeTemplate) {
-                TNodeTemplate n = (TNodeTemplate) tmpl;
-                TNodeTemplate.Requirements requirements = n.getRequirements();
+    public static XTRequirement resolveRequirement(XTServiceTemplate serviceTemplate, String reference) {
+        XTRequirement resolved = null;
+        for (XTEntityTemplate tmpl : serviceTemplate.getTopologyTemplate().getNodeTemplateOrRelationshipTemplate()) {
+            if (tmpl instanceof XTNodeTemplate) {
+                XTNodeTemplate n = (XTNodeTemplate) tmpl;
+                XTNodeTemplate.Requirements requirements = n.getRequirements();
                 if (requirements != null) {
-                    for (TRequirement req : n.getRequirements().getRequirement()) {
+                    for (XTRequirement req : n.getRequirements().getRequirement()) {
                         if (req.getId().equals(reference)) {
                             resolved = req;
                         }
@@ -414,14 +414,14 @@ public class ModelUtilities {
         return resolved;
     }
 
-    public static TCapability resolveCapability(TServiceTemplate serviceTemplate, String reference) {
-        TCapability resolved = null;
-        for (TEntityTemplate tmpl : serviceTemplate.getTopologyTemplate().getNodeTemplateOrRelationshipTemplate()) {
-            if (tmpl instanceof TNodeTemplate) {
-                TNodeTemplate n = (TNodeTemplate) tmpl;
-                TNodeTemplate.Capabilities capabilities = n.getCapabilities();
+    public static XTCapability resolveCapability(XTServiceTemplate serviceTemplate, String reference) {
+        XTCapability resolved = null;
+        for (XTEntityTemplate tmpl : serviceTemplate.getTopologyTemplate().getNodeTemplateOrRelationshipTemplate()) {
+            if (tmpl instanceof XTNodeTemplate) {
+                XTNodeTemplate n = (XTNodeTemplate) tmpl;
+                XTNodeTemplate.Capabilities capabilities = n.getCapabilities();
                 if (capabilities != null) {
-                    for (TCapability cap : n.getCapabilities().getCapability()) {
+                    for (XTCapability cap : n.getCapabilities().getCapability()) {
                         if (cap.getId().equals(reference)) {
                             resolved = cap;
                         }
@@ -432,11 +432,11 @@ public class ModelUtilities {
         return resolved;
     }
 
-    public static TNodeTemplate resolveNodeTemplate(TServiceTemplate serviceTemplate, String reference) {
-        TNodeTemplate resolved = null;
-        for (TEntityTemplate tmpl : serviceTemplate.getTopologyTemplate().getNodeTemplateOrRelationshipTemplate()) {
-            if (tmpl instanceof TNodeTemplate) {
-                TNodeTemplate n = (TNodeTemplate) tmpl;
+    public static XTNodeTemplate resolveNodeTemplate(XTServiceTemplate serviceTemplate, String reference) {
+        XTNodeTemplate resolved = null;
+        for (XTEntityTemplate tmpl : serviceTemplate.getTopologyTemplate().getNodeTemplateOrRelationshipTemplate()) {
+            if (tmpl instanceof XTNodeTemplate) {
+                XTNodeTemplate n = (XTNodeTemplate) tmpl;
                 if (n.getId().equals(reference)) {
                     resolved = n;
                 }
@@ -445,11 +445,11 @@ public class ModelUtilities {
         return resolved;
     }
 
-    public static TRelationshipTemplate resolveRelationshipTemplate(TServiceTemplate serviceTemplate, String reference) {
-        TRelationshipTemplate resolved = null;
-        for (TEntityTemplate tmpl : serviceTemplate.getTopologyTemplate().getNodeTemplateOrRelationshipTemplate()) {
-            if (tmpl instanceof TRelationshipTemplate) {
-                TRelationshipTemplate n = (TRelationshipTemplate) tmpl;
+    public static XTRelationshipTemplate resolveRelationshipTemplate(XTServiceTemplate serviceTemplate, String reference) {
+        XTRelationshipTemplate resolved = null;
+        for (XTEntityTemplate tmpl : serviceTemplate.getTopologyTemplate().getNodeTemplateOrRelationshipTemplate()) {
+            if (tmpl instanceof XTRelationshipTemplate) {
+                XTRelationshipTemplate n = (XTRelationshipTemplate) tmpl;
                 if (n.getId().equals(reference)) {
                     resolved = n;
                 }
@@ -458,13 +458,13 @@ public class ModelUtilities {
         return resolved;
     }
 
-    public static TPlan resolvePlan(TServiceTemplate serviceTemplate, String reference) {
-        TPlan resolved = null;
-        TPlans plans = serviceTemplate.getPlans();
+    public static XTPlan resolvePlan(XTServiceTemplate serviceTemplate, String reference) {
+        XTPlan resolved = null;
+        XTPlans plans = serviceTemplate.getPlans();
         if (plans == null) {
             return null;
         }
-        for (TPlan p : plans.getPlan()) {
+        for (XTPlan p : plans.getPlan()) {
             if (p.getId().equals(reference)) {
                 resolved = p;
             }
@@ -473,71 +473,58 @@ public class ModelUtilities {
     }
 
     /**
-     * This method instantiates a {@link TNodeTemplate} for a given {@link TNodeType}.
+     * This method instantiates a {@link XTNodeTemplate} for a given {@link XTNodeType}.
      *
-     * @param nodeType the {@link TNodeType} used for the {@link TNodeTemplate} instantiation.
-     * @return the instantiated {@link TNodeTemplate}
+     * @param nodeType the {@link XTNodeType} used for the {@link XTNodeTemplate} instantiation.
+     * @return the instantiated {@link XTNodeTemplate}
      */
-    public static TNodeTemplate instantiateNodeTemplate(TNodeType nodeType) {
+    public static XTNodeTemplate instantiateNodeTemplate(XTNodeType nodeType) {
 
-        TNodeTemplate nodeTemplate = new TNodeTemplate();
+        XTNodeTemplate.Builder nodeTemplate = new XTNodeTemplate.Builder(UUID.randomUUID().toString(), new QName(nodeType.getTargetNamespace(), nodeType.getName()));
 
-        nodeTemplate.setId(UUID.randomUUID().toString());
         nodeTemplate.setName(nodeType.getName());
-        nodeTemplate.setType(new QName(nodeType.getTargetNamespace(), nodeType.getName()));
 
         // add capabilities to the NodeTemplate
         if (nodeType.getCapabilityDefinitions() != null) {
-            for (TCapabilityDefinition cd : nodeType.getCapabilityDefinitions().getCapabilityDefinition()) {
-                TCapability capa = new TCapability();
-                capa.setId(UUID.randomUUID().toString());
-                capa.setName(cd.getCapabilityType().getLocalPart());
-                capa.setType(new QName(cd.getCapabilityType().getNamespaceURI(), cd.getCapabilityType().getLocalPart()));
-                nodeTemplate.setCapabilities(new TNodeTemplate.Capabilities());
-                nodeTemplate.getCapabilities().getCapability().add(capa);
+            for (XTCapabilityDefinition cd : nodeType.getCapabilityDefinitions().getCapabilityDefinition()) {
+                XTCapability.Builder capa = new XTCapability.Builder(UUID.randomUUID().toString(),
+                    new QName(cd.getCapabilityType().getNamespaceURI(), cd.getCapabilityType().getLocalPart()), cd.getCapabilityType().getLocalPart());
+                nodeTemplate.setCapabilities(new XTNodeTemplate.Capabilities());
+                nodeTemplate.addCapabilities(capa.build());
             }
         }
 
         // add requirements
         if (nodeType.getRequirementDefinitions() != null && nodeType.getRequirementDefinitions().getRequirementDefinition() != null) {
-            TNodeTemplate.Requirements requirementsNode = new TNodeTemplate.Requirements();
+            XTNodeTemplate.Requirements requirementsNode = new XTNodeTemplate.Requirements();
             nodeTemplate.setRequirements(requirementsNode);
-            for (TRequirementDefinition definition : nodeType.getRequirementDefinitions().getRequirementDefinition()) {
-                TRequirement newRequirement = new TRequirement();
-                newRequirement.setName(definition.getName());
-                newRequirement.setId(definition.getName());
-                newRequirement.setType(definition.getRequirementType());
-                nodeTemplate.getRequirements().getRequirement().add(newRequirement);
+            for (XTRequirementDefinition definition : nodeType.getRequirementDefinitions().getRequirementDefinition()) {
+                XTRequirement.Builder newRequirement = new XTRequirement.Builder(definition.getName(), definition.getRequirementType());
+                nodeTemplate.addRequirements(newRequirement.build());
             }
         }
 
-        return nodeTemplate;
+        return nodeTemplate.build();
     }
 
     /**
-     * This method instantiates a {@link TRelationshipTemplate} for a given {@link TRelationshipType}.
+     * This method instantiates a {@link XTRelationshipTemplate} for a given {@link XTRelationshipType}.
      *
-     * @param relationshipType   the {@link TRelationshipType} used for the {@link TRelationshipTemplate}
+     * @param relationshipType   the {@link XTRelationshipType} used for the {@link XTRelationshipTemplate}
      *                           instantiation.
-     * @param sourceNodeTemplate the source {@link TNodeTemplate} of the connection
-     * @param targetNodeTemplate the target {@link TNodeTemplate} of the connection
-     * @return the instantiated {@link TRelationshipTemplate}
+     * @param sourceNodeTemplate the source {@link XTNodeTemplate} of the connection
+     * @param targetNodeTemplate the target {@link XTNodeTemplate} of the connection
+     * @return the instantiated {@link XTRelationshipTemplate}
      */
-    public static TRelationshipTemplate instantiateRelationshipTemplate(TRelationshipType relationshipType, TNodeTemplate sourceNodeTemplate, TNodeTemplate targetNodeTemplate) {
-
-        TRelationshipTemplate relationshipTemplate = new TRelationshipTemplate();
-        relationshipTemplate.setId(UUID.randomUUID().toString());
-        relationshipTemplate.setName(relationshipType.getName());
-        relationshipTemplate.setType(new QName(relationshipType.getTargetNamespace(), relationshipType.getName()));
+    public static XTRelationshipTemplate instantiateRelationshipTemplate(XTRelationshipType relationshipType, XTNodeTemplate sourceNodeTemplate, XTNodeTemplate targetNodeTemplate) {
 
         // connect the NodeTemplates
-        TRelationshipTemplate.SourceOrTargetElement source = new TRelationshipTemplate.SourceOrTargetElement();
+        XTRelationshipTemplate.SourceOrTargetElement source = new XTRelationshipTemplate.SourceOrTargetElement();
         source.setRef(sourceNodeTemplate);
-        relationshipTemplate.setSourceElement(source);
-        TRelationshipTemplate.SourceOrTargetElement target = new TRelationshipTemplate.SourceOrTargetElement();
+        XTRelationshipTemplate.SourceOrTargetElement target = new XTRelationshipTemplate.SourceOrTargetElement();
         target.setRef(targetNodeTemplate);
-        relationshipTemplate.setTargetElement(target);
 
+        XTRelationshipTemplate relationshipTemplate = new XTRelationshipTemplate.Builder(UUID.randomUUID().toString(), new QName(relationshipType.getTargetNamespace(), relationshipType.getName()), source, target).build();
         return relationshipTemplate;
     }
 
@@ -545,7 +532,7 @@ public class ModelUtilities {
      * Target label is not present if - empty string - undefined - null Target Label is not case sensitive -> always
      * lower case.
      */
-    public static Optional<String> getTargetLabel(TNodeTemplate nodeTemplate) {
+    public static Optional<String> getTargetLabel(XTNodeTemplate nodeTemplate) {
         if (nodeTemplate == null) {
             return Optional.empty();
         }
@@ -560,45 +547,45 @@ public class ModelUtilities {
     /**
      * Target Label is not case sensitive -> set to lowercase.
      */
-    public static void setTargetLabel(TNodeTemplate nodeTemplate, String targetLabel) {
+    public static void setTargetLabel(XTNodeTemplate nodeTemplate, String targetLabel) {
         Objects.requireNonNull(nodeTemplate);
         Objects.requireNonNull(targetLabel);
         Map<QName, String> otherAttributes = nodeTemplate.getOtherAttributes();
         otherAttributes.put(QNAME_LOCATION, targetLabel.toLowerCase());
     }
 
-    public static TNodeTemplate getSourceNodeTemplateOfRelationshipTemplate(TTopologyTemplate topologyTemplate, TRelationshipTemplate relationshipTemplate) {
-        if (relationshipTemplate.getSourceElement().getRef() instanceof TRequirement) {
-            TRequirement requirement = (TRequirement) relationshipTemplate.getSourceElement().getRef();
+    public static XTNodeTemplate getSourceNodeTemplateOfRelationshipTemplate(XTTopologyTemplate topologyTemplate, XTRelationshipTemplate relationshipTemplate) {
+        if (relationshipTemplate.getSourceElement().getRef() instanceof XTRequirement) {
+            XTRequirement requirement = (XTRequirement) relationshipTemplate.getSourceElement().getRef();
             return topologyTemplate.getNodeTemplates().stream()
                 .filter(nt -> nt.getRequirements().getRequirement() != null)
                 .filter(nt -> nt.getRequirements().getRequirement().contains(requirement))
                 .findAny().get();
         } else {
-            TNodeTemplate sourceNodeTemplate = (TNodeTemplate) relationshipTemplate.getSourceElement().getRef();
+            XTNodeTemplate sourceNodeTemplate = (XTNodeTemplate) relationshipTemplate.getSourceElement().getRef();
             return sourceNodeTemplate;
         }
     }
 
-    public static TNodeTemplate getTargetNodeTemplateOfRelationshipTemplate(TTopologyTemplate topologyTemplate, TRelationshipTemplate relationshipTemplate) {
-        if (relationshipTemplate.getTargetElement().getRef() instanceof TCapability) {
-            TCapability capability = (TCapability) relationshipTemplate.getTargetElement().getRef();
+    public static XTNodeTemplate getTargetNodeTemplateOfRelationshipTemplate(XTTopologyTemplate topologyTemplate, XTRelationshipTemplate relationshipTemplate) {
+        if (relationshipTemplate.getTargetElement().getRef() instanceof XTCapability) {
+            XTCapability capability = (XTCapability) relationshipTemplate.getTargetElement().getRef();
             return topologyTemplate.getNodeTemplates().stream()
                 .filter(nt -> nt.getRequirements().getRequirement() != null)
                 .filter(nt -> nt.getRequirements().getRequirement().contains(capability))
                 .findAny().get();
         } else {
-            return (TNodeTemplate) relationshipTemplate.getTargetElement().getRef();
+            return (XTNodeTemplate) relationshipTemplate.getTargetElement().getRef();
         }
     }
 
     /**
      * @return incoming relation ship templates <em>pointing to node templates</em>
      */
-    public static List<TRelationshipTemplate> getIncomingRelationshipTemplates(TTopologyTemplate topologyTemplate, TNodeTemplate nodeTemplate) {
+    public static List<XTRelationshipTemplate> getIncomingRelationshipTemplates(XTTopologyTemplate topologyTemplate, XTNodeTemplate nodeTemplate) {
         Objects.requireNonNull(topologyTemplate);
         Objects.requireNonNull(nodeTemplate);
-        List<TRelationshipTemplate> incomingRelationshipTemplates = topologyTemplate.getRelationshipTemplates()
+        List<XTRelationshipTemplate> incomingRelationshipTemplates = topologyTemplate.getRelationshipTemplates()
             .stream()
             .filter(rt -> getTargetNodeTemplateOfRelationshipTemplate(topologyTemplate, rt).equals(nodeTemplate))
             .collect(Collectors.toList());
@@ -609,10 +596,10 @@ public class ModelUtilities {
     /**
      * @return outgoing relation ship templates <em>pointing to node templates</em>
      */
-    public static List<TRelationshipTemplate> getOutgoingRelationshipTemplates(TTopologyTemplate topologyTemplate, TNodeTemplate nodeTemplate) {
+    public static List<XTRelationshipTemplate> getOutgoingRelationshipTemplates(XTTopologyTemplate topologyTemplate, XTNodeTemplate nodeTemplate) {
         Objects.requireNonNull(topologyTemplate);
         Objects.requireNonNull(nodeTemplate);
-        List<TRelationshipTemplate> outgoingRelationshipTemplates = topologyTemplate.getRelationshipTemplates()
+        List<XTRelationshipTemplate> outgoingRelationshipTemplates = topologyTemplate.getRelationshipTemplates()
             .stream()
             .filter(rt -> getSourceNodeTemplateOfRelationshipTemplate(topologyTemplate, rt).equals(nodeTemplate))
             .collect(Collectors.toList());
@@ -622,30 +609,30 @@ public class ModelUtilities {
 
     /**
      * @return all nodes templates of the topologyTemplate
-     * @deprecated Use {@link TTopologyTemplate#getNodeTemplates()}
+     * @deprecated Use {@link XTTopologyTemplate#getNodeTemplates()}
      */
     @Deprecated
-    public static List<TNodeTemplate> getAllNodeTemplates(TTopologyTemplate topologyTemplate) {
+    public static List<XTNodeTemplate> getAllNodeTemplates(XTTopologyTemplate topologyTemplate) {
         Objects.requireNonNull(topologyTemplate);
 
         return topologyTemplate.getNodeTemplateOrRelationshipTemplate()
             .stream()
-            .filter(x -> x instanceof TNodeTemplate)
-            .map(TNodeTemplate.class::cast)
+            .filter(x -> x instanceof XTNodeTemplate)
+            .map(XTNodeTemplate.class::cast)
             .collect(Collectors.toList());
     }
 
     /**
-     * @deprecated Use {@link TTopologyTemplate#getRelationshipTemplates()}
+     * @deprecated Use {@link XTTopologyTemplate#getRelationshipTemplates()}
      */
     @Deprecated
-    public static List<TRelationshipTemplate> getAllRelationshipTemplates(TTopologyTemplate topologyTemplate) {
+    public static List<XTRelationshipTemplate> getAllRelationshipTemplates(XTTopologyTemplate topologyTemplate) {
         Objects.requireNonNull(topologyTemplate);
 
         return topologyTemplate.getNodeTemplateOrRelationshipTemplate()
             .stream()
-            .filter(x -> x instanceof TRelationshipTemplate)
-            .map(TRelationshipTemplate.class::cast)
+            .filter(x -> x instanceof XTRelationshipTemplate)
+            .map(XTRelationshipTemplate.class::cast)
             .collect(Collectors.toList());
     }
 
@@ -657,7 +644,7 @@ public class ModelUtilities {
      * @throws IllegalStateException if DocumentBuilder could not iniitialized
      * @throws IOException           if something goes wrong during parsing
      */
-    public static void patchAnyAttributes(Collection<? extends TEntityTemplate> templates) throws IOException {
+    public static void patchAnyAttributes(Collection<? extends XTEntityTemplate> templates) throws IOException {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         DocumentBuilder documentBuilder = null;
         try {
@@ -669,7 +656,7 @@ public class ModelUtilities {
 
         Map<QName, String> tempConvertedOtherAttributes = new HashMap<>();
 
-        for (TEntityTemplate template : templates) {
+        for (XTEntityTemplate template : templates) {
 
             //Convert the wrong QName created by the JSON serialization back to a right QName
             for (Map.Entry<QName, String> otherAttribute : template.getOtherAttributes().entrySet()) {
@@ -689,7 +676,7 @@ public class ModelUtilities {
             tempConvertedOtherAttributes.clear();
 
             // Convert the String created by the JSON serialization back to a XML dom document
-            TEntityTemplate.Properties properties = template.getProperties();
+            XTEntityTemplate.Properties properties = template.getProperties();
             if (properties != null) {
                 Object any = properties.getAny();
                 if (any instanceof String) {
@@ -709,9 +696,9 @@ public class ModelUtilities {
         }
     }
 
-    public static boolean isOfType(QName requiredType, QName givenType, Map<QName, ? extends TEntityType> elements) {
+    public static boolean isOfType(QName requiredType, QName givenType, Map<QName, ? extends XTEntityType> elements) {
         if (!givenType.equals(requiredType)) {
-            TEntityType entityType = elements.get(givenType);
+            XTEntityType entityType = elements.get(givenType);
             if (Objects.isNull(entityType) || Objects.isNull(entityType.getDerivedFrom())) {
                 return false;
             } else {
@@ -721,9 +708,9 @@ public class ModelUtilities {
         return true;
     }
 
-    public static <T extends TEntityType> Map<QName, T> getChildrenOf(QName givenType, Map<QName, T> elements) {
+    public static <T extends XTEntityType> Map<QName, T> getChildrenOf(QName givenType, Map<QName, T> elements) {
         HashMap<QName, T> children = new HashMap<>();
-        TEntityType entityType = elements.get(givenType);
+        XTEntityType entityType = elements.get(givenType);
         if (Objects.nonNull(entityType)) {
             elements.forEach((qName, type) -> {
                 if (!qName.equals(givenType) && isOfType(givenType, qName, elements)) {
@@ -734,11 +721,11 @@ public class ModelUtilities {
         return children;
     }
 
-    public static <T extends TEntityType> Map<T, String> getAvailableFeaturesOfType(QName givenType, Map<QName, T> elements) {
+    public static <T extends XTEntityType> Map<T, String> getAvailableFeaturesOfType(QName givenType, Map<QName, T> elements) {
         HashMap<T, String> features = new HashMap<>();
         getChildrenOf(givenType, elements).forEach((qName, t) -> {
             if (Objects.nonNull(t.getTags())) {
-                List<TTag> list = t.getTags().getTag();
+                List<XTTag> list = t.getTags().getTag();
                 list.stream()
                     .filter(tag -> "feature".equals(tag.getName()))
                     .findFirst()
@@ -748,15 +735,15 @@ public class ModelUtilities {
         return features;
     }
 
-    public static <T extends TEntityType> boolean isFeatureType(QName givenType, Map<QName, T> elements) {
+    public static <T extends XTEntityType> boolean isFeatureType(QName givenType, Map<QName, T> elements) {
         return Objects.nonNull(elements.get(givenType))
             && Objects.nonNull(elements.get(givenType).getTags())
             && elements.get(givenType).getTags().getTag().stream()
             .anyMatch(tag -> "feature".equals(tag.getName()));
     }
 
-    public static void updateNodeTemplate(TTopologyTemplate topology, String oldComponentId, QName newType, TNodeType newComponentType) {
-        TNodeTemplate nodeTemplate = topology.getNodeTemplate(oldComponentId);
+    public static void updateNodeTemplate(XTTopologyTemplate topology, String oldComponentId, QName newType, XTNodeType newComponentType) {
+        XTNodeTemplate nodeTemplate = topology.getNodeTemplate(oldComponentId);
         nodeTemplate.setType(newType);
         nodeTemplate.setName(newType.getLocalPart());
         // TODO: also make some more adjustments etc.
@@ -765,17 +752,17 @@ public class ModelUtilities {
     /**
      * This is specific to the TOSCA hostedOn relationship type.
      */
-    public static ArrayList<TNodeTemplate> getHostedOnSuccessors(TTopologyTemplate topologyTemplate, String nodeTemplate) {
+    public static ArrayList<XTNodeTemplate> getHostedOnSuccessors(XTTopologyTemplate topologyTemplate, String nodeTemplate) {
         return getHostedOnSuccessors(topologyTemplate, topologyTemplate.getNodeTemplate(nodeTemplate));
     }
 
-    public static ArrayList<TNodeTemplate> getHostedOnSuccessors(TTopologyTemplate topologyTemplate, TNodeTemplate nodeTemplate) {
-        ArrayList<TNodeTemplate> hostedOnSuccessors = new ArrayList<>();
+    public static ArrayList<XTNodeTemplate> getHostedOnSuccessors(XTTopologyTemplate topologyTemplate, XTNodeTemplate nodeTemplate) {
+        ArrayList<XTNodeTemplate> hostedOnSuccessors = new ArrayList<>();
 
-        Optional<TRelationshipTemplate> hostedOn;
+        Optional<XTRelationshipTemplate> hostedOn;
 
         do {
-            List<TRelationshipTemplate> outgoingRelationshipTemplates = getOutgoingRelationshipTemplates(topologyTemplate, nodeTemplate);
+            List<XTRelationshipTemplate> outgoingRelationshipTemplates = getOutgoingRelationshipTemplates(topologyTemplate, nodeTemplate);
 
             hostedOn = outgoingRelationshipTemplates.stream()
                 .filter(relation -> relation.getType().equals(ToscaBaseTypes.hostedOnRelationshipType))
@@ -799,12 +786,12 @@ public class ModelUtilities {
      * @param relationshipSourceOrTarget the source or target element the relationship points to.
      * @return the actual TNodeTemplate the TRelationshipTemplate is referring to.
      */
-    public static TNodeTemplate getNodeTemplateFromRelationshipSourceOrTarget(TTopologyTemplate topologyTemplate, RelationshipSourceOrTarget relationshipSourceOrTarget) {
-        Optional<TNodeTemplate> nodeTemplate = Optional.empty();
+    public static XTNodeTemplate getNodeTemplateFromRelationshipSourceOrTarget(XTTopologyTemplate topologyTemplate, XRelationshipSourceOrTarget relationshipSourceOrTarget) {
+        Optional<XTNodeTemplate> nodeTemplate = Optional.empty();
 
-        if (relationshipSourceOrTarget instanceof TNodeTemplate) {
-            nodeTemplate = Optional.of((TNodeTemplate) relationshipSourceOrTarget);
-        } else if (relationshipSourceOrTarget instanceof TCapability) {
+        if (relationshipSourceOrTarget instanceof XTNodeTemplate) {
+            nodeTemplate = Optional.of((XTNodeTemplate) relationshipSourceOrTarget);
+        } else if (relationshipSourceOrTarget instanceof XTCapability) {
             nodeTemplate = topologyTemplate.getNodeTemplates().stream()
                 .filter(node -> Objects.nonNull(node.getCapabilities()))
                 .filter(node ->
@@ -812,7 +799,7 @@ public class ModelUtilities {
                         .getCapability().stream().anyMatch(capability -> capability.getId().equals(relationshipSourceOrTarget.getId())
                     )
                 ).findFirst();
-        } else if (relationshipSourceOrTarget instanceof TRequirement) {
+        } else if (relationshipSourceOrTarget instanceof XTRequirement) {
             nodeTemplate = topologyTemplate.getNodeTemplates().stream()
                 .filter(node -> Objects.nonNull(node.getRequirements()))
                 .filter(node ->
@@ -825,7 +812,7 @@ public class ModelUtilities {
         return nodeTemplate.orElseThrow(NullPointerException::new);
     }
 
-    public static void collectIdsOfExistingTopologyElements(TTopologyTemplate topologyTemplateB, Map<String, String> idMapping) {
+    public static void collectIdsOfExistingTopologyElements(XTTopologyTemplate topologyTemplateB, Map<String, String> idMapping) {
         // collect existing node & relationship template ids
         topologyTemplateB.getNodeTemplateOrRelationshipTemplate()
             // the existing ids are left unchanged
@@ -846,13 +833,13 @@ public class ModelUtilities {
                 .forEach(x -> idMapping.put(x.getId(), x.getId())));
     }
 
-    public static void generateNewIdOfTemplate(HasId element, TTopologyTemplate topologyTemplate) {
+    public static void generateNewIdOfTemplate(XHasId element, XTTopologyTemplate topologyTemplate) {
         HashMap<String, String> map = new HashMap<>();
         collectIdsOfExistingTopologyElements(topologyTemplate, map);
         generateNewIdOfTemplate(element, map);
     }
 
-    public static void generateNewIdOfTemplate(HasId element, Map<String, String> idMapping) {
+    public static void generateNewIdOfTemplate(XHasId element, Map<String, String> idMapping) {
         String newId = element.getId();
         while (idMapping.containsKey(newId)) {
             newId = newId + "-new";
@@ -861,53 +848,53 @@ public class ModelUtilities {
         element.setId(newId);
     }
 
-    public static TRelationshipTemplate createRelationshipTemplate(TNodeTemplate sourceNode, TNodeTemplate targetNode, QName type) {
+    public static XTRelationshipTemplate createRelationshipTemplate(XTNodeTemplate sourceNode, XTNodeTemplate targetNode, QName type) {
         return createRelationshipTemplate(sourceNode, targetNode, type, "");
     }
 
-    public static TRelationshipTemplate createRelationshipTemplate(TNodeTemplate sourceNode, TNodeTemplate targetNode, QName type, String connectionDescription) {
-        TRelationshipTemplate rel = new TRelationshipTemplate();
-        rel.setType(type);
+    public static XTRelationshipTemplate createRelationshipTemplate(XTNodeTemplate sourceNode, XTNodeTemplate targetNode, QName type, String connectionDescription) {
+        XTRelationshipTemplate.SourceOrTargetElement sourceRef = new XTRelationshipTemplate.SourceOrTargetElement();
+        sourceRef.setRef(sourceNode);
+        XTRelationshipTemplate.SourceOrTargetElement targetRef = new XTRelationshipTemplate.SourceOrTargetElement();
+        targetRef.setRef(targetNode);
+
+        XTRelationshipTemplate.Builder rel = new XTRelationshipTemplate.Builder(sourceNode.getId() + "-" + connectionDescription + "-" + targetNode.getId(), type, sourceRef, targetRef);
         rel.setName(type.getLocalPart());
-        rel.setId(sourceNode.getId() + "-" + connectionDescription + "-" + targetNode.getId());
-        rel.setSourceNodeTemplate(sourceNode);
-        rel.setTargetNodeTemplate(targetNode);
-        return rel;
+        return rel.build();
     }
 
-    public static TRelationshipTemplate createRelationshipTemplateAndAddToTopology(TNodeTemplate sourceNode, TNodeTemplate targetNode, QName type,
-                                                                                   TTopologyTemplate topology) {
+    public static XTRelationshipTemplate createRelationshipTemplateAndAddToTopology(XTNodeTemplate sourceNode, XTNodeTemplate targetNode, QName type,
+                                                                                    XTTopologyTemplate topology) {
         return createRelationshipTemplateAndAddToTopology(sourceNode, targetNode, type, "", topology);
     }
 
-    public static TRelationshipTemplate createRelationshipTemplateAndAddToTopology(TNodeTemplate sourceNode, TNodeTemplate targetNode, QName type,
-                                                                                   String connectionDescription, TTopologyTemplate topology) {
-        TRelationshipTemplate relationshipTemplate = createRelationshipTemplate(sourceNode, targetNode, type, connectionDescription);
+    public static XTRelationshipTemplate createRelationshipTemplateAndAddToTopology(XTNodeTemplate sourceNode, XTNodeTemplate targetNode, QName type,
+                                                                                    String connectionDescription, XTTopologyTemplate topology) {
+        XTRelationshipTemplate relationshipTemplate = createRelationshipTemplate(sourceNode, targetNode, type, connectionDescription);
         generateNewIdOfTemplate(relationshipTemplate, topology);
         topology.addRelationshipTemplate(relationshipTemplate);
         return relationshipTemplate;
     }
 
-    public static boolean nodeTypeHasInterface(TNodeType nodeType, String interfaceName) {
+    public static boolean nodeTypeHasInterface(XTNodeType nodeType, String interfaceName) {
         return Objects.nonNull(nodeType.getInterfaces()) && nodeType.getInterfaces().getInterface().stream()
             .anyMatch(nodeInterface -> interfaceName.equals(nodeInterface.getName()));
     }
 
-    public static void addPolicy(TNodeTemplate node, QName policyType, String name) {
-        TPolicies policies = node.getPolicies();
+    public static void addPolicy(XTNodeTemplate node, QName policyType, String name) {
+        XTPolicies policies = node.getPolicies();
         if (Objects.isNull(policies)) {
-            policies = new TPolicies();
+            policies = new XTPolicies();
             node.setPolicies(policies);
         }
 
-        TPolicy policy = new TPolicy();
-        policy.setPolicyType(policyType);
+        XTPolicy.Builder policy = new XTPolicy.Builder(policyType);
         policy.setName(name);
         policies.getPolicy()
-            .add(policy);
+            .add(policy.build());
     }
 
-    public static boolean containsPolicyType(TNodeTemplate node, QName policyType) {
+    public static boolean containsPolicyType(XTNodeTemplate node, QName policyType) {
         return Objects.nonNull(node.getPolicies()) &&
             node.getPolicies().getPolicy().stream()
                 .anyMatch(policy -> policy.getPolicyType()

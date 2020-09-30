@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019 Contributors to the Eclipse Foundation
+ * Copyright (c) 2020 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -42,13 +42,12 @@ public class TParameter implements Serializable {
     protected String type;
 
     @XmlAttribute(name = "required")
-//    @XmlJavaTypeAdapter(BooleanToYesNo.class)
     @JsonSerialize(using = YesNo.Serializer.class)
     @JsonDeserialize(using = YesNo.Deserializer.class)
     protected boolean required;
 
-    public TParameter() {
-    }
+    @Deprecated // used for XML deserialization of API request content
+    public TParameter() { }
 
     public TParameter(Builder builder) {
         this.name = builder.name;

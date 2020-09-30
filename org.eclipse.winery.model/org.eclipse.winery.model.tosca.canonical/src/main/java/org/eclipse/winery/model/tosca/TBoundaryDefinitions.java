@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019 Contributors to the Eclipse Foundation
+ * Copyright (c) 2020 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -54,9 +54,8 @@ public class TBoundaryDefinitions implements Serializable {
     @XmlElement(name = "Interfaces")
     protected TBoundaryDefinitions.Interfaces interfaces;
 
-    public TBoundaryDefinitions() {
-
-    }
+    @Deprecated // used for XML deserialization of API request content
+    public TBoundaryDefinitions() { }
 
     public TBoundaryDefinitions(Builder builder) {
         this.properties = builder.properties;

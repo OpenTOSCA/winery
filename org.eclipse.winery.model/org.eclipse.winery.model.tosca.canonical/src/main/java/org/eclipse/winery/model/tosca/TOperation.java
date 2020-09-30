@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019 Contributors to the Eclipse Foundation
+ * Copyright (c) 2020 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -48,8 +48,8 @@ public class TOperation extends TExtensibleElements {
     @XmlSchemaType(name = "NCName")
     protected String name;
 
-    public TOperation() {
-    }
+    @Deprecated // used for XML deserialization of API request content
+    public TOperation() { }
 
     public TOperation(Builder builder) {
         super(builder);

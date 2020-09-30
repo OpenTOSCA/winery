@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019 Contributors to the Eclipse Foundation
+ * Copyright (c) 2020 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -31,8 +31,8 @@ public class TCapabilityType extends TEntityType {
     // java.lang.Object, org.eclipse.winery.repository.common.RepositoryFileReference, org.apache.tika.mime.MediaType)
     private List<QName> validNodeTypes;
 
-    public TCapabilityType() {
-    }
+    @Deprecated // used for XML deserialization of API request content
+    public TCapabilityType() { }
 
     public TCapabilityType(Builder builder) {
         super(builder);

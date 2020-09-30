@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019 Contributors to the Eclipse Foundation
+ * Copyright (c) 2020 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -51,6 +51,9 @@ public class TExportedOperation implements HasName, Serializable {
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     @XmlSchemaType(name = "NCName")
     protected String name;
+
+    @Deprecated // used for XML deserialization of API request content
+    public TExportedOperation() { }
 
     @Override
     public boolean equals(Object o) {

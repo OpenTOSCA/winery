@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019 Contributors to the Eclipse Foundation
+ * Copyright (c) 2020 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -43,6 +43,9 @@ public class TExportedInterface implements HasName, Serializable {
     @XmlSchemaType(name = "anyURI")
     @NonNull
     protected String name;
+
+    @Deprecated // used for XML deserialization of API request content
+    public TExportedInterface() { }
 
     @Override
     public boolean equals(Object o) {

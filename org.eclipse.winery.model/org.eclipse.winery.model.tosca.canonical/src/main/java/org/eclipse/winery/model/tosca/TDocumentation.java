@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019 Contributors to the Eclipse Foundation
+ * Copyright (c) 2020 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -50,6 +50,9 @@ public class TDocumentation implements Serializable {
     @Nullable
     @XmlAttribute(name = "lang", namespace = Namespaces.W3C_NAMESPACE_URI)
     protected String lang;
+
+    @Deprecated // used for XML deserialization of API request content
+    public TDocumentation() { }
 
     @Override
     public boolean equals(Object o) {

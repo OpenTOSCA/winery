@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019 Contributors to the Eclipse Foundation
+ * Copyright (c) 2020 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -52,8 +52,8 @@ public class TPolicy extends TExtensibleElements implements HasName {
     @Nullable
     protected List<QName> targets;
 
-    public TPolicy() {
-    }
+    @Deprecated // used for XML deserialization of API request content
+    public TPolicy() { }
 
     public TPolicy(Builder builder) {
         super(builder);

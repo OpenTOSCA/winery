@@ -21,7 +21,7 @@ import javax.xml.bind.PropertyException;
 import javax.xml.bind.Unmarshaller;
 
 import org.eclipse.winery.model.selfservice.Application;
-import org.eclipse.winery.model.tosca.xml.TDefinitions;
+import org.eclipse.winery.model.tosca.xml.XTDefinitions;
 import org.eclipse.winery.model.tosca.extensions.kvproperties.WinerysPropertiesDefinition;
 import org.eclipse.winery.repository.backend.MockXMLElement;
 
@@ -47,7 +47,7 @@ public class XmlModelJAXBSupport {
             // For winery classes, eventually the package+jaxb.index method could be better.
             // See http://stackoverflow.com/a/3628525/873282
             context = JAXBContext.newInstance(
-                TDefinitions.class, // all other elements are referred by "@XmlSeeAlso"
+                XTDefinitions.class, // all other elements are referred by "@XmlSeeAlso"
                 Application.class,
                 WinerysPropertiesDefinition.class,
                 MockXMLElement.class // MockXMLElement is added for testing purposes only.

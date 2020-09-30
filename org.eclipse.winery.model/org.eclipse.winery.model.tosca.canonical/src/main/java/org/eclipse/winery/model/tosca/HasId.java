@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019 Contributors to the Eclipse Foundation
+ * Copyright (c) 2020 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -33,8 +33,8 @@ public abstract class HasId extends TExtensibleElements implements HasIdInIdOrNa
     @XmlSchemaType(name = "ID")
     private String id;
 
-    public HasId() {
-    }
+    @Deprecated // used for XML deserialization of API request content
+    public HasId() { }
 
     public HasId(String id) {
         this.setId(id);

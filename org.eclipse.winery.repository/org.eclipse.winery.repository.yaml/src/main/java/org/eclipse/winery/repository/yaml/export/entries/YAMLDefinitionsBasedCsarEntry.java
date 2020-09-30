@@ -20,7 +20,7 @@ import java.io.OutputStream;
 import java.util.Objects;
 
 import org.eclipse.winery.model.tosca.TDefinitions;
-import org.eclipse.winery.model.tosca.yaml.TServiceTemplate;
+import org.eclipse.winery.model.tosca.yaml.YTServiceTemplate;
 import org.eclipse.winery.repository.backend.IRepository;
 import org.eclipse.winery.repository.backend.IWrappingRepository;
 import org.eclipse.winery.repository.export.entries.CsarEntry;
@@ -35,7 +35,7 @@ import org.eclipse.winery.repository.exceptions.WineryRepositoryException;
  */
 @Deprecated
 public class YAMLDefinitionsBasedCsarEntry implements CsarEntry {
-    private TServiceTemplate definitions;
+    private YTServiceTemplate definitions;
 
     public YAMLDefinitionsBasedCsarEntry(IRepository repo, TDefinitions definitions) {
         assert (definitions != null);
@@ -72,11 +72,11 @@ public class YAMLDefinitionsBasedCsarEntry implements CsarEntry {
         outputStream.write(writer.visit(definitions, new YamlWriter.Parameter(0)).toString().getBytes());
     }
 
-    public TServiceTemplate getDefinitions() {
+    public YTServiceTemplate getDefinitions() {
         return definitions;
     }
 
-    public void setDefinitions(TServiceTemplate definitions) {
+    public void setDefinitions(YTServiceTemplate definitions) {
         this.definitions = definitions;
     }
 }

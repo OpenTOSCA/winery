@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019 Contributors to the Eclipse Foundation
+ * Copyright (c) 2020 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -33,6 +33,9 @@ public class TInterfaces {
 
     @XmlElement(name = "Interface", required = true)
     protected List<TInterface> _interface;
+
+    @Deprecated // used for XML deserialization of API request content
+    public TInterfaces() { }
 
     @NonNull
     public List<TInterface> getInterface() {

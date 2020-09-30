@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019 Contributors to the Eclipse Foundation
+ * Copyright (c) 2020 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -37,9 +37,8 @@ public class TAppliesTo implements Serializable {
     @XmlElement(name = "NodeTypeReference", required = true)
     protected List<NodeTypeReference> nodeTypeReference;
 
-    public TAppliesTo() {
-
-    }
+    @Deprecated // used for XML deserialization of API request content
+    public TAppliesTo() { }
 
     @Override
     public boolean equals(Object o) {

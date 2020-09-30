@@ -56,17 +56,17 @@ import org.eclipse.winery.model.ids.definitions.RequirementTypeId;
 import org.eclipse.winery.model.tosca.TDefinitions;
 import org.eclipse.winery.model.tosca.TArtifactTemplate;
 import org.eclipse.winery.model.tosca.TNodeTemplate;
-import org.eclipse.winery.model.tosca.yaml.TArtifactDefinition;
-import org.eclipse.winery.model.tosca.yaml.TImplementation;
-import org.eclipse.winery.model.tosca.yaml.TImportDefinition;
-import org.eclipse.winery.model.tosca.yaml.TInterfaceDefinition;
-import org.eclipse.winery.model.tosca.yaml.TNodeType;
-import org.eclipse.winery.model.tosca.yaml.TOperationDefinition;
-import org.eclipse.winery.model.tosca.yaml.TRelationshipType;
-import org.eclipse.winery.model.tosca.yaml.TServiceTemplate;
-import org.eclipse.winery.model.tosca.yaml.TTopologyTemplateDefinition;
+import org.eclipse.winery.model.tosca.yaml.YTArtifactDefinition;
+import org.eclipse.winery.model.tosca.yaml.YTImplementation;
+import org.eclipse.winery.model.tosca.yaml.YTImportDefinition;
+import org.eclipse.winery.model.tosca.yaml.YTInterfaceDefinition;
+import org.eclipse.winery.model.tosca.yaml.YTNodeType;
+import org.eclipse.winery.model.tosca.yaml.YTOperationDefinition;
+import org.eclipse.winery.model.tosca.yaml.YTRelationshipType;
+import org.eclipse.winery.model.tosca.yaml.YTServiceTemplate;
+import org.eclipse.winery.model.tosca.yaml.YTTopologyTemplateDefinition;
 import org.eclipse.winery.model.tosca.yaml.support.Defaults;
-import org.eclipse.winery.model.tosca.yaml.support.TMapImportDefinition;
+import org.eclipse.winery.model.tosca.yaml.support.YTMapImportDefinition;
 import org.eclipse.winery.repository.JAXBSupport;
 import org.eclipse.winery.repository.backend.BackendUtils;
 import org.eclipse.winery.repository.backend.constants.MediaTypes;
@@ -318,10 +318,10 @@ public class YamlRepository extends AbstractFileBasedRepository {
 
             if (Files.exists(targetPath)) {
                 try {
-                    TServiceTemplate nodeType = readServiceTemplate(targetPath);
+                    YTServiceTemplate nodeType = readServiceTemplate(targetPath);
                     String targetArtifactName = getNameOfArtifactFromArtifactName(id.getQName().getLocalPart());
                     if (getTypeFromArtifactName(id.getQName().getLocalPart()).equalsIgnoreCase("nodetypes")) {
-                        Map<String, TArtifactDefinition> artifacts = nodeType.getNodeTypes().entrySet().iterator().next().getValue().getArtifacts();
+                        Map<String, YTArtifactDefinition> artifacts = nodeType.getNodeTypes().entrySet().iterator().next().getValue().getArtifacts();
                         nodeType.getNodeTypes().entrySet().iterator().next().setValue(removeImplementation(nodeType.getNodeTypes().entrySet().iterator().next().getValue(), targetArtifactName));
                         artifacts.remove(targetArtifactName);
                         nodeType.getNodeTypes().entrySet().iterator().next().getValue().setArtifacts(artifacts);
@@ -345,21 +345,21 @@ public class YamlRepository extends AbstractFileBasedRepository {
      * @param targetArtifactName targeted artifact name
      * @return updated node type
      **/
-    private TRelationshipType removeRelationshipArtifact(TRelationshipType relationshipType, String targetArtifactName) {
-        Map<String, TInterfaceDefinition> interfaces = relationshipType.getInterfaces();
+    private YTRelationshipType removeRelationshipArtifact(YTRelationshipType relationshipType, String targetArtifactName) {
+        Map<String, YTInterfaceDefinition> interfaces = relationshipType.getInterfaces();
         if (interfaces != null) {
-            for (Map.Entry<String, TInterfaceDefinition> interfaceDefinition : interfaces.entrySet()) {
-                Map<String, TOperationDefinition> operations = interfaceDefinition.getValue().getOperations();
+            for (Map.Entry<String, YTInterfaceDefinition> interfaceDefinition : interfaces.entrySet()) {
+                Map<String, YTOperationDefinition> operations = interfaceDefinition.getValue().getOperations();
                 if (operations != null) {
-                    TOperationDefinition operationWithImplementation = operations.get(targetArtifactName);
+                    YTOperationDefinition operationWithImplementation = operations.get(targetArtifactName);
                     if (operationWithImplementation != null) {
                         operationWithImplementation.setImplementation(null);
                         operations.replace(targetArtifactName, operationWithImplementation);
                     } else {
-                        for (Map.Entry<String, TOperationDefinition> operation : operations.entrySet()) {
-                            TOperationDefinition operationDefinition = operation.getValue();
+                        for (Map.Entry<String, YTOperationDefinition> operation : operations.entrySet()) {
+                            YTOperationDefinition operationDefinition = operation.getValue();
                             if (operationDefinition != null) {
-                                TImplementation implementation = operationDefinition.getImplementation();
+                                YTImplementation implementation = operationDefinition.getImplementation();
                                 if (implementation != null) {
                                     if (implementation.getPrimaryArtifactName() != null) {
                                         if (implementation.getPrimaryArtifactName().equalsIgnoreCase(targetArtifactName)) {
@@ -383,7 +383,7 @@ public class YamlRepository extends AbstractFileBasedRepository {
                         }
                     }
                 }
-                TInterfaceDefinition tInterfaceDefinition = interfaceDefinition.getValue();
+                YTInterfaceDefinition tInterfaceDefinition = interfaceDefinition.getValue();
                 tInterfaceDefinition.setOperations(operations);
                 interfaceDefinition.setValue(tInterfaceDefinition);
             }
@@ -399,16 +399,16 @@ public class YamlRepository extends AbstractFileBasedRepository {
      * @param targetArtifactName targeted artifact name
      * @return updated node type
      **/
-    private TNodeType removeImplementation(TNodeType nodeType, String targetArtifactName) {
-        Map<String, TInterfaceDefinition> interfaces = nodeType.getInterfaces();
+    private YTNodeType removeImplementation(YTNodeType nodeType, String targetArtifactName) {
+        Map<String, YTInterfaceDefinition> interfaces = nodeType.getInterfaces();
         if (interfaces != null) {
-            for (Map.Entry<String, TInterfaceDefinition> interfaceDefinition : interfaces.entrySet()) {
-                Map<String, TOperationDefinition> operations = interfaceDefinition.getValue().getOperations();
+            for (Map.Entry<String, YTInterfaceDefinition> interfaceDefinition : interfaces.entrySet()) {
+                Map<String, YTOperationDefinition> operations = interfaceDefinition.getValue().getOperations();
                 if (operations != null) {
-                    for (Map.Entry<String, TOperationDefinition> operation : operations.entrySet()) {
-                        TOperationDefinition operationDefinition = operation.getValue();
+                    for (Map.Entry<String, YTOperationDefinition> operation : operations.entrySet()) {
+                        YTOperationDefinition operationDefinition = operation.getValue();
                         if (operationDefinition != null) {
-                            TImplementation implementation = operationDefinition.getImplementation();
+                            YTImplementation implementation = operationDefinition.getImplementation();
                             if (implementation != null) {
                                 if (implementation.getPrimaryArtifactName() != null) {
                                     // TODO
@@ -432,7 +432,7 @@ public class YamlRepository extends AbstractFileBasedRepository {
                         operation.setValue(operationDefinition);
                     }
                 }
-                TInterfaceDefinition tInterfaceDefinition = interfaceDefinition.getValue();
+                YTInterfaceDefinition tInterfaceDefinition = interfaceDefinition.getValue();
                 tInterfaceDefinition.setOperations(operations);
                 interfaceDefinition.setValue(tInterfaceDefinition);
             }
@@ -561,7 +561,7 @@ public class YamlRepository extends AbstractFileBasedRepository {
      * @return xml definitions
      **/
     private TDefinitions convertToDefinitions(Path targetPath, String id, String targetNamespace) throws IOException, MultiException {
-        TServiceTemplate serviceTemplate = readServiceTemplate(targetPath);
+        YTServiceTemplate serviceTemplate = readServiceTemplate(targetPath);
         ToCanonical converter = new ToCanonical(this);
         return converter.convert(serviceTemplate, id, targetNamespace, targetPath.endsWith("ServiceTemplate.tosca"));
     }
@@ -572,7 +572,7 @@ public class YamlRepository extends AbstractFileBasedRepository {
      * @param targetPath target path of service template
      * @return yaml service template
      **/
-    private TServiceTemplate readServiceTemplate(Path targetPath) throws IOException, MultiException {
+    private YTServiceTemplate readServiceTemplate(Path targetPath) throws IOException, MultiException {
         InputStream in = newInputStream(targetPath);
         LOGGER.debug("Reading service template from  {}", targetPath);
         return new YamlReader().parse(in);
@@ -584,7 +584,7 @@ public class YamlRepository extends AbstractFileBasedRepository {
      * @param ref repository file reference
      * @return yaml service template
      **/
-    private TServiceTemplate readServiceTemplate(RepositoryFileReference ref) throws IOException, MultiException {
+    private YTServiceTemplate readServiceTemplate(RepositoryFileReference ref) throws IOException, MultiException {
         Path targetPath = ref2AbsolutePath(ref);
         InputStream in = newInputStream(targetPath);
         LOGGER.debug("Reading service template from reference {} resolved as {}", ref, targetPath);
@@ -652,7 +652,7 @@ public class YamlRepository extends AbstractFileBasedRepository {
     @Override
     public void putDefinition(RepositoryFileReference ref, TDefinitions content) throws IOException {
         try {
-            TServiceTemplate yaml = convertToYamlModel(ref, content);
+            YTServiceTemplate yaml = convertToYamlModel(ref, content);
             YamlWriter writer = new YamlWriter();
             writer.write(yaml, ref2AbsolutePath(ref));
         } catch (Exception e) {
@@ -678,7 +678,7 @@ public class YamlRepository extends AbstractFileBasedRepository {
             //IOUtils.copy(inputStream, outputStream);
             //Definitions definitions = readInputStream(new ByteArrayInputStream(outputStream.toByteArray()));
             TDefinitions definitions = (TDefinitions) JAXBSupport.createUnmarshaller().unmarshal(inputStream);
-            TServiceTemplate serviceTemplate = convertToYamlModel(ref, definitions);
+            YTServiceTemplate serviceTemplate = convertToYamlModel(ref, definitions);
             YamlWriter writer = new YamlWriter();
             return writer.writeToInputStream(serviceTemplate);
         } catch (Exception e) {
@@ -687,9 +687,9 @@ public class YamlRepository extends AbstractFileBasedRepository {
         return null;
     }
 
-    private TServiceTemplate convertToYamlModel(RepositoryFileReference existing, TDefinitions definitions) throws IOException, MultiException {
+    private YTServiceTemplate convertToYamlModel(RepositoryFileReference existing, TDefinitions definitions) throws IOException, MultiException {
         FromCanonical converter = new FromCanonical(this);
-        TServiceTemplate serviceTemplate;
+        YTServiceTemplate serviceTemplate;
         if (existing.getParent() instanceof NodeTypeImplementationId) {
             serviceTemplate = readServiceTemplate(existing);
             serviceTemplate = converter.convertNodeTypeImplementation(serviceTemplate, definitions.getNodeTypeImplementations().get(0));
@@ -699,28 +699,28 @@ public class YamlRepository extends AbstractFileBasedRepository {
         } else if (existing.getParent() instanceof NodeTypeId) {
             serviceTemplate = converter.convert(definitions);
             if (exists(existing)) {
-                TServiceTemplate oldServiceTemplate = readServiceTemplate(existing);
+                YTServiceTemplate oldServiceTemplate = readServiceTemplate(existing);
                 serviceTemplate = replaceOldWithNewData(serviceTemplate, oldServiceTemplate);
             }
         } else if (existing.getParent() instanceof RelationshipTypeId) {
             serviceTemplate = converter.convert(definitions);
             if (exists(existing)) {
-                TServiceTemplate oldServiceTemplate = readServiceTemplate(existing);
+                YTServiceTemplate oldServiceTemplate = readServiceTemplate(existing);
                 serviceTemplate = replaceOldRelationshipTypeWithNewData(serviceTemplate, oldServiceTemplate);
             }
         } else if (existing.getParent() instanceof ArtifactTemplateId) {
             ArtifactTemplateId id = (ArtifactTemplateId) existing.getParent();
             TArtifactTemplate artifactTemplate = definitions.getArtifactTemplates().get(0);
-            TArtifactDefinition artifact = converter.convertArtifactTemplate(artifactTemplate);
-            List<TMapImportDefinition> imports = converter.convertImports();
+            YTArtifactDefinition artifact = converter.convertArtifactTemplate(artifactTemplate);
+            List<YTMapImportDefinition> imports = converter.convertImports();
             Path targetPath = ref2AbsolutePath(existing);
             if (Files.exists(targetPath)) {
                 serviceTemplate = readServiceTemplate(targetPath);
                 if (serviceTemplate == null) {
                     serviceTemplate = createNewCacheNodeTypeWithArtifact(existing, artifactTemplate, artifact, imports);
                 } else if (getTypeFromArtifactName(id.getQName().getLocalPart()).equalsIgnoreCase("nodetypes")) {
-                    TNodeType nodeType = serviceTemplate.getNodeTypes().entrySet().iterator().next().getValue();
-                    Map<String, TArtifactDefinition> artifacts = nodeType.getArtifacts();
+                    YTNodeType nodeType = serviceTemplate.getNodeTypes().entrySet().iterator().next().getValue();
+                    Map<String, YTArtifactDefinition> artifacts = nodeType.getArtifacts();
                     if (artifacts.containsKey(artifactTemplate.getIdFromIdOrNameField())) {
                         artifacts.replace(artifactTemplate.getIdFromIdOrNameField(), artifact);
                     } else {
@@ -733,7 +733,7 @@ public class YamlRepository extends AbstractFileBasedRepository {
                 } else {
                     serviceTemplate = converter.convert(definitions);
                     if (exists(existing)) {
-                        TServiceTemplate existingServiceTemplate = readServiceTemplate(existing);
+                        YTServiceTemplate existingServiceTemplate = readServiceTemplate(existing);
                         serviceTemplate = replaceTopologyTemplate(serviceTemplate, existingServiceTemplate);
                     }
                 }
@@ -746,25 +746,26 @@ public class YamlRepository extends AbstractFileBasedRepository {
         return serviceTemplate;
     }
 
-    private TServiceTemplate replaceTopologyTemplate(TServiceTemplate newServiceTemplate, TServiceTemplate existingServiceTemplate) {
-        if (newServiceTemplate.getTopologyTemplate() != null) {
-            if (existingServiceTemplate.getTopologyTemplate() == null) {
-                existingServiceTemplate.setTopologyTemplate(new TTopologyTemplateDefinition());
-            }
-            TTopologyTemplateDefinition newTopologyTemplate = newServiceTemplate.getTopologyTemplate();
-            TTopologyTemplateDefinition existingTopologyTemplate = existingServiceTemplate.getTopologyTemplate();
-            existingTopologyTemplate.setPolicies(newTopologyTemplate.getPolicies());
-            existingTopologyTemplate.setNodeTemplates(newTopologyTemplate.getNodeTemplates());
-            existingTopologyTemplate.setRelationshipTemplates(newTopologyTemplate.getRelationshipTemplates());
-            if (newTopologyTemplate.getInputs() != null) {
-                existingTopologyTemplate.setInputs(newTopologyTemplate.getInputs());
-            }
-            if (newTopologyTemplate.getOutputs() != null) {
-                existingTopologyTemplate.setOutputs(newTopologyTemplate.getOutputs());
-            }
-            existingTopologyTemplate.setDescription(newTopologyTemplate.getDescription());
-            existingTopologyTemplate.setGroups(newTopologyTemplate.getGroups());
+    private YTServiceTemplate replaceTopologyTemplate(YTServiceTemplate newServiceTemplate, YTServiceTemplate existingServiceTemplate) {
+        if (newServiceTemplate.getTopologyTemplate() == null) {
+            return existingServiceTemplate;
         }
+        if (existingServiceTemplate.getTopologyTemplate() == null) {
+            existingServiceTemplate.setTopologyTemplate(new YTTopologyTemplateDefinition.Builder().build());
+        }
+        YTTopologyTemplateDefinition newTopologyTemplate = newServiceTemplate.getTopologyTemplate();
+        YTTopologyTemplateDefinition existingTopologyTemplate = existingServiceTemplate.getTopologyTemplate();
+        existingTopologyTemplate.setPolicies(newTopologyTemplate.getPolicies());
+        existingTopologyTemplate.setNodeTemplates(newTopologyTemplate.getNodeTemplates());
+        existingTopologyTemplate.setRelationshipTemplates(newTopologyTemplate.getRelationshipTemplates());
+        if (newTopologyTemplate.getInputs() != null) {
+            existingTopologyTemplate.setInputs(newTopologyTemplate.getInputs());
+        }
+        if (newTopologyTemplate.getOutputs() != null) {
+            existingTopologyTemplate.setOutputs(newTopologyTemplate.getOutputs());
+        }
+        existingTopologyTemplate.setDescription(newTopologyTemplate.getDescription());
+        existingTopologyTemplate.setGroups(newTopologyTemplate.getGroups());
         return existingServiceTemplate;
     }
 
@@ -776,11 +777,11 @@ public class YamlRepository extends AbstractFileBasedRepository {
      * @param artifact   artifact
      * @return edited interfaces
      **/
-    private Map<String, TInterfaceDefinition> addArtifactToInterfaces(Map<String, TInterfaceDefinition> interfaces, TArtifactDefinition artifact, String id) {
+    private Map<String, YTInterfaceDefinition> addArtifactToInterfaces(Map<String, YTInterfaceDefinition> interfaces, YTArtifactDefinition artifact, String id) {
         if (artifact.getFile() == null) {
             return interfaces;
         }
-        for (Map.Entry<String, TInterfaceDefinition> interfaceDefinitionEntry : interfaces.entrySet()) {
+        for (Map.Entry<String, YTInterfaceDefinition> interfaceDefinitionEntry : interfaces.entrySet()) {
             interfaceDefinitionEntry.setValue(addArtifactFileToTargetOperation(interfaceDefinitionEntry.getValue(), artifact, id));
         }
         return interfaces;
@@ -794,21 +795,21 @@ public class YamlRepository extends AbstractFileBasedRepository {
      * @param artifact   artifact
      * @return edited interfaces
      **/
-    private TInterfaceDefinition addArtifactFileToTargetOperation(TInterfaceDefinition interfaces, TArtifactDefinition artifact, String target) {
-        Map<String, TOperationDefinition> operations = interfaces.getOperations();
-        for (Map.Entry<String, TOperationDefinition> operation : operations.entrySet()) {
+    private YTInterfaceDefinition addArtifactFileToTargetOperation(YTInterfaceDefinition interfaces, YTArtifactDefinition artifact, String target) {
+        Map<String, YTOperationDefinition> operations = interfaces.getOperations();
+        for (Map.Entry<String, YTOperationDefinition> operation : operations.entrySet()) {
             if (operation.getKey().equalsIgnoreCase(target)) {
-                TImplementation implementation = operation.getValue().getImplementation();
+                YTImplementation implementation = operation.getValue().getImplementation();
                 implementation.setPrimaryArtifactName(artifact.getFile());
-                TOperationDefinition operationDefinition = operation.getValue();
+                YTOperationDefinition operationDefinition = operation.getValue();
                 operationDefinition.setImplementation(implementation);
                 operation.setValue(operationDefinition);
             } else {
-                TOperationDefinition operationDefinition = operation.getValue();
+                YTOperationDefinition operationDefinition = operation.getValue();
                 if (operationDefinition.getImplementation() != null) {
                     if (operationDefinition.getImplementation().getPrimaryArtifactName() != null) {
                         if (operationDefinition.getImplementation().getPrimaryArtifactName().equalsIgnoreCase(target)) {
-                            TImplementation implementation = operationDefinition.getImplementation();
+                            YTImplementation implementation = operationDefinition.getImplementation();
                             implementation.setPrimaryArtifactName(artifact.getFile());
                             operationDefinition.setImplementation(implementation);
                         }
@@ -828,16 +829,16 @@ public class YamlRepository extends AbstractFileBasedRepository {
      * @param newImport  new import
      * @return edited imports
      **/
-    private List<TMapImportDefinition> addImports(List<TMapImportDefinition> oldImports, List<TMapImportDefinition> newImport) {
+    private List<YTMapImportDefinition> addImports(List<YTMapImportDefinition> oldImports, List<YTMapImportDefinition> newImport) {
         if (newImport.isEmpty()) {
             return oldImports;
         }
         if (newImport.get(0).isEmpty()) {
             return oldImports;
         }
-        Map.Entry<String, TImportDefinition> targetImport = newImport.get(0).entrySet().iterator().next();
-        for (TMapImportDefinition tMapImportDefinition : oldImports) {
-            for (Map.Entry<String, TImportDefinition> tImportDefinitionEntry : tMapImportDefinition.entrySet()) {
+        Map.Entry<String, YTImportDefinition> targetImport = newImport.get(0).entrySet().iterator().next();
+        for (YTMapImportDefinition tMapImportDefinition : oldImports) {
+            for (Map.Entry<String, YTImportDefinition> tImportDefinitionEntry : tMapImportDefinition.entrySet()) {
                 if (tImportDefinitionEntry.getKey().equalsIgnoreCase(targetImport.getKey())) {
                     if (tImportDefinitionEntry.getValue().equals(targetImport.getValue())) {
                         return oldImports;
@@ -858,9 +859,9 @@ public class YamlRepository extends AbstractFileBasedRepository {
      * @param imports          imports
      * @return new yaml service template
      **/
-    private TServiceTemplate createNewCacheNodeTypeWithArtifact(RepositoryFileReference ref, TArtifactTemplate artifactTemplate, TArtifactDefinition artifact, List<TMapImportDefinition> imports) {
-        TServiceTemplate serviceTemplate = createEmptyCacheNodeType(((ArtifactTemplateId) ref.getParent()).getQName().getNamespaceURI());
-        Map<String, TArtifactDefinition> artifacts = new LinkedHashMap<>();
+    private YTServiceTemplate createNewCacheNodeTypeWithArtifact(RepositoryFileReference ref, TArtifactTemplate artifactTemplate, YTArtifactDefinition artifact, List<YTMapImportDefinition> imports) {
+        YTServiceTemplate serviceTemplate = createEmptyCacheNodeType(((ArtifactTemplateId) ref.getParent()).getQName().getNamespaceURI());
+        Map<String, YTArtifactDefinition> artifacts = new LinkedHashMap<>();
         artifacts.put(artifactTemplate.getIdFromIdOrNameField(), artifact);
         serviceTemplate.getNodeTypes().entrySet().iterator().next().getValue().setArtifacts(artifacts);
         serviceTemplate.setImports(imports);
@@ -873,9 +874,9 @@ public class YamlRepository extends AbstractFileBasedRepository {
      * @param targetNamespace target Namespace of cache node type
      * @return new yaml service template
      **/
-    private TServiceTemplate createEmptyCacheNodeType(String targetNamespace) {
-        return new TServiceTemplate.Builder(Defaults.TOSCA_DEFINITIONS_VERSION)
-            .setNodeType("Cache", (new TNodeType.Builder().addMetadata("targetNamespace", targetNamespace).build()))
+    private YTServiceTemplate createEmptyCacheNodeType(String targetNamespace) {
+        return new YTServiceTemplate.Builder(Defaults.TOSCA_DEFINITIONS_VERSION)
+            .setNodeType("Cache", (new YTNodeType.Builder().addMetadata("targetNamespace", targetNamespace).build()))
             .build();
     }
 
@@ -905,9 +906,9 @@ public class YamlRepository extends AbstractFileBasedRepository {
      * @param oldData already saved node type
      * @return edited yaml service template
      **/
-    private TServiceTemplate replaceOldWithNewData(TServiceTemplate newData, TServiceTemplate oldData) {
-        TNodeType oldNodeType = oldData.getNodeTypes().entrySet().iterator().next().getValue();
-        TNodeType newNodeType = newData.getNodeTypes().entrySet().iterator().next().getValue();
+    private YTServiceTemplate replaceOldWithNewData(YTServiceTemplate newData, YTServiceTemplate oldData) {
+        YTNodeType oldNodeType = oldData.getNodeTypes().entrySet().iterator().next().getValue();
+        YTNodeType newNodeType = newData.getNodeTypes().entrySet().iterator().next().getValue();
         oldNodeType.setMetadata(newNodeType.getMetadata());
         oldNodeType.setProperties(newNodeType.getProperties());
         oldNodeType.setDerivedFrom(newNodeType.getDerivedFrom());
@@ -929,9 +930,9 @@ public class YamlRepository extends AbstractFileBasedRepository {
      * @param oldData already saved relationship type
      * @return edited yaml service template
      **/
-    private TServiceTemplate replaceOldRelationshipTypeWithNewData(TServiceTemplate newData, TServiceTemplate oldData) {
-        TRelationshipType oldRelationshipType = oldData.getRelationshipTypes().entrySet().iterator().next().getValue();
-        TRelationshipType newRelationshipType = newData.getRelationshipTypes().entrySet().iterator().next().getValue();
+    private YTServiceTemplate replaceOldRelationshipTypeWithNewData(YTServiceTemplate newData, YTServiceTemplate oldData) {
+        YTRelationshipType oldRelationshipType = oldData.getRelationshipTypes().entrySet().iterator().next().getValue();
+        YTRelationshipType newRelationshipType = newData.getRelationshipTypes().entrySet().iterator().next().getValue();
         oldRelationshipType.setMetadata(newRelationshipType.getMetadata());
         oldRelationshipType.setProperties(newRelationshipType.getProperties());
         oldRelationshipType.setDerivedFrom(newRelationshipType.getDerivedFrom());
@@ -1030,11 +1031,11 @@ public class YamlRepository extends AbstractFileBasedRepository {
     @Override
     public void serialize(TDefinitions definitions, OutputStream target) throws IOException {
         FromCanonical converter = new FromCanonical(this);
-        TServiceTemplate implementedStandard = converter.convert(definitions);
+        YTServiceTemplate implementedStandard = converter.convert(definitions);
         serialize(implementedStandard, target);
     }
 
-    private void serialize(TServiceTemplate definitions, OutputStream target) throws IOException {
+    private void serialize(YTServiceTemplate definitions, OutputStream target) throws IOException {
         YamlWriter writer = new YamlWriter();
         target.write(writer.visit(definitions, new YamlWriter.Parameter(0)).toString().getBytes());
     }

@@ -20,23 +20,23 @@ import java.util.Objects;
 
 import javax.xml.namespace.QName;
 
-import org.eclipse.winery.model.tosca.yaml.TArtifactType;
-import org.eclipse.winery.model.tosca.yaml.TAttributeDefinition;
-import org.eclipse.winery.model.tosca.yaml.TCapabilityType;
-import org.eclipse.winery.model.tosca.yaml.TDataType;
-import org.eclipse.winery.model.tosca.yaml.TEntityType;
-import org.eclipse.winery.model.tosca.yaml.TSchemaDefinition;
-import org.eclipse.winery.model.tosca.yaml.TGroupDefinition;
-import org.eclipse.winery.model.tosca.yaml.TGroupType;
-import org.eclipse.winery.model.tosca.yaml.TInterfaceType;
-import org.eclipse.winery.model.tosca.yaml.TNodeTemplate;
-import org.eclipse.winery.model.tosca.yaml.TNodeType;
-import org.eclipse.winery.model.tosca.yaml.TPolicyDefinition;
-import org.eclipse.winery.model.tosca.yaml.TPolicyType;
-import org.eclipse.winery.model.tosca.yaml.TPropertyDefinition;
-import org.eclipse.winery.model.tosca.yaml.TRelationshipTemplate;
-import org.eclipse.winery.model.tosca.yaml.TRelationshipType;
-import org.eclipse.winery.model.tosca.yaml.TServiceTemplate;
+import org.eclipse.winery.model.tosca.yaml.YTArtifactType;
+import org.eclipse.winery.model.tosca.yaml.YTAttributeDefinition;
+import org.eclipse.winery.model.tosca.yaml.YTCapabilityType;
+import org.eclipse.winery.model.tosca.yaml.YTDataType;
+import org.eclipse.winery.model.tosca.yaml.YTEntityType;
+import org.eclipse.winery.model.tosca.yaml.YTSchemaDefinition;
+import org.eclipse.winery.model.tosca.yaml.YTGroupDefinition;
+import org.eclipse.winery.model.tosca.yaml.YTGroupType;
+import org.eclipse.winery.model.tosca.yaml.YTInterfaceType;
+import org.eclipse.winery.model.tosca.yaml.YTNodeTemplate;
+import org.eclipse.winery.model.tosca.yaml.YTNodeType;
+import org.eclipse.winery.model.tosca.yaml.YTPolicyDefinition;
+import org.eclipse.winery.model.tosca.yaml.YTPolicyType;
+import org.eclipse.winery.model.tosca.yaml.YTPropertyDefinition;
+import org.eclipse.winery.model.tosca.yaml.YTRelationshipTemplate;
+import org.eclipse.winery.model.tosca.yaml.YTRelationshipType;
+import org.eclipse.winery.model.tosca.yaml.YTServiceTemplate;
 import org.eclipse.winery.model.converter.support.Defaults;
 import org.eclipse.winery.model.converter.support.Namespaces;
 import org.eclipse.winery.model.converter.support.exception.InvalidDefinition;
@@ -56,7 +56,7 @@ public class TypeValidator extends ExceptionVisitor<Result, Parameter> {
         this.typeVisitor.addDataTypes(Defaults.TOSCA_TYPES, Namespaces.TOSCA_YAML_NS);
     }
 
-    public void validate(TServiceTemplate serviceTemplate) throws MultiException {
+    public void validate(YTServiceTemplate serviceTemplate) throws MultiException {
         serviceTemplate.accept(typeVisitor, new Parameter());
         if (typeVisitor.hasExceptions()) {
             this.setException(this.typeVisitor.getException());
@@ -89,13 +89,13 @@ public class TypeValidator extends ExceptionVisitor<Result, Parameter> {
         ).setContext(parameter.getContext()));
     }
 
-    private void validateEntityType(TEntityType node, Parameter parameter, Map<String, List<String>> types) {
+    private void validateEntityType(YTEntityType node, Parameter parameter, Map<String, List<String>> types) {
         if (Objects.nonNull(node.getDerivedFrom())) {
             validateTypeIsDefined(node.getDerivedFrom(), types, parameter.copy().addContext("derived_from"));
         }
     }
 
-    private void validatePropertyOrAttributeDefinition(QName type, TSchemaDefinition entrySchema, Parameter parameter) {
+    private void validatePropertyOrAttributeDefinition(QName type, YTSchemaDefinition entrySchema, Parameter parameter) {
         if (Objects.isNull(type)) {
             setInvalidDefinition(parameter);
         } else {
@@ -123,13 +123,13 @@ public class TypeValidator extends ExceptionVisitor<Result, Parameter> {
     }
 
     @Override
-    public Result visit(TArtifactType node, Parameter parameter) {
+    public Result visit(YTArtifactType node, Parameter parameter) {
         validateEntityType(node, parameter, typeVisitor.getArtifactTypes());
         return super.visit(node, parameter);
     }
 
     @Override
-    public Result visit(TCapabilityType node, Parameter parameter) {
+    public Result visit(YTCapabilityType node, Parameter parameter) {
         validateEntityType(node, parameter, typeVisitor.getCapabilityTypes());
 
         for (QName source : node.getValidSourceTypes()) {
@@ -140,7 +140,7 @@ public class TypeValidator extends ExceptionVisitor<Result, Parameter> {
     }
 
     @Override
-    public Result visit(TDataType node, Parameter parameter) {
+    public Result visit(YTDataType node, Parameter parameter) {
         validateEntityType(node, parameter, typeVisitor.getDataTypes());
 
         // Extend a native DataType should fail
@@ -160,37 +160,37 @@ public class TypeValidator extends ExceptionVisitor<Result, Parameter> {
     }
 
     @Override
-    public Result visit(TGroupType node, Parameter parameter) {
+    public Result visit(YTGroupType node, Parameter parameter) {
         validateEntityType(node, parameter, typeVisitor.getGroupTypes());
         return super.visit(node, parameter);
     }
 
     @Override
-    public Result visit(TInterfaceType node, Parameter parameter) {
+    public Result visit(YTInterfaceType node, Parameter parameter) {
         validateEntityType(node, parameter, typeVisitor.getInterfaceTypes());
         return super.visit(node, parameter);
     }
 
     @Override
-    public Result visit(TRelationshipType node, Parameter parameter) {
+    public Result visit(YTRelationshipType node, Parameter parameter) {
         validateEntityType(node, parameter, typeVisitor.getRelationshipTypes());
         return super.visit(node, parameter);
     }
 
     @Override
-    public Result visit(TNodeType node, Parameter parameter) {
+    public Result visit(YTNodeType node, Parameter parameter) {
         validateEntityType(node, parameter, typeVisitor.getNodeTypes());
         return super.visit(node, parameter);
     }
 
     @Override
-    public Result visit(TPolicyType node, Parameter parameter) {
+    public Result visit(YTPolicyType node, Parameter parameter) {
         validateEntityType(node, parameter, typeVisitor.getPolicyTypes());
         return super.visit(node, parameter);
     }
 
     @Override
-    public Result visit(TNodeTemplate node, Parameter parameter) {
+    public Result visit(YTNodeTemplate node, Parameter parameter) {
         if (Objects.isNull(node.getType())) {
             setInvalidDefinition(parameter);
         } else {
@@ -200,7 +200,7 @@ public class TypeValidator extends ExceptionVisitor<Result, Parameter> {
     }
 
     @Override
-    public Result visit(TRelationshipTemplate node, Parameter parameter) {
+    public Result visit(YTRelationshipTemplate node, Parameter parameter) {
         if (Objects.isNull(node.getType())) {
             setInvalidDefinition(parameter);
         } else {
@@ -210,7 +210,7 @@ public class TypeValidator extends ExceptionVisitor<Result, Parameter> {
     }
 
     @Override
-    public Result visit(TGroupDefinition node, Parameter parameter) {
+    public Result visit(YTGroupDefinition node, Parameter parameter) {
         if (Objects.isNull(node.getType())) {
             setInvalidDefinition(parameter);
         } else {
@@ -220,7 +220,7 @@ public class TypeValidator extends ExceptionVisitor<Result, Parameter> {
     }
 
     @Override
-    public Result visit(TPolicyDefinition node, Parameter parameter) {
+    public Result visit(YTPolicyDefinition node, Parameter parameter) {
         if (Objects.isNull(node.getType())) {
             setInvalidDefinition(parameter);
         } else {
@@ -230,13 +230,13 @@ public class TypeValidator extends ExceptionVisitor<Result, Parameter> {
     }
 
     @Override
-    public Result visit(TPropertyDefinition node, Parameter parameter) {
+    public Result visit(YTPropertyDefinition node, Parameter parameter) {
         validatePropertyOrAttributeDefinition(node.getType(), node.getEntrySchema(), parameter);
         return super.visit(node, parameter);
     }
 
     @Override
-    public Result visit(TAttributeDefinition node, Parameter parameter) {
+    public Result visit(YTAttributeDefinition node, Parameter parameter) {
         validatePropertyOrAttributeDefinition(node.getType(), node.getEntrySchema(), parameter);
         return super.visit(node, parameter);
     }

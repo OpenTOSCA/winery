@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019-2020 Contributors to the Eclipse Foundation
+ * Copyright (c) 2020 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -34,6 +34,7 @@ public class PropertyDefinitionKV implements Serializable {
     @JsonProperty("constraint")
     private List<ConstraintClauseKV> constraintList;
 
+    @Deprecated // used for XML deserialization of API request content
     public PropertyDefinitionKV() {
         super();
     }

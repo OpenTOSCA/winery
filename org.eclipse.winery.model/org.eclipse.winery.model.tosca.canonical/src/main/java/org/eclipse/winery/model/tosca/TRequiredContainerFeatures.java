@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019 Contributors to the Eclipse Foundation
+ * Copyright (c) 2020 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -52,6 +52,9 @@ public class TRequiredContainerFeatures implements Serializable {
 
     @XmlElement(name = "RequiredContainerFeature", required = true)
     protected List<TRequiredContainerFeature> requiredContainerFeature;
+
+    @Deprecated // used for XML deserialization of API request content
+    public TRequiredContainerFeatures() { }
 
     @Override
     public boolean equals(Object o) {

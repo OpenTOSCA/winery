@@ -31,8 +31,8 @@ import org.eclipse.winery.repository.converter.reader.YamlReader;
 import org.eclipse.winery.repository.converter.validator.support.ExceptionVisitor;
 import org.eclipse.winery.repository.converter.validator.support.Parameter;
 import org.eclipse.winery.repository.converter.validator.support.Result;
-import org.eclipse.winery.model.tosca.yaml.TImportDefinition;
-import org.eclipse.winery.model.tosca.yaml.TServiceTemplate;
+import org.eclipse.winery.model.tosca.yaml.YTImportDefinition;
+import org.eclipse.winery.model.tosca.yaml.YTServiceTemplate;
 
 public class ImportVisitor extends ExceptionVisitor<Result, Parameter> {
     protected final Path path;
@@ -44,7 +44,7 @@ public class ImportVisitor extends ExceptionVisitor<Result, Parameter> {
     }
 
     @Override
-    public Result visit(TServiceTemplate node, Parameter parameter) {
+    public Result visit(YTServiceTemplate node, Parameter parameter) {
         YamlReader reader = new YamlReader();
         if (!this.namespace.equals(Namespaces.TOSCA_YAML_NS)) {
             Set<String> typeDefinitions = new HashSet<>(Arrays.asList(
@@ -60,7 +60,7 @@ public class ImportVisitor extends ExceptionVisitor<Result, Parameter> {
                         "/".concat(typeDefinition)
                     );
                     Files.copy(inputStream, outFilePath, StandardCopyOption.REPLACE_EXISTING);
-                    TServiceTemplate serviceTemplate = reader.parseSkipTest(outFilePath, Namespaces.TOSCA_YAML_NS);
+                    YTServiceTemplate serviceTemplate = reader.parseSkipTest(outFilePath, Namespaces.TOSCA_YAML_NS);
                     if (Objects.nonNull(serviceTemplate)) {
                         serviceTemplate.accept(this, new Parameter());
                     }
@@ -78,11 +78,11 @@ public class ImportVisitor extends ExceptionVisitor<Result, Parameter> {
     }
 
     @Override
-    public Result visit(TImportDefinition node, Parameter parameter) {
+    public Result visit(YTImportDefinition node, Parameter parameter) {
         YamlReader reader = new YamlReader();
         String importNamespace = node.getNamespaceUri() == null ? this.namespace : node.getNamespaceUri();
         try {
-            TServiceTemplate serviceTemplate = reader.parse(node, path, importNamespace);
+            YTServiceTemplate serviceTemplate = reader.parse(node, path, importNamespace);
             if (serviceTemplate != null) {
                 String tmpNamespace = this.namespace;
                 this.namespace = importNamespace;

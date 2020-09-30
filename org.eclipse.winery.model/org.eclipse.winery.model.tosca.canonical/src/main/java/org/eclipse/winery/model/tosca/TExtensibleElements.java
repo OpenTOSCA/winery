@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019 Contributors to the Eclipse Foundation
+ * Copyright (c) 2020 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -71,8 +71,8 @@ public abstract class TExtensibleElements implements Serializable {
     @NonNull
     private Map<QName, String> otherAttributes = new HashMap<>();
 
-    public TExtensibleElements() {
-    }
+    @Deprecated // used for XML deserialization of API request content
+    public TExtensibleElements() { }
 
     public TExtensibleElements(Builder builder) {
         this.documentation = builder.documentation;

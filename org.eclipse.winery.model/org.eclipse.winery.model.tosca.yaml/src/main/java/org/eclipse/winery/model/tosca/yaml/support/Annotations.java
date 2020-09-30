@@ -22,4 +22,10 @@ public @interface Annotations {
     @interface StandardExtension {
 
     }
+
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target({ElementType.FIELD})
+    @interface FieldName {
+        String value();
+    }
 }

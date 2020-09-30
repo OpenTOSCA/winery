@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019 Contributors to the Eclipse Foundation
+ * Copyright (c) 2020 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -58,8 +58,8 @@ public class TRelationshipType extends TEntityType {
     @XmlElement(name = "ValidTarget")
     protected TRelationshipType.ValidTarget validTarget;
 
-    public TRelationshipType() {
-    }
+    @Deprecated // used for XML deserialization of API request content
+    public TRelationshipType() { }
 
     public TRelationshipType(Builder builder) {
         super(builder);

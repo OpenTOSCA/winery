@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019 Contributors to the Eclipse Foundation
+ * Copyright (c) 2020 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -53,8 +53,8 @@ public class TNodeType extends TEntityType {
     // added to support TOSCA YAML
     protected List<TInterfaceDefinition> interfaceDefinitions;
 
-    public TNodeType() {
-    }
+    @Deprecated // used for XML deserialization of API request content
+    public TNodeType() { }
 
     public TNodeType(Builder builder) {
         super(builder);
