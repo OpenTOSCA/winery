@@ -82,6 +82,19 @@ public abstract class ModelUtilities {
         new QName(Namespaces.TOSCA_WINERY_EXTENSIONS_NAMESPACE, "dataTransferType");
 
     private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(ModelUtilities.class);
+    private static final DocumentBuilder DOCUMENT_BUILDER;
+
+    static {
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        DocumentBuilder documentBuilder = null;
+        try {
+            documentBuilder = dbf.newDocumentBuilder();
+        } catch (ParserConfigurationException e) {
+            LOGGER.error("Could not initialize document builder", e);
+            throw new IllegalStateException("Could not initialize document builder", e);
+        }
+        DOCUMENT_BUILDER = documentBuilder;
+    }
 
     /**
      * This is a special method for Winery. Winery allows to define a property by specifying name/value values. Instead
@@ -698,19 +711,9 @@ public abstract class ModelUtilities {
      * @throws IOException           if something goes wrong during parsing
      */
     public static void patchAnyAttributes(Collection<? extends TEntityTemplate> templates) throws IOException {
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        DocumentBuilder documentBuilder = null;
-        try {
-            documentBuilder = dbf.newDocumentBuilder();
-        } catch (ParserConfigurationException e) {
-            LOGGER.error("Could not initialize document builder", e);
-            throw new IllegalStateException("Could not initialize document builder", e);
-        }
-
         Map<QName, String> tempConvertedOtherAttributes = new HashMap<>();
 
         for (TEntityTemplate template : templates) {
-
             //Convert the wrong QName created by the JSON serialization back to a right QName
             for (Map.Entry<QName, String> otherAttribute : template.getOtherAttributes().entrySet()) {
                 QName qName;
@@ -732,22 +735,30 @@ public abstract class ModelUtilities {
             TEntityTemplate.Properties properties = template.getProperties();
             if (properties != null && properties instanceof TEntityTemplate.XmlProperties) {
                 TEntityTemplate.XmlProperties props = (TEntityTemplate.XmlProperties) properties;
-                Object any = props.getAny();
-                if (any instanceof String) {
-                    Document doc = null;
-                    try {
-                        doc = documentBuilder.parse(new InputSource(new StringReader((String) any)));
-                    } catch (SAXException e) {
-                        LOGGER.error("Could not parse", e);
-                        throw new IOException("Could not parse", e);
-                    } catch (IOException e) {
-                        LOGGER.error("Could not parse", e);
-                        throw e;
-                    }
-                    props.setAny(doc.getDocumentElement());
-                }
+                props.setAny(patchAnyItem(props.getAny()));
             }
         }
+    }
+
+    public static Object patchAnyItem(Object item) throws IOException {
+        if (item instanceof String) {
+            Document doc = null;
+            try {
+                doc = DOCUMENT_BUILDER.parse(new InputSource(new StringReader((String) item)));
+            } catch (SAXException e) {
+                LOGGER.error("Could not parse", e);
+                throw new IOException("Could not parse", e);
+            } catch (IOException e) {
+                LOGGER.error("Could not parse", e);
+                throw e;
+            }
+            return doc.getDocumentElement();
+        }
+        if (!(item instanceof Element)) {
+            LOGGER.warn("any item to be converter was not an XML-String or an Element, but of unexpected type {}!", item.getClass().getName());
+            // TODO: consider implications of this, if it ever happens
+        }
+        return item;
     }
 
     public static boolean isOfType(QName requiredType, QName givenType, Map<QName, ? extends
