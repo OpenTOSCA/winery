@@ -76,7 +76,7 @@ public abstract class ModelUtilities {
 
     public static final QName QNAME_LOCATION = new QName(Namespaces.TOSCA_WINERY_EXTENSIONS_NAMESPACE, "location");
     public static final QName NODE_TEMPLATE_REGION = new QName(Namespaces.TOSCA_WINERY_EXTENSIONS_NAMESPACE, "region");
-    public static final QName NODE_TEMPLATE_PROVIDER = new QName(Namespaces.TOSCA_WINERY_EXTENSIONS_NAMESPACE, 
+    public static final QName NODE_TEMPLATE_PROVIDER = new QName(Namespaces.TOSCA_WINERY_EXTENSIONS_NAMESPACE,
         "provider");
     public static final QName RELATIONSHIP_TEMPLATE_TRANSFER_TYPE =
         new QName(Namespaces.TOSCA_WINERY_EXTENSIONS_NAMESPACE, "dataTransferType");
@@ -116,7 +116,7 @@ public abstract class ModelUtilities {
             return null;
         }
     }
-    
+
     public static void setPropertiesKV(TEntityTemplate template, LinkedHashMap<String, String> properties) {
         if (template.getProperties() == null) {
             template.setProperties(new TEntityTemplate.WineryKVProperties());
@@ -622,7 +622,7 @@ public abstract class ModelUtilities {
             TRequirement requirement = (TRequirement) relationshipTemplate.getSourceElement().getRef();
             return topologyTemplate.getNodeTemplates().stream()
                 .filter(nt -> nt.getRequirements() != null
-                        && nt.getRequirements().getRequirement().contains(requirement))
+                    && nt.getRequirements().getRequirement().contains(requirement))
                 .findAny().get();
         } else {
             TNodeTemplate sourceNodeTemplate = (TNodeTemplate) relationshipTemplate.getSourceElement().getRef();
@@ -636,7 +636,7 @@ public abstract class ModelUtilities {
             TCapability capability = (TCapability) relationshipTemplate.getTargetElement().getRef();
             return topologyTemplate.getNodeTemplates().stream()
                 .filter(nt -> nt.getRequirements() != null
-                        && nt.getRequirements().getRequirement().contains(capability))
+                    && nt.getRequirements().getRequirement().contains(capability))
                 .findAny().get();
         } else {
             return (TNodeTemplate) relationshipTemplate.getTargetElement().getRef();
@@ -741,6 +741,9 @@ public abstract class ModelUtilities {
     }
 
     public static Object patchAnyItem(Object item) throws IOException {
+        if (item == null) {
+            return item;
+        }
         if (item instanceof String) {
             Document doc = null;
             try {
