@@ -12,6 +12,7 @@ ui:
     splitting: {{ .Env.WINERY_FEATURE_SPLITTING }}
     testRefinement: {{ .Env.WINERY_FEATURE_TEST_REFINEMENT }}
     edmmModeling: {{ .Env.WINERY_FEATURE_EDMM_MODELING }}
+    updateTemplates: {{ .Env.WINERY_FEATURE_UPDATE_TEMPLATES }}
   endpoints:
     container: http://{{ .Env.CONTAINER_HOSTNAME }}:{{ .Env.CONTAINER_PORT }}
     workflowmodeler: http://{{ .Env.WORKFLOWMODELER_HOSTNAME }}:{{ .Env.WORKFLOWMODELER_PORT }}/winery-workflowmodeler
