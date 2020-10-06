@@ -190,11 +190,4 @@
             </plugins>
         </pluginManagement>
     </build>
-    <repositories>
-        <repository>
-            <id>google-maven-central</id>
-            <name>GCS Maven Central mirror EU</name>
-            <url>https://maven-central-eu.storage-download.googleapis.com/maven2/</url>
-        </repository>
-    </repositories>
 </project>
