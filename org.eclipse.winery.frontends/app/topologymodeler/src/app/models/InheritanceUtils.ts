@@ -179,7 +179,7 @@ export class InheritanceUtils {
      */
     static getKVProperties(type: any): any {
         const newKVProperies = {};
-        const kvProperties = type.full.serviceTemplateOrNodeTypeOrNodeTypeImplementation[0].any[0].propertyDefinitionKVList;
+        const kvProperties = type.full.serviceTemplateOrNodeTypeOrNodeTypeImplementation[0].propertiesDefinition.propertyDefinitionKVList;
         for (const obj of kvProperties) {
             const key = obj.key;
             let value;
@@ -197,9 +197,9 @@ export class InheritanceUtils {
 
     static hasKVPropDefinition(element: EntityType): boolean {
         return (element && element.full &&
-            element.full.serviceTemplateOrNodeTypeOrNodeTypeImplementation[0].any &&
-            element.full.serviceTemplateOrNodeTypeOrNodeTypeImplementation[0].any.length > 0 &&
-            element.full.serviceTemplateOrNodeTypeOrNodeTypeImplementation[0].any[0].propertyDefinitionKVList
+            element.full.serviceTemplateOrNodeTypeOrNodeTypeImplementation[0].propertiesDefinition &&
+            element.full.serviceTemplateOrNodeTypeOrNodeTypeImplementation[0].propertiesDefinition.propertyDefinitionKVList &&
+            element.full.serviceTemplateOrNodeTypeOrNodeTypeImplementation[0].propertiesDefinition.propertyDefinitionKVList.length > 0
         );
     }
 

@@ -1867,6 +1867,9 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
             }
         });
 
+        // define default properties of the node based on the type of the node
+        this.newNode.properties = InheritanceUtils.getDefaultPropertiesFromEntityTypes(this.newNode.type, this.entityTypes.unGroupedNodeTypes);
+
         // if in YAML mode, automatically add all requirement and capability definitions to the node template!
         if (this.configuration.isYaml()) {
             this.newNode.requirements = { requirement: [] };
