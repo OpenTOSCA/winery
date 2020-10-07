@@ -15,11 +15,9 @@ package org.eclipse.winery.repository.backend;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Objects;
-import java.util.Optional;
 
 import org.eclipse.winery.common.configuration.Environments;
 import org.eclipse.winery.common.configuration.FileBasedRepositoryConfiguration;
@@ -64,7 +62,7 @@ public class RepositoryFactory {
     public static void reconfigure(GitBasedRepositoryConfiguration gitBasedRepositoryConfiguration) throws IOException, GitAPIException {
         RepositoryFactory.gitBasedRepositoryConfiguration = gitBasedRepositoryConfiguration;
         RepositoryFactory.fileBasedRepositoryConfiguration = null;
-        AbstractFileBasedRepository compositeRepository = null;
+        AbstractFileBasedRepository compositeRepository;
         // if a repository root is specified, use it instead of the root specified in the config
         if (gitBasedRepositoryConfiguration.getRepositoryPath().isPresent()) {
             compositeRepository = createXmlOrYamlRepository(gitBasedRepositoryConfiguration, gitBasedRepositoryConfiguration.getRepositoryPath().get());
@@ -82,7 +80,7 @@ public class RepositoryFactory {
         RepositoryFactory.fileBasedRepositoryConfiguration = fileBasedRepositoryConfiguration;
         RepositoryFactory.gitBasedRepositoryConfiguration = null;
         AbstractFileBasedRepository compositeRepository;
-        //If a repository root is specified by the configuration use it instead of the root specified in the Configuration
+        // if a repository root is specified by the configuration use it instead of the root specified in the configuration
         if (fileBasedRepositoryConfiguration.getRepositoryPath().isPresent()) {
             compositeRepository = createXmlOrYamlRepository(fileBasedRepositoryConfiguration, fileBasedRepositoryConfiguration.getRepositoryPath().get());
         } else {
@@ -103,20 +101,8 @@ public class RepositoryFactory {
      * Reconfigures based on Environment
      */
     public static void reconfigure() throws Exception {
-        final Optional<GitBasedRepositoryConfiguration> gitBasedRepositoryConfiguration = Environments.getInstance().getGitBasedRepositoryConfiguration();
-        final FileBasedRepositoryConfiguration filebasedRepositoryConfiguration = Environments.getInstance().getFilebasedRepositoryConfiguration();
-
-        // Determine whether the filebased repository could be git repository.
-        // We do not use JGit's capabilities, but do it just by checking for the existance of a ".git" directory.
-        final Path repositoryRoot = Paths.get(Environments.getInstance().getRepositoryConfig().getRepositoryRoot());
-        final Path gitDirectory = repositoryRoot.resolve(".git");
-        // do not know if this is necessary?
-        boolean isGit = (Files.exists(gitDirectory) && Files.isDirectory(gitDirectory));
-        if (isGit && gitBasedRepositoryConfiguration.isPresent()) {
-            reconfigure(gitBasedRepositoryConfiguration.get());
-        } else {
-            reconfigure(filebasedRepositoryConfiguration);
-        }
+        final GitBasedRepositoryConfiguration gitBasedRepositoryConfiguration = Environments.getInstance().getGitBasedRepositoryConfiguration();
+        reconfigure(gitBasedRepositoryConfiguration);
     }
 
     public static IRepository getRepository() {
