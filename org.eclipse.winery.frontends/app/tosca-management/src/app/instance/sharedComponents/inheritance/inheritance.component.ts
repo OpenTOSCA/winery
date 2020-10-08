@@ -106,11 +106,11 @@ export class InheritanceComponent implements OnInit {
     private handleSuperClassData(superClasses: SelectData[]) {
         this.availableSuperClasses = this.noneElement.concat(superClasses)
             // do not show current selected type
-            .map(group => {
+            .filter(group => {
                 if (group.children) {
                     group.children = group.children.filter(type => type.id !== this.sharedData.toscaComponent.getQName());
                 }
-                return group;
+                return group.children && group.children.length > 0;
             });
         if (!(this.inheritanceApiData === null || this.inheritanceApiData === undefined)) {
             this.loading = false;
