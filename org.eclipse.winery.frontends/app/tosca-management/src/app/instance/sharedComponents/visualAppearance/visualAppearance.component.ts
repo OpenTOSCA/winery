@@ -98,7 +98,7 @@ export class VisualAppearanceComponent implements OnInit {
         this.relationshipData.boolData.targetArrowHeadSelected = targetarrowheadSelected;
     }
 
-    saveToServer() {
+    public saveToServer() {
         if (this.isRelationshipType) {
             this.service.saveVisuals(new RelationshipTypesVisualsApiData(this.relationshipData, false)).subscribe(
                 data => this.handleResponse(data),
@@ -151,7 +151,6 @@ export class VisualAppearanceComponent implements OnInit {
 
     public set colorLocal(color: string) {
         this.relationshipData.color = color;
-        this.saveToServer();
     }
 
     public get borderColorLocal() {
@@ -160,7 +159,6 @@ export class VisualAppearanceComponent implements OnInit {
 
     public set borderColorLocal(color: string) {
         this.nodeTypeData.color = color;
-        this.saveToServer();
     }
 
     public get hoverColorLocal() {
@@ -169,7 +167,6 @@ export class VisualAppearanceComponent implements OnInit {
 
     public set hoverColorLocal(color: string) {
         this.relationshipData.hoverColor = color;
-        this.saveToServer();
     }
 
     private handleResponse(response: HttpResponse<string>) {
