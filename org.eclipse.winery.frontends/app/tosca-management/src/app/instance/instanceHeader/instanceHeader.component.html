@@ -33,18 +33,12 @@
                     <li>
                         <a target="_blank" href="{{ toscaComponent.xmlPath }}">XML</a>
                     </li>
-                    <li>
-                        <a target="_blank" href="{{ toscaComponent.yamlPath }}">YAML</a>
-                    </li>
                     <li class="divider dropdown-divider"></li>
                     <li>
-                        <a target="_blank" href="{{ toscaComponent.yamlCsarPath }}">CSAR (YAML)</a>
-                    </li>
-                    <li>
-                        <a target="_blank" href="{{ toscaComponent.xmlCsarPath }}">CSAR (XML)</a>
+                        <a target="_blank" href="{{ toscaComponent.xmlCsarPath }}">CSAR</a>
                     </li>
                     <li *ngIf="accountabilityEnabled">
-                        <a target="_blank" href="{{ toscaComponent.provenanceCsarPath }}">Provenance CSAR (XML)</a>
+                        <a target="_blank" href="{{ toscaComponent.provenanceCsarPath }}">Provenance CSAR</a>
                     </li>
                     <li *ngIf="showEdmmExport">
                         <a target="_blank" href="{{ toscaComponent.edmmExportPath }}"
