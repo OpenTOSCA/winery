@@ -45,6 +45,8 @@ public abstract class TestWithGitBackedRepository {
 
     protected static final Logger LOGGER = LoggerFactory.getLogger(TestWithGitBackedRepository.class);
 
+    public final Path repositoryPath;
+
     public final IRepository repository;
 
     public final Git git;
@@ -59,7 +61,7 @@ public abstract class TestWithGitBackedRepository {
     }
 
     protected TestWithGitBackedRepository(RepositoryConfigurationObject.RepositoryProvider provider) {
-        Path repositoryPath = Paths.get(System.getProperty("java.io.tmpdir")).resolve("test-repository");
+        this.repositoryPath = Paths.get(System.getProperty("java.io.tmpdir")).resolve("test-repository");
         String remoteUrl = "https://github.com/winery/test-repository.git";
 
         try {
