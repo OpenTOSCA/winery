@@ -190,7 +190,7 @@ export class PropertiesDefinitionComponent implements OnInit {
                     return prop;
                 });
             this.availableTypes = this.yamlTypes;
-        } else if (this.resourceApiData.winerysPropertiesDefinition !== null) {
+        } else if (this.resourceApiData.winerysPropertiesDefinition) {
             this.columns = winery_properties_columns;
             this.tableData = this.resourceApiData.winerysPropertiesDefinition.propertyDefinitionKVList;
             this.availableTypes = this.xmlTypes;
