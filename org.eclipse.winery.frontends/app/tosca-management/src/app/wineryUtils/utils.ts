@@ -17,6 +17,10 @@ import { QName } from '../../../../shared/src/app/model/qName';
 
 export class Utils {
 
+    public static isEmpty(object: object) {
+        return Object.keys(object).length === 0;
+    }
+
     /**
      * Generates a random alphanumeric string of the given length.
      *
