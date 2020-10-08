@@ -145,11 +145,13 @@ export class CapOrReqDefComponent implements OnInit {
             this.validSourceTypesService.getValidSourceTypesForCapabilityDefinition(value.replace('{', '/').replace('}', '/'), 'capabilitydefinitions')
                 .subscribe(
                     (current) => {
-                        current.nodes.forEach(value1 => {
-                            const qName = QName.create(value1.namespace, value1.localname);
-                            this.validSourceTypesTableData.push(qName);
-                            this.capOrReqDefToBeAdded.validSourceTypes.push(qName.qName);
-                        });
+                        if (current.nodes) {
+                            current.nodes.forEach(value1 => {
+                                const qName = QName.create(value1.namespace, value1.localname);
+                                this.validSourceTypesTableData.push(qName);
+                                this.capOrReqDefToBeAdded.validSourceTypes.push(qName.qName);
+                            });
+                        }
                     },
                     error => this.handleError(error)
                 );
