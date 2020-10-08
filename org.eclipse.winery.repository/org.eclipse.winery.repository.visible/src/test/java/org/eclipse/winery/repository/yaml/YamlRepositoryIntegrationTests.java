@@ -14,74 +14,43 @@
 
 package org.eclipse.winery.repository.yaml;
 
-import java.io.IOException;
-import java.nio.file.Paths;
-import java.util.stream.Stream;
+import javax.xml.namespace.QName;
 
 import org.eclipse.winery.common.configuration.RepositoryConfigurationObject;
-import org.eclipse.winery.model.ids.definitions.ArtifactTypeId;
-import org.eclipse.winery.model.ids.definitions.CapabilityTypeId;
-import org.eclipse.winery.model.ids.definitions.DataTypeId;
-import org.eclipse.winery.model.ids.definitions.DefinitionsChildId;
-import org.eclipse.winery.model.ids.definitions.InterfaceTypeId;
-import org.eclipse.winery.model.ids.definitions.NodeTypeId;
-import org.eclipse.winery.model.ids.definitions.PolicyTypeId;
-import org.eclipse.winery.model.ids.definitions.RelationshipTypeId;
 import org.eclipse.winery.model.ids.definitions.ServiceTemplateId;
-import org.eclipse.winery.model.tosca.TDefinitions;
+import org.eclipse.winery.model.tosca.TRelationshipTemplate;
+import org.eclipse.winery.model.tosca.TServiceTemplate;
 import org.eclipse.winery.repository.TestWithGitBackedRepository;
 
-import org.eclipse.jgit.api.Status;
-import org.eclipse.jgit.api.errors.GitAPIException;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtensionContext;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.ArgumentsProvider;
-import org.junit.jupiter.params.provider.ArgumentsSource;
-import org.junit.platform.commons.util.Preconditions;
 
-import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class YamlRepositoryIntegrationTests extends TestWithGitBackedRepository {
 
-    /**
-     * While this intends to hijack the infrastructure exposed by {@link TestWithGitBackedRepository} wwe need to use
-     * a YAML based repository for these tests and as such require a slightly different setup
-     */
     public YamlRepositoryIntegrationTests() {
-        super(Paths.get(System.getProperty("java.io.tmpdir")).resolve("yaml-test-repository"),
-            "https://github.com/radon-h2020/radon-particles.git",
-            RepositoryConfigurationObject.RepositoryProvider.YAML);
+        super(RepositoryConfigurationObject.RepositoryProvider.YAML);
     }
-    
-    
-    @BeforeEach
-    public void testSetup() throws GitAPIException {
-        setRevisionTo("e76b05461e255dbf41a780c543fdc7ad2516cbbc");
-    }
-    
-    @Test
-    @Disabled("Serialization is currently too non-deterministic to expect useful test results")
-    public void roundtripDoesNotChangeContents() {
-        assertAll(
-            repository.getAllDefinitionsChildIds().stream()
-                .map(definitionsId -> () -> {
-                    TDefinitions retrieved = repository.getDefinitions(definitionsId);
-                    try {
-                        repository.putDefinition(definitionsId, retrieved);
 
-                        final Status gitStatus = git.status().call();
-                        assertTrue(gitStatus.isClean(), "Failed for definitionsId " + definitionsId);
-                    } catch (IOException | GitAPIException e) {
-                        Preconditions.condition(false, "Exception occured during validation");
-                    }
-                })
+    @Test
+    public void retrieveInitialServiceTemplate() throws Exception {
+        this.setRevisionTo("bab12e7a8ca7af1c0a0ce186c81bab3899ab989b");
+
+        assertEquals(10, repository.getAllDefinitionsChildIds().size());
+        TServiceTemplate element = repository.getElement(
+            new ServiceTemplateId(QName.valueOf("{example.org.tosca.servicetemplates}demo_w1-wip1"))
         );
+
+        assertNotNull(element);
+        assertNotNull(element.getTopologyTemplate());
+        assertEquals(3, element.getTopologyTemplate().getNodeTemplateOrRelationshipTemplate().size());
+        assertNotNull(element.getTopologyTemplate().getNodeTemplate("compute_w1-wip1_0"));
+        assertNotNull(element.getTopologyTemplate().getNodeTemplate("software_w1-wip1_0"));
+
+        TRelationshipTemplate relation = element.getTopologyTemplate().getRelationshipTemplate("con_hostedOn_0");
+        assertNotNull(relation);
+        assertEquals("software_w1-wip1_0", relation.getSourceElement().getRef().getId());
+        assertEquals("compute_w1-wip1_0", relation.getTargetElement().getRef().getId());
     }
 }

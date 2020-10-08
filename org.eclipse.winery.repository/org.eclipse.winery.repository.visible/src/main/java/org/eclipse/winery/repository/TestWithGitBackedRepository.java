@@ -55,12 +55,13 @@ public abstract class TestWithGitBackedRepository {
      * @throws RuntimeException wraps an Exception
      */
     public TestWithGitBackedRepository() {
-        this(Paths.get(System.getProperty("java.io.tmpdir")).resolve("test-repository"),
-            "https://github.com/winery/test-repository.git",
-            RepositoryConfigurationObject.RepositoryProvider.FILE);
+        this(RepositoryConfigurationObject.RepositoryProvider.FILE);
     }
-    
-    protected TestWithGitBackedRepository(Path repositoryPath, String remoteUrl, RepositoryConfigurationObject.RepositoryProvider provider) {
+
+    protected TestWithGitBackedRepository(RepositoryConfigurationObject.RepositoryProvider provider) {
+        Path repositoryPath = Paths.get(System.getProperty("java.io.tmpdir")).resolve("test-repository");
+        String remoteUrl = "https://github.com/winery/test-repository.git";
+
         try {
             LOGGER.debug("Testing with repository directory {}", repositoryPath);
 
@@ -89,7 +90,7 @@ public abstract class TestWithGitBackedRepository {
             }
 
             // inject the current path to the repository factory
-            FileBasedRepositoryConfiguration fileBasedRepositoryConfiguration = new FileBasedRepositoryConfiguration(repositoryPath);
+            FileBasedRepositoryConfiguration fileBasedRepositoryConfiguration = new FileBasedRepositoryConfiguration(repositoryPath, provider);
             // force xml repository provider
             fileBasedRepositoryConfiguration.setRepositoryProvider(provider);
             GitBasedRepositoryConfiguration gitBasedRepositoryConfiguration = new GitBasedRepositoryConfiguration(false, fileBasedRepositoryConfiguration);
