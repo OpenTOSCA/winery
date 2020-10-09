@@ -24,11 +24,38 @@ import { RequirementDefinitionModel } from './requirementDefinitonModel';
 import { RequirementModel } from './requirementModel';
 import { InheritanceUtils } from './InheritanceUtils';
 import { QName } from '../../../../shared/src/app/model/qName';
+import { TPolicy } from './policiesModalData';
 
-export class TopologyTemplateUtil {
+export abstract class TopologyTemplateUtil {
 
     static HORIZONTAL_OFFSET_FOR_NODES_WITHOUT_COORDINATES = 350;
     static VERTICAL_OFFSET_FOR_NODES_WITHOUT_COORDINATES = 200;
+
+    static prepareSave(topologyTemplate: TTopologyTemplate): TTopologyTemplate {
+        // Initialization
+        const topologySkeleton = {
+            documentation: [],
+            any: [],
+            otherAttributes: {},
+            relationshipTemplates: [],
+            nodeTemplates: [],
+            policies: { policy: new Array<TPolicy>() }
+        };
+        // Prepare for saving by updating the existing topology with the current topology state inside the Redux store
+        topologySkeleton.nodeTemplates = topologyTemplate.nodeTemplates;
+        topologySkeleton.relationshipTemplates = topologyTemplate.relationshipTemplates;
+        topologySkeleton.relationshipTemplates.map(relationship => {
+            delete relationship.state;
+        });
+        // remove the 'Color' field from all nodeTemplates as the REST Api does not recognize it.
+        topologySkeleton.nodeTemplates.map(nodeTemplate => {
+            delete nodeTemplate.visuals;
+            delete nodeTemplate._state;
+        });
+        topologySkeleton.policies = topologyTemplate.policies;
+
+        return topologySkeleton;
+    }
 
     static createTNodeTemplateFromObject(node: TNodeTemplate, nodeVisuals: Visuals[],
                                          isYaml: boolean, types: EntityTypesModel, state?: DifferenceStates): TNodeTemplate {

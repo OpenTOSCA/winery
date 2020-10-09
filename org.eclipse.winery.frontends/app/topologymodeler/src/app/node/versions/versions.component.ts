@@ -65,6 +65,7 @@ export class VersionsComponent implements OnInit {
 
     propertyDiff: PropertyDiffList;
     saveAfterUpdate: boolean;
+    private topologyTemplate: TTopologyTemplate;
 
     constructor(private modalService: BsModalService,
                 private updateService: UpdateService,
@@ -72,6 +73,8 @@ export class VersionsComponent implements OnInit {
                 private ngRedux: NgRedux<IWineryState>,
                 private configurationService: WineryRepositoryConfigurationService,
                 private wineryActions: WineryActions) {
+        this.ngRedux.select(state => state.wineryState.currentJsonTopology)
+            .subscribe(topology => this.topologyTemplate = topology);
     }
 
     ngOnInit() {
@@ -126,7 +129,8 @@ export class VersionsComponent implements OnInit {
             this.matchedProperties,
             this.propertyDiff.newProperties,
             this.propertyDiff.resolvedProperties,
-            this.saveAfterUpdate
+            this.saveAfterUpdate,
+            this.topologyTemplate,
         );
 
         this.updateService.update(updateInfo)

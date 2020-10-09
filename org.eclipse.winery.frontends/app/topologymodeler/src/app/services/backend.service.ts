@@ -34,6 +34,7 @@ import { takeLast } from 'rxjs/operators';
 import { TPolicy } from '../models/policiesModalData';
 import { EntityTypesModel } from '../models/entityTypesModel';
 import { ToscaUtils } from '../models/toscaUtils';
+import { TopologyTemplateUtil } from '../models/topologyTemplateUtil';
 
 /**
  * Responsible for interchanging data between the app and the server.
@@ -383,32 +384,9 @@ export class BackendService {
      */
     saveTopologyTemplate(topologyTemplate: TTopologyTemplate): Observable<HttpResponse<string>> {
         if (this.configuration) {
-            // Initialization
-            const topologySkeleton = {
-                documentation: [],
-                any: [],
-                otherAttributes: {},
-                relationshipTemplates: [],
-                nodeTemplates: [],
-                policies: { policy: new Array<TPolicy>() }
-            };
-            // Prepare for saving by updating the existing topology with the current topology state inside the Redux store
-            topologySkeleton.nodeTemplates = topologyTemplate.nodeTemplates;
-            topologySkeleton.relationshipTemplates = topologyTemplate.relationshipTemplates;
-            topologySkeleton.relationshipTemplates.map(relationship => {
-                delete relationship.state;
-            });
-            // remove the 'Color' field from all nodeTemplates as the REST Api does not recognize it.
-            topologySkeleton.nodeTemplates.map(nodeTemplate => {
-                delete nodeTemplate.visuals;
-                delete nodeTemplate._state;
-            });
-            topologySkeleton.policies = topologyTemplate.policies;
-            console.log(topologySkeleton);
-
-            const headers = new HttpHeaders().set('Content-Type', 'application/json');
+           const headers = new HttpHeaders().set('Content-Type', 'application/json');
             return this.http.put(this.configuration.elementUrl,
-                topologySkeleton,
+                TopologyTemplateUtil.prepareSave(topologyTemplate),
                 { headers: headers, responseType: 'text', observe: 'response' }
             );
         }

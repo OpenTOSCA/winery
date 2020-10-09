@@ -392,7 +392,9 @@ public class TopologyTemplateResource {
     @Path("update")
     @Consumes(MediaType.APPLICATION_JSON)
     public TTopologyTemplate updateVersionOfNodeTemplate(UpdateInfo updateInfo) {
-        TNodeTemplate nodeTemplate = topologyTemplate.getNodeTemplate(updateInfo.getNodeTemplateId());
+        TTopologyTemplate localTemplate = updateInfo.getTopologyTemplate() == null ? this.topologyTemplate : updateInfo.getTopologyTemplate();
+
+        TNodeTemplate nodeTemplate = localTemplate.getNodeTemplate(updateInfo.getNodeTemplateId());
         if (nodeTemplate != null && nodeTemplate.getProperties() != null) {
             Map<String, String> propertyMappings = new LinkedHashMap<>();
             updateInfo.getMappingList().forEach(
@@ -419,13 +421,13 @@ public class TopologyTemplateResource {
             }
         }
 
-        BackendUtils.updateVersionOfNodeTemplate(this.topologyTemplate, updateInfo.getNodeTemplateId(), updateInfo.getNewComponentType());
+        BackendUtils.updateVersionOfNodeTemplate(localTemplate, updateInfo.getNodeTemplateId(), updateInfo.getNewComponentType());
 
         if (updateInfo.isSaveAfterUpdate()) {
-            RestUtils.persist(this.parent);
+            this.setModel(localTemplate);
         }
 
-        return this.topologyTemplate;
+        return localTemplate;
     }
 
     @POST
