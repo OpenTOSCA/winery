@@ -38,7 +38,7 @@
         <i *wineryRepositoryFeatureToggle="configEnum.updateTemplates"
            class="fas fa-exclamation-triangle newVersionTriangle" (click)="openVersionModal()"></i>
         <winery-versions #versionModal [aVersionElement]="newVersionElement" [nodeTemplateId]="nodeTemplate.id"
-                         [nodeType]="nodeTemplate.type"></winery-versions>
+                         [nodeType]="nodeTemplate.type" [entityTypes]="entityTypes"></winery-versions>
     </div>
 
     <div *ngIf="nodeClass !== 'pattern'; else showPattern"

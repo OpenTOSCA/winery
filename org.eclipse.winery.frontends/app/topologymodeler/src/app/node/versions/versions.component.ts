@@ -27,6 +27,7 @@ import { PropertyDiffList } from '../../models/propertyDiffList';
 import { Utils } from '../../../../../tosca-management/src/app/wineryUtils/utils';
 import { WineryVersion } from '../../../../../tosca-management/src/app/model/wineryVersion';
 import { WineryRepositoryConfigurationService } from '../../../../../tosca-management/src/app/wineryFeatureToggleModule/WineryRepositoryConfiguration.service';
+import { EntityTypesModel } from '../../models/entityTypesModel';
 
 @Component({
     selector: 'winery-versions',
@@ -55,6 +56,8 @@ export class VersionsComponent implements OnInit {
     @Input() aVersionElement: VersionElement;
     @Input() nodeTemplateId: string;
     @Input() nodeType: string;
+    @Input() entityTypes: EntityTypesModel;
+
     qNamePrefix: string;
     versions: WineryVersion[];
     kvComparison: any;
@@ -95,9 +98,7 @@ export class VersionsComponent implements OnInit {
 
     openProperty() {
         this.updatePropertyModalRef = this.modalService.show(this.updatePropertyModal);
-
         this.continueOrMap = this.CONTINUE;
-
     }
 
     matchProperties() {
@@ -152,7 +153,7 @@ export class VersionsComponent implements OnInit {
     }
 
     updateTopology(topology: TTopologyTemplate) {
-        TopologyTemplateUtil.updateTopologyTemplate(this.ngRedux, this.wineryActions, topology, this.configurationService.isYaml());
+        TopologyTemplateUtil.updateTopologyTemplate(this.ngRedux, this.wineryActions, topology, this.entityTypes, this.configurationService.isYaml());
     }
 
     showKVComparison() {

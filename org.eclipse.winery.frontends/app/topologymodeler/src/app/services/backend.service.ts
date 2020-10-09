@@ -14,7 +14,6 @@
 
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs/Subject';
-import { isNullOrUndefined } from 'util';
 import { Entity, EntityType, TArtifactType, TDataType, TPolicyType, TTopologyTemplate, VisualEntityType } from '../models/ttopology-template';
 import { QNameWithTypeApiData } from '../models/generateArtifactApiData';
 import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
@@ -33,7 +32,6 @@ import { VersionElement } from '../models/versionElement';
 import { WineryRepositoryConfigurationService } from '../../../../tosca-management/src/app/wineryFeatureToggleModule/WineryRepositoryConfiguration.service';
 import { takeLast } from 'rxjs/operators';
 import { TPolicy } from '../models/policiesModalData';
-import { backendBaseURL } from '../../../../tosca-management/src/app/configuration';
 import { EntityTypesModel } from '../models/entityTypesModel';
 import { ToscaUtils } from '../models/toscaUtils';
 
@@ -73,9 +71,7 @@ export class BackendService {
     }
 
     public configure(params: TopologyModelerConfiguration) {
-        if (!(isNullOrUndefined(params.id) && isNullOrUndefined(params.ns) &&
-            isNullOrUndefined(params.repositoryURL) && isNullOrUndefined(params.uiURL))) {
-
+        if (params.id && params.ns && params.repositoryURL && params.uiURL) {
             this.configuration = new TopologyModelerConfiguration(
                 params.id,
                 params.ns,
@@ -115,7 +111,6 @@ export class BackendService {
         if (this.topologyDifferences[0] !== undefined && this.topologyDifferences[1] !== undefined) {
             this.topDiff.next(this.topologyDifferences);
         }
-        const backendLoadingState = results[2];
 
         // entity types are encapsulated in a separate forkJoin
         const entityTypes = results[1];
@@ -350,7 +345,6 @@ export class BackendService {
         }
     }
 
-
     /**
      * Requests all namespaces from the backend
      */
@@ -470,8 +464,7 @@ export class BackendService {
      *
      */
     threatCreation(data: ThreatCreation): Observable<string> {
-        const url = this.configuration.repositoryURL;
-        return this.http.post(url + '/threats', data, { responseType: 'text' });
+        return this.http.post(`${(this.configuration.repositoryURL)}/threats`, data, { responseType: 'text' });
     }
 
     /**
@@ -576,10 +569,10 @@ export class BackendService {
                     // skipping object prototype inherited members to make tslint happy
                     continue;
                 }
-                const memberType = typeof(p[member]);
+                const memberType = typeof (p[member]);
                 if (memberType === 'string') {
                     const patched = jsonParse(p[member]);
-                    if (typeof(patched) !== 'string') {
+                    if (typeof (patched) !== 'string') {
                         p[member] = patched;
                     }
                 } else if (memberType === 'object') {
@@ -588,6 +581,7 @@ export class BackendService {
                 }
             }
         }
+
         for (const node of topology.nodeTemplates) {
             if (node.properties && node.properties.properties) {
                 patchMembers(node.properties.properties);

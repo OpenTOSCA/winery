@@ -34,7 +34,6 @@ import { ToggleModalDataModel } from '../models/toggleModalDataModel';
 import { ToastrService } from 'ngx-toastr';
 import { BackendService } from '../services/backend.service';
 import { CapabilityModel } from '../models/capabilityModel';
-import { isNullOrUndefined } from 'util';
 import { RequirementModel } from '../models/requirementModel';
 import { EntityTypesModel } from '../models/entityTypesModel';
 import { ExistsService } from '../services/exists.service';
@@ -331,7 +330,7 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
                 this.requirements.requirements = currentNodeData.requirements;
                 this.requirements.nodeId = currentNodeData.id;
                 // if a requirement in the table is clicked show the data in the modal
-                if (!isNullOrUndefined(currentNodeData.currentRequirement)) {
+                if (currentNodeData.currentRequirement) {
                     this.showCurrentRequirement = true;
                     this.requirements.reqId = currentNodeData.currentRequirement.id;
                     this.requirements.oldReqId = currentNodeData.currentRequirement.id;
@@ -413,7 +412,7 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
                 this.capabilities.capabilities = currentNodeData.capabilities;
                 this.capabilities.nodeId = currentNodeData.id;
                 // if a capability in the table is clicked show the data in the modal
-                if (!isNullOrUndefined(currentNodeData.currentCapability)) {
+                if (currentNodeData.currentCapability) {
                     this.showCurrentCapability = true;
                     this.capabilities.capId = currentNodeData.currentCapability.id;
                     this.capabilities.oldCapId = currentNodeData.currentCapability.id;
@@ -909,7 +908,7 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
             if (difference === 1) {
                 this.handleNewRelationship(currentRelationships);
             } else if (difference > 0 || difference < 0) {
-                if (this.configuration.isYaml() && difference < 0) {
+                if (this.configuration.isYaml() && difference < 0 && this.allNodeTemplates.length > 0) {
                     // a relationship is deleted. reset the associated source requirement
                     const deletedRels = this.allRelationshipTemplates.filter(rel => currentRelationships.every(curRel => curRel.id !== rel.id));
                     deletedRels.forEach(deletedRel => {
@@ -1212,7 +1211,7 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
     paintRelationship(newRelationship: TRelationshipTemplate) {
         const allJsPlumbRelationships = this.newJsPlumbInstance.getAllConnections();
         if (!allJsPlumbRelationships.some(rel => rel.id === newRelationship.id)) {
-            let labelString = (isNullOrUndefined(newRelationship.state) ? '' : newRelationship.state + '<br>')
+            let labelString = (!newRelationship.state ? '' : newRelationship.state + '<br>')
                 // why not use name -> save the type's id into the name (without management version)
                 + newRelationship.name;
 
@@ -1263,7 +1262,7 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
                 }
             }
 
-            const border = isNullOrUndefined(newRelationship.state)
+            const border = !newRelationship.state
                 ? '#fafafa' : VersionUtils.getElementColorByDiffState(newRelationship.state);
             const me = this;
             const conn = this.newJsPlumbInstance.connect({
@@ -1924,8 +1923,8 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
             if (storeData) {
                 // update exposed keys
                 for (const key of ['name', 'minInstances', 'maxInstances', 'properties',
-                                   'capabilities', 'requirements', 'deploymentArtifacts',
-                                   'policies', 'otherAttributes']) {
+                    'capabilities', 'requirements', 'deploymentArtifacts',
+                    'policies', 'otherAttributes']) {
                     nodeTemplate[key] = storeData[key];
                 }
                 const nodeComponent = this.nodeComponentChildren.find(c => c.nodeTemplate.id === nodeTemplate.id);
@@ -2356,7 +2355,7 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
                 if (rel.policies !== relationshipTemplate.policies) {
                     const oldCon = this.newJsPlumbInstance.getAllConnections().find(jSPlumbConnection => jSPlumbConnection.id === relationshipTemplate.id);
                     if (relationshipTemplate.policies && relationshipTemplate.policies.policy) {
-                        let labelString = (isNullOrUndefined(relationshipTemplate.state) ? '' : relationshipTemplate.state + '<br>')
+                        let labelString = (!relationshipTemplate.state ? '' : relationshipTemplate.state + '<br>')
                             + relationshipTemplate.name;
                         if (labelString.startsWith(this.backendService.configuration.relationshipPrefix)) {
                             // Workaround to support old topology templates with the real name
@@ -2376,7 +2375,7 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
                         const relationshipType = this.entityTypes.relationshipTypes.filter(rT => rT.qName === relationshipTemplate.type)[0];
 
                         if (oldCon) {
-                            const border = isNullOrUndefined(relationshipTemplate.state)
+                            const border = !relationshipTemplate.state
                                 ? '#fafafa' : VersionUtils.getElementColorByDiffState(relationshipTemplate.state);
                             const me = this;
                             // create new JsPlumb instance with updated attributes
@@ -2428,7 +2427,7 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
                 this.notify.warning('Duplicate policy name!', 'Policy not Added!');
             } else {
                 const newPolicy = new TPolicy(policyName, undefined, this.selectedNewPolicyType, [],
-                    [], {}, { properties: { } }, []);
+                    [], {}, { properties: {} }, []);
                 const newPolicies = [...this.entityTypes.yamlPolicies, newPolicy];
                 this.ngRedux.dispatch(this.actions.changeYamlPolicies(newPolicies));
                 this.addYamlPolicyModal.hide();

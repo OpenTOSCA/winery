@@ -30,8 +30,6 @@ import { TopologyRendererState } from './redux/reducers/topologyRenderer.reducer
 import { VersionElement } from './models/versionElement';
 import { TopologyRendererActions } from './redux/actions/topologyRenderer.actions';
 import { WineryRepositoryConfigurationService } from '../../../tosca-management/src/app/wineryFeatureToggleModule/WineryRepositoryConfiguration.service';
-import { TPolicy } from './models/policiesModalData';
-import { GroupedNodeTypeModel } from './models/groupedNodeTypeModel';
 import { WineryActions } from './redux/actions/winery.actions';
 
 /**
@@ -155,7 +153,7 @@ export class WineryComponent implements OnInit, AfterViewInit {
                     id: '',
                     name: '',
                     type: '',
-                    properties: { kvproperties: { foo: 'bar' }},
+                    properties: { kvproperties: { foo: 'bar' } },
                 },
                 minInstances: -1,
                 maxInstances: -1,
@@ -176,10 +174,20 @@ export class WineryComponent implements OnInit, AfterViewInit {
 
     initiateData(): void {
         // TODO well, this is a mess
-        this.backendService.model$.subscribe(m => this.entityTypes = m);
-        this.backendService.topDiff$.subscribe(diff => this.topologyDifferences = diff);
-        this.backendService.topTemplate$.subscribe(template => this.initTopologyTemplateForRendering(template.nodeTemplates, template.relationshipTemplates));
-        this.backendService.loaded$.subscribe(l => { if (l) { this.triggerLoaded('everything'); }});
+        this.backendService.model$.subscribe(m => {
+            this.entityTypes = m;
+            this.ngRedux.dispatch(this.uiActions.addEntityTypes(this.entityTypes));
+        });
+        this.backendService.topDiff$
+            .subscribe(diff => this.topologyDifferences = diff);
+        this.backendService.topTemplate$
+            .subscribe(template => this.initTopologyTemplateForRendering(template.nodeTemplates, template.relationshipTemplates));
+        this.backendService.loaded$
+            .subscribe(l => {
+                if (l) {
+                    this.triggerLoaded('everything');
+                }
+            });
     }
 
     onReduxReady() {

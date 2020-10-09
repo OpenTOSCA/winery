@@ -19,6 +19,7 @@ import { TDeploymentArtifact } from '../../models/artifactsModalData';
 import { TPolicy } from '../../models/policiesModalData';
 import { Visuals } from '../../models/visuals';
 import { DetailsSidebarState } from '../../sidebars/node-details/node-details-sidebar';
+import { EntityTypesModel } from '../../models/entityTypesModel';
 
 export interface SendPaletteOpenedAction extends Action {
     paletteOpened: boolean;
@@ -32,7 +33,11 @@ export interface SidebarStateAction extends Action {
     sidebarContents: DetailsSidebarState;
 }
 
-export interface SidebarNodeNamechange extends Action {
+export interface AddEntityTypesAction extends Action {
+    types: EntityTypesModel;
+}
+
+export interface SidebarChangeNodeName extends Action {
     nodeNames: {
         newNodeName: string,
         id: string
@@ -117,7 +122,7 @@ export interface SetPropertyAction extends Action {
     };
 }
 
-export interface SetCababilityAction extends Action {
+export interface SetCapabilityAction extends Action {
     nodeCapability: {
         nodeId: string,
         color: string,
@@ -220,6 +225,7 @@ export class WineryActions {
     static UPDATE_REL_DATA = 'UPDATE_REL_DATA';
     static CHANGE_MIN_INSTANCES = 'CHANGE_MIN_INSTANCES';
     static CHANGE_MAX_INSTANCES = 'CHANGE_MAX_INSTANCES';
+    static ADD_ENTITY_TYPES = 'ADD_ENTITY_TYPES';
 
     static INC_MIN_INSTANCES = 'INC_MIN_INSTANCES';
     static DEC_MIN_INSTANCES = 'DEC_MIN_INSTANCES';
@@ -241,6 +247,11 @@ export class WineryActions {
     static SEND_CURRENT_NODE_ID = 'SEND_CURRENT_NODE_ID';
     static SET_NODE_VISUALS = 'SET_NODE_VISUALS';
 
+    addEntityTypes: ActionCreator<AddEntityTypesAction> = ((entityTypes) => ({
+        type: WineryActions.ADD_ENTITY_TYPES,
+        types: entityTypes,
+    }));
+
     sendPaletteOpened: ActionCreator<SendPaletteOpenedAction> =
         ((paletteOpened) => ({
             type: WineryActions.SEND_PALETTE_OPENED,
@@ -256,7 +267,7 @@ export class WineryActions {
             type: WineryActions.OPEN_SIDEBAR,
             sidebarContents: newSidebarData.sidebarContents
         }));
-    changeNodeName: ActionCreator<SidebarNodeNamechange> =
+    changeNodeName: ActionCreator<SidebarChangeNodeName> =
         ((nodeNames) => ({
             type: WineryActions.CHANGE_NODE_NAME,
             nodeNames: nodeNames.nodeNames
@@ -326,7 +337,7 @@ export class WineryActions {
             type: WineryActions.SET_PROPERTY,
             propertyData: data,
         }));
-    setCapability: ActionCreator<SetCababilityAction> =
+    setCapability: ActionCreator<SetCapabilityAction> =
         ((newCapability) => ({
             type: WineryActions.SET_CAPABILITY,
             nodeCapability: newCapability

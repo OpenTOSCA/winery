@@ -239,22 +239,24 @@ export class TopologyTemplateUtil {
         return relationshipTemplates;
     }
 
-    static updateTopologyTemplate(ngRedux: NgRedux<IWineryState>, wineryActions: WineryActions, topology: TTopologyTemplate, isYaml: boolean) {
+    static updateTopologyTemplate(ngRedux: NgRedux<IWineryState>, wineryActions: WineryActions, topology: TTopologyTemplate,
+                                  types: EntityTypesModel, isYaml: boolean) {
         const wineryState = ngRedux.getState().wineryState;
 
         // Required because if the palette is open, the last node inserted will be bound to the mouse movement.
         ngRedux.dispatch(wineryActions.sendPaletteOpened(false));
 
-        wineryState.currentJsonTopology.nodeTemplates
-            .forEach(
-                node => ngRedux.dispatch(wineryActions.deleteNodeTemplate(node.id))
-            );
+        // It's important to remove the relations first, as the YAML mode may break.
         wineryState.currentJsonTopology.relationshipTemplates
             .forEach(
                 relationship => ngRedux.dispatch(wineryActions.deleteRelationshipTemplate(relationship.id))
             );
+        wineryState.currentJsonTopology.nodeTemplates
+            .forEach(
+                node => ngRedux.dispatch(wineryActions.deleteNodeTemplate(node.id))
+            );
 
-        TopologyTemplateUtil.initNodeTemplates(topology.nodeTemplates, wineryState.nodeVisuals, isYaml, null)
+        TopologyTemplateUtil.initNodeTemplates(topology.nodeTemplates, wineryState.nodeVisuals, isYaml, types)
             .forEach(
                 node => ngRedux.dispatch(wineryActions.saveNodeTemplate(node))
             );
