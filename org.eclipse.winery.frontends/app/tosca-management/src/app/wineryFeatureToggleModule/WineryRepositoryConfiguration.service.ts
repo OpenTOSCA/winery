@@ -41,6 +41,7 @@ export interface WineryConfiguration {
         workflowmodeler: string;
         edmmTransformationTool: string;
         eclipseChe: string;
+        repositoryPath: string
     };
 }
 

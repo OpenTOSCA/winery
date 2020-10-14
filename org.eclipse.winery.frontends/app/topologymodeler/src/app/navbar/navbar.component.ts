@@ -27,6 +27,7 @@ import { StatefulAnnotationsService } from '../services/statefulAnnotations.serv
 import { FeatureEnum } from '../../../../tosca-management/src/app/wineryFeatureToggleModule/wineryRepository.feature.direct';
 import { WineryRepositoryConfigurationService } from '../../../../tosca-management/src/app/wineryFeatureToggleModule/WineryRepositoryConfiguration.service';
 import { TTopologyTemplate } from '../models/ttopology-template';
+import { CheService } from '../../../../tosca-management/src/app/che/che.service';
 
 /**
  * The navbar of the topologymodeler.
@@ -71,7 +72,8 @@ export class NavbarComponent implements OnDestroy {
                 private backendService: BackendService,
                 private statefulService: StatefulAnnotationsService,
                 private hotkeysService: HotkeysService,
-                public configurationService: WineryRepositoryConfigurationService) {
+                public configurationService: WineryRepositoryConfigurationService,
+                private che: CheService) {
         this.subscriptions.push(ngRedux.select(state => state.topologyRendererState)
             .subscribe(newButtonsState => this.setButtonsState(newButtonsState)));
         this.subscriptions.push(ngRedux.select(currentState => currentState.wineryState.currentJsonTopology)
@@ -274,6 +276,12 @@ export class NavbarComponent implements OnDestroy {
     }
 
     openChe() {
-        window.open(this.configurationService.configuration.endpoints.eclipseChe, '_blank');
+        this.che.getCheTheiaUrl().subscribe(response => {
+            const pathParts = this.configurationService.configuration.endpoints.repositoryPath.split('/');
+            const path = pathParts[1];
+            const readmePath = response.url + `/?ns=${this.backendService.configuration.ns}&id=${this.backendService.configuration
+                .id}&parentPath=${path}/${this.backendService.configuration.parentPath}#/projects`;
+            window.open(readmePath, '_blank');
+        });
     }
 }

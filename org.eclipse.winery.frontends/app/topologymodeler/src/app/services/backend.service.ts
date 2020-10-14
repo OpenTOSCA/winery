@@ -33,7 +33,6 @@ import { VersionElement } from '../models/versionElement';
 import { WineryRepositoryConfigurationService } from '../../../../tosca-management/src/app/wineryFeatureToggleModule/WineryRepositoryConfiguration.service';
 import { takeLast } from 'rxjs/operators';
 import { TPolicy } from '../models/policiesModalData';
-import { backendBaseURL } from '../../../../tosca-management/src/app/configuration';
 import { EntityTypesModel } from '../models/entityTypesModel';
 import { ToscaUtils } from '../models/toscaUtils';
 

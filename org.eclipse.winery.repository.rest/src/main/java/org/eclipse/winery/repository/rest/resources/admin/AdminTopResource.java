@@ -16,6 +16,8 @@ package org.eclipse.winery.repository.rest.resources.admin;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -35,16 +37,20 @@ import org.eclipse.winery.repository.backend.consistencycheck.ConsistencyChecker
 import org.eclipse.winery.repository.backend.consistencycheck.ConsistencyCheckerConfiguration;
 import org.eclipse.winery.repository.backend.consistencycheck.ConsistencyCheckerVerbosity;
 import org.eclipse.winery.repository.backend.consistencycheck.ConsistencyErrorCollector;
+import org.eclipse.winery.repository.rest.resources.admin.AdminTopResource.CheResponse;
 import org.eclipse.winery.repository.rest.resources.admin.types.ConstraintTypesManager;
 import org.eclipse.winery.repository.rest.resources.admin.types.PlanLanguagesManager;
 import org.eclipse.winery.repository.rest.resources.admin.types.PlanTypesManager;
 import org.eclipse.winery.repository.rest.resources.apiData.OAuthStateAndCodeApiData;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
@@ -91,6 +97,7 @@ public class AdminTopResource {
 
     /**
      * This method answers a get-request by the WineryRepositoryConfigurationService
+     *
      * @return the winery config file in json format.
      */
     @GET
@@ -98,6 +105,60 @@ public class AdminTopResource {
     @Produces(MediaType.APPLICATION_JSON)
     public UiConfigurationObject getConfig() {
         return Environments.getInstance().getUiConfig();
+    }
+
+    public static class Server {
+        public String url;
+        public String status;
+    }
+
+    public static class Machine {
+        public Map<String, String> attributes;
+
+        public Map<String, Server> servers;
+    }
+
+    public static class Runtime {
+        public Map<String, Machine> machines;
+    }
+
+    public static class WorkspaceResponse {
+        public Runtime runtime;
+    }
+
+    public static class CheResponse {
+        public String url;
+
+        CheResponse(String url) {
+            this.url = url;
+        }
+    }
+
+    @GET
+    @Path("che")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getCheUrl() throws Exception {
+        HttpClient httpclient = HttpClients.createDefault();
+        String cheApiEndpoint = System.getenv("CHE_API");
+        String cheMachineToken = System.getenv("CHE_MACHINE_TOKEN");
+        String cheWorkspaceId = System.getenv("CHE_WORKSPACE_ID");
+        HttpGet httpGet = new HttpGet(cheApiEndpoint + "/workspace/" + cheWorkspaceId);
+        httpGet.setHeader("Authorization", "Bearer " + cheMachineToken);
+
+        HttpResponse
+            response = httpclient.execute(httpGet);
+
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        WorkspaceResponse workspace = mapper.readValue(response.getEntity().getContent(), WorkspaceResponse.class);
+        Optional<Machine> machine = workspace.runtime.machines.values().stream().filter(x -> "theia-editor".equals(x.attributes.get("component"))).findFirst();
+
+        Optional<Server> runningServer = machine.get().servers.values().stream().filter(x -> x.status.equals("RUNNING")).findFirst();
+
+        return Response
+            .status(response.getStatusLine().getStatusCode())
+            .entity(new CheResponse(runningServer.get().url))
+            .build();
     }
 
     @PUT
