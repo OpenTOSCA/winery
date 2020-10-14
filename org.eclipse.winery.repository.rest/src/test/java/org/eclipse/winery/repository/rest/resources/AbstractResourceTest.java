@@ -19,6 +19,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.Scanner;
 
+import org.eclipse.winery.common.configuration.RepositoryConfigurationObject;
 import org.eclipse.winery.common.json.JacksonProvider;
 import org.eclipse.winery.model.ids.EncodingUtil;
 import org.eclipse.winery.repository.TestWithGitBackedRepository;
@@ -50,6 +51,14 @@ public abstract class AbstractResourceTest extends TestWithGitBackedRepository {
     static {
         SLF4JBridgeHandler.removeHandlersForRootLogger();
         SLF4JBridgeHandler.install();
+    }
+
+    public AbstractResourceTest() {
+        super();
+    }
+
+    public AbstractResourceTest(RepositoryConfigurationObject.RepositoryProvider provider) {
+        super(provider);
     }
 
     @BeforeAll

@@ -12,16 +12,14 @@
  * SPDX-License-Identifier: EPL-2.0 OR Apache-2.0
  *******************************************************************************/
 
-import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnDestroy, Output, SimpleChanges } from '@angular/core';
 import { Subject, Subscription } from 'rxjs';
 import { KeyValueItem } from '../../../../../tosca-management/src/app/model/keyValueItem';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { BackendService } from '../../services/backend.service';
-import { EntityType, TDataType } from '../../models/ttopology-template';
+import { EntityType } from '../../models/ttopology-template';
 import { InheritanceUtils } from '../../models/InheritanceUtils';
-import { ConstraintChecking } from '../property-constraints';
 import { ToscaUtils } from '../../models/toscaUtils';
-import { isWellKnown } from '../../../../../tosca-management/src/app/model/constraint';
 
 function patchJson(rawKV: KeyValueItem) {
     const userInput = rawKV.value;
@@ -32,7 +30,7 @@ function patchJson(rawKV: KeyValueItem) {
         // if the user input is not actually JSON, we just fall back to it
         result = userInput;
     }
-    return { key: rawKV.key, value: result};
+    return { key: rawKV.key, value: result };
 }
 
 @Component({
@@ -59,9 +57,7 @@ export class YamlPropertiesComponent implements OnChanges, OnDestroy {
                 this.nodeTypes = model.unGroupedNodeTypes.concat(model.relationshipTypes);
             }
         ));
-        this.subscriptions.push(this.outputDebouncer.pipe(
-            debounceTime(300),
-            distinctUntilChanged(), )
+        this.subscriptions.push(this.outputDebouncer.pipe(debounceTime(300), distinctUntilChanged())
             .subscribe(rawValue => this.propertyEdited.emit(patchJson(rawValue))));
     }
 
@@ -114,5 +110,9 @@ export class YamlPropertiesComponent implements OnChanges, OnDestroy {
                 this.propertyValues[propDefinition.name] = propDefinition.defaultValue || '';
             }
         }
+    }
+
+    isEmpty(): boolean {
+        return !this.propertyDefinitions || this.propertyDefinitions.length === 0;
     }
 }

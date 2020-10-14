@@ -20,6 +20,7 @@ import { TopologyRendererActions } from '../../redux/actions/topologyRenderer.ac
 import { WineryActions } from '../../redux/actions/winery.actions';
 import { TopologyTemplateUtil } from '../../models/topologyTemplateUtil';
 import { WineryRepositoryConfigurationService } from '../../../../../tosca-management/src/app/wineryFeatureToggleModule/WineryRepositoryConfiguration.service';
+import { EntityTypesModel } from '../../models/entityTypesModel';
 
 @Component({
     selector: 'winery-refinement',
@@ -40,12 +41,16 @@ export class RefinementSidebarComponent implements OnDestroy {
     refinementIsDone: boolean;
     prmCandidates: PatternRefinementModel[];
 
+    private entityTypes: EntityTypesModel;
+
     constructor(private ngRedux: NgRedux<IWineryState>,
                 private rendererActions: TopologyRendererActions,
                 private wineryActions: WineryActions,
                 private webSocketService: RefinementWebSocketService,
                 private configurationService: WineryRepositoryConfigurationService,
                 private backendService: BackendService) {
+        this.ngRedux.select(state => state.wineryState.entityTypes)
+            .subscribe(types => this.entityTypes = types);
     }
 
     startRefinement(event: MouseEvent) {
@@ -99,7 +104,8 @@ export class RefinementSidebarComponent implements OnDestroy {
             }
 
             if (value.currentTopology) {
-                TopologyTemplateUtil.updateTopologyTemplate(this.ngRedux, this.wineryActions, value.currentTopology, this.configurationService.isYaml());
+                TopologyTemplateUtil.updateTopologyTemplate(this.ngRedux, this.wineryActions, value.currentTopology,
+                    this.entityTypes, this.configurationService.isYaml());
             } else {
                 this.openModelerFor(value.serviceTemplateContainingRefinements.xmlId.decoded,
                     value.serviceTemplateContainingRefinements.namespace.decoded,

@@ -51,6 +51,8 @@ components:
                 env:
                   - name: WINERY_FEATURE_RADON
                     value: "true"
+                  - name: WINERY_FEATURE_UPDATE_TEMPLATES
+                    value: "true"
                   - name: WINERY_REPOSITORY_PROVIDER
                     value: "yaml"
                   - name: WINERY_REPOSITORY_URL

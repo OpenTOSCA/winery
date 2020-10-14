@@ -12,14 +12,13 @@
  * SPDX-License-Identifier: EPL-2.0 OR Apache-2.0
  *******************************************************************************/
 
-import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { Subject, Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 @Component({
     selector: 'winery-xml-properties',
     templateUrl: './xml-properties.component.html',
-    // styleUrls: ['./xml-properties.component.css']
 })
 export class XmlPropertiesComponent implements OnInit, OnDestroy {
     @Input() readonly: boolean;
@@ -31,9 +30,7 @@ export class XmlPropertiesComponent implements OnInit, OnDestroy {
     subscriptions: Array<Subscription> = [];
 
     ngOnInit(): void {
-        this.subscriptions.push(this.properties.pipe(
-            debounceTime(300),
-            distinctUntilChanged(), )
+        this.subscriptions.push(this.properties.pipe(debounceTime(300), distinctUntilChanged())
             .subscribe(value => {
                 this.propertyEdited.emit(value);
             }));

@@ -16,11 +16,11 @@ import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angu
 import { Subject, Subscription } from 'rxjs';
 import { KeyValueItem } from '../../../../../tosca-management/src/app/model/keyValueItem';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { Utils } from '../../../../../tosca-management/src/app/wineryUtils/utils';
 
 @Component({
     selector: 'winery-kv-properties',
     templateUrl: './kv-properties.component.html',
-    // styleUrls: ['./kv-properties.component.css'],
 })
 export class KvPropertiesComponent implements OnInit, OnDestroy {
     @Input() readonly: boolean;
@@ -37,15 +37,11 @@ export class KvPropertiesComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {
         // find out which row was edited by key
-        this.subscriptions.push(this.keySubject.pipe(
-            debounceTime(200),
-            distinctUntilChanged(), )
+        this.subscriptions.push(this.keySubject.pipe(debounceTime(200), distinctUntilChanged())
             .subscribe(key => {
                 this.key = key;
             }));
-        this.subscriptions.push(this.properties.pipe(
-            debounceTime(300),
-            distinctUntilChanged(), )
+        this.subscriptions.push(this.properties.pipe(debounceTime(300), distinctUntilChanged())
             .subscribe(propertyValue => {
                 this.propertyEdited.emit({
                     key: this.key,
@@ -58,4 +54,7 @@ export class KvPropertiesComponent implements OnInit, OnDestroy {
         this.subscriptions.forEach(s => s.unsubscribe());
     }
 
+    isEmpty(): boolean {
+        return !this.nodeProperties || Utils.isEmpty(this.nodeProperties);
+    }
 }

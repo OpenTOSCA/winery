@@ -13,6 +13,7 @@ ui:
     testRefinement: true
     placement: true
     edmmModeling: false
+    updateTemplates: true
   endpoints:
     container: http://localhost:1337
     workflowmodeler: http://localhost:9527

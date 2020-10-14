@@ -14,7 +14,6 @@
 
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs/Subject';
-import { isNullOrUndefined } from 'util';
 import { Entity, EntityType, TArtifactType, TDataType, TPolicyType, TTopologyTemplate, VisualEntityType } from '../models/ttopology-template';
 import { QNameWithTypeApiData } from '../models/generateArtifactApiData';
 import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
@@ -35,6 +34,7 @@ import { takeLast } from 'rxjs/operators';
 import { TPolicy } from '../models/policiesModalData';
 import { EntityTypesModel } from '../models/entityTypesModel';
 import { ToscaUtils } from '../models/toscaUtils';
+import { TopologyTemplateUtil } from '../models/topologyTemplateUtil';
 
 /**
  * Responsible for interchanging data between the app and the server.
@@ -72,9 +72,7 @@ export class BackendService {
     }
 
     public configure(params: TopologyModelerConfiguration) {
-        if (!(isNullOrUndefined(params.id) && isNullOrUndefined(params.ns) &&
-            isNullOrUndefined(params.repositoryURL) && isNullOrUndefined(params.uiURL))) {
-
+        if (params.id && params.ns && params.repositoryURL && params.uiURL) {
             this.configuration = new TopologyModelerConfiguration(
                 params.id,
                 params.ns,
@@ -114,7 +112,6 @@ export class BackendService {
         if (this.topologyDifferences[0] !== undefined && this.topologyDifferences[1] !== undefined) {
             this.topDiff.next(this.topologyDifferences);
         }
-        const backendLoadingState = results[2];
 
         // entity types are encapsulated in a separate forkJoin
         const entityTypes = results[1];
@@ -349,7 +346,6 @@ export class BackendService {
         }
     }
 
-
     /**
      * Requests all namespaces from the backend
      */
@@ -388,32 +384,9 @@ export class BackendService {
      */
     saveTopologyTemplate(topologyTemplate: TTopologyTemplate): Observable<HttpResponse<string>> {
         if (this.configuration) {
-            // Initialization
-            const topologySkeleton = {
-                documentation: [],
-                any: [],
-                otherAttributes: {},
-                relationshipTemplates: [],
-                nodeTemplates: [],
-                policies: { policy: new Array<TPolicy>() }
-            };
-            // Prepare for saving by updating the existing topology with the current topology state inside the Redux store
-            topologySkeleton.nodeTemplates = topologyTemplate.nodeTemplates;
-            topologySkeleton.relationshipTemplates = topologyTemplate.relationshipTemplates;
-            topologySkeleton.relationshipTemplates.map(relationship => {
-                delete relationship.state;
-            });
-            // remove the 'Color' field from all nodeTemplates as the REST Api does not recognize it.
-            topologySkeleton.nodeTemplates.map(nodeTemplate => {
-                delete nodeTemplate.visuals;
-                delete nodeTemplate._state;
-            });
-            topologySkeleton.policies = topologyTemplate.policies;
-            console.log(topologySkeleton);
-
-            const headers = new HttpHeaders().set('Content-Type', 'application/json');
+           const headers = new HttpHeaders().set('Content-Type', 'application/json');
             return this.http.put(this.configuration.elementUrl,
-                topologySkeleton,
+                TopologyTemplateUtil.prepareSave(topologyTemplate),
                 { headers: headers, responseType: 'text', observe: 'response' }
             );
         }
@@ -469,8 +442,7 @@ export class BackendService {
      *
      */
     threatCreation(data: ThreatCreation): Observable<string> {
-        const url = this.configuration.repositoryURL;
-        return this.http.post(url + '/threats', data, { responseType: 'text' });
+        return this.http.post(`${(this.configuration.repositoryURL)}/threats`, data, { responseType: 'text' });
     }
 
     /**
@@ -575,10 +547,10 @@ export class BackendService {
                     // skipping object prototype inherited members to make tslint happy
                     continue;
                 }
-                const memberType = typeof(p[member]);
+                const memberType = typeof (p[member]);
                 if (memberType === 'string') {
                     const patched = jsonParse(p[member]);
-                    if (typeof(patched) !== 'string') {
+                    if (typeof (patched) !== 'string') {
                         p[member] = patched;
                     }
                 } else if (memberType === 'object') {
@@ -587,6 +559,7 @@ export class BackendService {
                 }
             }
         }
+
         for (const node of topology.nodeTemplates) {
             if (node.properties && node.properties.properties) {
                 patchMembers(node.properties.properties);

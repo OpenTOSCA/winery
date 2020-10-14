@@ -30,12 +30,12 @@
             <url>https://www.jitpack.io</url>
         </repository>
     </repositories>
-    
+
     <dependencies>
         <dependency>
             <groupId>com.github.UST-EDMM.edmm</groupId>
             <artifactId>edmm-core</artifactId>
-            <version>v1.0.6</version>
+            <version>v1.0.8</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.winery</groupId>
