@@ -208,7 +208,7 @@ public class YamlBuilder {
             .setNodeTemplates(buildMap(map, "node_templates", this::buildNodeTemplate, parameter))
             .setRelationshipTemplates(buildMap(map, "relationship_templates", this::buildRelationshipTemplate, parameter))
             .setGroups(buildMap(map, "groups", this::buildGroupDefinition, parameter))
-            .setPolicies(buildMap(map, "policies", this::buildPolicyDefinition, parameter))
+            .setPolicies(buildListMap(map, "policies", this::buildPolicyDefinition, parameter))
             .setOutputs(buildMap(map, "outputs", this::buildParameterDefinition, parameter))
             .setSubstitutionMappings(buildSubstitutionMappings(map.get("substitution_mappings"),
                 parameter.copy().addContext("substitution_mappings")
@@ -1301,6 +1301,32 @@ public class YamlBuilder {
 
     private <T> boolean nonNull(Pair<String, T> pair) {
         return Objects.nonNull(pair) && Objects.nonNull(pair.getOne()) && Objects.nonNull(pair.getTwo());
+    }
+
+    private <T, K> Map<String, T> buildListMap(Map<String, Object> map, String key,
+                                               BiFunction<Object, Parameter<T>, T> function, Parameter<K> parameter) {
+        return buildListMap(map.get(key),
+            new Parameter<T>(parameter.getContext()).addContext(key)
+                .setBuilderOO(function)
+        );
+    }
+
+    private <T> Map<String, T> buildListMap(Object object, Parameter<T> parameter) {
+        if (Objects.isNull(object)) {
+            return null;
+        }
+        @SuppressWarnings("unchecked")
+        List<Map<String, Object>> list = (List<Map<String, Object>>) object;
+        return list.stream()
+            .filter(Objects::nonNull)
+            .flatMap(map -> map.entrySet().stream())
+            .filter(Objects::nonNull)
+            .map(entry -> Tuples.pair(entry.getKey(), parameter.getBuilderOO().apply(entry.getValue(),
+                new Parameter<T>(parameter.getContext())
+                    .setClazz(parameter.getClazz())
+                    .setValue(entry.getKey())))
+            )
+            .collect(Collectors.toMap(Pair::getOne, Pair::getTwo));
     }
 
     private <T, K> Map<String, T> buildMap(Map<String, Object> map, String key,

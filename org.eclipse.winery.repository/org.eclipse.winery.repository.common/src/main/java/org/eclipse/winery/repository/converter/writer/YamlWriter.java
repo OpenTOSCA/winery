@@ -23,6 +23,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -164,7 +165,7 @@ public class YamlWriter extends AbstractVisitor<YamlPrinter, YamlWriter.Paramete
             .print(printMap("node_templates", node.getNodeTemplates(), parameter))
             .print(printMap("relationship_templates", node.getRelationshipTemplates(), parameter))
             .print(printMap("groups", node.getGroups(), parameter))
-            .print(printMap("policies", node.getPolicies(), parameter))
+            .print(printListMap("policies", Collections.singletonList(node.getPolicies()), parameter))
             .print(printMap("outputs", node.getOutputs(), parameter))
             .print(printVisitorNode(node.getSubstitutionMappings(), new Parameter(parameter.getIndent()).addContext("substitution_mappings")));
     }
@@ -634,7 +635,7 @@ public class YamlWriter extends AbstractVisitor<YamlPrinter, YamlWriter.Paramete
 
     private <T> YamlPrinter printListMap(String keyValue, List<Map<String, T>> list, Parameter parameter) {
         YamlPrinter printer = new YamlPrinter(parameter.getIndent());
-        if (!list.isEmpty()) {
+        if (list != null && !list.isEmpty()) {
             printer.printKey(keyValue)
                 .print(list.stream()
                     .flatMap(map -> map.entrySet().stream())

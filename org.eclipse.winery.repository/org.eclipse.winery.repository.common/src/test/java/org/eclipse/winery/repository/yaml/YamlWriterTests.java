@@ -14,19 +14,30 @@
 
 package org.eclipse.winery.repository.yaml;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.xml.namespace.QName;
+
 import org.eclipse.winery.model.tosca.yaml.YTConstraintClause;
 import org.eclipse.winery.model.tosca.yaml.YTImportDefinition;
+import org.eclipse.winery.model.tosca.yaml.YTNodeTemplate;
+import org.eclipse.winery.model.tosca.yaml.YTPolicyDefinition;
 import org.eclipse.winery.model.tosca.yaml.YTPropertyAssignment;
+import org.eclipse.winery.model.tosca.yaml.YTRelationshipTemplate;
 import org.eclipse.winery.model.tosca.yaml.YTServiceTemplate;
+import org.eclipse.winery.model.tosca.yaml.YTTopologyTemplateDefinition;
 import org.eclipse.winery.model.tosca.yaml.support.Defaults;
 import org.eclipse.winery.repository.converter.writer.YamlPrinter;
 import org.eclipse.winery.repository.converter.writer.YamlWriter;
@@ -46,6 +57,14 @@ public class YamlWriterTests {
     public void testServiceTemplates(YTServiceTemplate template, String expected) {
         YamlWriter writer = new YamlWriter();
         YamlPrinter p = writer.visit(template, new YamlWriter.Parameter(0));
+        assertEquals(expected, p.toString());
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(ServiceTmpltTopologyTmpltProvider.class)
+    public void testTopologyTemplateContent(YTServiceTemplate serv, String expected) {
+        YamlWriter writer = new YamlWriter();
+        YamlPrinter p = writer.visit(serv, new YamlWriter.Parameter(0).addContext("root"));
         assertEquals(expected, p.toString());
     }
 
@@ -100,6 +119,35 @@ public class YamlWriterTests {
         }
     }
 
+    static class ServiceTmpltTopologyTmpltProvider implements ArgumentsProvider {
+        @Override
+        public Stream<? extends Arguments> provideArguments(ExtensionContext extensionContext) throws Exception {
+            InputStream s = getClass().getClassLoader().getResourceAsStream("yaml/simple-tests/valid-topology_templates-1_3.yml");
+            Map<String, YTPolicyDefinition> polTemplate = new LinkedHashMap<>();
+            YTPolicyDefinition pol1 = new YTPolicyDefinition.Builder(
+                new QName("plt1")).setTargets(Collections.singletonList(new QName("ndt1"))).build();
+            YTPolicyDefinition pol2 = new YTPolicyDefinition.Builder(
+                new QName("plt2")).setTargets(Collections.singletonList(new QName("ndt1"))).build();
+            polTemplate.put("plc1", pol1);
+            polTemplate.put("plc2", pol2);
+            Map<String, YTRelationshipTemplate> relTemplate = new LinkedHashMap<>();
+            YTRelationshipTemplate rel1 = new YTRelationshipTemplate.Builder(new QName("rlt1")).build();
+            relTemplate.put("rltp1", rel1);
+            Map<String, YTNodeTemplate> nodTemplate = new LinkedHashMap<>();
+            YTNodeTemplate nod1 = new YTNodeTemplate.Builder(new QName("tosca.nodes.Database")).build();
+            nodTemplate.put("database", nod1);
+            YTTopologyTemplateDefinition topo = new YTTopologyTemplateDefinition.Builder()
+                .setPolicies(polTemplate)
+                .setRelationshipTemplates(relTemplate)
+                .setNodeTemplates(nodTemplate).build();
+            YTServiceTemplate base = new YTServiceTemplate.Builder(Defaults.TOSCA_DEFINITIONS_VERSION)
+                .setTopologyTemplate(topo).build();
+            return Stream.of(
+                Arguments.of(base, inputStreamToString(s))
+            );
+        }
+    }
+
     static class ImportArgumentsProvider implements ArgumentsProvider {
         @Override
         public Stream<? extends Arguments> provideArguments(ExtensionContext context) {
@@ -134,8 +182,8 @@ public class YamlWriterTests {
         @Override
         public Stream<? extends Arguments> provideArguments(ExtensionContext context) {
             final YTPropertyAssignment baseList = new YTPropertyAssignment.Builder().setValue(Stream.of("a1", "a2")
-                    .map(v -> new YTPropertyAssignment.Builder().setValue(v).build())
-                    .collect(Collectors.toList()))
+                .map(v -> new YTPropertyAssignment.Builder().setValue(v).build())
+                .collect(Collectors.toList()))
                 .build();
             final Map<String, YTPropertyAssignment> nestedMap = new HashMap<>();
             nestedMap.put("pre_activities", baseList);
@@ -183,6 +231,13 @@ public class YamlWriterTests {
                     new YTPropertyAssignment.Builder().setValue(Collections.singletonMap("get_artifact", new YTPropertyAssignment.Builder().setValue(Arrays.asList("e_name", "a_name", "loc", false)).build())).build(),
                     "root: { get_artifact: [ e_name, a_name, loc, false ] }\n")
             );
+        }
+    }
+
+    private static String inputStreamToString(InputStream is) throws IOException {
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(is))) {
+            // + \n because code style requires us to provide an empty line in the end
+            return br.lines().collect(Collectors.joining(System.lineSeparator())) + "\n";
         }
     }
 }
