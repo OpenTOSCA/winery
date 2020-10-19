@@ -89,7 +89,8 @@ public class TDefinitions extends HasId implements HasName, HasTargetNamespace {
         @XmlElement(name = "PatternRefinementModel", type = OTPatternRefinementModel.class),
         @XmlElement(name = "TestRefinementModel", type = OTTestRefinementModel.class)
     })
-    @Deprecated // removing this type information is not helpful, because this class does no longer need to conform to the TOSCA XML XSD
+    @Deprecated
+    // removing this type information is not helpful, because this class does no longer need to conform to the TOSCA XML XSD
     protected List<TExtensibleElements> serviceTemplateOrNodeTypeOrNodeTypeImplementation;
 
     @XmlAttribute(name = "name")
@@ -103,7 +104,8 @@ public class TDefinitions extends HasId implements HasName, HasTargetNamespace {
     protected Map<String, QName> importDefinitions = new HashMap<>();
 
     @Deprecated // used for XML deserialization of API request content
-    public TDefinitions() { }
+    public TDefinitions() {
+    }
 
     public TDefinitions(Builder builder) {
         super(builder);
@@ -327,7 +329,7 @@ public class TDefinitions extends HasId implements HasName, HasTargetNamespace {
             .map(TDataType.class::cast)
             .collect(Collectors.toList());
     }
-    
+
     @JsonIgnore
     @NonNull
     public List<TRequirementType> getRequirementTypes() {
@@ -343,6 +345,15 @@ public class TDefinitions extends HasId implements HasName, HasTargetNamespace {
         return getServiceTemplateOrNodeTypeOrNodeTypeImplementation().stream()
             .filter(x -> x instanceof TPolicyType)
             .map(TPolicyType.class::cast)
+            .collect(Collectors.toList());
+    }
+
+    @JsonIgnore
+    @NonNull
+    public List<TGroupType> getGroupTypes() {
+        return getServiceTemplateOrNodeTypeOrNodeTypeImplementation().stream()
+            .filter(x -> x instanceof TGroupType)
+            .map(TGroupType.class::cast)
             .collect(Collectors.toList());
     }
 
@@ -457,6 +468,7 @@ public class TDefinitions extends HasId implements HasName, HasTargetNamespace {
         private List<TRelationshipTypeImplementation> relationshipTypeImplementations;
         private List<TRequirementType> requirementTypes;
         private List<TDataType> dataTypes;
+        private List<TGroupType> groupTypes;
         private List<TCapabilityType> capabilityTypes;
         private List<TArtifactType> artifactTypes;
         private List<TArtifactTemplate> artifactTemplates;
@@ -507,7 +519,7 @@ public class TDefinitions extends HasId implements HasName, HasTargetNamespace {
             this.testRefinementModels = refinementModels;
             return self();
         }
-        
+
         public Builder setNonStandardElements(List<TExtensibleElements> nonStandardElements) {
             this.nonStandardElements = nonStandardElements;
             return self();
@@ -547,7 +559,7 @@ public class TDefinitions extends HasId implements HasName, HasTargetNamespace {
             this.policyTypes = policyTypes;
             return self();
         }
-        
+
         public Builder setInterfaceTypes(List<TInterfaceType> interfaceTypes) {
             this.interfaceTypes = interfaceTypes;
             return self();
@@ -757,6 +769,28 @@ public class TDefinitions extends HasId implements HasName, HasTargetNamespace {
             return addRelationshipTypeImplementations(tmp);
         }
 
+        public Builder addGroupTypes(List<TGroupType> groupTypes) {
+            if (groupTypes == null || groupTypes.isEmpty()) {
+                return self();
+            }
+            if (this.groupTypes == null) {
+                this.groupTypes = groupTypes;
+            } else {
+                this.groupTypes.addAll(groupTypes);
+            }
+            return self();
+        }
+
+        public Builder addGroupTypes(TGroupType groupType) {
+            if (groupType == null) {
+                return self();
+            }
+            if (groupTypes == null) {
+                groupTypes = new ArrayList<>();
+            }
+            return addGroupTypes(Collections.singletonList(groupType));
+        }
+
         public Builder addRequirementTypes(List<TRequirementType> requirementTypes) {
             if (requirementTypes == null || requirementTypes.isEmpty()) {
                 return self();
@@ -784,7 +818,7 @@ public class TDefinitions extends HasId implements HasName, HasTargetNamespace {
             if (dataTypes == null || dataTypes.isEmpty()) {
                 return self();
             }
-            
+
             if (this.dataTypes == null) {
                 this.dataTypes = dataTypes;
             } else {
@@ -792,7 +826,7 @@ public class TDefinitions extends HasId implements HasName, HasTargetNamespace {
             }
             return self();
         }
-        
+
         public Builder addDataTypes(TDataType dataType) {
             if (dataType == null) {
                 return self();
@@ -802,7 +836,7 @@ public class TDefinitions extends HasId implements HasName, HasTargetNamespace {
             }
             return addDataTypes(Collections.singletonList(dataType));
         }
-        
+
         public Builder addCapabilityTypes(List<TCapabilityType> capabilityTypes) {
             if (capabilityTypes == null || capabilityTypes.isEmpty()) {
                 return self();
@@ -952,8 +986,8 @@ public class TDefinitions extends HasId implements HasName, HasTargetNamespace {
         }
 
         /**
-         * @deprecated there is no good reason for the canonical model to conform to the TOSCA xml xsd any longer
-         *              As such this total removal of type information could be removed for ease of use in the frontend
+         * @deprecated there is no good reason for the canonical model to conform to the TOSCA xml xsd any longer As
+         * such this total removal of type information could be removed for ease of use in the frontend
          */
         @Deprecated
         public List<TExtensibleElements> getServiceTemplateOrNodeTypeOrNodeTypeImplementation() {

@@ -311,27 +311,27 @@ public class YTTopologyTemplateDefinition implements VisitorNode {
             return addGroups(Collections.singletonMap(name, group));
         }
 
-//        public Builder addPolicies(Map<String, TPolicyDefinition> policies) {
-//            if (policies == null || policies.isEmpty()) {
-//                return this;
-//            }
-//
-//            if (this.policies == null) {
-//                this.policies = new LinkedHashMap<>(policies);
-//            } else {
-//                this.policies.putAll(policies);
-//            }
-//
-//            return this;
-//        }
-//
-//        public Builder addPolicies(String name, TPolicyDefinition policy) {
-//            if (name == null || name.isEmpty()) {
-//                return this;
-//            }
-//
-//            return addPolicies(Collections.singletonMap(name, policy));
-//        }
+        public Builder addPolicies(Map<String, YTPolicyDefinition> policies) {
+            if (policies == null || policies.isEmpty()) {
+                return this;
+            }
+
+            if (this.policies == null) {
+                this.policies = new LinkedHashMap<>(policies);
+            } else {
+                this.policies.putAll(policies);
+            }
+
+            return this;
+        }
+
+        public Builder addPolicies(String name, YTPolicyDefinition policy) {
+            if (name == null || name.isEmpty()) {
+                return this;
+            }
+
+            return addPolicies(Collections.singletonMap(name, policy));
+        }
 
         public Builder addOutputs(Map<String, YTParameterDefinition> outputs) {
             if (outputs == null || outputs.isEmpty()) {

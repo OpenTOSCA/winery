@@ -384,7 +384,7 @@ export class BackendService {
      */
     saveTopologyTemplate(topologyTemplate: TTopologyTemplate): Observable<HttpResponse<string>> {
         if (this.configuration) {
-           const headers = new HttpHeaders().set('Content-Type', 'application/json');
+            const headers = new HttpHeaders().set('Content-Type', 'application/json');
             return this.http.put(this.configuration.elementUrl,
                 TopologyTemplateUtil.prepareSave(topologyTemplate),
                 { headers: headers, responseType: 'text', observe: 'response' }
@@ -462,7 +462,7 @@ export class BackendService {
                         + '&id=' + res.xmlId.encoded
                         + '&parentPath=' + this.configuration.parentPath
                         + '&elementPath=' + this.configuration.elementPath;
-                    this.alert.success('automatically opening does not work currently...', 'Substitution successful!');
+                    this.alert.success('Automatically opening does not work currently: ' + url, 'Substitution successful!');
                 },
                 error => {
                     this.errorHandler.handleError(error);

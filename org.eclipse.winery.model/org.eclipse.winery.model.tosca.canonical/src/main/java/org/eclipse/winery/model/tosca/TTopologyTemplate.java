@@ -39,6 +39,7 @@ import org.eclipse.jdt.annotation.Nullable;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "tTopologyTemplate", propOrder = {
     "nodeTemplateOrRelationshipTemplate",
+    "groups",
     "policies",
     "inputs",
     "outputs"
@@ -52,16 +53,17 @@ public class TTopologyTemplate extends TExtensibleElements {
     protected List<TEntityTemplate> nodeTemplateOrRelationshipTemplate;
 
     // added to support conversion from/to YAML policies
+    @JsonProperty("groups")
+    protected List<TGroupDefinition> groups;
     protected TPolicies policies;
-
-    // added to support conversion from/to YAML inputs/outputs
     @JsonProperty("inputs")
     protected List<ParameterDefinition> inputs;
     @JsonProperty("outputs")
     protected List<ParameterDefinition> outputs;
 
     @Deprecated // used for XML deserialization of API request content
-    public TTopologyTemplate() { }
+    public TTopologyTemplate() {
+    }
 
     public TTopologyTemplate(Builder builder) {
         super(builder);
@@ -69,6 +71,7 @@ public class TTopologyTemplate extends TExtensibleElements {
         this.policies = builder.policies;
         this.inputs = builder.inputs;
         this.outputs = builder.outputs;
+        this.groups = builder.groups;
     }
 
     @Override
@@ -79,7 +82,7 @@ public class TTopologyTemplate extends TExtensibleElements {
         TTopologyTemplate that = (TTopologyTemplate) o;
         return Objects.equals(nodeTemplateOrRelationshipTemplate, that.nodeTemplateOrRelationshipTemplate) &&
             Objects.equals(policies, that.policies) &&
-            Objects.equals(inputs, that.inputs) && 
+            Objects.equals(inputs, that.inputs) &&
             Objects.equals(outputs, that.outputs);
     }
 
@@ -194,6 +197,22 @@ public class TTopologyTemplate extends TExtensibleElements {
         this.outputs = outputs;
     }
 
+    @Nullable
+    public List<TGroupDefinition> getGroups() {
+        return groups;
+    }
+
+    public void setGroups(List<TGroupDefinition> groups) {
+        this.groups = groups;
+    }
+
+    public void addGroup(TGroupDefinition group) {
+        if (groups == null) {
+            groups = new ArrayList<>();
+        }
+        groups.add(group);
+    }
+
     public void accept(Visitor visitor) {
         visitor.visit(this);
     }
@@ -204,6 +223,7 @@ public class TTopologyTemplate extends TExtensibleElements {
         private TPolicies policies;
         private List<ParameterDefinition> inputs;
         private List<ParameterDefinition> outputs;
+        private List<TGroupDefinition> groups;
 
         public Builder() {
         }
@@ -281,6 +301,11 @@ public class TTopologyTemplate extends TExtensibleElements {
 
         public Builder setOutputs(List<ParameterDefinition> outputs) {
             this.outputs = outputs;
+            return this;
+        }
+
+        public Builder setGroups(List<TGroupDefinition> groups) {
+            this.groups = groups;
             return this;
         }
 
