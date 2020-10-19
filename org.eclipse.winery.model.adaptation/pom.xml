@@ -28,7 +28,7 @@
         </dependency>
         <dependency>
             <groupId>org.eclipse.winery</groupId>
-            <artifactId>org.eclipse.winery.repository.common</artifactId>
+            <artifactId>org.eclipse.winery.repository</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

@@ -61,7 +61,7 @@
                 </tr>
             </table>
         </div>
-        <div class="col-sm-3">
+        <div class="col-sm-3 winery-image">
             <img *ngIf="!nodeTemplate.visuals?.imageUrl" src="https://via.placeholder.com/50x50"
                  style="border-radius: 10%; margin-top: 1px; width: 50px; height: auto">
             <img *ngIf="nodeTemplate.visuals?.imageUrl" src="{{nodeTemplate.visuals?.imageUrl}}">
@@ -145,10 +145,9 @@
                    [ngClass]="{'fa-chevron-down': propertiesgroup?.isOpen, 'fa-chevron-right': !propertiesgroup?.isOpen}"
                 ></i>
             </div>
-            <winery-properties
-                    [templateId]="nodeTemplate.id"
-                    [readonly]="readonly"
-                    [isNode]="true">
+            <winery-properties [templateId]="nodeTemplate.id"
+                               [readonly]="readonly"
+                               [isNode]="true">
             </winery-properties>
         </accordion-group>
 
@@ -216,6 +215,23 @@
                                     nodeTemplate: nodeTemplate,
                                     currentNodePart: 'CAPABILITIES'}">
             </winery-capabilities>
+        </accordion-group>
+
+        <!-- GROUPS -->
+        <accordion-group
+            #groupsgroup
+            panelClass="accordionGroupPanel"
+            *ngIf="navbarButtonsState.buttonsState.yamlGroupsButton">
+            <div accordion-heading>
+                Groups
+                <i class="pull-sm-0 float-sm-right fa icon-styling padding-top--2px"
+                   [ngClass]="{'fa-chevron-down': groupsgroup?.isOpen, 'fa-chevron-right': !groupsgroup?.isOpen}">
+                </i>
+            </div>
+            <winery-groups [readonly]="readonly"
+                           [groups]="groupDefinitions"
+                           [node]="nodeTemplate">
+            </winery-groups>
         </accordion-group>
 
         <!-- POLICIES -->

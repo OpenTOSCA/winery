@@ -18,7 +18,7 @@ import {
     DeleteRelationshipAction, DeleteYamlArtifactAction, HideNavBarAndPaletteAction, IncMaxInstances, IncMinInstances, SaveNodeTemplateAction,
     SaveRelationshipAction, SendCurrentNodeIdAction, SendPaletteOpenedAction, SetCapabilityAction, SetDeploymentArtifactAction, SetNodeVisuals, SetPolicyAction,
     SetPropertyAction, SetRequirementAction, SetTargetLocation, SetYamlArtifactAction, SidebarChangeNodeName, SidebarMaxInstanceChanges,
-    SidebarMinInstanceChanges, SidebarStateAction, UpdateNodeCoordinatesAction, UpdateRelationshipNameAction, WineryActions
+    SidebarMinInstanceChanges, SidebarStateAction, UpdateGroupDefinitionAction, UpdateNodeCoordinatesAction, UpdateRelationshipNameAction, WineryActions
 } from '../actions/winery.actions';
 import { TArtifact, TNodeTemplate, TRelationshipTemplate, TTopologyTemplate } from '../../models/ttopology-template';
 import { TDeploymentArtifact } from '../../models/artifactsModalData';
@@ -398,6 +398,15 @@ export const WineryReducer =
                     }
                 };
 
+            case WineryActions.UPDATE_GROUP_DEFINITIONS:
+                return <WineryState>{
+                    ...lastState,
+                    currentJsonTopology: {
+                        ...lastState.currentJsonTopology,
+                        groups: (<UpdateGroupDefinitionAction>action).groups
+                    }
+                };
+
             case WineryActions.SET_POLICY_FOR_RELATIONSHIP:
                 const newRelPolicy: any = (<SetPolicyAction>action).nodePolicy;
                 const relPolicy = newRelPolicy.newPolicy;
@@ -543,7 +552,12 @@ export const WineryReducer =
 
                                 return pol;
                             })
-                        }
+                        },
+                        // update groups
+                        groups: lastState.currentJsonTopology.groups.map((group) => {
+                            group.members = group.members.filter((member) => member !== deletedNodeId);
+                            return group;
+                        }),
                     }
                 };
             case WineryActions.DELETE_RELATIONSHIP_TEMPLATE:

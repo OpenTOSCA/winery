@@ -49,7 +49,6 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>${org.slf4j}</version>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.eclipse.winery</groupId>
@@ -58,20 +57,14 @@
         </dependency>
         <dependency>
             <groupId>org.eclipse.winery</groupId>
-            <artifactId>org.eclipse.winery.repository.common</artifactId>
+            <artifactId>org.eclipse.winery.repository</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.winery</groupId>
             <artifactId>org.eclipse.winery.repository.rest</artifactId>
             <version>${project.version}</version>
-<!--            <type>war</type>-->
             <classifier>classes</classifier>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.winery</groupId>
-            <artifactId>org.eclipse.winery.repository.visible</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.winery</groupId>
@@ -92,7 +85,6 @@
             <groupId>org.glassfish.jersey.media</groupId>
             <artifactId>jersey-media-json-jackson</artifactId>
             <version>${jersey.version}</version>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.glassfish.jersey.media</groupId>
@@ -103,7 +95,6 @@
             <groupId>org.glassfish.jersey.media</groupId>
             <artifactId>jersey-media-multipart</artifactId>
             <version>${jersey.version}</version>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.glassfish.jersey.inject</groupId>

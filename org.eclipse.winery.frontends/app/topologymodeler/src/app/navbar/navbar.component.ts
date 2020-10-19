@@ -245,6 +245,12 @@ export class NavbarComponent implements OnDestroy {
             case 'manageYamlPolicies':
                 this.ngRedux.dispatch(this.actions.manageYamlPolicies());
                 break;
+            case 'manageYamlGroups':
+                this.ngRedux.dispatch(this.actions.toggleManageYamlGroups());
+                break;
+            case 'yamlGroups':
+                this.ngRedux.dispatch(this.actions.toggleYamlGroups());
+                break;
         }
     }
 

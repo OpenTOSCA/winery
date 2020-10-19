@@ -19,13 +19,12 @@
                 (onClosed)="notifyClose('node-details')"
                 *ngIf="loaded?.loadedData">
         <!-- need to wait for loading to know about repo configuration's yaml state -->
-        <winery-node-details-sidebar
-            [readonly]="readonly"
-            (sidebarDeleteButtonClicked)="sidebarDeleteButtonClicked($event)"
-            class="sidebar">
+        <winery-node-details-sidebar [readonly]="readonly"
+                                     (sidebarDeleteButtonClicked)="sidebarDeleteButtonClicked($event)"
+                                     class="sidebar">
         </winery-node-details-sidebar>
     </ng-sidebar>
-    
+
     <div ng-sidebar-content>
 
         <hotkeys-cheatsheet></hotkeys-cheatsheet>
@@ -48,13 +47,15 @@
                                           [entityTypes]="this.entityTypes">
                 </winery-palette-component>
             </div>
-            <winery-refinement *ngIf="refiningType" [refinementType]="refiningType" class="sidebar">
-            </winery-refinement>
         </div>
 
-        <winery-problem-detection class="sidebar"></winery-problem-detection>
-        <winery-enricher class="sidebar"></winery-enricher>
-        <winery-edmm-transformation-check class="sidebar"></winery-edmm-transformation-check>
+        <div class="sidebar-container">
+            <winery-refinement *ngIf="refiningType" [refinementType]="refiningType"></winery-refinement>
+            <winery-problem-detection></winery-problem-detection>
+            <winery-enricher></winery-enricher>
+            <winery-edmm-transformation-check></winery-edmm-transformation-check>
+            <winery-group-view></winery-group-view>
+        </div>
 
     </div>
 
