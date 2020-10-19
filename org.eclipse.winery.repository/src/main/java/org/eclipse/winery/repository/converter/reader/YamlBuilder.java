@@ -1306,6 +1306,9 @@ public class YamlBuilder {
         if (Objects.isNull(object)) {
             return null;
         }
+        if (!(object instanceof List)) {
+            return null;
+        }
         @SuppressWarnings("unchecked")
         List<Map<String, Object>> list = (List<Map<String, Object>>) object;
         return list.stream()

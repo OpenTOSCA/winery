@@ -84,4 +84,15 @@ public class YamlReaderTest extends AbstractConverterTest {
         YTServiceTemplate template = reader.parse(is);
         Assertions.assertNotNull(template);
     }
+
+    @Test
+    public void testPolicyDefinitionsAsMap() throws Exception {
+        YamlReader reader = new YamlReader();
+        InputStream is = getClass().getClassLoader().getResourceAsStream("yaml/simple-tests/wrong-policy-map-in-tt.yml");
+        YTServiceTemplate template = reader.parse(is);
+        Assertions.assertNotNull(template);
+        YTTopologyTemplateDefinition topologyTemplate = template.getTopologyTemplate();
+        Assertions.assertNotNull(topologyTemplate);
+        Assertions.assertEquals(0, topologyTemplate.getPolicies().size());
+    }
 }
