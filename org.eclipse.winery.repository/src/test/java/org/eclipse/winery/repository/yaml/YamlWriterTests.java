@@ -134,7 +134,7 @@ public class YamlWriterTests {
             relTemplate.put("rltp1", rel1);
             Map<String, YTNodeTemplate> nodTemplate = new LinkedHashMap<>();
             YTNodeTemplate nod1 = new YTNodeTemplate.Builder(new QName("tosca.nodes.Database")).build();
-            nodTemplate.put("database", nod1);
+            nodTemplate.put("ndt1", nod1);
             YTTopologyTemplateDefinition topo = new YTTopologyTemplateDefinition.Builder()
                 .setPolicies(polTemplate)
                 .setRelationshipTemplates(relTemplate)
