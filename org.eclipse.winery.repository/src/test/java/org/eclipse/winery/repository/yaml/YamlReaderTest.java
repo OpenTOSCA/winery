@@ -95,4 +95,15 @@ public class YamlReaderTest extends AbstractConverterTest {
         Assertions.assertNotNull(topologyTemplate);
         Assertions.assertEquals(0, topologyTemplate.getPolicies().size());
     }
+
+    @Test
+    public void testPolicyDefinitionsAsList() throws Exception {
+        YamlReader reader = new YamlReader();
+        InputStream is = getClass().getClassLoader().getResourceAsStream("yaml/simple-tests/valid-topology_templates-1_3.yml");
+        YTServiceTemplate template = reader.parse(is);
+        Assertions.assertNotNull(template);
+        YTTopologyTemplateDefinition topologyTemplate = template.getTopologyTemplate();
+        Assertions.assertNotNull(topologyTemplate);
+        Assertions.assertEquals(2, topologyTemplate.getPolicies().size());
+    }
 }
