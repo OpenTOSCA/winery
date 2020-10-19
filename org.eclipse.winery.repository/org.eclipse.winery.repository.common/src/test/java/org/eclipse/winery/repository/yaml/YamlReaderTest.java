@@ -23,6 +23,7 @@ import java.nio.file.Paths;
 import org.eclipse.winery.model.tosca.yaml.YTInterfaceDefinition;
 import org.eclipse.winery.model.tosca.yaml.YTNodeType;
 import org.eclipse.winery.model.tosca.yaml.YTServiceTemplate;
+import org.eclipse.winery.model.tosca.yaml.YTTopologyTemplateDefinition;
 import org.eclipse.winery.repository.converter.AbstractConverterTest;
 import org.eclipse.winery.repository.converter.reader.YamlReader;
 
@@ -47,6 +48,20 @@ public class YamlReaderTest extends AbstractConverterTest {
         YamlReader reader = new YamlReader();
         InputStream is = new FileInputStream(new File(path.toFile(), filename.toString()));
         Assertions.assertNotNull(reader.parse(is));
+    }
+
+    @DisplayName("Basic Topology Template Reader Test")
+    @Test
+    public void testBasicTopologyTemplate() throws Exception {
+        YamlReader reader = new YamlReader();
+        InputStream is = getClass().getClassLoader().getResourceAsStream("yaml/simple-tests/valid-topology_templates-1_3.yml");
+        YTServiceTemplate serviceTemplate = reader.parse(is);
+        Assertions.assertNotNull(serviceTemplate);
+        YTTopologyTemplateDefinition topoTemplate = serviceTemplate.getTopologyTemplate();
+        Assertions.assertNotNull(topoTemplate);
+        Assertions.assertEquals(topoTemplate.getPolicies().size(), 2);
+        Assertions.assertEquals(topoTemplate.getNodeTemplates().size(), 1);
+        Assertions.assertEquals(topoTemplate.getRelationshipTemplates().size(), 1);
     }
 
     @Test
