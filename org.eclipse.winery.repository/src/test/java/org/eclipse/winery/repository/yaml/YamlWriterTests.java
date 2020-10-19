@@ -14,10 +14,8 @@
 
 package org.eclipse.winery.repository.yaml;
 
-import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -42,6 +40,7 @@ import org.eclipse.winery.model.tosca.yaml.support.Defaults;
 import org.eclipse.winery.repository.converter.writer.YamlPrinter;
 import org.eclipse.winery.repository.converter.writer.YamlWriter;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -234,10 +233,7 @@ public class YamlWriterTests {
         }
     }
 
-    private static String inputStreamToString(InputStream is) throws IOException {
-        try (BufferedReader br = new BufferedReader(new InputStreamReader(is))) {
-            // + \n because code style requires us to provide an empty line in the end
-            return br.lines().collect(Collectors.joining(System.lineSeparator())) + "\n";
-        }
+    private static String inputStreamToString(InputStream is) throws Exception {
+        return IOUtils.toString(is, StandardCharsets.UTF_8);
     }
 }

@@ -30,6 +30,7 @@ import org.eclipse.winery.repository.backend.BackendUtils;
 
 import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.commons.util.Preconditions;
 
@@ -127,6 +128,7 @@ public class YamlRepositoryIntegrationTests extends TestWithGitBackedRepository 
     }
 
     @Test
+    @Disabled("for this to work properly we need a \"touched\" repository state as well as deterministic serialization")
     public void roundTripDoesNotChangeContent() throws Exception {
         this.setRevisionTo("origin/yaml");
         assertAll(
