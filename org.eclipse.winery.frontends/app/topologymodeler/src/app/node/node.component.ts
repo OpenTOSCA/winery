@@ -21,7 +21,7 @@ import { IWineryState } from '../redux/store/winery.store';
 import { WineryActions } from '../redux/actions/winery.actions';
 import { EntityType, TNodeTemplate } from '../models/ttopology-template';
 import { QName } from '../models/qname';
-import { PropertyDefinitionType, urlElement } from '../models/enums';
+import { LiveModelingStates, NodeTemplateInstanceStates, PropertyDefinitionType, urlElement } from '../models/enums';
 import { BackendService } from '../services/backend.service';
 import { GroupedNodeTypeModel } from '../models/groupedNodeTypeModel';
 import { EntityTypesModel } from '../models/entityTypesModel';
@@ -33,8 +33,9 @@ import { VersionElement } from '../models/versionElement';
 import { VersionsComponent } from './versions/versions.component';
 import { WineryVersion } from '../../../../tosca-management/src/app/model/wineryVersion';
 import { FeatureEnum } from '../../../../tosca-management/src/app/wineryFeatureToggleModule/wineryRepository.feature.direct';
-import { WineryRepositoryConfigurationService } from '../../../../tosca-management/src/app/wineryFeatureToggleModule/WineryRepositoryConfiguration.service';
+import { PropertiesComponent } from '../properties/properties.component';
 import { Subscription } from 'rxjs';
+import { WineryRepositoryConfigurationService } from '../../../../tosca-management/src/app/wineryFeatureToggleModule/WineryRepositoryConfiguration.service';
 import { InheritanceUtils } from '../models/InheritanceUtils';
 
 /**
@@ -81,6 +82,7 @@ export class NodeComponent implements OnInit, AfterViewInit, OnDestroy, DoCheck 
 
     @Input() readonly: boolean;
     @Input() entityTypes: EntityTypesModel;
+    @Input() nodeEntityType: EntityType;
     @Input() dragSource: string;
     @Input() navbarButtonsState: TopologyRendererState;
     @Input() nodeTemplate: TNodeTemplate;
@@ -101,6 +103,7 @@ export class NodeComponent implements OnInit, AfterViewInit, OnDestroy, DoCheck 
     @Output() showYamlPolicyManagementModal: EventEmitter<void>;
 
     @ViewChild('versionModal') versionModal: VersionsComponent;
+    @ViewChild('nodeProperties') nodePropertiesComponent: PropertiesComponent;
     previousPosition: any;
     currentPosition: any;
     nodeRef: ComponentRef<Component>;
@@ -115,6 +118,10 @@ export class NodeComponent implements OnInit, AfterViewInit, OnDestroy, DoCheck 
     newerVersions: WineryVersion[];
     newerVersionExist: boolean;
     newVersionElement: VersionElement;
+
+    liveModelingEnabled = false;
+    subscriptions: Subscription[] = [];
+    NodeTemplateInstanceStates = NodeTemplateInstanceStates;
 
     constructor(private zone: NgZone,
                 private $ngRedux: NgRedux<IWineryState>,
@@ -262,6 +269,11 @@ export class NodeComponent implements OnInit, AfterViewInit, OnDestroy, DoCheck 
         }
 
         this.addNewVersions(new QName(this.nodeTemplate.type));
+
+        this.subscriptions.push(this.$ngRedux.select(wineryState => wineryState.liveModelingState.state)
+            .subscribe(liveModelingState => {
+                this.liveModelingEnabled = liveModelingState !== LiveModelingStates.DISABLED;
+            }));
     }
 
     /**
@@ -525,6 +537,11 @@ export class NodeComponent implements OnInit, AfterViewInit, OnDestroy, DoCheck 
         if (this.artifactsChangedSubscription) {
             this.artifactsChangedSubscription.unsubscribe();
         }
+
+        this.subscriptions.forEach((subscription: Subscription) => {
+            subscription.unsubscribe();
+        });
+        this.subscriptions = [];
     }
 
     /**
@@ -563,6 +580,30 @@ export class NodeComponent implements OnInit, AfterViewInit, OnDestroy, DoCheck 
             this.newVersionElement = new VersionElement(currentQname.qName, this.newerVersions);
         }
 
+    }
+
+    getInstanceStateColor() {
+        switch (this.nodeTemplate.instanceState) {
+            case NodeTemplateInstanceStates.STARTED:
+            case NodeTemplateInstanceStates.CREATED:
+                return '#0EFF09';
+            case NodeTemplateInstanceStates.STOPPED:
+            case NodeTemplateInstanceStates.DELETED:
+                return '#B8B8B6';
+            case NodeTemplateInstanceStates.CONFIGURING:
+            case NodeTemplateInstanceStates.CREATING:
+            case NodeTemplateInstanceStates.DELETING:
+            case NodeTemplateInstanceStates.STARTING:
+            case NodeTemplateInstanceStates.STOPPING:
+                return '#F9CF00';
+            case NodeTemplateInstanceStates.CONFIGURED:
+            case NodeTemplateInstanceStates.MIGRATED:
+                return '#007bff';
+            case NodeTemplateInstanceStates.ERROR:
+                return '#ff090d';
+            default:
+                return 'black';
+        }
     }
 
     public openVersionModal() {

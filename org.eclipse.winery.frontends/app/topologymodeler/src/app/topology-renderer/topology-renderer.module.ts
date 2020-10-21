@@ -19,7 +19,6 @@ import { HttpClientModule } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { AccordionModule } from 'ngx-bootstrap/accordion';
-import { NavbarComponent } from '../navbar/navbar.component';
 import { NodeComponent } from '../node/node.component';
 import { CanvasComponent } from '../canvas/canvas.component';
 import { LayoutDirective } from '../layout/layout.directive';
@@ -67,7 +66,6 @@ import { Ng2TableModule } from 'ng2-table';
         Ng2TableModule,
     ],
     declarations: [
-        NavbarComponent,
         NodeComponent,
         CanvasComponent,
         LayoutDirective,

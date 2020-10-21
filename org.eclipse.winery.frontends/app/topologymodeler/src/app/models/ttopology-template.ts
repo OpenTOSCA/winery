@@ -16,6 +16,7 @@ import { Visuals } from './visuals';
 import { TPolicy } from './policiesModalData';
 import { Interface } from '../../../../tosca-management/src/app/model/interfaces';
 import { PropertiesDefinition } from '../../../../tosca-management/src/app/instance/sharedComponents/propertiesDefinition/propertiesDefinitionsResourceApiData';
+import { NodeTemplateInstanceStates } from './enums';
 
 export class AbstractTEntity {
     constructor(public documentation?: any,
@@ -55,7 +56,10 @@ export class TNodeTemplate extends AbstractTEntity {
                 public deploymentArtifacts?: any,
                 public policies?: { policy: any[] },
                 public artifacts?: { artifact: Array<TArtifact> },
-                public _state?: DifferenceStates) {
+                public instanceState?: NodeTemplateInstanceStates,
+                public valid?: boolean,
+                public working?: boolean,
+                private _state?: DifferenceStates) {
         super(documentation, any, otherAttributes);
     }
 
@@ -70,7 +74,7 @@ export class TNodeTemplate extends AbstractTEntity {
     generateNewNodeTemplateWithUpdatedAttribute(updatedAttribute: string, updatedValue: any): TNodeTemplate {
         const nodeTemplate = new TNodeTemplate(this.properties, this.id, this.type, this.name, this.minInstances, this.maxInstances,
             this.visuals, this.documentation, this.any, this.otherAttributes, this.x, this.y, this.capabilities,
-            this.requirements, this.deploymentArtifacts, this.policies, this.artifacts);
+            this.requirements, this.deploymentArtifacts, this.policies, this.artifacts, this.instanceState, this.valid, this.working, this._state);
         if (updatedAttribute === 'coordinates') {
             nodeTemplate.x = updatedValue.x;
             nodeTemplate.y = updatedValue.y;
@@ -98,7 +102,6 @@ export class TNodeTemplate extends AbstractTEntity {
                 };
                 nodeTemplate.otherAttributes = otherAttributes;
             }
-            console.log(nodeTemplate);
         } else if (updatedAttribute === ('minInstances') || updatedAttribute === ('maxInstances')) {
             if (Number.isNaN(+updatedValue)) {
                 nodeTemplate[updatedAttribute] = updatedValue;
@@ -106,9 +109,7 @@ export class TNodeTemplate extends AbstractTEntity {
                 nodeTemplate[updatedAttribute] = +updatedValue;
             }
         } else {
-            console.log(updatedValue);
             nodeTemplate[updatedAttribute] = updatedValue;
-            console.log(nodeTemplate);
         }
         return nodeTemplate;
     }
@@ -122,8 +123,11 @@ export class TNodeTemplate extends AbstractTEntity {
         this.visuals.color = VersionUtils.getElementColorByDiffState(value);
     }
 
-    public deleteStateAndVisuals() {
+    public deleteAppendix() {
         delete this._state;
+        delete this.instanceState;
+        delete this.valid;
+        delete this.working;
         delete this.visuals;
     }
 }

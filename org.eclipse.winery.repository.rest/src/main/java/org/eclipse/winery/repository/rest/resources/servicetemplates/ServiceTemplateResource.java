@@ -383,6 +383,36 @@ public class ServiceTemplateResource extends AbstractComponentInstanceResourceCo
         return response.getResponse();
     }
 
+    @POST()
+    @Path("createlivemodelingversion")
+    @Produces( {MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public Response createLiveModelingVersion() {
+        LOGGER.debug("Creating live modeling version of Service Template {}...", this.getId());
+        ServiceTemplateId id = (ServiceTemplateId) this.getId();
+        WineryVersion version = VersionUtils.getVersion(id);
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd-HHmmss");
+        WineryVersion newVersion = new WineryVersion(
+            version.toString() + "-live-" + dateFormat.format(new Date()),
+            1,
+            0
+        );
+
+        ServiceTemplateId newId = new ServiceTemplateId(id.getNamespace().getDecoded(),
+            VersionUtils.getNameWithoutVersion(id) + WineryVersion.WINERY_NAME_FROM_VERSION_SEPARATOR + newVersion.toString(),
+            false);
+        ResourceResult response = RestUtils.duplicate(id, newId);
+
+        if (response.getStatus() == Status.CREATED) {
+            response.setUri(null);
+            response.setMessage(new QNameApiData(newId));
+        }
+
+        LOGGER.debug("Created Service Template {}", newId.getQName());
+
+        return response.getResponse();
+    }
+
     @Path("threatmodeling")
     @Produces(MediaType.APPLICATION_JSON)
     @GET

@@ -12,14 +12,3 @@
  * SPDX-License-Identifier: EPL-2.0 OR Apache-2.0
  ********************************************************************************/
 
-winery-navbar {
-    position: fixed;
-    top: 0px;
-    width: 100%;
-    z-index: 700;
-}
-
-winery-canvas {
-    width: 100%;
-    padding-top: 47px;
-}

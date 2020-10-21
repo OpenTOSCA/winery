@@ -13,7 +13,7 @@
  ********************************************************************************/
 
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
-import { Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { NgRedux } from '@angular-redux/store';
 import { IWineryState } from '../redux/store/winery.store';
 import { WineryActions } from '../redux/actions/winery.actions';
@@ -37,19 +37,21 @@ import { PolicyService } from '../services/policy.service';
         trigger('sidebarAnimationStatus', [
             state('in', style({ transform: 'translateX(0)' })),
             transition('void => *', [
-                style({ transform: 'translateX(100%)' }),
+                style({ transform: 'translateX(-100%)' }),
                 animate('100ms cubic-bezier(0.86, 0, 0.07, 1)')
             ]),
             transition('* => void', [
                 animate('200ms cubic-bezier(0.86, 0, 0.07, 1)', style({
                     opacity: 0,
-                    transform: 'translateX(100%)'
+                    transform: 'translateX(-100%)'
                 }))
             ])
         ])
     ]
 })
 export class SidebarComponent implements OnInit, OnDestroy {
+    @Input() top: number;
+
     // ngRedux sidebarSubscription
     sidebarSubscription;
     sidebarState: any;
@@ -89,7 +91,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
                 type: '',
                 minInstances: -1,
                 maxInstances: -1,
-                properties: ''
+                properties: '',
             }
         }));
     }
@@ -136,7 +138,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
         // apply changes to the node name <input> field with a debounceTime of 300ms
         this.subscription = this.nodeNameKeyUp.pipe(
             debounceTime(300),
-            distinctUntilChanged(), )
+            distinctUntilChanged())
             .subscribe(data => {
                 if (this.sidebarState.nodeClicked) {
                     this.$ngRedux.dispatch(this.actions.changeNodeName({
@@ -177,7 +179,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
         // minInstances
         const nodeMinInstancesKeyUpObservable = this.nodeMinInstancesKeyUp.pipe(
             debounceTime(300),
-            distinctUntilChanged(), )
+            distinctUntilChanged())
             .subscribe(data => {
                 if (this.sidebarState.nodeClicked) {
                     this.$ngRedux.dispatch(this.actions.changeMinInstances({
@@ -207,7 +209,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
         // maxInstances
         const nodeMaxInstancesKeyUpObservable = this.nodeMaxInstancesKeyUp.pipe(
             debounceTime(300),
-            distinctUntilChanged(), )
+            distinctUntilChanged())
             .subscribe(data => {
                 if (this.sidebarState.nodeClicked) {
                     this.$ngRedux.dispatch(this.actions.changeMaxInstances({

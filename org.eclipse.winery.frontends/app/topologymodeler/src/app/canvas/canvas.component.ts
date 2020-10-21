@@ -39,7 +39,7 @@ import { RequirementModel } from '../models/requirementModel';
 import { EntityTypesModel } from '../models/entityTypesModel';
 import { ExistsService } from '../services/exists.service';
 import { ModalVariant, ModalVariantAndState } from './entities-modal/modal-model';
-import { align, toggleModalType } from '../models/enums';
+import { align, LiveModelingStates, toggleModalType } from '../models/enums';
 import { QName } from '../models/qname';
 import { ImportTopologyModalData } from '../models/importTopologyModalData';
 import { ImportTopologyService } from '../services/import-topology.service';
@@ -170,6 +170,11 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
         targets?: string[]
     }[];
 
+    isMiddleMouseButtonDown = false;
+    private lastMouseEvent: MouseEvent;
+
+    private liveModelingState: LiveModelingStates;
+
     constructor(private jsPlumbService: JsPlumbService,
                 private eref: ElementRef,
                 private layoutDirective: LayoutDirective,
@@ -207,6 +212,8 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
         this.gridTemplate = new GridTemplate(100, false, false, 30);
         this.subscriptions.push(this.ngRedux.select(state => state.wineryState.currentPaletteOpenedState)
             .subscribe(currentPaletteOpened => this.setPaletteState(currentPaletteOpened)));
+        this.subscriptions.push(this.ngRedux.select(state => state.liveModelingState.state)
+            .subscribe(state => this.liveModelingState = state));
         this.hotkeysService.add(new Hotkey('mod+a', (event: KeyboardEvent): boolean => {
             event.stopPropagation();
             this.allNodeTemplates.forEach(node => this.enhanceDragSelection(node.id));
@@ -234,9 +241,13 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
      * Upon detecting a long mouse down the navbar and the palette fade out for maximum dragging space.
      * Resets the values.
      */
-    @HostListener('mouseup')
-    onMouseUp() {
+    @HostListener('mouseup', ['$event'])
+    onMouseUp(event: MouseEvent) {
         this.longPressing = false;
+        if (event.button === 1) {
+            this.isMiddleMouseButtonDown = false;
+            this.updateAllNodes();
+        }
     }
 
     /**
@@ -250,6 +261,27 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
         if (event.button === 0) {
             this.longPressing = false;
             setTimeout(() => this.longPressing = true, 250);
+        } else if (event.button === 1) {
+            this.isMiddleMouseButtonDown = true;
+            this.lastMouseEvent = event;
+        }
+    }
+
+    @HostListener('mousemove', ['$event'])
+    onMouseMove(event: MouseEvent) {
+        if (this.isMiddleMouseButtonDown) {
+            const x = event.clientX - this.lastMouseEvent.clientX;
+            const y = event.clientY - this.lastMouseEvent.clientY;
+            this.moveNodes(x, y);
+            this.revalidateContainer();
+            this.lastMouseEvent = event;
+        }
+    }
+
+    moveNodes(x: number, y: number) {
+        for (const node of this.allNodeTemplates) {
+            node.x += x;
+            node.y += y;
         }
     }
 
@@ -1473,21 +1505,23 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
      * @param $event
      */
     showSelectionRange($event: any) {
-        this.gridTemplate.crosshair = true;
-        this.ngRedux.dispatch(this.actions.sendPaletteOpened(false));
-        this.hideSidebar();
-        this.clearSelectedNodes();
-        this.nodeChildrenArray.forEach(node => node.makeSelectionVisible = false);
-        this.gridTemplate.pageX = $event.pageX;
-        this.gridTemplate.pageY = $event.pageY;
-        this.gridTemplate.initialW = $event.pageX;
-        this.gridTemplate.initialH = $event.pageY;
-        this.zone.run(() => {
-            this.unbindMouseActions.push(this.renderer.listen(this.eref.nativeElement, 'mousemove', (event) =>
-                this.openSelector(event)));
-            this.unbindMouseActions.push(this.renderer.listen(this.eref.nativeElement, 'mouseup', (event) =>
-                this.selectElements(event)));
-        });
+        if ($event.button === 0) {
+            this.gridTemplate.crosshair = true;
+            this.ngRedux.dispatch(this.actions.sendPaletteOpened(false));
+            this.hideSidebar();
+            this.clearSelectedNodes();
+            this.nodeChildrenArray.forEach(node => node.makeSelectionVisible = false);
+            this.gridTemplate.pageX = $event.pageX;
+            this.gridTemplate.pageY = $event.pageY;
+            this.gridTemplate.initialW = $event.pageX;
+            this.gridTemplate.initialH = $event.pageY;
+            this.zone.run(() => {
+                this.unbindMouseActions.push(this.renderer.listen(this.eref.nativeElement, 'mousemove', (event) =>
+                    this.openSelector(event)));
+                this.unbindMouseActions.push(this.renderer.listen(this.eref.nativeElement, 'mouseup', (event) =>
+                    this.selectElements(event)));
+            });
+        }
     }
 
     /**
@@ -1970,6 +2004,15 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
                 } else if (nodeTemplate.deploymentArtifacts !== node.deploymentArtifacts) {
                     nodeTemplate.deploymentArtifacts = node.deploymentArtifacts;
                     return true;
+                } else if (nodeTemplate.instanceState !== node.instanceState) {
+                    nodeTemplate.instanceState = node.instanceState;
+                    return true;
+                } else if (nodeTemplate.valid !== node.valid) {
+                    nodeTemplate.valid = node.valid;
+                    return true;
+                } else if (nodeTemplate.working !== node.working) {
+                    nodeTemplate.working = node.working;
+                    return true;
                 } else if (nodeTemplate.policies !== node.policies) {
                     nodeTemplate.policies = node.policies;
                     return true;
@@ -2008,14 +2051,25 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
      * jsPlumb relationship/label click actions
      */
     onClickJsPlumbConnection(conn: any, rel: any) {
-        this.clearSelectedNodes();
-        this.newJsPlumbInstance.select().removeType('marked');
-        const currentRel = this.allRelationshipTemplates.find(con => con.id === conn.id);
+        const currentRel = this.allRelationshipTemplates.find(con => con.id === rel.id);
         let name = currentRel.name;
         if (currentRel.name.startsWith(this.backendService.configuration.relationshipPrefix)) {
             // Workaround to support old topology templates with the real name
             name = currentRel.type.substring(currentRel.type.indexOf('}') + 1);
         }
+
+        if (this.liveModelingState === LiveModelingStates.DISABLED) {
+            if (currentRel) {
+                const sourceNode = this.allNodeTemplates.find(node => node.id === currentRel.sourceElement.ref);
+                const targetNode = this.allNodeTemplates.find(node => node.id === currentRel.targetElement.ref);
+                if (sourceNode.working && targetNode.working) {
+                    return;
+                }
+            }
+        }
+
+        this.clearSelectedNodes();
+        this.newJsPlumbInstance.select().removeType('marked');
         if (currentRel) {
             this.ngRedux.dispatch(this.actions.openSidebar({
                 sidebarContents: {
@@ -2547,5 +2601,9 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
         // no need to encode the namespace since we assume dotted namespaces in YAML mode
         const absoluteURL = `${this.backendService.configuration.uiURL}${refType}/${typeQName.nameSpace}/${typeQName.localName}`;
         return '<a href="' + absoluteURL + '">' + typeQName.localName + '</a>';
+    }
+
+    private getNodeEntityType(name: string): EntityType {
+        return this.entityTypes.unGroupedNodeTypes.find(type => type.name === name);
     }
 }

@@ -17,7 +17,8 @@
         <h3 style="margin-right: .5em;">winery</h3>
         <button *ngIf="!readonly"
                 class="btn btn-sm align-middle btn-success" type="button"
-                (click)="saveTopologyTemplateToRepository()">Save
+                (click)="saveTopologyTemplateToRepository()">Save<span
+            *ngIf="unsavedChanges">*</span>
         </button>
 
         <button class="btn btn-sm align-middle btn-info button-group" (click)="openManagementUi()">
@@ -82,6 +83,29 @@
                 (click)="toggleButton($event)"
                 [style.background-color]="getStyle(navbarButtonsState.buttonsState.propertiesButton)">
                 Properties
+                <span *wineryRepositoryFeatureToggle="configEnum.PropertyCheck" >
+                    <ng-template
+                        *ngIf="navbarButtonsState.buttonsState.checkNodePropertiesButton; then squareCheck else square"></ng-template>
+                    <ng-template #square>
+                        <i class="far fa-square"
+                           style="padding-left: .5em;"
+                           [tooltip]="checkNodeTooltip"
+                           containerClass="tooltip-check-properties"
+                           placement="bottom"
+                           [class.disable-icon]="!navbarButtonsState.buttonsState.propertiesButton"
+                           (click)="toggleCheckNodeProperties()"></i>
+                    </ng-template>
+                    <ng-template #squareCheck>
+                        <i class="far fa-check-square"
+                           style="padding-left: .5em;"
+                           [tooltip]="checkNodeTooltip"
+                           containerClass="tooltip-check-properties"
+                           placement="bottom"
+                           [class.disable-icon]="!navbarButtonsState.buttonsState.propertiesButton"
+                           (click)="toggleCheckNodeProperties()"></i>
+                    </ng-template>
+                    <ng-template #checkNodeTooltip><span>Check node properties</span></ng-template>
+                </span>
             </button>
             <button
                 class="btn btn-sm align-middle dark-button-style"
@@ -215,7 +239,6 @@
                 Refine Topology with Tests
             </button>
         </div>
-
         <div *wineryRepositoryFeatureToggle="configEnum.EdmmModeling" class="btn-group button-group"
              data-toggle="buttons">
             <button class="btn btn-sm align-middle dark-button-style" id="edmmTransformationCheck"
@@ -270,3 +293,27 @@
         </div>
     </form>
 </nav>
+
+<ng-template #confirmModal>
+    <div class="modal-header">
+        <h4 class="modal-title pull-left">Information</h4>
+        <button type="button" class="close pull-right" aria-label="Close" (click)="this.modalRef.hide()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <div class="px-2">
+            <span>There are errors within the current configuration. Do you want to continue anyway?</span>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-default"
+                (click)="this.modalRef.hide()">
+            No
+        </button>
+        <button type="button" class="btn btn-primary"
+                (click)="this.modalRef.hide(); this.saveTopologyTemplateToRepository()">
+            Yes
+        </button>
+    </div>
+</ng-template>

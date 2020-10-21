@@ -12,12 +12,13 @@
  * SPDX-License-Identifier: EPL-2.0 OR Apache-2.0
  ********************************************************************************/
 
-import { Action, ActionCreator } from 'redux';
+import { Action } from 'redux';
 import { Injectable } from '@angular/core';
-import { TArtifact, TNodeTemplate, TRelationshipTemplate } from '../../models/ttopology-template';
+import { TArtifact, TNodeTemplate, TRelationshipTemplate, TTopologyTemplate } from '../../models/ttopology-template';
 import { TDeploymentArtifact } from '../../models/artifactsModalData';
 import { TPolicy } from '../../models/policiesModalData';
 import { Visuals } from '../../models/visuals';
+import { NodeTemplateInstanceStates } from '../../models/enums';
 
 export interface SendPaletteOpenedAction extends Action {
     paletteOpened: boolean;
@@ -207,6 +208,39 @@ export interface SetNodeVisuals extends Action {
     visuals: Visuals[];
 }
 
+export interface SendLiveModelingSidebarOpenedAction extends Action {
+    sidebarOpened: boolean;
+}
+
+export interface SetLastSavedJsonTopologyAction extends Action {
+    lastSavedJsonTopology: TTopologyTemplate;
+}
+
+export interface SetUnsavedChangesAction extends Action {
+    unsavedChanges: boolean;
+}
+
+export interface SetNodePropertyValidityAction extends Action {
+    nodeValidity: {
+        nodeId: string;
+        valid: boolean;
+    };
+}
+
+export interface SetNodeInstanceStateAction extends Action {
+    nodeInstanceState: {
+        nodeId: string;
+        state: NodeTemplateInstanceStates
+    };
+}
+
+export interface SetNodeWorkingAction extends Action {
+    nodeWorking: {
+        nodeId: string;
+        working: boolean;
+    };
+}
+
 /**
  * Winery Actions
  */
@@ -245,160 +279,276 @@ export class WineryActions {
     static DELETE_POLICY = 'DELETE_POLICY';
     static SEND_CURRENT_NODE_ID = 'SEND_CURRENT_NODE_ID';
     static SET_NODE_VISUALS = 'SET_NODE_VISUALS';
+    static SEND_LIVE_MODELING_SIDEBAR_OPENED = 'SEND_LIVE_MODELING_SIDEBAR_OPENED';
 
-    sendPaletteOpened: ActionCreator<SendPaletteOpenedAction> =
-        ((paletteOpened) => ({
+    static SET_LAST_SAVED_JSON_TOPOLOGY = 'SET_LAST_SAVED_JSON_TOPOLOGY';
+    static SET_UNSAVED_CHANGES = 'SET_UNSAVED_CHANGES';
+    static SET_NODE_VALIDITY = 'SET_NODE_VALIDITY';
+    static SET_NODE_INSTANCE_STATE = 'SET_NODE_INSTANCE_STATE';
+    static SET_NODE_WORKING = 'SET_NODE_WORKING';
+
+    sendPaletteOpened(paletteOpened: boolean): SendPaletteOpenedAction {
+        return {
             type: WineryActions.SEND_PALETTE_OPENED,
             paletteOpened: paletteOpened
-        }));
-    hideNavBarAndPalette: ActionCreator<HideNavBarAndPaletteAction> =
-        ((hideNavBarAndPalette) => ({
+        };
+    }
+
+    hideNavBarAndPalette(hideNavBarAndPalette: boolean): HideNavBarAndPaletteAction {
+        return {
             type: WineryActions.HIDE_NAVBAR_AND_PALETTE,
             hideNavBarAndPalette: hideNavBarAndPalette
-        }));
-    openSidebar: ActionCreator<SidebarStateAction> =
-        ((newSidebarData) => ({
+        };
+    }
+
+    openSidebar(newSidebarData): SidebarStateAction {
+        return {
             type: WineryActions.OPEN_SIDEBAR,
             sidebarContents: newSidebarData.sidebarContents
-        }));
-    changeNodeName: ActionCreator<SidebarNodeNamechange> =
-        ((nodeNames) => ({
+        };
+    }
+
+    changeNodeName(nodeNames): SidebarNodeNamechange {
+        return {
             type: WineryActions.CHANGE_NODE_NAME,
             nodeNames: nodeNames.nodeNames
-        }));
-    changeMinInstances: ActionCreator<SidebarMinInstanceChanges> =
-        ((minInstances) => ({
+        };
+    }
+
+    changeMinInstances(minInstances): SidebarMinInstanceChanges {
+        return {
             type: WineryActions.CHANGE_MIN_INSTANCES,
             minInstances: minInstances.minInstances
-        }));
-    changeMaxInstances: ActionCreator<SidebarMaxInstanceChanges> =
-        ((maxInstances) => ({
+        };
+    }
+
+    changeMaxInstances(maxInstances): SidebarMaxInstanceChanges {
+        return {
             type: WineryActions.CHANGE_MAX_INSTANCES,
             maxInstances: maxInstances.maxInstances
-        }));
-    incMinInstances: ActionCreator<IncMinInstances> =
-        ((minInstances) => ({
+        };
+    }
+
+    incMinInstances(minInstances): IncMinInstances {
+        return {
             type: WineryActions.INC_MIN_INSTANCES,
             minInstances: minInstances.minInstances
-        }));
-    incMaxInstances: ActionCreator<IncMaxInstances> =
-        ((maxInstances) => ({
+        };
+    }
+
+    incMaxInstances(maxInstances): IncMaxInstances {
+        return {
             type: WineryActions.INC_MAX_INSTANCES,
             maxInstances: maxInstances.maxInstances
-        }));
-    decMinInstances: ActionCreator<DecMinInstances> =
-        ((minInstances) => ({
+        };
+    }
+
+    decMinInstances(minInstances): DecMinInstances {
+        return {
             type: WineryActions.DEC_MIN_INSTANCES,
             minInstances: minInstances.minInstances
-        }));
-    decMaxInstances: ActionCreator<DecMaxInstances> =
-        ((maxInstances) => ({
+        };
+    }
+
+    decMaxInstances(maxInstances): DecMaxInstances {
+        return {
             type: WineryActions.DEC_MAX_INSTANCES,
             maxInstances: maxInstances.maxInstances
-        }));
-    saveNodeTemplate: ActionCreator<SaveNodeTemplateAction> =
-        ((newNode) => ({
+        };
+    }
+
+    saveNodeTemplate(newNode): SaveNodeTemplateAction {
+        return {
             type: WineryActions.SAVE_NODE_TEMPLATE,
             nodeTemplate: newNode
-        }));
-    saveRelationship: ActionCreator<SaveRelationshipAction> =
-        ((newRelationship) => ({
+        };
+    }
+
+    saveRelationship(newRelationship): SaveRelationshipAction {
+        return {
             type: WineryActions.SAVE_RELATIONSHIP,
             relationshipTemplate: newRelationship
-        }));
-    deleteNodeTemplate: ActionCreator<DeleteNodeAction> =
-        ((deletedNodeId) => ({
+        };
+    }
+
+    deleteNodeTemplate(deletedNodeId): DeleteNodeAction {
+        return {
             type: WineryActions.DELETE_NODE_TEMPLATE,
             nodeTemplateId: deletedNodeId
-        }));
-    deleteRelationshipTemplate: ActionCreator<DeleteRelationshipAction> =
-        ((deletedRelationshipId) => ({
+        };
+    }
+
+    deleteRelationshipTemplate(deletedRelationshipId): DeleteRelationshipAction {
+        return {
             type: WineryActions.DELETE_RELATIONSHIP_TEMPLATE,
             nodeTemplateId: deletedRelationshipId
-        }));
-    updateNodeCoordinates: ActionCreator<UpdateNodeCoordinatesAction> =
-        ((currentNodeCoordinates) => ({
+        };
+    }
+
+    updateNodeCoordinates(currentNodeCoordinates): UpdateNodeCoordinatesAction {
+        return {
             type: WineryActions.UPDATE_NODE_COORDINATES,
             otherAttributes: currentNodeCoordinates
-        }));
-    updateRelationshipName: ActionCreator<UpdateRelationshipNameAction> =
-        ((currentRelData) => ({
+        };
+    }
+
+    updateRelationshipName(currentRelData): UpdateRelationshipNameAction {
+        return {
             type: WineryActions.UPDATE_REL_DATA,
             relData: currentRelData.relData
-        }));
-    setProperty: ActionCreator<SetPropertyAction> =
-        ((newProperty) => ({
+        };
+    }
+
+    setProperty(newProperty): SetPropertyAction {
+        return {
             type: WineryActions.SET_PROPERTY,
-            nodeProperty: newProperty.nodeProperty,
-            propertyType: newProperty.propertyType
-        }));
-    setCapability: ActionCreator<SetCababilityAction> =
-        ((newCapability) => ({
+            nodeProperty: newProperty.nodeProperty
+        };
+    }
+
+    setCapability(newCapability): SetCababilityAction {
+        return {
             type: WineryActions.SET_CAPABILITY,
             nodeCapability: newCapability
-        }));
-    setRequirement: ActionCreator<SetRequirementAction> =
-        ((newRequirement) => ({
+        };
+    }
+
+    setRequirement(newRequirement): SetRequirementAction {
+        return {
             type: WineryActions.SET_REQUIREMENT,
             nodeRequirement: newRequirement
-        }));
-    setDeploymentArtifact: ActionCreator<SetDeploymentArtifactAction> =
-        ((newDepArt) => ({
+        };
+    }
+
+    setDeploymentArtifact(newDepArt): SetDeploymentArtifactAction {
+        return {
             type: WineryActions.SET_DEPLOYMENT_ARTIFACT,
             nodeDeploymentArtifact: newDepArt
-        }));
-    deleteDeploymentArtifact: ActionCreator<DeleteDeploymentArtifactAction> =
-        ((deletedDeploymentArtifact) => ({
+        };
+    }
+
+    deleteDeploymentArtifact(deletedDeploymentArtifact): DeleteDeploymentArtifactAction {
+        return {
             type: WineryActions.DELETE_DEPLOYMENT_ARTIFACT,
             nodeDeploymentArtifact: deletedDeploymentArtifact
-        }));
-    setYamlArtifact: ActionCreator<SetYamlArtifactAction> =
-        ((newYamlArt) => ({
+        };
+    }
+
+    setYamlArtifact(newYamlArt): SetYamlArtifactAction {
+        return {
             type: WineryActions.SET_YAML_ARTIFACT,
             nodeYamlArtifact: newYamlArt
-        }));
-    deleteYamlArtifact: ActionCreator<DeleteYamlArtifactAction> =
-        ((deletedYamlArt) => ({
+        };
+    }
+
+    deleteYamlArtifact(deletedYamlArt): DeleteYamlArtifactAction {
+        return {
             type: WineryActions.DELETE_YAML_ARTIFACT,
             nodeYamlArtifact: deletedYamlArt
-        }));
-    setPolicy: ActionCreator<SetPolicyAction> =
-        ((newPolicy) => ({
+        };
+    }
+
+    setPolicy(newPolicy): SetPolicyAction {
+        return {
             type: WineryActions.SET_POLICY,
             nodePolicy: newPolicy
-        }));
-    setPolicyForRelationship: ActionCreator<SetPolicyAction> =
-        ((newPolicy) => ({
+        };
+    }
+
+    setPolicyForRelationship(newPolicy): SetPolicyAction {
+        return {
             type: WineryActions.SET_POLICY_FOR_RELATIONSHIP,
             nodePolicy: newPolicy
-        }));
-    changeYamlPolicies: ActionCreator<ChangeYamlPoliciesAction> =
-        ((policies) => ({
+        };
+    }
+
+    changeYamlPolicies(policies): ChangeYamlPoliciesAction {
+        return {
             type: WineryActions.UPDATE_YAML_POLICIES,
             yamlPolicies: {
                 policies: {
                     policy: policies
                 }
             }
-        }));
-    setTargetLocation: ActionCreator<SetTargetLocation> =
-        ((newTargetLocation) => ({
+        };
+    }
+
+    setTargetLocation(newTargetLocation): SetTargetLocation {
+        return {
             type: WineryActions.SET_TARGET_LOCATION,
             nodeTargetLocation: newTargetLocation
-        }));
-    deletePolicy: ActionCreator<DeletePolicyAction> =
-        ((deletedPolicy) => ({
+        };
+    }
+
+    deletePolicy(deletedPolicy): DeletePolicyAction {
+        return {
             type: WineryActions.DELETE_POLICY,
             nodePolicy: deletedPolicy
-        }));
-    sendCurrentNodeId: ActionCreator<SendCurrentNodeIdAction> =
-        ((currentNodeData) => ({
+        };
+    }
+
+    sendCurrentNodeId(currentNodeData): SendCurrentNodeIdAction {
+        return {
             type: WineryActions.SEND_CURRENT_NODE_ID,
             currentNodeData: currentNodeData
-        }));
-    setNodeVisuals: ActionCreator<SetNodeVisuals> =
-        ((visuals: Visuals[]) => ({
+        };
+    }
+
+    setNodeVisuals(visuals): SetNodeVisuals {
+        return {
             type: WineryActions.SET_NODE_VISUALS,
             visuals: visuals
-        }));
+        };
+    }
+
+    sendLiveModelingSidebarOpened(sidebarOpened): SendLiveModelingSidebarOpenedAction {
+        return {
+            type: WineryActions.SEND_LIVE_MODELING_SIDEBAR_OPENED,
+            sidebarOpened: sidebarOpened
+        };
+    }
+
+    setLastSavedJsonTopology(lastSavedJsonTopology: TTopologyTemplate): SetLastSavedJsonTopologyAction {
+        return {
+            type: WineryActions.SET_LAST_SAVED_JSON_TOPOLOGY,
+            lastSavedJsonTopology: lastSavedJsonTopology
+        };
+    }
+
+    setUnsavedChanges(unsavedChanges: boolean): SetUnsavedChangesAction {
+        return {
+            type: WineryActions.SET_UNSAVED_CHANGES,
+            unsavedChanges: unsavedChanges
+        };
+    }
+
+    setNodePropertyValidity(nodeId: string, valid: boolean): SetNodePropertyValidityAction {
+        return {
+            type: WineryActions.SET_NODE_VALIDITY,
+            nodeValidity: {
+                nodeId: nodeId,
+                valid: valid
+            }
+        };
+    }
+
+    setNodeInstanceState(nodeId: string, state: NodeTemplateInstanceStates): SetNodeInstanceStateAction {
+        return {
+            type: WineryActions.SET_NODE_INSTANCE_STATE,
+            nodeInstanceState: {
+                nodeId: nodeId,
+                state: state
+            }
+        };
+    }
+
+    setNodeWorking(nodeId: string, working: boolean): SetNodeWorkingAction {
+        return {
+            type: WineryActions.SET_NODE_WORKING,
+            nodeWorking: {
+                nodeId: nodeId,
+                working: working
+            }
+        };
+    }
 }

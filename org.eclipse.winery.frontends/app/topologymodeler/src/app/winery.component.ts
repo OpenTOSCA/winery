@@ -23,7 +23,6 @@ import { Subscription } from 'rxjs';
 import { NgRedux } from '@angular-redux/store';
 import { IWineryState } from './redux/store/winery.store';
 import { ToscaDiff } from './models/ToscaDiff';
-import { isNullOrUndefined } from 'util';
 import { TopologyTemplateUtil } from './models/topologyTemplateUtil';
 import { EntityTypesModel, TopologyModelerInputDataFormat } from './models/entityTypesModel';
 import { ActivatedRoute } from '@angular/router';
@@ -33,6 +32,10 @@ import { TopologyRendererState } from './redux/reducers/topologyRenderer.reducer
 import { VersionElement } from './models/versionElement';
 import { TopologyRendererActions } from './redux/actions/topologyRenderer.actions';
 import { WineryRepositoryConfigurationService } from '../../../tosca-management/src/app/wineryFeatureToggleModule/WineryRepositoryConfiguration.service';
+import { ResizedEvent } from 'angular-resize-event';
+import { FeatureEnum } from '../../../tosca-management/src/app/wineryFeatureToggleModule/wineryRepository.feature.direct';
+import { TopologyService } from './services/topology.service';
+import { WineryActions } from './redux/actions/winery.actions';
 import { TPolicy } from './models/policiesModalData';
 import { GroupedNodeTypeModel } from './models/groupedNodeTypeModel';
 
@@ -68,14 +71,19 @@ export class WineryComponent implements OnInit, AfterViewInit {
     private loadedRelationshipVisuals = 0;
     private requiredRelationshipVisuals: number;
 
+    navbarHeight = 0;
+    configEnum = FeatureEnum;
+
     constructor(private loadedService: LoadedService,
                 private appReadyEvent: AppReadyEventService,
                 public backendService: BackendService,
                 private ngRedux: NgRedux<IWineryState>,
+                private wineryActions: WineryActions,
                 private actions: TopologyRendererActions,
                 private alert: ToastrService,
                 private activatedRoute: ActivatedRoute,
-                private configurationService: WineryRepositoryConfigurationService) {
+                private configurationService: WineryRepositoryConfigurationService,
+                private topologyService: TopologyService) {
         this.subscriptions.push(this.ngRedux.select(state => state.wineryState.hideNavBarAndPaletteState)
             .subscribe(hideNavBar => this.hideNavBarState = hideNavBar));
         this.subscriptions.push(this.ngRedux.select(state => state.topologyRendererState)
@@ -311,7 +319,7 @@ export class WineryComponent implements OnInit, AfterViewInit {
             this.entityTypes.relationshipVisuals = topologyData[2];
             this.entityTypes.policyTemplateVisuals = topologyData[3];
             this.entityTypes.policyTypeVisuals = topologyData[4];
-            if (topologyData.length === 7 && !isNullOrUndefined(topologyData[5]) && !isNullOrUndefined(topologyData[6])) {
+            if (topologyData.length === 7 && topologyData[5] && topologyData[6]) {
                 this.topologyDifferences = [topologyData[5], topologyData[6]];
             }
 
@@ -355,6 +363,16 @@ export class WineryComponent implements OnInit, AfterViewInit {
 
     onReduxReady() {
         this.loaded.generatedReduxState = true;
+        this.ngRedux.dispatch(this.wineryActions.setLastSavedJsonTopology(this.ngRedux.getState().wineryState.currentJsonTopology));
+        this.topologyService.enableCheck();
+        window.addEventListener('beforeunload', (e => {
+            if (this.ngRedux.getState().wineryState.unsavedChanges) {
+                e.preventDefault();
+                e.returnValue = '';
+            } else {
+                delete e['returnValue'];
+            }
+        }));
     }
 
     sidebarDeleteButtonClicked($event) {
@@ -382,5 +400,9 @@ export class WineryComponent implements OnInit, AfterViewInit {
         } else {
             delete this.refiningType;
         }
+    }
+
+    onNavbarResized(event: ResizedEvent) {
+        this.navbarHeight = event.newHeight;
     }
 }

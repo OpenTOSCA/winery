@@ -33,6 +33,7 @@ public class PropertyDefinitionKV implements Serializable {
     private String description;
 
     private ConstraintClauseKVList constraintList;
+    private String pattern;
 
     public PropertyDefinitionKV() {
         super();
@@ -82,6 +83,14 @@ public class PropertyDefinitionKV implements Serializable {
         this.type = type;
     }
 
+    public String getPattern() {
+        return this.pattern;
+    }
+
+    public void setPattern(String pattern) {
+        this.pattern = pattern;
+    }
+    
     public Boolean isRequired() {
         return required;
     }

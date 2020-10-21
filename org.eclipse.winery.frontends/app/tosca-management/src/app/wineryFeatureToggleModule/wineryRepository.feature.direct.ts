@@ -18,7 +18,8 @@ export enum FeatureEnum {
     Accountability = 'accountability', Completion = 'completion', Compliance = 'compliance', EdmmModeling = 'edmmModeling',
     FreezeAndDefrost = 'freezeAndDefrost', ManagementFeatureEnrichment = 'managementFeatureEnrichment', NFV = 'nfv', PatternRefinement = 'patternRefinement',
     ProblemDetection = 'problemDetection', Radon = 'radon', Splitting = 'splitting', TestRefinement = 'testRefinement',
-    TopologyFragmentRefinementModel = 'topologyFragmentRefinementModel', Placement = 'placement', updateTemplates = 'updateTemplates', Yaml = 'yaml'
+    TopologyFragmentRefinementModel = 'topologyFragmentRefinementModel', Placement = 'placement', updateTemplates = 'updateTemplates', Yaml = 'yaml',
+    LiveModeling = 'liveModeling', PropertyCheck = 'propertyCheck'
 }
 
 @Directive({

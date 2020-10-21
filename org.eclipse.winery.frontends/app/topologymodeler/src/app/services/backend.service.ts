@@ -31,9 +31,10 @@ import { Threat, ThreatAssessmentApiData } from '../models/threatModelingModalDa
 import { Visuals } from '../models/visuals';
 import { VersionElement } from '../models/versionElement';
 import { WineryRepositoryConfigurationService } from '../../../../tosca-management/src/app/wineryFeatureToggleModule/WineryRepositoryConfiguration.service';
-import { takeLast } from 'rxjs/operators';
-import { TPolicy } from '../models/policiesModalData';
-import { backendBaseURL } from '../../../../tosca-management/src/app/configuration';
+import { takeLast, tap } from 'rxjs/operators';
+import { NgRedux } from '@angular-redux/store';
+import { IWineryState } from '../redux/store/winery.store';
+import { WineryActions } from '../redux/actions/winery.actions';
 
 /**
  * Responsible for interchanging data between the app and the server.
@@ -56,7 +57,9 @@ export class BackendService {
     constructor(private http: HttpClient,
                 private alert: ToastrService,
                 private errorHandler: ErrorHandlerService,
-                private configurationService: WineryRepositoryConfigurationService) {
+                private configurationService: WineryRepositoryConfigurationService,
+                private ngRedux: NgRedux<IWineryState>,
+                private wineryActions: WineryActions) {
         this.endpointConfiguration$.subscribe((params: TopologyModelerConfiguration) => {
             if (!(isNullOrUndefined(params.id) && isNullOrUndefined(params.ns) &&
                 isNullOrUndefined(params.repositoryURL) && isNullOrUndefined(params.uiURL))) {
@@ -271,39 +274,81 @@ export class BackendService {
     }
 
     /**
+     * This method retrieves a Topology Template from the backend.
+     */
+    requestTopologyTemplate(serviceTemplateId?: string): Observable<TTopologyTemplate> {
+        if (this.configuration) {
+            if (serviceTemplateId) {
+                const url = this.configuration.parentUrl
+                    + encodeURIComponent(encodeURIComponent(this.configuration.ns)) + '/'
+                    + serviceTemplateId + '/topologytemplate';
+                return this.http.get<TTopologyTemplate>(url);
+            } else {
+                return this.http.get<TTopologyTemplate>(this.configuration.elementUrl);
+            }
+        }
+        return null;
+    }
+
+    /**
      * Saves the topologyTemplate back to the repository
      */
     saveTopologyTemplate(topologyTemplate: TTopologyTemplate): Observable<HttpResponse<string>> {
         if (this.configuration) {
-            // Initialization
-            const topologySkeleton = {
-                documentation: [],
-                any: [],
-                otherAttributes: {},
-                relationshipTemplates: [],
-                nodeTemplates: [],
-                policies: { policy: new Array<TPolicy>() }
-            };
-            // Prepare for saving by updating the existing topology with the current topology state inside the Redux store
-            topologySkeleton.nodeTemplates = topologyTemplate.nodeTemplates;
-            topologySkeleton.relationshipTemplates = topologyTemplate.relationshipTemplates;
-            topologySkeleton.relationshipTemplates.map(relationship => {
-                delete relationship.state;
-            });
-            // remove the 'Color' field from all nodeTemplates as the REST Api does not recognize it.
-            topologySkeleton.nodeTemplates.map(nodeTemplate => {
-                delete nodeTemplate.visuals;
-                delete nodeTemplate._state;
-            });
-            topologySkeleton.policies = topologyTemplate.policies;
-            console.log(topologySkeleton);
-
+            const topologyToBeSaved = this.prepareTopologyTemplateForExport(topologyTemplate);
             const headers = new HttpHeaders().set('Content-Type', 'application/json');
             return this.http.put(this.configuration.elementUrl,
-                topologySkeleton,
+                topologyToBeSaved,
                 { headers: headers, responseType: 'text', observe: 'response' }
+            ).pipe(
+                tap(resp => {
+                    if (resp.ok) {
+                        this.ngRedux.dispatch(this.wineryActions.setLastSavedJsonTopology(topologyTemplate));
+                    }
+                })
             );
         }
+    }
+
+    /**
+     * Creates new service template version for live-modeling.
+     */
+    createLiveModelingServiceTemplate(): Observable<any> {
+        if (this.configuration) {
+            const headers = new HttpHeaders().set('Content-Type', 'application/json');
+            return this.http.post(this.configuration.parentElementUrl + 'createlivemodelingversion',
+                null,
+                { headers: headers }
+            );
+        }
+    }
+
+    /**
+     * Prepare topology by removing properties that are not recognizable by the REST API
+     * @param topologyTemplate
+     */
+    private prepareTopologyTemplateForExport(topologyTemplate: any) {
+        return {
+            documentation: [],
+            any: [],
+            otherAttributes: {},
+            relationshipTemplates: topologyTemplate.relationshipTemplates.map(relationship => {
+                const clone = Object.assign({}, relationship);
+                delete clone.state;
+                return clone;
+            }),
+            // remove the 'Color' field from all nodeTemplates as the REST Api does not recognize it.
+            nodeTemplates: topologyTemplate.nodeTemplates.map(nodeTemplate => {
+                const clone = Object.assign({}, nodeTemplate);
+                delete clone._state;
+                delete clone.instanceState;
+                delete clone.valid;
+                delete clone.working;
+                delete clone.visuals;
+                return clone;
+            }),
+            policies: topologyTemplate.policies,
+        };
     }
 
     saveYamlArtifact(topology: TTopologyTemplate,
@@ -356,8 +401,7 @@ export class BackendService {
      *
      */
     threatCreation(data: ThreatCreation): Observable<string> {
-        const url = this.configuration.repositoryURL;
-        return this.http.post(url + '/threats', data, { responseType: 'text' });
+        return this.http.post(this.configuration.repositoryURL + '/threats', data, { responseType: 'text' });
     }
 
     /**

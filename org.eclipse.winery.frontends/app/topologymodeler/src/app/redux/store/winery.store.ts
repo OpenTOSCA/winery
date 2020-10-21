@@ -17,6 +17,7 @@ import { INITIAL_WINERY_STATE, WineryReducer, WineryState } from '../reducers/wi
 import {
     INITIAL_TOPOLOGY_RENDERER_STATE, TopologyRendererReducer, TopologyRendererState
 } from '../reducers/topologyRenderer.reducer';
+import { INITIAL_LIVE_MODELING_STATE, LiveModelingReducer, LiveModelingState } from '../reducers/live-modeling.reducer';
 
 /**
  * The topology modeler has one store for all data.
@@ -24,14 +25,17 @@ import {
 export interface IWineryState {
     topologyRendererState: TopologyRendererState;
     wineryState: WineryState;
+    liveModelingState: LiveModelingState;
 }
 
 export const INITIAL_IWINERY_STATE: IWineryState = {
     topologyRendererState: INITIAL_TOPOLOGY_RENDERER_STATE,
-    wineryState: INITIAL_WINERY_STATE
+    wineryState: INITIAL_WINERY_STATE,
+    liveModelingState: INITIAL_LIVE_MODELING_STATE
 };
 
 export const rootReducer: Reducer<IWineryState> = combineReducers<IWineryState>({
     topologyRendererState: TopologyRendererReducer,
-    wineryState: WineryReducer
+    wineryState: WineryReducer,
+    liveModelingState: LiveModelingReducer
 });

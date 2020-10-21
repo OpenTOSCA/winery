@@ -11,7 +11,24 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR Apache-2.0
 -->
-<winery-properties-content
-    [readonly]="readonly"
-    [currentNodeData]="currentNodeData">
-</winery-properties-content>
+<div *ngIf="!currentNodeData.propertyDefinitionType"
+     style="display: flex; justify-content: center; align-items: center">
+    <i class="fa fa-3x fa-refresh fa-spin" style="max-width: 50%;"></i>
+</div>
+
+<winery-properties-kv *ngIf="currentNodeData.propertyDefinitionType == 'KV'"
+                      [nodeId]="nodeId"
+                      [properties]="nodeProperties"
+                      [readonly]="readonly"
+                      [nodeData]="currentNodeData"
+                      (updateProperty)="kvPropertyUpdate($event)"
+></winery-properties-kv>
+
+<winery-properties-xml *ngIf="currentNodeData.propertyDefinitionType == 'XML'"
+                       [properties]="nodeProperties"
+                       [readonly]="readonly"
+                       (updateProperty)="xmlPropertyUpdate($event)"
+></winery-properties-xml>
+
+<div *ngIf="currentNodeData.propertyDefinitionType == 'NONE'" style="color: dimgray; text-align: center">
+    <span>No properties defined <br> for this Element.</span></div>

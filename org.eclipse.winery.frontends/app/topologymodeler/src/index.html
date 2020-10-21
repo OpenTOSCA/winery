@@ -25,8 +25,15 @@
 </head>
 <body>
 
-<!-- Enable bootstrap 4 theme -->
-<script>window.__theme = 'bs4';</script>
+<script>
+    // Enable bootstrap 4 theme
+    window.__theme = 'bs4';
+    
+    // Prevent scrolling, use panning instead
+    document.addEventListener("mousedown", function(e) {
+        if (e.button === 1) e.preventDefault();
+    });
+</script>
 <winery-topologymodeler></winery-topologymodeler>
 
 <div id="pre-bootstrap-container">
