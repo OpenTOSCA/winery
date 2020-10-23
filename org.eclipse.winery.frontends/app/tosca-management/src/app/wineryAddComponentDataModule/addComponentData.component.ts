@@ -74,10 +74,16 @@ export class WineryAddComponentDataComponent {
 
     onInputChange() {
         this.validation = new AddComponentValidation();
+
+        if (!this.newComponentName) {
+            this.validFormEvent.emit(false);
+            return { noNameAvailable: true };
+        }
         this.newComponentFinalName = this.newComponentName;
 
         if (this.typeRequired && !this.newComponentSelectedType) {
             this.validation.noTypeAvailable = true;
+            this.validFormEvent.emit(false);
             return { noTypeAvailable: true };
         }
 
@@ -86,6 +92,7 @@ export class WineryAddComponentDataComponent {
         if (this.newComponentVersion.componentVersion && this.useComponentVersion) {
             this.validation.noUnderscoresAllowed = this.newComponentVersion.componentVersion.includes('_');
             if (this.validation.noUnderscoresAllowed) {
+                this.validFormEvent.emit(false);
                 return { noUnderscoresAllowed: true };
             }
         }
@@ -129,14 +136,17 @@ export class WineryAddComponentDataComponent {
     }
 
     createUrlAndCheck() {
-        this.artifactUrl = backendBaseURL + '/' + this.toscaType + '/' + encodeURIComponent(encodeURIComponent(
-            this.newComponentNamespace)) + '/' + this.newComponentFinalName + '/';
+        const namespace = encodeURIComponent(encodeURIComponent(this.newComponentNamespace));
+        if (this.toscaType && namespace && this.newComponentFinalName) {
+            this.artifactUrl = backendBaseURL + '/' + this.toscaType + '/' + encodeURIComponent(encodeURIComponent(
+                this.newComponentNamespace)) + '/' + this.newComponentFinalName + '/';
 
-        this.existService.check(this.artifactUrl)
-            .subscribe(
-                () => this.validate(false),
-                () => this.validate(true)
-            );
+            this.existService.check(this.artifactUrl)
+                .subscribe(
+                    () => this.validate(false),
+                    () => this.validate(true)
+                );
+        }
         this.newComponentNameEvent.emit(this.newComponentFinalName);
         this.newComponentNamespaceEvent.emit(this.newComponentNamespace);
     }
