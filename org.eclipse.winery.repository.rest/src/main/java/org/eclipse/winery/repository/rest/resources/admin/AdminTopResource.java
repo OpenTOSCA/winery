@@ -16,7 +16,6 @@ package org.eclipse.winery.repository.rest.resources.admin;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import javax.ws.rs.Consumes;
@@ -30,6 +29,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.eclipse.winery.common.configuration.Environments;
+import org.eclipse.winery.common.configuration.RepositoryConfigurationObject;
 import org.eclipse.winery.common.configuration.UiConfigurationObject;
 import org.eclipse.winery.repository.backend.IRepository;
 import org.eclipse.winery.repository.backend.RepositoryFactory;
@@ -37,10 +37,14 @@ import org.eclipse.winery.repository.backend.consistencycheck.ConsistencyChecker
 import org.eclipse.winery.repository.backend.consistencycheck.ConsistencyCheckerConfiguration;
 import org.eclipse.winery.repository.backend.consistencycheck.ConsistencyCheckerVerbosity;
 import org.eclipse.winery.repository.backend.consistencycheck.ConsistencyErrorCollector;
-import org.eclipse.winery.repository.rest.resources.admin.AdminTopResource.CheResponse;
+import org.eclipse.winery.repository.rest.resources.admin.types.CheResponse;
 import org.eclipse.winery.repository.rest.resources.admin.types.ConstraintTypesManager;
+import org.eclipse.winery.repository.rest.resources.admin.types.Machine;
 import org.eclipse.winery.repository.rest.resources.admin.types.PlanLanguagesManager;
 import org.eclipse.winery.repository.rest.resources.admin.types.PlanTypesManager;
+import org.eclipse.winery.repository.rest.resources.admin.types.RepositoryConfigurationResponse;
+import org.eclipse.winery.repository.rest.resources.admin.types.Server;
+import org.eclipse.winery.repository.rest.resources.admin.types.WorkspaceResponse;
 import org.eclipse.winery.repository.rest.resources.apiData.OAuthStateAndCodeApiData;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -107,31 +111,12 @@ public class AdminTopResource {
         return Environments.getInstance().getUiConfig();
     }
 
-    public static class Server {
-        public String url;
-        public String status;
-    }
-
-    public static class Machine {
-        public Map<String, String> attributes;
-
-        public Map<String, Server> servers;
-    }
-
-    public static class Runtime {
-        public Map<String, Machine> machines;
-    }
-
-    public static class WorkspaceResponse {
-        public Runtime runtime;
-    }
-
-    public static class CheResponse {
-        public String url;
-
-        CheResponse(String url) {
-            this.url = url;
-        }
+    @GET
+    @Path("repository-config")
+    @Produces(MediaType.APPLICATION_JSON)
+    public RepositoryConfigurationResponse getRepositoryConfig() {
+        RepositoryConfigurationObject config = Environments.getInstance().getRepositoryConfig();
+        return new RepositoryConfigurationResponse(config.getRepositoryRoot());
     }
 
     @GET
