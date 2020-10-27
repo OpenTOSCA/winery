@@ -165,7 +165,8 @@ public class YamlWriter extends AbstractVisitor<YamlPrinter, YamlWriter.Paramete
             .print(printMap("node_templates", node.getNodeTemplates(), parameter))
             .print(printMap("relationship_templates", node.getRelationshipTemplates(), parameter))
             .print(printMap("groups", node.getGroups(), parameter))
-            .print(printListMap("policies", Collections.singletonList(node.getPolicies()), parameter))
+            .print(printListMap("policies",
+                node.getPolicies().size() > 0 ? Collections.singletonList(node.getPolicies()) : new ArrayList<>(), parameter))
             .print(printMap("outputs", node.getOutputs(), parameter))
             .print(printVisitorNode(node.getSubstitutionMappings(), new Parameter(parameter.getIndent()).addContext("substitution_mappings")));
     }
