@@ -41,8 +41,11 @@ export interface WineryConfiguration {
         workflowmodeler: string;
         edmmTransformationTool: string;
         eclipseChe: string;
-        repositoryPath: string
     };
+}
+
+export interface WineryRepositoryConfiguration {
+    repositoryRoot: String;
 }
 
 @Injectable()
@@ -71,6 +74,10 @@ export class WineryRepositoryConfigurationService {
                 }
             );
         return subject.asObservable();
+    }
+
+    getRepositoryConfiguration(): Observable<WineryRepositoryConfiguration> {
+        return this.http.get<WineryRepositoryConfiguration>(backendBaseURL + '/admin/repository-config');
     }
 
     isYaml(): boolean {

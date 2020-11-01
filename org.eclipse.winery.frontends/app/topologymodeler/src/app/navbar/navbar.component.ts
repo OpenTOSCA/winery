@@ -27,7 +27,7 @@ import { StatefulAnnotationsService } from '../services/statefulAnnotations.serv
 import { FeatureEnum } from '../../../../tosca-management/src/app/wineryFeatureToggleModule/wineryRepository.feature.direct';
 import { WineryRepositoryConfigurationService } from '../../../../tosca-management/src/app/wineryFeatureToggleModule/WineryRepositoryConfiguration.service';
 import { TTopologyTemplate } from '../models/ttopology-template';
-import { CheService } from '../../../../tosca-management/src/app/che/che.service';
+import { CheService } from '../services/che.service';
 
 /**
  * The navbar of the topologymodeler.
@@ -276,12 +276,11 @@ export class NavbarComponent implements OnDestroy {
     }
 
     openChe() {
-        this.che.getCheTheiaUrl().subscribe(response => {
-            const pathParts = this.configurationService.configuration.endpoints.repositoryPath.split('/');
-            const path = pathParts[1];
-            const readmePath = response.url + `/?ns=${this.backendService.configuration.ns}&id=${this.backendService.configuration
-                .id}&parentPath=${path}/${this.backendService.configuration.parentPath}#/projects`;
-            window.open(readmePath, '_blank');
-        });
+        this.che.openChe(
+            this.backendService.configuration.repositoryURL,
+            this.backendService.configuration.id,
+            this.backendService.configuration.ns,
+            'servicetemplates'
+        );
     }
 }
