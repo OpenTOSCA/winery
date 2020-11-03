@@ -23,7 +23,7 @@
     </div>
     <div class="managementButtons row" *ngIf="showManagementButtons">
         <button class="btn btn-danger col-lg-4" (click)="openDeleteConfirmationModel()">Delete</button>
-        <button *ngIf="radon" class="btn btn-info col-lg-4" (click)="openChe()">Open IDE</button>
+        <button *wineryRepositoryShowOnFeature="'radon'" class="btn btn-info col-lg-4" (click)="openChe()">Open in IDE</button>
         <div *ngIf="!this.configurationService.isYaml(); then xmlExport else yamlExport"></div>
         <ng-template #xmlExport>
             <div class="btn-group col-lg-4" dropdown>

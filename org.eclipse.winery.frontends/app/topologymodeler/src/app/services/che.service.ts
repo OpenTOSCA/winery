@@ -44,12 +44,12 @@ export class CheService {
             // TODO split this or just give theia the full path?
             const pathParts = repositoryConfiguration.repositoryRoot.split('/');
             const path = pathParts[2];
+            // TODO give full path as folderPath
             const pathToOpen = theiaUrl + `/?ns=${namespace}&id=${id}&parentPath=${path}/${type}#/projects`;
             window.open(pathToOpen, '_blank');
         } catch (err) {
             if (err instanceof HttpErrorResponse) {
                 if (err.status === 500) {
-                    // TODO throw explicit error in the backend?
                     this.toastrService.error('Server was not properly configured for IDE usage', 'Configuration Error');
                 }
             }
