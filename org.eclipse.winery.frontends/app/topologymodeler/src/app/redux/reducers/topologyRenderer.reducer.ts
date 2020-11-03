@@ -43,6 +43,8 @@ export interface TopologyRendererState {
         cleanFreezableComponentsButton?: boolean;
         placeComponentsButton?: boolean;
         manageYamlPoliciesButton?: boolean;
+        manageYamlGroupsButton?: boolean;
+        yamlGroupsButton?: boolean;
     };
     nodesToSelect?: string[];
 }
@@ -74,8 +76,10 @@ export const INITIAL_TOPOLOGY_RENDERER_STATE: TopologyRendererState = {
         determineFreezableComponentsButton: false,
         cleanFreezableComponentsButton: false,
         placeComponentsButton: false,
-        manageYamlPoliciesButton: false
-    }
+        manageYamlPoliciesButton: false,
+        manageYamlGroupsButton: false,
+        yamlGroupsButton: false,
+    },
 };
 /**
  * Reducer for the TopologyRenderer
@@ -83,6 +87,30 @@ export const INITIAL_TOPOLOGY_RENDERER_STATE: TopologyRendererState = {
 export const TopologyRendererReducer =
     function (lastState: TopologyRendererState = INITIAL_TOPOLOGY_RENDERER_STATE, action: Action): TopologyRendererState {
         switch (action.type) {
+            case TopologyRendererActions.TOGGLE_YAML_GROUPS:
+                return {
+                    ...lastState,
+                    buttonsState: {
+                        ...lastState.buttonsState,
+                        yamlGroupsButton: !lastState.buttonsState.yamlGroupsButton
+                    }
+                };
+            case TopologyRendererActions.SHOW_MANAGE_YAML_GROUPS:
+                return {
+                    ...lastState,
+                    buttonsState: {
+                        ...lastState.buttonsState,
+                        manageYamlGroupsButton: true
+                    }
+                };
+            case TopologyRendererActions.TOGGLE_MANAGE_YAML_GROUPS:
+                return {
+                    ...lastState,
+                    buttonsState: {
+                        ...lastState.buttonsState,
+                        manageYamlGroupsButton: !lastState.buttonsState.manageYamlGroupsButton
+                    }
+                };
             case TopologyRendererActions.TOGGLE_POLICIES:
                 return {
                     ...lastState,

@@ -47,7 +47,6 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>${org.slf4j}</version>
-            <scope>compile</scope>
         </dependency>
     </dependencies>
 </project>

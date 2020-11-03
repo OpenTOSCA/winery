@@ -21,7 +21,8 @@ import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
 
 @Injectable()
 export class TagService {
-    private path: string;
+
+    private readonly path: string;
 
     constructor(private http: HttpClient,
                 private route: Router) {

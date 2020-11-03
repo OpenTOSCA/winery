@@ -28,13 +28,11 @@
         <main.basedir>${project.parent.basedir}</main.basedir>
     </properties>
 
-
     <dependencies>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>${org.slf4j}</version>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.eclipse.virgo.util</groupId>
@@ -54,7 +52,7 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-    
+
     <build>
         <plugins>
             <plugin>

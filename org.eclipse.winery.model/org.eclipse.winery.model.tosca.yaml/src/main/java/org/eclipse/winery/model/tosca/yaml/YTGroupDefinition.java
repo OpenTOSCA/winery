@@ -32,12 +32,12 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 
 public class YTGroupDefinition implements VisitorNode {
+
     private QName type;
     private String description;
     private Metadata metadata;
     private Map<String, YTPropertyAssignment> properties;
     private List<QName> members;
-    private Map<String, YTInterfaceDefinition> interfaces;
 
     protected YTGroupDefinition(Builder builder) {
         this.setType(builder.type);
@@ -45,7 +45,6 @@ public class YTGroupDefinition implements VisitorNode {
         this.setMetadata(builder.metadata);
         this.setProperties(builder.properties);
         this.setMembers(builder.members);
-        this.setInterfaces(builder.interfaces);
     }
 
     @Override
@@ -57,13 +56,12 @@ public class YTGroupDefinition implements VisitorNode {
             Objects.equals(getDescription(), that.getDescription()) &&
             Objects.equals(getMetadata(), that.getMetadata()) &&
             Objects.equals(getProperties(), that.getProperties()) &&
-            Objects.equals(getMembers(), that.getMembers()) &&
-            Objects.equals(getInterfaces(), that.getInterfaces());
+            Objects.equals(getMembers(), that.getMembers());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getType(), getDescription(), getMetadata(), getProperties(), getMembers(), getInterfaces());
+        return Objects.hash(getType(), getDescription(), getMetadata(), getProperties(), getMembers());
     }
 
     @Override
@@ -74,7 +72,6 @@ public class YTGroupDefinition implements VisitorNode {
             ", metadata=" + getMetadata() +
             ", properties=" + getProperties() +
             ", members=" + getMembers() +
-            ", interfaces=" + getInterfaces() +
             '}';
     }
 
@@ -135,30 +132,17 @@ public class YTGroupDefinition implements VisitorNode {
         this.members = members;
     }
 
-    @NonNull
-    public Map<String, YTInterfaceDefinition> getInterfaces() {
-        if (this.interfaces == null) {
-            this.interfaces = new LinkedHashMap<>();
-        }
-
-        return interfaces;
-    }
-
-    public void setInterfaces(Map<String, YTInterfaceDefinition> interfaces) {
-        this.interfaces = interfaces;
-    }
-
     public <R extends AbstractResult<R>, P extends AbstractParameter<P>> R accept(IVisitor<R, P> visitor, P parameter) {
         return visitor.visit(this, parameter);
     }
 
     public static class Builder {
+
         private final QName type;
         private String description;
         private Metadata metadata;
         private Map<String, YTPropertyAssignment> properties;
         private List<QName> members;
-        private Map<String, YTInterfaceDefinition> interfaces;
 
         public Builder(QName type) {
             this.type = type;
@@ -181,11 +165,6 @@ public class YTGroupDefinition implements VisitorNode {
 
         public Builder setMembers(List<QName> members) {
             this.members = members;
-            return this;
-        }
-
-        public Builder setInterfaces(Map<String, YTInterfaceDefinition> interfaces) {
-            this.interfaces = interfaces;
             return this;
         }
 
@@ -231,28 +210,6 @@ public class YTGroupDefinition implements VisitorNode {
             }
 
             return addMembers(Collections.singletonList(member));
-        }
-
-        public Builder addInterfaces(Map<String, YTInterfaceDefinition> interfaces) {
-            if (interfaces == null || interfaces.isEmpty()) {
-                return this;
-            }
-
-            if (this.interfaces == null) {
-                this.interfaces = new LinkedHashMap<>(interfaces);
-            } else {
-                this.interfaces.putAll(interfaces);
-            }
-
-            return this;
-        }
-
-        public Builder addInterfaces(String name, YTInterfaceDefinition interfaceDefinition) {
-            if (name == null) {
-                return this;
-            }
-
-            return addInterfaces(Collections.singletonMap(name, interfaceDefinition));
         }
 
         public YTGroupDefinition build() {
