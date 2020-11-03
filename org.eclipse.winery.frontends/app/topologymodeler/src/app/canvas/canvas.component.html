@@ -388,14 +388,13 @@
                 <form>
                     <div *ngFor="let prop of selectedYamlPolicy.properties.properties | keysPipe">
                         <label class="control-label">{{prop.key}}</label>
-                        <textarea
-                            style="width:100%; overflow-y: scroll;"
-                            rows="1"
-                            placeholder="Edit your value here."
-                            #YamlPolicyProperties
-                            [value]="prop.value">
-                        
-                    </textarea>
+                        <textarea rows="1"
+                                  placeholder="Edit your value here."
+                                  style="width:100%; overflow-y: scroll;"
+                                  [(ngModel)]="prop.value"
+                                  [ngModelOptions]="{standalone: true}"
+                                  #YamlPolicyProperties>
+                        </textarea>
                     </div>
                     <button type="submit" class="btn btn-primary"
                             (click)="savePolicyProperties()"> Save Properties
