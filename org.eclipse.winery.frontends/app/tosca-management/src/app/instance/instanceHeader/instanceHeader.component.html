@@ -60,8 +60,11 @@
                     <li>
                         <a target="_blank" href="{{ toscaComponent.yamlCsarPath }}">Download</a>
                     </li>
-                    <li>
+                    <li *wineryRepositoryHideOnFeature="'radon'">
                         <a (click)="exportToFilesystem()">Export to Filesystem</a>
+                    </li>
+                    <li *wineryRepositoryShowOnFeature="'radon'">
+                        <a (click)="exportToFilesystem()">Export to IDE</a>
                     </li>
                 </ul>
             </div>
