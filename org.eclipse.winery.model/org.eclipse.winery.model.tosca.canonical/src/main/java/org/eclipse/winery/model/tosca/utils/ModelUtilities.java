@@ -562,13 +562,13 @@ public abstract class ModelUtilities {
 
         // add properties
         WinerysPropertiesDefinition propDef = nodeType.getWinerysPropertiesDefinition();
-        if (propDef != null && propDef.getPropertyDefinitionKVList() != null) {
+        if (propDef != null && propDef.getPropertyDefinitions() != null) {
             Map<String, String> properties = new HashMap<>();
-            propDef.getPropertyDefinitionKVList().getPropertyDefinitionKVs().forEach(propertyDefinition -> {
+            propDef.getPropertyDefinitions().forEach(propertyDefinition -> {
                 properties.put(propertyDefinition.getKey(), propertyDefinition.getDefaultValue());
             });
-            TEntityTemplate.Properties tProps = new TEntityTemplate.Properties();
-            tProps.setKVProperties(properties);
+            TEntityTemplate.WineryKVProperties tProps = new TEntityTemplate.WineryKVProperties();
+            tProps.setKVProperties(new LinkedHashMap<>(properties));
             nodeTemplate.setProperties(tProps);
         }
 
