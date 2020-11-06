@@ -694,12 +694,15 @@ public interface IRepository extends IWineryRepositoryCommon {
             List<TRequirementDefinition> reqDefs = reqDefsContainer.getRequirementDefinition();
             for (TRequirementDefinition reqDef : reqDefs) {
                 // if either of these is set, we're dealing with a type defined in YAML
-                if (Objects.nonNull(reqDef.getRelationship()) || Objects.nonNull(reqDef.getCapability())) {
+                if (Objects.nonNull(reqDef.getRelationship()) || Objects.nonNull(reqDef.getCapability()) || Objects.nonNull(reqDef.getNode())) {
                     if (Objects.nonNull(reqDef.getRelationship())) {
                         ids.add(new RelationshipTypeId(reqDef.getRelationship()));
                     }
                     if (Objects.nonNull(reqDef.getCapability())) {
                         ids.add(new CapabilityTypeId(reqDef.getCapability()));
+                    }
+                    if (Objects.nonNull(reqDef.getNode())) {
+                        ids.add(new NodeTypeId(reqDef.getNode()));
                     }
                 } else {
                     RequirementTypeId reqTypeId = new RequirementTypeId(reqDef.getRequirementType());
