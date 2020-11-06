@@ -40,29 +40,14 @@ public class TImport extends TExtensibleElements {
     protected String importType;
 
     @Deprecated // used for XML deserialization of API request content
-    public TImport() { }
+    public TImport() {
+    }
 
     public TImport(Builder builder) {
         super(builder);
         this.namespace = builder.namespace;
         this.location = builder.location;
         this.importType = builder.importType;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof TImport)) return false;
-        if (!super.equals(o)) return false;
-        TImport tImport = (TImport) o;
-        return Objects.equals(namespace, tImport.namespace) &&
-            Objects.equals(location, tImport.location) &&
-            Objects.equals(importType, tImport.importType);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), namespace, location, importType);
     }
 
     @Override
@@ -96,6 +81,22 @@ public class TImport extends TExtensibleElements {
     public void setImportType(@NonNull String value) {
         Objects.requireNonNull(value);
         this.importType = value;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        TImport tImport = (TImport) o;
+        return Objects.equals(getNamespace(), tImport.getNamespace()) &&
+            Objects.equals(getLocation(), tImport.getLocation()) &&
+            Objects.equals(getImportType(), tImport.getImportType());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), getNamespace(), getLocation(), getImportType());
     }
 
     public static class Builder extends TExtensibleElements.Builder<Builder> {
