@@ -128,6 +128,9 @@ public class YamlCsarImporter extends CsarImporter {
         String defaultNamespace = defs.getTargetNamespace();
         List<TExtensibleElements> componentInstanceList = defs.getServiceTemplateOrNodeTypeOrNodeTypeImplementation();
 
+        // flag to prevent cycles when types are already present
+        boolean processImports = true;
+
         for (final TExtensibleElements ci : componentInstanceList) {
             if (ci instanceof org.eclipse.winery.model.tosca.TServiceTemplate &&
                 Objects.isNull(((org.eclipse.winery.model.tosca.TServiceTemplate) ci).getTopologyTemplate())
@@ -148,6 +151,7 @@ public class YamlCsarImporter extends CsarImporter {
                     String msg = String.format("Deleted %1$s %2$s to enable replacement", ci.getClass().getName(), wid.getQName().toString());
                     LOGGER.debug(msg);
                 } else {
+                    processImports = false;
                     String msg = String.format("Skipped %1$s %2$s, because it already exists", ci.getClass().getName(), wid.getQName().toString());
                     LOGGER.debug(msg);
                     // this is not displayed in the UI as we currently do not distinguish between pre-existing types and types created during the import.
@@ -173,8 +177,10 @@ public class YamlCsarImporter extends CsarImporter {
             storeDefs(wid, newDefs);
         }
 
-        List<TImport> imports = defs.getImport();
-        this.importImports(definitionsPath.getParent(), tmf, imports, errors, options);
+        if (processImports) {
+            List<TImport> imports = defs.getImport();
+            this.importImports(definitionsPath.getParent(), tmf, imports, errors, options);
+        }
 
         return entryServiceTemplate;
     }
