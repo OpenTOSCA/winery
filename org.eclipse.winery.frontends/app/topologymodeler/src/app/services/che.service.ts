@@ -46,10 +46,9 @@ export class CheService {
         } catch (err) {
             if (err instanceof HttpErrorResponse) {
                 if (err.status === 500) {
-                    this.toastrService.error('Server was not properly configured for IDE usage', 'Configuration Error');
+                    this.toastrService.error('Winery is not properly configured for IDE usage', 'Configuration Error');
                 }
             }
         }
     }
-
 }

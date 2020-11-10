@@ -114,13 +114,14 @@ export class InstanceHeaderComponent implements OnInit {
     }
 
     openChe() {
-        this.che.openChe(backendBaseURL, this.toscaComponent.localName, this.toscaComponent.namespace, this.toscaComponent.toscaType.valueOf()).catch(err => {
-            if (err instanceof HttpErrorResponse) {
-                if (err.status === 500) {
-                    this.notify.error('Server is not properly configured for IDE usage');
+        this.che.openChe(backendBaseURL, this.toscaComponent.localName, this.toscaComponent.namespace, this.toscaComponent.toscaType.valueOf())
+            .catch((err) => {
+                if (err instanceof HttpErrorResponse) {
+                    if (err.status === 500) {
+                        this.notify.error('Winery is not properly configured for IDE usage');
+                    }
                 }
-            }
-        });
+            });
     }
 
     private handleSuccess(message: string) {

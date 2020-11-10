@@ -29,7 +29,6 @@ import org.eclipse.winery.model.tosca.yaml.YTCapabilityType;
 import org.eclipse.winery.model.tosca.yaml.YTConstraintClause;
 import org.eclipse.winery.model.tosca.yaml.YTDataType;
 import org.eclipse.winery.model.tosca.yaml.YTEntityType;
-import org.eclipse.winery.model.tosca.yaml.YTSchemaDefinition;
 import org.eclipse.winery.model.tosca.yaml.YTGroupDefinition;
 import org.eclipse.winery.model.tosca.yaml.YTGroupType;
 import org.eclipse.winery.model.tosca.yaml.YTImplementation;
@@ -54,6 +53,7 @@ import org.eclipse.winery.model.tosca.yaml.YTRelationshipType;
 import org.eclipse.winery.model.tosca.yaml.YTRepositoryDefinition;
 import org.eclipse.winery.model.tosca.yaml.YTRequirementAssignment;
 import org.eclipse.winery.model.tosca.yaml.YTRequirementDefinition;
+import org.eclipse.winery.model.tosca.yaml.YTSchemaDefinition;
 import org.eclipse.winery.model.tosca.yaml.YTServiceTemplate;
 import org.eclipse.winery.model.tosca.yaml.YTSubstitutionMappings;
 import org.eclipse.winery.model.tosca.yaml.YTTopologyTemplateDefinition;
@@ -133,17 +133,14 @@ public abstract class AbstractVisitor<R extends AbstractResult<R>, P extends Abs
     public R visit(YTGroupDefinition node, P parameter) {
         return reduce(Stream.of(
             visitElement(node.getMetadata(), parameter, "metadata"),
-            visitElement(node.getProperties(), parameter, "properties"),
-            visitElement(node.getInterfaces(), parameter, "interfaces")
+            visitElement(node.getProperties(), parameter, "properties")
         ));
     }
 
     @Override
     public R visit(YTGroupType node, P parameter) {
         return reduce(Stream.of(
-            visitMapElement(node.getRequirements(), parameter, "requirements"),
-            visitElement(node.getCapabilities(), parameter, "capabilities"),
-            visitElement(node.getInterfaces(), parameter, "interfaces")
+            // TODO may be removed
         ));
     }
 

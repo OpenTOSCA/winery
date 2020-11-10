@@ -55,6 +55,12 @@ import { PolicyService } from './services/policy.service';
 import { SidebarModule } from 'ng-sidebar';
 import { NodeDetailsSidebarComponent } from './sidebars/node-details/nodeDetailsSidebar.component';
 import { RefinementSidebarComponent } from './sidebars/refinement/refinementSidebar.component';
+import { GroupViewComponent } from './group-view/group-view.component';
+import { TagService } from '../../../tosca-management/src/app/instance/sharedComponents/tag/tag.service';
+import { WineryDynamicTableModule } from '../../../tosca-management/src/app/wineryDynamicTable/wineryDynamicTable.module';
+import { WineryDuplicateValidatorModule } from '../../../tosca-management/src/app/wineryValidators/wineryDuplicateValidator.module';
+import { CollapseModule } from 'ngx-bootstrap';
+import { GroupViewPoliciesComponent } from './group-view/policies/policies.component';
 
 @NgModule({
     declarations: [
@@ -66,6 +72,8 @@ import { RefinementSidebarComponent } from './sidebars/refinement/refinementSide
         ProblemDetectionComponent,
         EnricherComponent,
         EdmmTransformationCheckComponent,
+        GroupViewComponent,
+        GroupViewPoliciesComponent,
     ],
     exports: [WineryComponent],
     imports: [
@@ -94,7 +102,10 @@ import { RefinementSidebarComponent } from './sidebars/refinement/refinementSide
         PopoverModule.forRoot(),
         PropertiesModule,
         WineryFeatureToggleModule,
-        WineryTableModule
+        WineryTableModule,
+        WineryDynamicTableModule,
+        WineryDuplicateValidatorModule,
+        CollapseModule,
     ],
     providers: [
         // { provide: ToastOptions, useClass: WineryCustomOption },
@@ -104,6 +115,7 @@ import { RefinementSidebarComponent } from './sidebars/refinement/refinementSide
         LoadedService,
         AppReadyEventService,
         BackendService,
+        TagService,
         ExistsService,
         EntitiesModalService,
         ImportTopologyService,

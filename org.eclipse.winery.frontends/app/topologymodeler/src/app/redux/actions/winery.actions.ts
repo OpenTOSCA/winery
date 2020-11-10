@@ -14,7 +14,7 @@
 
 import { Action, ActionCreator } from 'redux';
 import { Injectable } from '@angular/core';
-import { TArtifact, TNodeTemplate, TRelationshipTemplate } from '../../models/ttopology-template';
+import { TArtifact, TGroupDefinition, TNodeTemplate, TRelationshipTemplate } from '../../models/ttopology-template';
 import { TDeploymentArtifact } from '../../models/artifactsModalData';
 import { TPolicy } from '../../models/policiesModalData';
 import { Visuals } from '../../models/visuals';
@@ -185,6 +185,14 @@ export interface ChangeYamlPoliciesAction extends Action {
     };
 }
 
+export interface UpdateGroupDefinitionAction extends Action {
+    groups: TGroupDefinition[];
+}
+
+export interface AddGroupDefinitionAction extends Action {
+    group: TGroupDefinition;
+}
+
 export interface SetTargetLocation extends Action {
     nodeTargetLocation: {
         nodeId: string,
@@ -226,10 +234,8 @@ export class WineryActions {
     static CHANGE_MIN_INSTANCES = 'CHANGE_MIN_INSTANCES';
     static CHANGE_MAX_INSTANCES = 'CHANGE_MAX_INSTANCES';
     static ADD_ENTITY_TYPES = 'ADD_ENTITY_TYPES';
-
     static INC_MIN_INSTANCES = 'INC_MIN_INSTANCES';
     static DEC_MIN_INSTANCES = 'DEC_MIN_INSTANCES';
-
     static INC_MAX_INSTANCES = 'INC_MAX_INSTANCES';
     static DEC_MAX_INSTANCES = 'DEC_MAX_INSTANCES';
     static SET_PROPERTY = 'SET_PROPERTY';
@@ -246,6 +252,7 @@ export class WineryActions {
     static DELETE_POLICY = 'DELETE_POLICY';
     static SEND_CURRENT_NODE_ID = 'SEND_CURRENT_NODE_ID';
     static SET_NODE_VISUALS = 'SET_NODE_VISUALS';
+    static UPDATE_GROUP_DEFINITIONS = 'UPDATE_GROUP_DEFINITIONS';
 
     addEntityTypes: ActionCreator<AddEntityTypesAction> = ((entityTypes) => ({
         type: WineryActions.ADD_ENTITY_TYPES,
@@ -385,6 +392,11 @@ export class WineryActions {
                     policy: policies
                 }
             }
+        }));
+    updateGroupDefinitions: ActionCreator<UpdateGroupDefinitionAction> =
+        ((groups) => ({
+            type: WineryActions.UPDATE_GROUP_DEFINITIONS,
+            groups,
         }));
     setTargetLocation: ActionCreator<SetTargetLocation> =
         ((newTargetLocation) => ({

@@ -1549,7 +1549,7 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
                 },
                 relationshipTemplate: undefined,
                 source: '',
-                target: ''
+                target: '',
             }
         }));
     }

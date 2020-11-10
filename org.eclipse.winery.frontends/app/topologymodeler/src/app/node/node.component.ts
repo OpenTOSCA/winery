@@ -19,7 +19,7 @@ import { animate, keyframes, state, style, transition, trigger } from '@angular/
 import { NgRedux } from '@angular-redux/store';
 import { IWineryState } from '../redux/store/winery.store';
 import { WineryActions } from '../redux/actions/winery.actions';
-import { EntityType, TNodeTemplate } from '../models/ttopology-template';
+import { EntityType, TGroupDefinition, TNodeTemplate } from '../models/ttopology-template';
 import { PropertyDefinitionType, urlElement } from '../models/enums';
 import { BackendService } from '../services/backend.service';
 import { GroupedNodeTypeModel } from '../models/groupedNodeTypeModel';
@@ -78,6 +78,7 @@ export class NodeComponent implements OnInit, AfterViewInit, OnDestroy, DoCheck 
     policiesOfNode: TPolicy[];
     private policyChangeSubscription: Subscription;
     private artifactsChangedSubscription: Subscription;
+    groupDefinitions: TGroupDefinition[];
 
     @Input() readonly: boolean;
     @Input() entityTypes: EntityTypesModel;
@@ -162,6 +163,8 @@ export class NodeComponent implements OnInit, AfterViewInit, OnDestroy, DoCheck 
                 }
             });
         }
+        this.$ngRedux.select((store) => store.wineryState.currentJsonTopology)
+            .subscribe((topology) => this.groupDefinitions = topology.groups);
         this.$ngRedux.subscribe(() => this.setPolicyIcons());
     }
 

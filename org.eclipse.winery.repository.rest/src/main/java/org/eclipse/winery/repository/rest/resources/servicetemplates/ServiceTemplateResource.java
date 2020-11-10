@@ -40,12 +40,12 @@ import javax.xml.namespace.QName;
 
 import org.eclipse.winery.common.configuration.Environments;
 import org.eclipse.winery.common.configuration.RepositoryConfigurationObject;
-import org.eclipse.winery.edmm.EdmmUtils;
-import org.eclipse.winery.model.ids.definitions.ServiceTemplateId;
 import org.eclipse.winery.common.version.WineryVersion;
 import org.eclipse.winery.compliance.checking.ServiceTemplateCheckingResult;
 import org.eclipse.winery.compliance.checking.ServiceTemplateComplianceRuleRuleChecker;
+import org.eclipse.winery.edmm.EdmmUtils;
 import org.eclipse.winery.model.adaptation.substitution.Substitution;
+import org.eclipse.winery.model.ids.definitions.ServiceTemplateId;
 import org.eclipse.winery.model.threatmodeling.ThreatAssessment;
 import org.eclipse.winery.model.threatmodeling.ThreatModeling;
 import org.eclipse.winery.model.tosca.HasId;
@@ -120,7 +120,7 @@ public class ServiceTemplateResource extends AbstractComponentInstanceResourceCo
                 LOGGER.error("Failed to delete yaml artifact files from disk. Reason {}", e.getMessage());
             }
             if (topologyTemplate.getNodeTemplates().stream().anyMatch(nt -> nt.getRequirements() != null
-                    && nt.getRequirements().getRequirement().stream().anyMatch(req -> req.getRelationship() != null))) {
+                && nt.getRequirements().getRequirement().stream().anyMatch(req -> req.getRelationship() != null))) {
                 // filter unused requirements
                 // (1) get a list of requirement template ids
                 // (2) filter requirement entry on node template if there is relations assigned
@@ -155,7 +155,7 @@ public class ServiceTemplateResource extends AbstractComponentInstanceResourceCo
             }
         }
         if (boundaryDefs.getCapabilities() != null) {
-            for (Iterator<TCapabilityRef> it = boundaryDefs.getCapabilities().getCapability().iterator(); it.hasNext();) {
+            for (Iterator<TCapabilityRef> it = boundaryDefs.getCapabilities().getCapability().iterator(); it.hasNext(); ) {
                 TCapabilityRef ref = it.next();
                 TCapability target = ref.getRef();
                 if (!containsCapability(topology, target)) {
@@ -165,7 +165,7 @@ public class ServiceTemplateResource extends AbstractComponentInstanceResourceCo
             }
         }
         if (boundaryDefs.getRequirements() != null) {
-            for (Iterator<TRequirementRef> it = boundaryDefs.getRequirements().getRequirement().iterator(); it.hasNext();) {
+            for (Iterator<TRequirementRef> it = boundaryDefs.getRequirements().getRequirement().iterator(); it.hasNext(); ) {
                 TRequirementRef ref = it.next();
                 TRequirement target = ref.getRef();
                 if (!containsRequirement(topology, target)) {
@@ -184,7 +184,7 @@ public class ServiceTemplateResource extends AbstractComponentInstanceResourceCo
     private static boolean containsCapability(TTopologyTemplate topology, TCapability target) {
         return topology.getNodeTemplates().stream()
             .anyMatch(nt -> nt.getCapabilities() != null
-                    && nt.getCapabilities().getCapability().contains(target));
+                && nt.getCapabilities().getCapability().contains(target));
     }
 
     private static boolean containsRequirement(TTopologyTemplate topology, TRequirement target) {

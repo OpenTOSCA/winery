@@ -25,6 +25,19 @@ export class AbstractTEntity {
     }
 }
 
+export class TGroupDefinition extends AbstractTEntity {
+
+    constructor(public name: string,
+                public description: string,
+                public members: string[],
+                public properties?: any,
+                documentation?: any,
+                any?: any,
+                otherAttributes?: any) {
+        super(documentation, any, otherAttributes);
+    }
+}
+
 /**
  * This is the datamodel for node Templates and relationship templates
  */
@@ -32,6 +45,7 @@ export class TTopologyTemplate extends AbstractTEntity {
     nodeTemplates: Array<TNodeTemplate> = [];
     relationshipTemplates: Array<TRelationshipTemplate> = [];
     policies: { policy: Array<TPolicy> };
+    groups: Array<TGroupDefinition> = [];
 }
 
 /**
@@ -200,8 +214,8 @@ export class SchemaDefinition {
                 public description: string = '',
                 public constraints: Constraint[] = [],
                 public keySchema: SchemaDefinition = undefined,
-                public entrySchema: SchemaDefinition = undefined,
-                ) {}
+                public entrySchema: SchemaDefinition = undefined) {
+    }
 }
 
 export class TArtifactType extends EntityType {
@@ -268,7 +282,7 @@ export class TArtifact extends AbstractTEntity {
 
 export class TNodeType extends AbstractTEntity {
     constructor(public name: string,
-                public interfaces: { interfaces: Interface[]},
+                public interfaces: { interfaces: Interface[] },
                 public propertiesDefinition: PropertiesDefinition,
                 public derivedFrom: any,
                 documentation?: any,

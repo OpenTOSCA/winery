@@ -49,15 +49,9 @@
         </dependency>
         <dependency>
             <groupId>org.eclipse.winery</groupId>
-            <artifactId>org.eclipse.winery.repository.common</artifactId>
+            <artifactId>org.eclipse.winery.repository</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.eclipse.winery</groupId>
-            <artifactId>org.eclipse.winery.repository.visible</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
@@ -68,13 +62,11 @@
             <groupId>io.github.adr</groupId>
             <artifactId>e-adr</artifactId>
             <version>${io.github.adr.e-adr.version}</version>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.eclipse.jdt</groupId>
             <artifactId>org.eclipse.jdt.annotation</artifactId>
             <version>${org.eclipse.jdt.annotation}</version>
-            <scope>compile</scope>
         </dependency>
     </dependencies>
 

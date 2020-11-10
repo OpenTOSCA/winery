@@ -14,13 +14,12 @@
 
 package org.eclipse.winery.repository.rest.resources.entitytypes.nodetypes;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.Scanner;
+import java.nio.file.Path;
 
 import org.eclipse.winery.common.configuration.RepositoryConfigurationObject;
 import org.eclipse.winery.repository.rest.resources.AbstractResourceTest;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -38,16 +37,9 @@ public class YamlNodeTypesResourceTest extends AbstractResourceTest {
         this.assertPost("nodetypes", "entitytypes/nodetypes/addYamlNodeType.json");
         this.assertGetSize("nodetypes", 3);
 
-        File toscaFile = this.repositoryPath.resolve("nodetypes/org.example.tosca.nodetypes/myLittleExample_1.0.0-w1-1/NodeType.tosca").toFile();
-        StringBuilder actual = new StringBuilder();
-        try (Scanner myReader = new Scanner(toscaFile)) {
-            while (myReader.hasNextLine()) {
-                actual.append(myReader.nextLine()).append("\n");
-            }
-        } catch (FileNotFoundException e) {
-            LOGGER.error("Error while reading created file!", e);
-            throw e;
-        }
-        assertEquals(readFromClasspath("entitytypes/nodetypes/addecYamlNodeType.yml"), actual.toString());
+        Path filePath = this.repositoryPath.resolve("nodetypes/org.example.tosca.nodetypes/myLittleExample_1.0.0-w1-1/NodeType.tosca");
+        String fileContent = FileUtils.readFileToString(filePath.toFile(), "UTF-8");
+
+        assertEquals(readFromClasspath("entitytypes/nodetypes/addecYamlNodeType.yml"), fileContent);
     }
 }
