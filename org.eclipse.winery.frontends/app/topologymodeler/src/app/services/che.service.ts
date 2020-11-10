@@ -41,11 +41,7 @@ export class CheService {
         try {
             const theiaUrl = await this.getCheTheiaUrl(backendUrl).toPromise();
             const repositoryConfiguration = await this.configurationService.getRepositoryConfiguration().toPromise();
-            // TODO split this or just give theia the full path?
-            const pathParts = repositoryConfiguration.repositoryRoot.split('/');
-            const path = pathParts[2];
-            // TODO give full path as folderPath
-            const pathToOpen = theiaUrl + `/?ns=${namespace}&id=${id}&parentPath=${path}/${type}#/projects`;
+            const pathToOpen = theiaUrl + `/${repositoryConfiguration.repositoryRoot}/${type}/${namespace}/${id}#/projects`
             window.open(pathToOpen, '_blank');
         } catch (err) {
             if (err instanceof HttpErrorResponse) {
