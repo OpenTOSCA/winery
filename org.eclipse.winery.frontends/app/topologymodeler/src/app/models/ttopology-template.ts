@@ -16,11 +16,25 @@ import { Visuals } from './visuals';
 import { TPolicy } from './policiesModalData';
 import { Interface } from '../../../../tosca-management/src/app/model/interfaces';
 import { PropertiesDefinition } from '../../../../tosca-management/src/app/instance/sharedComponents/propertiesDefinition/propertiesDefinitionsResourceApiData';
+import { Constraint } from '../../../../tosca-management/src/app/model/constraint';
 
 export class AbstractTEntity {
     constructor(public documentation?: any,
                 public any?: any,
                 public otherAttributes?: any) {
+    }
+}
+
+export class TGroupDefinition extends AbstractTEntity {
+
+    constructor(public name: string,
+                public description: string,
+                public members: string[],
+                public properties?: any,
+                documentation?: any,
+                any?: any,
+                otherAttributes?: any) {
+        super(documentation, any, otherAttributes);
     }
 }
 
@@ -31,6 +45,7 @@ export class TTopologyTemplate extends AbstractTEntity {
     nodeTemplates: Array<TNodeTemplate> = [];
     relationshipTemplates: Array<TRelationshipTemplate> = [];
     policies: { policy: Array<TPolicy> };
+    groups: Array<TGroupDefinition> = [];
 }
 
 /**
@@ -62,7 +77,7 @@ export class TNodeTemplate extends AbstractTEntity {
     /**
      * needed for the winery redux reducer,
      * updates a specific attribute and returns a whole new node template
-     * @param indexOfUpdatedAttribute: index of the to be updated attribute in the constructor
+     * @param updatedAttribute: index of the to be updated attribute in the constructor
      * @param updatedValue: the new value
      *
      * @return nodeTemplate: a new node template with the updated value
@@ -180,6 +195,29 @@ export class TPolicyType extends EntityType {
     }
 }
 
+export class TDataType extends EntityType {
+    constructor(id: string,
+                qName: string,
+                name: string,
+                namespace: string,
+                properties: any,
+                public full: any,
+                public constraints: Constraint[] = [],
+                public keySchema: SchemaDefinition = undefined,
+                public entrySchema: SchemaDefinition = undefined) {
+        super(id, qName, name, namespace, properties, full);
+    }
+}
+
+export class SchemaDefinition {
+    constructor(public type: string,
+                public description: string = '',
+                public constraints: Constraint[] = [],
+                public keySchema: SchemaDefinition = undefined,
+                public entrySchema: SchemaDefinition = undefined) {
+    }
+}
+
 export class TArtifactType extends EntityType {
     constructor(id: string,
                 qName: string,
@@ -244,7 +282,7 @@ export class TArtifact extends AbstractTEntity {
 
 export class TNodeType extends AbstractTEntity {
     constructor(public name: string,
-                public interfaces: { interfaces: Interface[]},
+                public interfaces: { interfaces: Interface[] },
                 public propertiesDefinition: PropertiesDefinition,
                 public derivedFrom: any,
                 documentation?: any,

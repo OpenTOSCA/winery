@@ -17,8 +17,8 @@ package org.eclipse.winery.repository.rest.resources.apiData;
 import javax.ws.rs.core.UriInfo;
 import javax.xml.namespace.QName;
 
-import org.eclipse.winery.common.RepositoryFileReference;
-import org.eclipse.winery.common.ids.definitions.DefinitionsChildId;
+import org.eclipse.winery.repository.common.RepositoryFileReference;
+import org.eclipse.winery.model.ids.definitions.DefinitionsChildId;
 import org.eclipse.winery.repository.backend.IRepository;
 import org.eclipse.winery.repository.backend.RepositoryFactory;
 import org.eclipse.winery.repository.backend.constants.Filename;
@@ -26,7 +26,6 @@ import org.eclipse.winery.repository.rest.resources._support.GenericVisualAppear
 
 public class VisualsApiData {
 
-    public String iconUrl;
     public String imageUrl;
     public String color;
     public boolean pattern;
@@ -39,15 +38,6 @@ public class VisualsApiData {
         this.color = visuals.getColor();
         this.typeId = parent.getQName();
         this.pattern = repository.getNamespaceManager().isPatternNamespace(parent.getNamespace().getDecoded());
-
-        RepositoryFileReference iconRef = new RepositoryFileReference(visuals.getId(), Filename.FILENAME_SMALL_ICON);
-        if (repository.exists(iconRef)) {
-            if (uriInfo != null) {
-                iconUrl = visuals.getAbsoluteURL(uriInfo) + "16x16";
-            } else {
-                iconUrl = visuals.getAbsoluteURL() + "16x16";
-            }
-        }
 
         RepositoryFileReference imageRef = new RepositoryFileReference(visuals.getId(), Filename.FILENAME_BIG_ICON);
         if (repository.exists(imageRef)) {

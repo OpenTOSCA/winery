@@ -18,6 +18,7 @@ import java.net.URI;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -39,27 +40,31 @@ import javax.xml.namespace.QName;
 
 import org.eclipse.winery.common.configuration.Environments;
 import org.eclipse.winery.common.configuration.RepositoryConfigurationObject;
-import org.eclipse.winery.common.ids.definitions.ServiceTemplateId;
-import org.eclipse.winery.common.version.VersionUtils;
 import org.eclipse.winery.common.version.WineryVersion;
 import org.eclipse.winery.compliance.checking.ServiceTemplateCheckingResult;
 import org.eclipse.winery.compliance.checking.ServiceTemplateComplianceRuleRuleChecker;
+import org.eclipse.winery.edmm.EdmmUtils;
 import org.eclipse.winery.model.adaptation.substitution.Substitution;
+import org.eclipse.winery.model.ids.definitions.ServiceTemplateId;
 import org.eclipse.winery.model.threatmodeling.ThreatAssessment;
 import org.eclipse.winery.model.threatmodeling.ThreatModeling;
 import org.eclipse.winery.model.tosca.HasId;
 import org.eclipse.winery.model.tosca.TBoundaryDefinitions;
+import org.eclipse.winery.model.tosca.TCapability;
+import org.eclipse.winery.model.tosca.TCapabilityRef;
 import org.eclipse.winery.model.tosca.TExtensibleElements;
 import org.eclipse.winery.model.tosca.TPlans;
+import org.eclipse.winery.model.tosca.TPropertyMapping;
 import org.eclipse.winery.model.tosca.TRequirement;
+import org.eclipse.winery.model.tosca.TRequirementRef;
 import org.eclipse.winery.model.tosca.TServiceTemplate;
 import org.eclipse.winery.model.tosca.TTopologyTemplate;
 import org.eclipse.winery.model.tosca.utils.ModelUtilities;
 import org.eclipse.winery.repository.backend.BackendUtils;
+import org.eclipse.winery.repository.backend.RepositoryFactory;
 import org.eclipse.winery.repository.backend.YamlArtifactsSynchronizer;
 import org.eclipse.winery.repository.driverspecificationandinjection.DASpecification;
 import org.eclipse.winery.repository.driverspecificationandinjection.DriverInjection;
-import org.eclipse.winery.repository.export.EdmmUtils;
 import org.eclipse.winery.repository.rest.RestUtils;
 import org.eclipse.winery.repository.rest.resources._support.AbstractComponentInstanceResourceContainingATopology;
 import org.eclipse.winery.repository.rest.resources._support.IHasName;
@@ -94,12 +99,17 @@ public class ServiceTemplateResource extends AbstractComponentInstanceResourceCo
     }
 
     @Override
+    public TTopologyTemplate getTopology() {
+        return getServiceTemplate().getTopologyTemplate();
+    }
+
+    @Override
     public void setTopology(TTopologyTemplate topologyTemplate, String type) {
         // if we are in yaml mode, replacing the topology can result in yaml artifacts having to be deleted.
         if (Environments.getInstance().getRepositoryConfig().getProvider() == RepositoryConfigurationObject.RepositoryProvider.YAML) {
             try {
                 YamlArtifactsSynchronizer synchronizer = new YamlArtifactsSynchronizer
-                    .Builder()
+                    .Builder(RepositoryFactory.getRepository())
                     .setOriginalTemplate(this.getServiceTemplate().getTopologyTemplate())
                     .setNewTemplate(topologyTemplate)
                     .setServiceTemplateId((ServiceTemplateId) this.getId())
@@ -109,28 +119,85 @@ public class ServiceTemplateResource extends AbstractComponentInstanceResourceCo
             } catch (IOException e) {
                 LOGGER.error("Failed to delete yaml artifact files from disk. Reason {}", e.getMessage());
             }
-            // filter unused requirements
-            // (1) get a list of requirement template ids
-            // (2) filter requirement entry on node template if there is relations assigned
-            Set<String> usedRelationshipTemplateIds = topologyTemplate.getRelationshipTemplates()
-                .stream().map(HasId::getId).collect(Collectors.toSet());
-            topologyTemplate.getNodeTemplates().forEach(node -> {
-                if (node.getRequirements() != null) {
-                    List<TRequirement> requirements = node.getRequirements().getRequirement().stream()
-                        .filter(r -> usedRelationshipTemplateIds.contains(r.getRelationship()))
-                        .collect(Collectors.toList());
-                    node.getRequirements().getRequirement().clear();
-                    node.getRequirements().getRequirement().addAll(requirements);
-                }
-            });
+            if (topologyTemplate.getNodeTemplates().stream().anyMatch(nt -> nt.getRequirements() != null
+                && nt.getRequirements().getRequirement().stream().anyMatch(req -> req.getRelationship() != null))) {
+                // filter unused requirements
+                // (1) get a list of requirement template ids
+                // (2) filter requirement entry on node template if there is relations assigned
+                Set<String> usedRelationshipTemplateIds = topologyTemplate.getRelationshipTemplates()
+                    .stream().map(HasId::getId).collect(Collectors.toSet());
+                topologyTemplate.getNodeTemplates().forEach(node -> {
+                    if (node.getRequirements() == null) return;
+                    node.getRequirements().getRequirement()
+                        .removeIf(r -> !usedRelationshipTemplateIds.contains(r.getRelationship()));
+                });
+            }
         }
         this.getServiceTemplate().setTopologyTemplate(topologyTemplate);
+        this.cullElementReferences();
+    }
+
+    private void cullElementReferences() {
+        final TTopologyTemplate topology = this.getServiceTemplate().getTopologyTemplate();
+        TBoundaryDefinitions boundaryDefs = this.getServiceTemplate().getBoundaryDefinitions();
+        if (boundaryDefs == null) {
+            return;
+        }
+        if (boundaryDefs.getProperties() != null
+            && boundaryDefs.getProperties().getPropertyMappings() != null) {
+            for (Iterator<TPropertyMapping> it = boundaryDefs.getProperties().getPropertyMappings().getPropertyMapping().iterator(); it.hasNext(); ) {
+                TPropertyMapping propMapping = it.next();
+                HasId targetObject = propMapping.getTargetObjectRef();
+                if (!containsTarget(topology, targetObject)) {
+                    // cull the property mapping pointing towards a no-longer existing element
+                    it.remove();
+                }
+            }
+        }
+        if (boundaryDefs.getCapabilities() != null) {
+            for (Iterator<TCapabilityRef> it = boundaryDefs.getCapabilities().getCapability().iterator(); it.hasNext(); ) {
+                TCapabilityRef ref = it.next();
+                TCapability target = ref.getRef();
+                if (!containsCapability(topology, target)) {
+                    // cull the capability referencing a no longer existing capability in the topology
+                    it.remove();
+                }
+            }
+        }
+        if (boundaryDefs.getRequirements() != null) {
+            for (Iterator<TRequirementRef> it = boundaryDefs.getRequirements().getRequirement().iterator(); it.hasNext(); ) {
+                TRequirementRef ref = it.next();
+                TRequirement target = ref.getRef();
+                if (!containsRequirement(topology, target)) {
+                    // cull the requirement referencing a no longer existing requirement in the topology
+                    it.remove();
+                }
+            }
+        }
+    }
+
+    private static boolean containsTarget(TTopologyTemplate topology, HasId target) {
+        return topology.getNodeTemplate(target.getId()) != null
+            || topology.getRelationshipTemplate(target.getId()) != null;
+    }
+
+    private static boolean containsCapability(TTopologyTemplate topology, TCapability target) {
+        return topology.getNodeTemplates().stream()
+            .anyMatch(nt -> nt.getCapabilities() != null
+                && nt.getCapabilities().getCapability().contains(target));
+    }
+
+    private static boolean containsRequirement(TTopologyTemplate topology, TRequirement target) {
+        return topology.getNodeTemplates().stream()
+            .anyMatch(nt -> nt.getRequirements() != null
+                && nt.getRequirements().getRequirement().contains(target));
     }
 
     /**
      * sub-resources
      **/
     @Path("topologytemplate/")
+    @SuppressWarnings("deprecated")
     public TopologyTemplateResource getTopologyTemplateResource() {
         if (this.getServiceTemplate().getTopologyTemplate() == null) {
             // the main service template resource exists
@@ -153,7 +220,7 @@ public class ServiceTemplateResource extends AbstractComponentInstanceResourceCo
 
     @Path("selfserviceportal/")
     public SelfServicePortalResource getSelfServicePortalResource() {
-        return new SelfServicePortalResource(this);
+        return new SelfServicePortalResource(this, requestRepository);
     }
 
     @Path("boundarydefinitions/")
@@ -359,7 +426,7 @@ public class ServiceTemplateResource extends AbstractComponentInstanceResourceCo
     public Response createNewStatefulVersion() {
         LOGGER.debug("Creating new stateful version of Service Template {}...", this.getId());
         ServiceTemplateId id = (ServiceTemplateId) this.getId();
-        WineryVersion version = VersionUtils.getVersion(id);
+        WineryVersion version = id.getVersion();
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd-HHmmss");
         WineryVersion newVersion = new WineryVersion(
@@ -369,7 +436,7 @@ public class ServiceTemplateResource extends AbstractComponentInstanceResourceCo
         );
 
         ServiceTemplateId newId = new ServiceTemplateId(id.getNamespace().getDecoded(),
-            VersionUtils.getNameWithoutVersion(id) + WineryVersion.WINERY_NAME_FROM_VERSION_SEPARATOR + newVersion.toString(),
+            id.getNameWithoutVersion() + WineryVersion.WINERY_NAME_FROM_VERSION_SEPARATOR + newVersion.toString(),
             false);
         ResourceResult response = RestUtils.duplicate(id, newId);
 
@@ -398,10 +465,11 @@ public class ServiceTemplateResource extends AbstractComponentInstanceResourceCo
 
     @Override
     public void synchronizeReferences() throws IOException {
-        BackendUtils.synchronizeReferences((ServiceTemplateId) this.id);
+        BackendUtils.synchronizeReferences((ServiceTemplateId) this.id, RepositoryFactory.getRepository());
     }
 
     @Path("parameters")
+    @SuppressWarnings("deprecated")
     public ParameterResource getParameterResource() {
         if (this.getServiceTemplate().getTopologyTemplate() == null) {
             this.getServiceTemplate().setTopologyTemplate(new TTopologyTemplate());

@@ -25,13 +25,12 @@ import javax.xml.namespace.QName;
 
 import org.eclipse.winery.model.tosca.HasInheritance;
 import org.eclipse.winery.model.tosca.HasType;
-import org.eclipse.winery.model.tosca.TBoolean;
 import org.eclipse.winery.model.tosca.TNodeTemplate;
 import org.eclipse.winery.model.tosca.TNodeType;
 import org.eclipse.winery.repository.backend.NamespaceManager;
 import org.eclipse.winery.repository.backend.RepositoryFactory;
 
-public class SubstitutionUtils {
+public abstract class SubstitutionUtils {
 
     /**
      * This method collects all templates of the given <code>templates</code> which are abstract and must be
@@ -71,7 +70,7 @@ public class SubstitutionUtils {
     public static <T extends HasInheritance> Optional<List<Subtypes<T>>> collectTypeHierarchy(Map<QName, T> types, QName parent) {
         T type = types.get(parent);
 
-        if (Objects.nonNull(type) && type.getAbstract().equals(TBoolean.YES)) {
+        if (Objects.nonNull(type) && type.getAbstract()) {
             List<Subtypes<T>> subtypes = new ArrayList<>();
             types.forEach((key, current) -> {
                 if (Objects.nonNull(current.getDerivedFrom()) && current.getDerivedFrom().getTypeAsQName().equals(parent)) {

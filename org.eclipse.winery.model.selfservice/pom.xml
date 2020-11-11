@@ -24,13 +24,6 @@
         <checkstyle.config.location>../checkstyle.xml</checkstyle.config.location>
         <main.basedir>${project.parent.basedir}</main.basedir>
     </properties>
-    <distributionManagement>
-        <repository>
-            <id>internal.repo</id>
-            <name>Temporary Staging Repository</name>
-            <url>file://${main.basedir}/target/mvn-repo</url>
-        </repository>
-    </distributionManagement>
     <dependencies>
         <dependency>
             <groupId>ch.qos.logback</groupId>

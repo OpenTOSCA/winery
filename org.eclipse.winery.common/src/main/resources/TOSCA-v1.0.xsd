@@ -18,6 +18,8 @@
    - otDirection
    - otPrmPropertyMapping
    - otPrmPropertyMappingType
+   - otTopologyFragmentRefinementModel
+   - otPermutationOption & otPermutationMapping
  - Add "ComplianceRules" as tComplianceRule
  - Add tPolicies to Relationship Templates
  - Add "TestRefinementModels" as otTestRefinementModel
@@ -279,6 +281,7 @@
        <xs:simpleType>
         <xs:restriction base="xs:string">
          <xs:enumeration value="unbounded"/>
+         <xs:enumeration value="UNBOUNDED"/>
         </xs:restriction>
        </xs:simpleType>
       </xs:union>
@@ -478,6 +481,7 @@
        <xs:simpleType>
         <xs:restriction base="xs:string">
          <xs:enumeration value="unbounded"/>
+         <xs:enumeration value="UNBOUNDED"/>
         </xs:restriction>
        </xs:simpleType>
       </xs:union>
@@ -524,11 +528,13 @@
        <xs:simpleType>
         <xs:restriction base="xs:string">
          <xs:enumeration value="unbounded"/>
+         <xs:enumeration value="UNBOUNDED"/>
         </xs:restriction>
        </xs:simpleType>
       </xs:union>
      </xs:simpleType>
     </xs:attribute>
+    <xs:attribute name="validSourceTypes" use="optional"/>
    </xs:extension>
   </xs:complexContent>
  </xs:complexType>
@@ -843,10 +849,31 @@
        </xs:sequence>
       </xs:complexType>
      </xs:element>
+     <xs:element name="PermutationMappings">
+      <xs:complexType>
+       <xs:sequence>
+        <xs:element name="PermutationMapping" type="otPermutationMapping" maxOccurs="unbounded"/>
+       </xs:sequence>
+      </xs:complexType>
+     </xs:element>
      <xs:element name="DeploymentArtifactMappings">
       <xs:complexType>
        <xs:sequence>
         <xs:element name="DeploymentArtifactMapping" type="otDeploymentArtifactMapping" maxOccurs="unbounded"/>
+       </xs:sequence>
+      </xs:complexType>
+     </xs:element>
+     <xs:element name="PermutationOptions">
+      <xs:complexType>
+       <xs:sequence>
+        <xs:element name="PermutationOption" type="xs:string"/>
+       </xs:sequence>
+      </xs:complexType>
+     </xs:element>
+     <xs:element name="ComponentSets">
+      <xs:complexType>
+       <xs:sequence>
+        <xs:element name="ComponentSet" type="xs:string"/>
        </xs:sequence>
       </xs:complexType>
      </xs:element>
@@ -855,6 +882,11 @@
     <xs:attribute name="targetNamespace" type="xs:anyURI"/>
    </xs:extension>
   </xs:complexContent>
+ </xs:complexType>
+ <xs:complexType name="otPermutationMapping">
+  <xs:attribute name="id" type="xs:ID" use="required"/>
+  <xs:attribute name="detectorNode" type="xs:string" use="required"/>
+  <xs:attribute name="refinementNode" type="xs:string" use="required"/>
  </xs:complexType>
  <xs:complexType name="otRelationMapping">
   <xs:attribute name="id" type="xs:ID" use="required"/>

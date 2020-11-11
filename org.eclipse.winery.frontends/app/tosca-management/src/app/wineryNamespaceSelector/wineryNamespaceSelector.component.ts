@@ -17,7 +17,6 @@ import { WineryNotificationService } from '../wineryNotificationModule/wineryNot
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { NamespaceProperties } from '../model/namespaceProperties';
 import { StartNamespaces, ToscaTypes } from '../model/enums';
-import { isNullOrUndefined } from 'util';
 import { HttpErrorResponse } from '@angular/common/http';
 import { WineryRepositoryConfigurationService } from '../wineryFeatureToggleModule/WineryRepositoryConfiguration.service';
 
@@ -75,7 +74,7 @@ const noop = () => {
 export class WineryNamespaceSelectorComponent implements OnInit, ControlValueAccessor {
 
     @Input() isRequired = false;
-    @Input() typeAheadListLimit = 50;
+    @Input() typeAheadListLimit = 10;
     @Input() toscaType: ToscaTypes;
     @Input() useStartNamespace = true;
     @Output() onChange = new EventEmitter<string>();
@@ -119,6 +118,7 @@ export class WineryNamespaceSelectorComponent implements OnInit, ControlValueAcc
     set namespaceValue(value: string) {
         this.innerNamespaceValue = value;
         this.propagateChange(this.innerNamespaceValue);
+        this.onChange.emit(this.innerNamespaceValue);
         if (this.namespaceInput) {
             this.namespaceInput.nativeElement.focus();
         }

@@ -12,9 +12,14 @@
  * SPDX-License-Identifier: EPL-2.0 OR Apache-2.0
  ********************************************************************************/
 import { ServiceTemplateTemplateTypes, ToscaTypes } from '../model/enums';
-import { QName } from '../model/qName';
+import { WineryVersion } from '../model/wineryVersion';
+import { QName } from '../../../../shared/src/app/model/qName';
 
 export class Utils {
+
+    public static isEmpty(object: object) {
+        return Object.keys(object).length === 0;
+    }
 
     /**
      * Generates a random alphanumeric string of the given length.
@@ -68,6 +73,9 @@ export class Utils {
             case ToscaTypes.PolicyTemplate:
             case ToscaTypes.PolicyTemplate.toString().slice(0, -1):
                 return ToscaTypes.PolicyTemplate;
+            case ToscaTypes.DataType:
+            case ToscaTypes.DataType.toString().slice(0, -1):
+                return ToscaTypes.DataType;
             case ToscaTypes.Imports:
             case ToscaTypes.Imports.toString().slice(0, -1):
                 return ToscaTypes.Imports;
@@ -120,6 +128,9 @@ export class Utils {
                 break;
             case ToscaTypes.PolicyTemplate:
                 type = 'Policy Template';
+                break;
+            case ToscaTypes.DataType:
+                type = 'YAML Custom Property Type';
                 break;
             case ToscaTypes.Imports:
                 type = 'XSD Import';
@@ -244,13 +255,25 @@ export class Utils {
     }
 
     public static nodeTypeUrlForQName(nodeType: QName): string {
-        return `/#/nodetypes/${encodeURIComponent(encodeURIComponent(nodeType.namespace))}/${nodeType.localPart}/readme`;
+        return `/#/nodetypes/${encodeURIComponent(encodeURIComponent(nodeType.nameSpace))}/${nodeType.localName}/readme`;
     }
 
     public static nodeTypeURL(nodeTypeName: string): string {
         const qname = QName.stringToQName(nodeTypeName);
-        return `/#/nodetypes/${encodeURIComponent(encodeURIComponent(qname.namespace))}/${qname.localPart}/readme`;
+        return `/#/nodetypes/${encodeURIComponent(encodeURIComponent(qname.nameSpace))}/${qname.localName}/readme`;
+    }
 
+    static getVersionFromString(qName: string) {
+        const res = qName.match(/_(([^_]*)-)?w([0-9]+)(-wip([0-9]+))?$/);
+        if (res) {
+            const [, , componentVersion, wineryVersion, , wipVersion] = res;
+            return new WineryVersion(
+                componentVersion,
+                isNaN(Number(wineryVersion)) ? 1 : Number(wineryVersion),
+                isNaN(Number(wipVersion)) ? 0 : Number(wipVersion)
+            );
+        }
+        return undefined;
     }
 }
 

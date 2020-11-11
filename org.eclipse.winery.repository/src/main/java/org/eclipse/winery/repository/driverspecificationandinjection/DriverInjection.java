@@ -14,13 +14,15 @@
 
 package org.eclipse.winery.repository.driverspecificationandinjection;
 
-import org.eclipse.winery.common.ids.definitions.ArtifactTemplateId;
+import org.eclipse.winery.model.ids.definitions.ArtifactTemplateId;
 import org.eclipse.winery.model.tosca.*;
 import org.eclipse.winery.model.tosca.utils.ModelUtilities;
 import org.eclipse.winery.repository.backend.RepositoryFactory;
 import org.eclipse.winery.repository.exceptions.WineryRepositoryException;
 
 import javax.xml.namespace.QName;
+
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -33,7 +35,7 @@ public class DriverInjection {
 
         for (TNodeTemplate nodeTemplateWithAbstractDA : nodeTemplatesWithAbstractDA) {
             List<TDeploymentArtifact> abstractDAsAttachedToNodeTemplate = nodeTemplateWithAbstractDA.getDeploymentArtifacts().getDeploymentArtifact().stream()
-                .filter(da -> DASpecification.getArtifactTypeOfDA(da).getAbstract() == TBoolean.YES)
+                .filter(da -> DASpecification.getArtifactTypeOfDA(da).getAbstract())
                 .collect(Collectors.toList());
             for (TDeploymentArtifact abstractDA : abstractDAsAttachedToNodeTemplate) {
                 Map<TRelationshipTemplate, TNodeTemplate> nodeTemplatesWithConcreteDA = DASpecification.getNodesWithSuitableConcreteDAAndTheDirectlyConnectedNode(nodeTemplateWithAbstractDA, abstractDA, topologyTemplate);
@@ -60,11 +62,12 @@ public class DriverInjection {
         TArtifactTemplate artifactTemplate = RepositoryFactory.getRepository().getElement(artifactTemplateId);
 
         Map<String, String> artifactProperties = ModelUtilities.getPropertiesKV(artifactTemplate);
-        Map<String, String> relationshipProperties = ModelUtilities.getPropertiesKV(relationshipTemplate);
+        LinkedHashMap<String, String> relationshipProperties = ModelUtilities.getPropertiesKV(relationshipTemplate);
 
-        if ((artifactProperties != null) && (relationshipProperties != null) && artifactProperties.containsKey("Driver") && relationshipProperties.containsKey("Driver")) {
+        if ((artifactProperties != null) && (relationshipProperties != null) 
+            && artifactProperties.containsKey("Driver") && relationshipProperties.containsKey("Driver")) {
             relationshipProperties.put("Driver", artifactProperties.get("Driver"));
-            relationshipTemplate.getProperties().setKVProperties(relationshipProperties);
+            ModelUtilities.setPropertiesKV(relationshipTemplate, relationshipProperties);
         } else {
             throw new WineryRepositoryException("No Property found to set to the driver classname");
         }

@@ -29,10 +29,10 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import javax.xml.namespace.QName;
 
-import org.eclipse.winery.common.RepositoryFileReference;
-import org.eclipse.winery.common.Util;
+import org.eclipse.winery.repository.common.RepositoryFileReference;
+import org.eclipse.winery.repository.common.Util;
 import org.eclipse.winery.common.configuration.Environments;
-import org.eclipse.winery.common.ids.elements.ToscaElementId;
+import org.eclipse.winery.model.ids.elements.ToscaElementId;
 import org.eclipse.winery.repository.backend.constants.Filename;
 import org.eclipse.winery.repository.rest.RestUtils;
 import org.eclipse.winery.repository.rest.resources.apiData.VisualsApiData;
@@ -110,21 +110,6 @@ public abstract class GenericVisualAppearanceResource {
     }
 
     public abstract VisualsApiData getJsonData(@Context UriInfo uriInfo);
-
-    @GET
-    @Path("16x16")
-    public Response get16x16Image(@HeaderParam("If-Modified-Since") String modified) {
-        // Even if the extension is "png", it might contain a jpg, too
-        // We keep the file extension as the windows explorer can display previews even if the content is not a png
-        return this.getImage(Filename.FILENAME_SMALL_ICON, modified);
-    }
-
-    @PUT
-    @Path("16x16")
-    @Consumes(MediaType.MULTIPART_FORM_DATA)
-    public Response post16x16Image(@FormDataParam("file") InputStream uploadedInputStream, @FormDataParam("file") FormDataBodyPart body) {
-        return this.putImage(Filename.FILENAME_SMALL_ICON, uploadedInputStream, body.getMediaType());
-    }
 
     @GET
     @Path("50x50")

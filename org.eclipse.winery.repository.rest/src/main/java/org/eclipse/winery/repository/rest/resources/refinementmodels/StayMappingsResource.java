@@ -22,8 +22,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import org.eclipse.winery.model.tosca.TEntityTemplate;
-import org.eclipse.winery.model.tosca.OTPrmModelElementType;
-import org.eclipse.winery.model.tosca.OTStayMapping;
+import org.eclipse.winery.model.tosca.extensions.OTStayMapping;
 import org.eclipse.winery.repository.rest.resources._support.AbstractRefinementModelMappingsResource;
 import org.eclipse.winery.repository.rest.resources.apiData.PrmStayMappingApiData;
 
@@ -38,16 +37,17 @@ public class StayMappingsResource extends AbstractRefinementModelMappingsResourc
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public List<OTStayMapping> addPropertyMappingFromApi(PrmStayMappingApiData mapping) {
-        TEntityTemplate detectorElement, refinementNode;
+        TEntityTemplate detectorElement = this.res.getDetectorResource().getTopologyTempalte()
+            .getNodeTemplateOrRelationshipTemplate().stream()
+            .filter(element -> element.getId().equals(mapping.detectorElement))
+            .findFirst()
+            .orElseThrow(IllegalArgumentException::new);
+        TEntityTemplate refinementElement = this.res.getRefinementTopologyResource().getTopologyTempalte()
+            .getNodeTemplateOrRelationshipTemplate().stream()
+            .filter(element -> element.getId().equals(mapping.refinementElement))
+            .findFirst()
+            .orElseThrow(IllegalArgumentException::new);
 
-        if (mapping.modelElementType == OTPrmModelElementType.NODE) {
-            detectorElement = this.res.getDetector().getComponentInstanceJSON().getNodeTemplate(mapping.detectorNode);
-            refinementNode = this.res.getRefinementTopology().getComponentInstanceJSON().getNodeTemplate(mapping.refinementNode);
-        } else {
-            detectorElement = this.res.getDetector().getComponentInstanceJSON().getRelationshipTemplate(mapping.detectorNode);
-            refinementNode = this.res.getRefinementTopology().getComponentInstanceJSON().getRelationshipTemplate(mapping.refinementNode);
-        }
-
-        return this.addMapping(mapping.createOTPrmStayMapping(detectorElement, refinementNode));
+        return this.addMapping(mapping.createOTPrmStayMapping(detectorElement, refinementElement));
     }
 }

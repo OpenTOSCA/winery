@@ -52,6 +52,9 @@ export class TopologyRendererActions {
     static CLEAN_FREEZABLE_COMPONENTS = 'CLEAN_FREEZABLE_COMPONENTS';
     static PLACE_COMPONENTS = 'PLACE_COMPONENTS';
     static MANAGE_YAML_POLICIES = 'MANAGE_YAML_POLICIES';
+    static SHOW_MANAGE_YAML_GROUPS = 'SHOW_MANAGE_YAML_GROUPS';
+    static TOGGLE_MANAGE_YAML_GROUPS = 'TOGGLE_MANAGE_YAML_GROUPS';
+    static TOGGLE_YAML_GROUPS = 'TOGGLE_YAML_GROUPS';
 
     togglePolicies(): Action {
         return { type: TopologyRendererActions.TOGGLE_POLICIES };
@@ -164,5 +167,17 @@ export class TopologyRendererActions {
 
     manageYamlPolicies(): Action {
         return { type: TopologyRendererActions.MANAGE_YAML_POLICIES };
+    }
+
+    showManageYamlGroups(): Action {
+        return { type: TopologyRendererActions.SHOW_MANAGE_YAML_GROUPS };
+    }
+
+    toggleManageYamlGroups(): Action {
+        return { type: TopologyRendererActions.TOGGLE_MANAGE_YAML_GROUPS };
+    }
+
+    toggleYamlGroups(): Action {
+        return { type: TopologyRendererActions.TOGGLE_YAML_GROUPS };
     }
 }

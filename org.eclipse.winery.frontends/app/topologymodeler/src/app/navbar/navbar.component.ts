@@ -245,6 +245,12 @@ export class NavbarComponent implements OnDestroy {
             case 'manageYamlPolicies':
                 this.ngRedux.dispatch(this.actions.manageYamlPolicies());
                 break;
+            case 'manageYamlGroups':
+                this.ngRedux.dispatch(this.actions.toggleManageYamlGroups());
+                break;
+            case 'yamlGroups':
+                this.ngRedux.dispatch(this.actions.toggleYamlGroups());
+                break;
         }
     }
 
@@ -271,5 +277,9 @@ export class NavbarComponent implements OnDestroy {
 
     openManagementUi() {
         window.open(this.backendService.serviceTemplateUiUrl, '_blank');
+    }
+
+    openChe() {
+        window.open(this.configurationService.configuration.endpoints.eclipseChe, '_blank');
     }
 }

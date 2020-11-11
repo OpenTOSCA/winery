@@ -21,7 +21,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import org.eclipse.winery.model.tosca.OTDeploymentArtifactMapping;
+import org.eclipse.winery.model.tosca.extensions.OTDeploymentArtifactMapping;
 import org.eclipse.winery.model.tosca.TEntityTemplate;
 import org.eclipse.winery.repository.rest.resources._support.AbstractRefinementModelMappingsResource;
 import org.eclipse.winery.repository.rest.resources.apiData.PrmDeploymentArtifactMappingApiData;
@@ -38,9 +38,9 @@ public class DeploymentArtifactMappingsResource extends AbstractRefinementModelM
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public List<OTDeploymentArtifactMapping> addDeploymentArtifactMapping(PrmDeploymentArtifactMappingApiData mapping) {
-        TEntityTemplate detectorElement = this.res.getDetector().getComponentInstanceJSON().getNodeTemplate(mapping.detectorNode);
-        TEntityTemplate refinementNode = this.res.getRefinementTopology().getComponentInstanceJSON().getNodeTemplate(mapping.refinementNode);
+        TEntityTemplate detectorElement = this.res.getDetectorResource().getTopologyTempalte().getNodeTemplate(mapping.detectorElement);
+        TEntityTemplate refinementElement = this.res.getRefinementTopologyResource().getTopologyTempalte().getNodeTemplate(mapping.refinementElement);
 
-        return this.addMapping(mapping.createDeploymentArtifactMapping(detectorElement, refinementNode));
+        return this.addMapping(mapping.createDeploymentArtifactMapping(detectorElement, refinementElement));
     }
 }

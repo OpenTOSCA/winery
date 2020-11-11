@@ -32,6 +32,7 @@ export class SubMenuItems {
     static readonly capabilityDefinitions: SubMenuItem = { displayName: 'Capability Definitions', urlFragment: 'capabilitydefinitions' };
     static readonly configuration: SubMenuItem = { displayName: 'Configuration', urlFragment: 'configuration' };
     static readonly consistencyCheck: SubMenuItem = { displayName: 'Consistency Check', urlFragment: 'consistencycheck' };
+    static readonly constraints: SubMenuItem = { displayName: 'Constraints', urlFragment: 'constraints' };
     static readonly constraintChecking: SubMenuItem = { displayName: 'Constraint Checking', urlFragment: 'constraintchecking' };
     static readonly constraintTypes: SubMenuItem = { displayName: 'Constraint Types', urlFragment: 'constrainttypes' };
     static readonly deploymentArtifacts: SubMenuItem = { displayName: 'Deployment Artifacts', urlFragment: 'deploymentartifacts' };
@@ -70,6 +71,8 @@ export class SubMenuItems {
     static readonly sourceInterfaces: SubMenuItem = { displayName: 'Source Interfaces', urlFragment: 'sourceinterfaces' };
     static readonly stayMappings: SubMenuItem = { displayName: 'Stay Mappings', urlFragment: 'staymappings' };
     static readonly deploymentArtifactMappings: SubMenuItem = { displayName: 'Deployment Artifact Mappings', urlFragment: 'deploymentartifactmappings' };
+    static readonly permutationMappings: SubMenuItem = {displayName: 'Permutation Mappings', urlFragment: 'permutationmappings'};
+    static readonly permutations: SubMenuItem = {displayName: 'Permutations', urlFragment: 'permutations'};
     static readonly tags: SubMenuItem = { displayName: 'Tags', urlFragment: 'tags' };
     static readonly targetInterfaces: SubMenuItem = { displayName: 'Target Interfaces', urlFragment: 'targetinterfaces' };
     static readonly templates: SubMenuItem = { displayName: 'Templates', urlFragment: 'templates' };
@@ -77,7 +80,7 @@ export class SubMenuItems {
     static readonly threatModeling: SubMenuItem = { displayName: 'Threat Modeling', urlFragment: 'threatmodeling' };
     static readonly topologyTemplate: SubMenuItem = { displayName: 'Topology Template', urlFragment: 'topologytemplate' };
     static readonly validSourcesAndTargets: SubMenuItem = { displayName: 'Valid Sources and Targets', urlFragment: 'validsourcesandtargets' };
-    static readonly capabilityTypeConstraints: SubMenuItem = { displayName: 'Constraints', urlFragment: 'constraints' };
+    static readonly capabilityTypeConstraints: SubMenuItem = { displayName: 'Valid Source Types', urlFragment: 'constraints' };
     static readonly supportedFiles: SubMenuItem = { displayName: 'Supported File Types', urlFragment: 'supportedfiles' };
     static readonly xml: SubMenuItem = { displayName: 'XML', urlFragment: 'xml' };
     static readonly attributes: SubMenuItem = { displayName: 'Attribute Definitions', urlFragment: 'attributes' };

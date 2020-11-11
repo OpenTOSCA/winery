@@ -14,7 +14,6 @@
 
 package org.eclipse.winery.repository.rest.resources._support;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -22,9 +21,9 @@ import java.util.Objects;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
 
-import org.eclipse.winery.common.ids.definitions.DefinitionsChildId;
-import org.eclipse.winery.model.tosca.OTRefinementModel;
-import org.eclipse.winery.model.tosca.OTRelationMapping;
+import org.eclipse.winery.model.ids.definitions.DefinitionsChildId;
+import org.eclipse.winery.model.tosca.extensions.OTRefinementModel;
+import org.eclipse.winery.model.tosca.extensions.OTRelationMapping;
 import org.eclipse.winery.model.tosca.TTopologyTemplate;
 import org.eclipse.winery.repository.rest.RestUtils;
 import org.eclipse.winery.repository.rest.resources.refinementmodels.RelationMappingsResource;
@@ -42,11 +41,11 @@ public abstract class AbstractRefinementModelResource extends AbstractComponentI
     public abstract OTRefinementModel getTRefinementModel();
 
     @Path("detector")
-    public TopologyTemplateResource getDetector() {
+    public TopologyTemplateResource getDetectorResource() {
         return new TopologyTemplateResource(this, this.getTRefinementModel().getDetector(), DETECTOR);
     }
 
-    public abstract TopologyTemplateResource getRefinementTopology();
+    public abstract TopologyTemplateResource getRefinementTopologyResource();
 
     @Path("relationmappings")
     public RelationMappingsResource getRelationMappings() {
@@ -77,7 +76,7 @@ public abstract class AbstractRefinementModelResource extends AbstractComponentI
     }
 
     @Override
-    protected void synchronizeReferences() throws IOException {
+    protected void synchronizeReferences() {
         // no synchronization needed
     }
 
@@ -93,5 +92,11 @@ public abstract class AbstractRefinementModelResource extends AbstractComponentI
             default:
                 break;
         }
+    }
+
+    @Override
+    public TTopologyTemplate getTopology() {
+        // TODO this is only here to have SOME implementation
+        return this.getTRefinementModel().getRefinementTopology();
     }
 }

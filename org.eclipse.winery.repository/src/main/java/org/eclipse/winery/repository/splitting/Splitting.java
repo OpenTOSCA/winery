@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017-2018 Contributors to the Eclipse Foundation
+ * Copyright (c) 2017-2020 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -11,7 +11,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR Apache-2.0
  *******************************************************************************/
-
 package org.eclipse.winery.repository.splitting;
 
 import java.io.IOException;
@@ -29,12 +28,10 @@ import java.util.stream.Collectors;
 
 import javax.xml.namespace.QName;
 
-import org.eclipse.winery.common.Util;
-import org.eclipse.winery.common.ids.definitions.CapabilityTypeId;
-import org.eclipse.winery.common.ids.definitions.RelationshipTypeId;
-import org.eclipse.winery.common.ids.definitions.RequirementTypeId;
-import org.eclipse.winery.common.ids.definitions.ServiceTemplateId;
-import org.eclipse.winery.common.version.VersionUtils;
+import org.eclipse.winery.model.ids.definitions.CapabilityTypeId;
+import org.eclipse.winery.model.ids.definitions.RelationshipTypeId;
+import org.eclipse.winery.model.ids.definitions.RequirementTypeId;
+import org.eclipse.winery.model.ids.definitions.ServiceTemplateId;
 import org.eclipse.winery.model.tosca.TCapability;
 import org.eclipse.winery.model.tosca.TCapabilityType;
 import org.eclipse.winery.model.tosca.TNodeTemplate;
@@ -45,9 +42,11 @@ import org.eclipse.winery.model.tosca.TRequirementType;
 import org.eclipse.winery.model.tosca.TServiceTemplate;
 import org.eclipse.winery.model.tosca.TTopologyTemplate;
 import org.eclipse.winery.model.tosca.utils.ModelUtilities;
+import org.eclipse.winery.model.version.VersionSupport;
 import org.eclipse.winery.repository.backend.BackendUtils;
 import org.eclipse.winery.repository.backend.IRepository;
 import org.eclipse.winery.repository.backend.RepositoryFactory;
+import org.eclipse.winery.repository.common.Util;
 import org.eclipse.winery.repository.driverspecificationandinjection.DASpecification;
 import org.eclipse.winery.repository.driverspecificationandinjection.DriverInjection;
 
@@ -59,7 +58,6 @@ public class Splitting {
 
     // counter for relationships starts at 100 because all TRelationshipTemplate should have a 3 digit number in their id
     private static int newRelationshipIdCounter = 100;
-    private static int nodeTemplateIdCounter = 1;
     private static int IdCounter = 1;
 
     // Required variables for the following computation of the transitive closure of a given topology
@@ -84,7 +82,7 @@ public class Splitting {
         // create wrapper service template
         ServiceTemplateId splitServiceTemplateId = new ServiceTemplateId(
             id.getNamespace().getDecoded(),
-            VersionUtils.getNewComponentVersionId(id, "split"),
+            VersionSupport.getNewComponentVersionId(id, "split"),
             false);
 
         repository.forceDelete(splitServiceTemplateId);
@@ -103,7 +101,7 @@ public class Splitting {
         // create wrapper service template
         ServiceTemplateId matchedServiceTemplateId = new ServiceTemplateId(
             id.getNamespace().getDecoded(),
-            VersionUtils.getNewComponentVersionId(id, "split-matched"),
+            VersionSupport.getNewComponentVersionId(id, "split-matched"),
             false);
 
         repository.forceDelete(matchedServiceTemplateId);
@@ -187,7 +185,7 @@ public class Splitting {
         // create wrapper service template
         ServiceTemplateId matchedServiceTemplateId = new ServiceTemplateId(
             id.getNamespace().getDecoded(),
-            VersionUtils.getNewComponentVersionId(id, "matched"),
+            VersionSupport.getNewComponentVersionId(id, "matched"),
             false);
 
         RepositoryFactory.getRepository().forceDelete(matchedServiceTemplateId);
@@ -241,7 +239,7 @@ public class Splitting {
         repository.setElement(composedServiceTemplateId, composedServiceTemplate);
         //add all node and relationship templates from the solution fragements to the composed topology template
         for (ServiceTemplateId id : serviceTemplateIds) {
-            BackendUtils.mergeTopologyTemplateAinTopologyTemplateB(id, composedServiceTemplateId);
+            BackendUtils.mergeTopologyTemplateAinTopologyTemplateB(id, composedServiceTemplateId, repository);
         }
         composedServiceTemplate = repository.getElement(composedServiceTemplateId);
         composedTopologyTemplate = composedServiceTemplate.getTopologyTemplate();
@@ -275,8 +273,6 @@ public class Splitting {
 
     /**
      *
-     * @param serviceTemplateId
-     * @throws SplittingException
      */
     public void resolveTopologyTemplate(ServiceTemplateId serviceTemplateId) throws SplittingException, IOException {
         IRepository repository = RepositoryFactory.getRepository();
@@ -859,10 +855,6 @@ public class Splitting {
 
     /**
      *
-     *
-     * @param topologyTemplate
-     * @return
-     * @throws SplittingException
      */
     public Map<String, List<TTopologyTemplate>> getConnectionInjectionOptions(TTopologyTemplate topologyTemplate) throws SplittingException {
         ProviderRepository providerRepository = new ProviderRepository();
@@ -903,10 +895,6 @@ public class Splitting {
 
     /**
      *
-     * @param topologyTemplate
-     * @param selectedConnectionFragments
-     * @return
-     * @throws SplittingException
      */
 
     public TTopologyTemplate injectConnectionNodeTemplates(TTopologyTemplate topologyTemplate, Map<String, TTopologyTemplate> selectedConnectionFragments)
@@ -953,9 +941,6 @@ public class Splitting {
 
     /**
      *
-     * @param requirement
-     * @param capability
-     * @return
      */
     private TRelationshipType getMatchingRelationshipType(TRequirement requirement, TCapability capability) {
 
@@ -970,13 +955,14 @@ public class Splitting {
         Map<String, String> requirementProperties = ModelUtilities.getPropertiesKV(requirement);
         Map<String, String> capabilityProperties = ModelUtilities.getPropertiesKV(capability);
 
-		/* If the property "requiredRelationshipType" is defined for the requirement and the capability this relationship type
+        /* If the property "requiredRelationshipType" is defined for the requirement and the capability this relationship type
            has to be taken - if the specified relationship type is not available, no relationship type is chosen */
         if (requirementProperties != null && capabilityProperties != null &&
             requirementProperties.containsKey("requiredRelationshipType") && capabilityProperties.containsKey("requiredRelationshipType")
             && requirementProperties.get("requiredRelationshipType").equals(capabilityProperties.get("requiredRelationshipType"))
             && requirementProperties.get("requiredRelationshipType") != null) {
-            QName referencedRelationshipType = QName.valueOf(requirementProperties.get("requiredRelationshipType"));
+            // Assumption: We work on basic KV properties here
+            QName referencedRelationshipType = QName.valueOf((String) requirementProperties.get("requiredRelationshipType"));
             RelationshipTypeId relTypeId = new RelationshipTypeId(referencedRelationshipType);
             if (relTypeIds.stream().anyMatch(rti -> rti.equals(relTypeId))) {
                 return RepositoryFactory.getRepository().getElement(relTypeId);
@@ -1284,8 +1270,6 @@ public class Splitting {
 
     /**
      *
-     * @param topologyTemplate
-     * @return
      */
     public List<TRequirement> getOpenRequirements(TTopologyTemplate topologyTemplate) {
         List<TRequirement> openRequirements = new ArrayList<>();
@@ -1347,7 +1331,7 @@ public class Splitting {
         return basisCapabilityType;
     }
 
-    private QName getRequiredCapabilityTypeQNameOfRequirement(TRequirement requirement) {
+    public QName getRequiredCapabilityTypeQNameOfRequirement(TRequirement requirement) {
         QName reqTypeQName = requirement.getType();
         RequirementTypeId reqTypeId = new RequirementTypeId(reqTypeQName);
         TRequirementType requirementType = RepositoryFactory.getRepository().getElement(reqTypeId);
@@ -1427,10 +1411,10 @@ public class Splitting {
 
         // check properties if they are defined (just equals on properties does not seem to work)
         if (Objects.nonNull(node1.getProperties()) && Objects.nonNull(node2.getProperties())
-            && Objects.nonNull(node1.getProperties().getKVProperties())
-            && Objects.nonNull(node2.getProperties().getKVProperties())) {
-            LinkedHashMap<String, String> properties1 = node1.getProperties().getKVProperties();
-            LinkedHashMap<String, String> properties2 = node1.getProperties().getKVProperties();
+            && Objects.nonNull(ModelUtilities.getPropertiesKV(node1))
+            && Objects.nonNull(ModelUtilities.getPropertiesKV(node2))) {
+            LinkedHashMap<String, String> properties1 = ModelUtilities.getPropertiesKV(node1);
+            LinkedHashMap<String, String> properties2 = ModelUtilities.getPropertiesKV(node2);
             if (!properties1.equals(properties2)) {
                 return false;
             }

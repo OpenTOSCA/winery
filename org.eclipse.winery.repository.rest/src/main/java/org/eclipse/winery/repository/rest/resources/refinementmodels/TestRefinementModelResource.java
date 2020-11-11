@@ -16,8 +16,8 @@ package org.eclipse.winery.repository.rest.resources.refinementmodels;
 
 import javax.ws.rs.Path;
 
-import org.eclipse.winery.common.ids.definitions.DefinitionsChildId;
-import org.eclipse.winery.model.tosca.OTTestRefinementModel;
+import org.eclipse.winery.model.ids.definitions.DefinitionsChildId;
+import org.eclipse.winery.model.tosca.extensions.OTTestRefinementModel;
 import org.eclipse.winery.repository.rest.resources._support.AbstractRefinementModelResource;
 import org.eclipse.winery.repository.rest.resources.servicetemplates.topologytemplates.TopologyTemplateResource;
 
@@ -34,11 +34,11 @@ public class TestRefinementModelResource extends AbstractRefinementModelResource
 
     @Override
     protected OTTestRefinementModel createNewElement() {
-        return new OTTestRefinementModel();
+        return new OTTestRefinementModel(new OTTestRefinementModel.Builder());
     }
 
     @Path("testfragment")
-    public TopologyTemplateResource getRefinementTopology() {
+    public TopologyTemplateResource getRefinementTopologyResource() {
         return new TopologyTemplateResource(this, this.getTRefinementModel().getRefinementTopology(), REFINEMENT_TOPOLOGY);
     }
 }

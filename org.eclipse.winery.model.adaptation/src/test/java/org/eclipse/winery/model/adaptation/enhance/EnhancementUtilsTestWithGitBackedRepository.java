@@ -21,9 +21,9 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
-import org.eclipse.winery.common.ids.definitions.NodeTypeId;
-import org.eclipse.winery.common.ids.definitions.NodeTypeImplementationId;
-import org.eclipse.winery.common.ids.definitions.ServiceTemplateId;
+import org.eclipse.winery.model.ids.definitions.NodeTypeId;
+import org.eclipse.winery.model.ids.definitions.NodeTypeImplementationId;
+import org.eclipse.winery.model.ids.definitions.ServiceTemplateId;
 import org.eclipse.winery.common.version.WineryVersion;
 import org.eclipse.winery.model.tosca.TExtensibleElements;
 import org.eclipse.winery.model.tosca.TNodeTemplate;
@@ -33,6 +33,7 @@ import org.eclipse.winery.model.tosca.TPolicy;
 import org.eclipse.winery.model.tosca.TServiceTemplate;
 import org.eclipse.winery.model.tosca.TTopologyTemplate;
 import org.eclipse.winery.model.tosca.constants.OpenToscaBaseTypes;
+import org.eclipse.winery.model.tosca.utils.ModelUtilities;
 import org.eclipse.winery.repository.TestWithGitBackedRepository;
 import org.eclipse.winery.repository.backend.RepositoryFactory;
 
@@ -144,8 +145,8 @@ class EnhancementUtilsTestWithGitBackedRepository extends TestWithGitBackedRepos
             );
 
         Map<String, Map<QName, String>> availableFeaturesForTopology =
-            EnhancementUtils.getAvailableFeaturesForTopology
-                (serviceTemplate.getTopologyTemplate());
+            // As we do not want to filter the features based on the deployment technology, the second parameter is null.
+            EnhancementUtils.getAvailableFeaturesForTopology(serviceTemplate.getTopologyTemplate(), null);
 
         assertEquals(2, availableFeaturesForTopology.size());
         assertEquals(1, availableFeaturesForTopology.get("MySQL-Database_w1").size());
@@ -164,7 +165,8 @@ class EnhancementUtilsTestWithGitBackedRepository extends TestWithGitBackedRepos
             );
 
         Map<String, Map<QName, String>> availableFeaturesForTopology =
-            EnhancementUtils.getAvailableFeaturesForTopology(serviceTemplate.getTopologyTemplate());
+            // As we do not want to filter the features based on the deployment technology, the second parameter is null.
+            EnhancementUtils.getAvailableFeaturesForTopology(serviceTemplate.getTopologyTemplate(), null);
 
         assertEquals(1, availableFeaturesForTopology.size());
         assertEquals(1, availableFeaturesForTopology.get("MySQL-Database_w2").size()
@@ -183,8 +185,8 @@ class EnhancementUtilsTestWithGitBackedRepository extends TestWithGitBackedRepos
             );
 
         Map<String, Map<QName, String>> availableFeaturesForTopology =
-            EnhancementUtils.getAvailableFeaturesForTopology
-                (serviceTemplate.getTopologyTemplate());
+            // As we do not want to filter the features based on the deployment technology, the second parameter is null.
+            EnhancementUtils.getAvailableFeaturesForTopology(serviceTemplate.getTopologyTemplate(), null);
 
         assertEquals(2, availableFeaturesForTopology.size());
         assertEquals(2, availableFeaturesForTopology.get("MySQL-Database_w2").size());
@@ -223,7 +225,7 @@ class EnhancementUtilsTestWithGitBackedRepository extends TestWithGitBackedRepos
         assertEquals(1, listOfNodeTypes.size() - previousListOfNodeTypes.size());
         assertEquals(expectedMergedUbuntuQName, generatedFeatureEnrichedNodeType.getQName());
         assertNotNull(generatedFeatureEnrichedNodeType.getWinerysPropertiesDefinition());
-        assertEquals(9, generatedFeatureEnrichedNodeType.getWinerysPropertiesDefinition().getPropertyDefinitionKVList().size());
+        assertEquals(9, generatedFeatureEnrichedNodeType.getWinerysPropertiesDefinition().getPropertyDefinitions().size());
 
         TNodeTypeImplementation generatedUbuntuImpl = this.repository.getElement(
             new ArrayList<>(this.repository.getAllElementsReferencingGivenType(NodeTypeImplementationId.class, expectedMergedUbuntuQName))
@@ -246,7 +248,8 @@ class EnhancementUtilsTestWithGitBackedRepository extends TestWithGitBackedRepos
                 )
             ).getTopologyTemplate();
 
-        EnhancementUtils.applyFeaturesForTopology(topology, EnhancementUtils.getAvailableFeaturesForTopology(topology));
+        // As we do not want to filter the features based on the deployment technology, the second parameter is null.
+        EnhancementUtils.applyFeaturesForTopology(topology, EnhancementUtils.getAvailableFeaturesForTopology(topology, null));
 
         String ubuntuNodeTemplateId = "Ubuntu_16.04-w1";
         String mySqlNodeTemplateId = "MySQL-Database_w1";
@@ -263,9 +266,42 @@ class EnhancementUtilsTestWithGitBackedRepository extends TestWithGitBackedRepos
                 + WineryVersion.WINERY_VERSION_SEPARATOR + WineryVersion.WINERY_VERSION_PREFIX + "1"),
             topology.getNodeTemplate(mySqlNodeTemplateId).getType()
         );
-        assertNotNull(topology.getNodeTemplate(ubuntuNodeTemplateId).getProperties());
-        assertEquals(9, topology.getNodeTemplate(ubuntuNodeTemplateId).getProperties().getKVProperties().size());
-        assertNotNull(topology.getNodeTemplate(mySqlNodeTemplateId).getProperties());
-        assertEquals(3, topology.getNodeTemplate(mySqlNodeTemplateId).getProperties().getKVProperties().size());
+        assertNotNull(ModelUtilities.getPropertiesKV(topology.getNodeTemplate(ubuntuNodeTemplateId)));
+        assertEquals(9, ModelUtilities.getPropertiesKV(topology.getNodeTemplate(ubuntuNodeTemplateId)).size());
+        assertNotNull(ModelUtilities.getPropertiesKV(topology.getNodeTemplate(mySqlNodeTemplateId)));
+        assertEquals(3, ModelUtilities.getPropertiesKV(topology.getNodeTemplate(mySqlNodeTemplateId)).size());
+    }
+
+    @Test
+    void getAvailableFeaturesFilteredByDeploymentTechnology() throws Exception {
+        this.setRevisionTo("origin/plain");
+
+        TServiceTemplate serviceTemplate = RepositoryFactory.getRepository()
+            .getElement(
+                new ServiceTemplateId(
+                    // This ST is the same as the other ones only without a annotated deployment technology.
+                    // This is required for the integration tests, as the deployment technology is determined by
+                    // the resource.
+                    QName.valueOf("{http://opentosca.org/add/management/to/instances/servicetemplates}STWithBasicManagementOnly_noDeplTech-w1-wip1")
+                )
+            );
+
+        Map<String, Map<QName, String>> openStackFeatures =
+            EnhancementUtils.getAvailableFeaturesForTopology(serviceTemplate.getTopologyTemplate(), "OpenStackHeat");
+        assertEquals(1, openStackFeatures.size());
+        Map<QName, String> openStackFeature = openStackFeatures.get("NodeTypeWithDifferentFeatures_w1-wip1_0");
+        assertEquals(1, openStackFeature.size());
+        assertEquals("scalable AWS and Heat", openStackFeature.get(QName.valueOf("{http://opentosca.org/add/management/to/instances/nodetypes}ScaleFeature_AWS-OpenStack-w1-wip1")));
+
+        Map<String, Map<QName, String>> kubernetesFeatures =
+            EnhancementUtils.getAvailableFeaturesForTopology(serviceTemplate.getTopologyTemplate(), "Kubernetes");
+        assertEquals(1, kubernetesFeatures.size());
+        Map<QName, String> kubernetesFeature = kubernetesFeatures.get("NodeTypeWithDifferentFeatures_w1-wip1_0");
+        assertEquals(1, kubernetesFeature.size());
+        assertEquals("scalable Kubernetes", kubernetesFeature.get(QName.valueOf("{http://opentosca.org/add/management/to/instances/nodetypes}ScaleFeature_Kubernetes-w1-wip1")));
+
+        Map<String, Map<QName, String>> nonExisting =
+            EnhancementUtils.getAvailableFeaturesForTopology(serviceTemplate.getTopologyTemplate(), "Chef");
+        assertEquals(0, nonExisting.size());
     }
 }

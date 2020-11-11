@@ -13,8 +13,8 @@
  *******************************************************************************/
 package org.eclipse.winery.repository.rest.resources.servicetemplates.topologytemplates;
 
-import org.eclipse.winery.common.ids.definitions.ServiceTemplateId;
 import org.eclipse.winery.common.json.JacksonProvider;
+import org.eclipse.winery.model.ids.definitions.ServiceTemplateId;
 import org.eclipse.winery.model.tosca.TTopologyTemplate;
 import org.eclipse.winery.repository.backend.RepositoryFactory;
 import org.eclipse.winery.repository.rest.resources.AbstractResourceTest;
@@ -60,6 +60,14 @@ public class TopologyTemplateResourceTest extends AbstractResourceTest {
         this.setRevisionTo("3fe0df76e98d46ead68295920e5d1cf1354bdea1");
         this.assertPut("servicetemplates/http%253A%252F%252Fwinery.opentosca.org%252Ftest%252Fservicetemplates%252Ffruits/baobab_serviceTemplate/topologytemplate/", "servicetemplates/baobab_topologytemplate_v2.json");
         this.assertGet("servicetemplates/http%253A%252F%252Fwinery.opentosca.org%252Ftest%252Fservicetemplates%252Ffruits/baobab_serviceTemplate/topologytemplate/", "servicetemplates/baobab_topologytemplate_v2.json");
+    }
+
+    @Test
+    public void emptyElementTagsInXML() throws Exception {
+        this.setRevisionTo("origin/plain");
+        // for testing an arbitrary existing service template is used
+        this.assertPut("servicetemplates/http%253A%252F%252Fplain.winery.opentosca.org%252Fservicetemplates/ServiceTemplateMinimalExampleWithAllPropertyVariants_w1-wip1/topologytemplate/", "servicetemplates/topologytemplates/plain-TopologyTemplateMinimalExampleWithAllPropertyVariants_w1-wip1.json");
+        this.assertGet("servicetemplates/http%253A%252F%252Fplain.winery.opentosca.org%252Fservicetemplates/ServiceTemplateMinimalExampleWithAllPropertyVariants_w1-wip1/topologytemplate/", "servicetemplates/topologytemplates/plain-TopologyTemplateMinimalExampleWithAllPropertyVariants_w1-wip1.xml");
     }
 
     @Test
@@ -176,5 +184,26 @@ public class TopologyTemplateResourceTest extends AbstractResourceTest {
         this.setRevisionTo("origin/plain");
         this.assertGet("servicetemplates/http%253A%252F%252Fplain.winery.opentosca.org%252Fservicetemplates/STWithUpdateableComponent_w1-wip1/topologytemplate/newversions",
             "servicetemplates/nodeTemplateVersionListWithoutFeatures.json");
+    }
+
+    @Test
+    public void getAvailableFeaturesFilteredByDeploymentTechnologyOpenStack() throws Exception {
+        this.setRevisionTo("origin/plain");
+        this.assertGet("servicetemplates/http%253A%252F%252Fopentosca.org%252Fadd%252Fmanagement%252Fto%252Finstances%252Fservicetemplates/STWithBasicManagementOnly_OpenStackHeat-w1-wip1/topologytemplate/availablefeatures",
+            "servicetemplates/topologytemplates/availableFeatures-openStack.json");
+    }
+
+    @Test
+    public void getAvailableFeaturesFilteredByDeploymentTechnologyPuppet() throws Exception {
+        this.setRevisionTo("origin/plain");
+        this.assertGet("servicetemplates/http%253A%252F%252Fopentosca.org%252Fadd%252Fmanagement%252Fto%252Finstances%252Fservicetemplates/STWithBasicManagementOnly_puppet-w1-wip1/topologytemplate/availablefeatures",
+            "servicetemplates/topologytemplates/availableFeatures-puppet.json");
+    }
+
+    @Test
+    public void getAvailableFeaturesNoDeploymentTechnologyAnnotated() throws Exception {
+        this.setRevisionTo("origin/plain");
+        this.assertGet("servicetemplates/http%253A%252F%252Fopentosca.org%252Fadd%252Fmanagement%252Fto%252Finstances%252Fservicetemplates/STWithBasicManagementOnly_noDeplTech-w1-wip1/topologytemplate/availablefeatures",
+            "servicetemplates/topologytemplates/availableFeatures.json");
     }
 }

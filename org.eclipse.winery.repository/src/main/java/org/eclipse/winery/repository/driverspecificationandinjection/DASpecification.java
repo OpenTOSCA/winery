@@ -14,9 +14,9 @@
 
 package org.eclipse.winery.repository.driverspecificationandinjection;
 
-import org.eclipse.winery.common.ids.definitions.ArtifactTypeId;
-import org.eclipse.winery.common.ids.definitions.NodeTypeImplementationId;
-import org.eclipse.winery.common.ids.definitions.RelationshipTypeId;
+import org.eclipse.winery.model.ids.definitions.ArtifactTypeId;
+import org.eclipse.winery.model.ids.definitions.NodeTypeImplementationId;
+import org.eclipse.winery.model.ids.definitions.RelationshipTypeId;
 import org.eclipse.winery.model.tosca.*;
 import org.eclipse.winery.model.tosca.utils.ModelUtilities;
 import org.eclipse.winery.repository.backend.IRepository;
@@ -36,7 +36,7 @@ public class DASpecification {
         List<TNodeTemplate> nodeTemplatesWithAbstractDA = nodeTemplates.stream()
             .filter(nt -> nt.getDeploymentArtifacts() != null)
             .filter(nt -> nt.getDeploymentArtifacts().getDeploymentArtifact().stream()
-                .anyMatch(da -> getArtifactTypeOfDA(da).getAbstract() == TBoolean.YES))
+                .anyMatch(da -> getArtifactTypeOfDA(da).getAbstract()))
             .collect(Collectors.toList());
 
         return nodeTemplatesWithAbstractDA;

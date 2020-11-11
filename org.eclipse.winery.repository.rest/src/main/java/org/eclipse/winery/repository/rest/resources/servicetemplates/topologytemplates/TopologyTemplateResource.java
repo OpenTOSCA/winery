@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012-2019 Contributors to the Eclipse Foundation
+ * Copyright (c) 2012-2020 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -38,11 +38,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import javax.xml.namespace.QName;
 
-import org.eclipse.winery.common.Util;
 import org.eclipse.winery.common.configuration.Environments;
-import org.eclipse.winery.common.ids.definitions.NodeTypeId;
-import org.eclipse.winery.common.ids.definitions.ServiceTemplateId;
-import org.eclipse.winery.common.version.VersionUtils;
 import org.eclipse.winery.common.version.WineryVersion;
 import org.eclipse.winery.model.adaptation.enhance.EnhancementUtils;
 import org.eclipse.winery.model.adaptation.enhance.TopologyAndErrorList;
@@ -50,17 +46,24 @@ import org.eclipse.winery.model.adaptation.placement.PlacementUtils;
 import org.eclipse.winery.model.adaptation.problemsolving.SolutionFactory;
 import org.eclipse.winery.model.adaptation.problemsolving.SolutionInputData;
 import org.eclipse.winery.model.adaptation.problemsolving.SolutionStrategy;
+import org.eclipse.winery.model.ids.EncodingUtil;
+import org.eclipse.winery.model.ids.definitions.NodeTypeId;
+import org.eclipse.winery.model.ids.definitions.ServiceTemplateId;
+import org.eclipse.winery.model.tosca.HasTags;
 import org.eclipse.winery.model.tosca.TEntityTemplate;
 import org.eclipse.winery.model.tosca.TEntityType;
 import org.eclipse.winery.model.tosca.TNodeTemplate;
 import org.eclipse.winery.model.tosca.TNodeType;
 import org.eclipse.winery.model.tosca.TRelationshipTemplate;
+import org.eclipse.winery.model.tosca.TTag;
 import org.eclipse.winery.model.tosca.TTopologyTemplate;
-import org.eclipse.winery.model.tosca.kvproperties.PropertyDefinitionKV;
+import org.eclipse.winery.model.tosca.extensions.kvproperties.PropertyDefinitionKV;
 import org.eclipse.winery.model.tosca.utils.ModelUtilities;
+import org.eclipse.winery.model.version.VersionSupport;
 import org.eclipse.winery.repository.backend.BackendUtils;
 import org.eclipse.winery.repository.backend.IRepository;
 import org.eclipse.winery.repository.backend.RepositoryFactory;
+import org.eclipse.winery.repository.backend.WineryVersionUtils;
 import org.eclipse.winery.repository.backend.filebased.NamespaceProperties;
 import org.eclipse.winery.repository.rest.RestUtils;
 import org.eclipse.winery.repository.rest.resources._support.AbstractComponentInstanceResourceContainingATopology;
@@ -86,6 +89,8 @@ public class TopologyTemplateResource {
 
     private final AbstractComponentInstanceResourceContainingATopology parent;
     private final String type;
+
+    private final IRepository requestRepository = RepositoryFactory.getRepository();
 
     /**
      * A topology template is always nested in a service template
@@ -114,7 +119,7 @@ public class TopologyTemplateResource {
         // at the topology modeler, jersey needs to have an absolute path
         URI repositoryURI = uriInfo.getBaseUri();
         location = location + "/?repositoryURL=";
-        location = location + Util.URLencode(repositoryURI.toString());
+        location = location + EncodingUtil.URLencode(repositoryURI.toString());
         ServiceTemplateId serviceTemplate = (ServiceTemplateId) this.parent.getId();
         location = location + "&ns=";
         location = location + serviceTemplate.getNamespace().getEncoded();
@@ -141,7 +146,7 @@ public class TopologyTemplateResource {
         "@return The JSON representation of the topology template <em>without</em> associated artifacts and without the parent service template")
     @Produces(MediaType.APPLICATION_JSON)
     // @formatter:on
-    public TTopologyTemplate getComponentInstanceJSON() {
+    public TTopologyTemplate getTopologyTempalte() {
         return this.topologyTemplate;
     }
 
@@ -156,7 +161,7 @@ public class TopologyTemplateResource {
         ServiceTemplateId otherServiceTemplateId = new ServiceTemplateId(otherServiceTemplateQName);
         ServiceTemplateId thisServiceTemplateId = (ServiceTemplateId) this.parent.getId();
         try {
-            BackendUtils.mergeTopologyTemplateAinTopologyTemplateB(otherServiceTemplateId, thisServiceTemplateId);
+            BackendUtils.mergeTopologyTemplateAinTopologyTemplateB(otherServiceTemplateId, thisServiceTemplateId, RepositoryFactory.getRepository());
         } catch (IOException e) {
             LOGGER.debug("Could not merge", e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e).build();
@@ -198,9 +203,20 @@ public class TopologyTemplateResource {
     public Response setModelJson(TTopologyTemplate topologyTemplate) throws Exception {
         ModelUtilities.patchAnyAttributes(topologyTemplate.getNodeTemplates());
         ModelUtilities.patchAnyAttributes(topologyTemplate.getRelationshipTemplates());
+        // FIXME patching the topology with the inputs and outputs stored on the server, so long as they are empty
+        //  this is necessary because the topologymodeler does not in any way interact with inputs and outputs and
+        //  thus does not store or include any information about them here
+        if (topologyTemplate.getInputs() == null) {
+            topologyTemplate.setInputs(this.parent.getTopology().getInputs());
+        }
+        if (topologyTemplate.getOutputs() == null) {
+            topologyTemplate.setOutputs(this.parent.getTopology().getOutputs());
+        }
+
         // the following method includes patching of the topology template (removing empty lists, ..)
         this.parent.setTopology(topologyTemplate, this.type);
-        return RestUtils.persist(this.parent);
+        requestRepository.putDefinition(parent.getId(), this.parent.getDefinitions());
+        return Response.noContent().build();
     }
 
     // @formatter:off
@@ -215,7 +231,7 @@ public class TopologyTemplateResource {
     @Produces( {MediaType.APPLICATION_XML, MediaType.TEXT_XML})
     // @formatter:on
     public Response getComponentInstanceXML() {
-        return RestUtils.getXML(TTopologyTemplate.class, this.topologyTemplate);
+        return RestUtils.getXML(TTopologyTemplate.class, this.topologyTemplate, requestRepository);
     }
 
     @Path("split/")
@@ -275,7 +291,7 @@ public class TopologyTemplateResource {
         Splitting splitting = new Splitting();
         String newComposedSolutionServiceTemplateId = compositionData.getTargetid();
         List<ServiceTemplateId> compositionServiceTemplateIDs = new ArrayList<>();
-        compositionData.getCspath().stream().forEach(entry -> {
+        compositionData.getCspath().forEach(entry -> {
             QName qName = QName.valueOf(entry);
             compositionServiceTemplateIDs.add(new ServiceTemplateId(qName.getNamespaceURI(), qName.getLocalPart(), false));
         });
@@ -327,8 +343,9 @@ public class TopologyTemplateResource {
             .filter(template -> template.getProperties() != null)
             .findFirst();
 
-        if (foundTemplate.isPresent() && Objects.nonNull(foundTemplate.get().getProperties().getKVProperties())) {
-            HashMap<String, String> oldKvs = foundTemplate.get().getProperties().getKVProperties();
+        if (foundTemplate.isPresent() && Objects.nonNull(foundTemplate.get().getProperties()) &&
+            Objects.nonNull(ModelUtilities.getPropertiesKV(foundTemplate.get()))) {
+            HashMap<String, String> oldKvs = ModelUtilities.getPropertiesKV(foundTemplate.get());
 
             QName qNameType = QName.valueOf(updateInfo.getNewComponentType());
             IRepository repository = RepositoryFactory.getRepository();
@@ -336,8 +353,7 @@ public class TopologyTemplateResource {
 
             if (Objects.nonNull(newNodeTypeVersion) && Objects.nonNull(newNodeTypeVersion.getWinerysPropertiesDefinition())) {
                 List<PropertyDefinitionKV> newKvs = newNodeTypeVersion.getWinerysPropertiesDefinition()
-                    .getPropertyDefinitionKVList()
-                    .getPropertyDefinitionKVs();
+                    .getPropertyDefinitions();
 
                 resolvedProperties = newKvs.stream()
                     .map(PropertyDefinitionKV::getKey)
@@ -376,47 +392,42 @@ public class TopologyTemplateResource {
     @Path("update")
     @Consumes(MediaType.APPLICATION_JSON)
     public TTopologyTemplate updateVersionOfNodeTemplate(UpdateInfo updateInfo) {
-        if (topologyTemplate.getNodeTemplate(updateInfo.getNodeTemplateId()).getProperties() != null) {
+        TTopologyTemplate localTemplate = updateInfo.getTopologyTemplate() == null ? this.topologyTemplate : updateInfo.getTopologyTemplate();
+
+        TNodeTemplate nodeTemplate = localTemplate.getNodeTemplate(updateInfo.getNodeTemplateId());
+        if (nodeTemplate != null && nodeTemplate.getProperties() != null) {
             Map<String, String> propertyMappings = new LinkedHashMap<>();
             updateInfo.getMappingList().forEach(
                 propertyMatching -> propertyMappings.put(propertyMatching.getOldKey(), propertyMatching.getNewKey())
             );
 
             LinkedHashMap<String, String> resultKvs = new LinkedHashMap<>();
-
-            topologyTemplate.getNodeTemplateOrRelationshipTemplate().stream()
-                .filter(template -> template.getId().equals(updateInfo.getNodeTemplateId()))
-                .filter(template -> template.getProperties() != null)
-                .findFirst()
-                .ifPresent(nodeTemplate -> {
-                    Map<String, String> oldKvs = nodeTemplate.getProperties().getKVProperties();
-                    oldKvs.forEach((key, value) -> {
-                        if (propertyMappings.containsKey(key)) {
-                            resultKvs.put(propertyMappings.get(key), value);
-                        }
-                        if (updateInfo.getResolvedList().contains(key)) {
-                            resultKvs.put(key, value);
-                        }
-                    });
-                    updateInfo.getNewList().forEach(key -> {
-                        if (!resultKvs.containsKey(key)) {
-                            resultKvs.put(key, "");
-                        }
-                    });
-
-                    TEntityTemplate.Properties oldProps = nodeTemplate.getProperties();
-                    oldProps.setAny(null);
-                    oldProps.setKVProperties(resultKvs);
+            Map<String, String> oldKvs = ModelUtilities.getPropertiesKV(nodeTemplate);
+            if (oldKvs != null) {
+                oldKvs.forEach((key, value) -> {
+                    if (propertyMappings.containsKey(key)) {
+                        resultKvs.put(propertyMappings.get(key), value);
+                    }
+                    if (updateInfo.getResolvedList().contains(key)) {
+                        resultKvs.put(key, value);
+                    }
                 });
+                updateInfo.getNewList().forEach(key -> {
+                    if (!resultKvs.containsKey(key)) {
+                        resultKvs.put(key, "");
+                    }
+                });
+                ModelUtilities.setPropertiesKV(nodeTemplate, resultKvs);
+            }
         }
 
-        BackendUtils.updateVersionOfNodeTemplate(this.topologyTemplate, updateInfo.getNodeTemplateId(), updateInfo.getNewComponentType());
+        BackendUtils.updateVersionOfNodeTemplate(localTemplate, updateInfo.getNodeTemplateId(), updateInfo.getNewComponentType());
 
         if (updateInfo.isSaveAfterUpdate()) {
-            RestUtils.persist(this.parent);
+            this.setModel(localTemplate);
         }
 
-        return this.topologyTemplate;
+        return localTemplate;
     }
 
     @POST
@@ -461,13 +472,25 @@ public class TopologyTemplateResource {
     public ArrayList<AvailableFeaturesApiData> getAvailableFeatures() {
         ArrayList<AvailableFeaturesApiData> apiData = new ArrayList<>();
 
-        EnhancementUtils.getAvailableFeaturesForTopology(this.topologyTemplate).forEach((nodeTemplateId, featuresMap) -> {
-            ArrayList<AvailableFeaturesApiData.Features> features = new ArrayList<>();
-            featuresMap.forEach(
-                (featureType, featureName) -> features.add(new AvailableFeaturesApiData.Features(featureType, featureName))
-            );
-            apiData.add(new AvailableFeaturesApiData(nodeTemplateId, features));
-        });
+        String deploymentTechnology = null;
+        if (this.parent.getElement() instanceof HasTags && ((HasTags) this.parent.getElement()).getTags() != null) {
+            for (TTag tag : ((HasTags) this.parent.getElement()).getTags().getTag()) {
+                // To enable the usage of "technology" and "technologies", we only check for "technolog"
+                if (tag.getName().toLowerCase().contains("deploymentTechnolog".toLowerCase())) {
+                    deploymentTechnology = tag.getValue();
+                    break;
+                }
+            }
+        }
+
+        EnhancementUtils.getAvailableFeaturesForTopology(this.topologyTemplate, deploymentTechnology)
+            .forEach((nodeTemplateId, featuresMap) -> {
+                ArrayList<AvailableFeaturesApiData.Features> features = new ArrayList<>();
+                featuresMap.forEach(
+                    (featureType, featureName) -> features.add(new AvailableFeaturesApiData.Features(featureType, featureName))
+                );
+                apiData.add(new AvailableFeaturesApiData(nodeTemplateId, features));
+            });
 
         return apiData;
     }
@@ -506,18 +529,20 @@ public class TopologyTemplateResource {
         Map<QName, List<WineryVersion>> versionElements = new HashMap<>();
 
         for (TNodeTemplate node : this.topologyTemplate.getNodeTemplates()) {
-            NodeTypeId nodeTypeId = new NodeTypeId(node.getType());
-            if (!versionElements.containsKey(nodeTypeId.getQName())) {
-                List<WineryVersion> versionList = BackendUtils.getAllVersionsOfOneDefinition(nodeTypeId).stream()
-                    .filter(wineryVersion -> {
-                        QName qName = VersionUtils.getDefinitionInTheGivenVersion(nodeTypeId, wineryVersion).getQName();
-                        NamespaceProperties namespaceProperties = repository.getNamespaceManager().getNamespaceProperties(qName.getNamespaceURI());
-                        return !(namespaceProperties.isGeneratedNamespace()
-                            || ModelUtilities.isFeatureType(qName, nodeTypes));
-                    })
-                    .collect(Collectors.toList());
+            if (nodeTypes.containsKey(node.getType())) {
+                NodeTypeId nodeTypeId = new NodeTypeId(node.getType());
+                if (!versionElements.containsKey(nodeTypeId.getQName())) {
+                    List<WineryVersion> versionList = WineryVersionUtils.getAllVersionsOfOneDefinition(nodeTypeId, repository).stream()
+                        .filter(wineryVersion -> {
+                            QName qName = VersionSupport.getDefinitionInTheGivenVersion(nodeTypeId, wineryVersion).getQName();
+                            NamespaceProperties namespaceProperties = repository.getNamespaceManager().getNamespaceProperties(qName.getNamespaceURI());
+                            return !(namespaceProperties.isGeneratedNamespace()
+                                || ModelUtilities.isFeatureType(qName, nodeTypes));
+                        })
+                        .collect(Collectors.toList());
 
-                versionElements.put(nodeTypeId.getQName(), versionList);
+                    versionElements.put(nodeTypeId.getQName(), versionList);
+                }
             }
         }
 
