@@ -14,8 +14,6 @@
 
 package org.eclipse.winery.repository.rest.resources.admin.types.che;
 
-import org.eclipse.winery.repository.rest.resources.admin.types.che.Runtime;
-
 public class WorkspaceResponse {
     public Runtime runtime;
 }
