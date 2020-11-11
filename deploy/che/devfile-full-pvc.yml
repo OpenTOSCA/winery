@@ -20,7 +20,6 @@ components:
           secure: "false"
           discoverable: "false"
           public: "true"
-    # mountSources: true
     referenceContent: |
       ---
       apiVersion: v1
