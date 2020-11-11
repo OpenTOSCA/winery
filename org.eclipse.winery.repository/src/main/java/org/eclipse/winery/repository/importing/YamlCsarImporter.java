@@ -20,11 +20,12 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Iterator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.eclipse.winery.model.converter.support.Namespaces;
@@ -67,6 +68,8 @@ public class YamlCsarImporter extends CsarImporter {
     private static final Logger LOGGER = LoggerFactory.getLogger(YamlCsarImporter.class);
 
     private final YamlRepository targetRepository;
+
+    private final Set<TImport> handledImports = new HashSet<>();
 
     public YamlCsarImporter(YamlRepository target) {
         super(target);
@@ -129,9 +132,8 @@ public class YamlCsarImporter extends CsarImporter {
         List<TExtensibleElements> componentInstanceList = defs.getServiceTemplateOrNodeTypeOrNodeTypeImplementation();
 
         for (final TExtensibleElements ci : componentInstanceList) {
-            if (ci instanceof org.eclipse.winery.model.tosca.TServiceTemplate &&
-                Objects.isNull(((org.eclipse.winery.model.tosca.TServiceTemplate) ci).getTopologyTemplate())
-            ) {
+            if (ci instanceof org.eclipse.winery.model.tosca.TServiceTemplate
+                && Objects.isNull(((org.eclipse.winery.model.tosca.TServiceTemplate) ci).getTopologyTemplate())) {
                 continue;
             }
 
@@ -297,22 +299,21 @@ public class YamlCsarImporter extends CsarImporter {
      * @param options  the set of options applicable while importing a CSAR
      */
     private void importImports(Path basePath, TOSCAMetaFile tmf, List<TImport> imports, final List<String> errors, CsarImportOptions options) throws IOException {
-        Iterator<TImport> iterator = imports.iterator();
-        while (iterator.hasNext()) {
-            TImport imp = iterator.next();
+        for (TImport imp : imports) {
+            if (handledImports.contains(imp)) {
+                continue;
+            }
+            handledImports.add(imp);
             String importType = imp.getImportType();
-            String loc = imp.getLocation();
-
+            String location = imp.getLocation();
             if (Namespaces.TOSCA_YAML_NS.equals(importType)) {
-                Path defsPath = basePath.resolve(loc);
+                Path defsPath = basePath.resolve(location);
                 // fallback for older CSARs, where the location is given from the root
                 if (Files.exists(defsPath)) {
                     this.importDefinitions(tmf, defsPath, errors, options);
                     // imports of definitions don't have to be kept as these are managed by Winery
-
                 }
             }
-            iterator.remove();
         }
     }
 

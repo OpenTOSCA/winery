@@ -1214,9 +1214,10 @@ public class FromCanonical {
         if (Objects.isNull(node)) {
             return new HashMap<>();
         }
+        String nodeFullName = this.getFullName(node);        
         YTDataType.Builder builder = convert(node, new YTDataType.Builder(), TDataType.class);
         return Collections.singletonMap(
-            node.getIdFromIdOrNameField(),
+            nodeFullName,
             builder.setConstraints(convertConstraints(node.getConstraints())).build()
         );
     }

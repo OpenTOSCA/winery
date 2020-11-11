@@ -1083,7 +1083,8 @@ public class ToCanonical {
         return builder.build();
     }
 
-    public TDataType convert(YTDataType node, String name) {
+    public TDataType convert(YTDataType node, String id) {
+        String name = fixNamespaceDuplication(id, node.getMetadata().get("targetNamespace"));
         TDataType.Builder builder = new TDataType.Builder(name)
             // set specific fields 
             .addConstraints(convertList(node.getConstraints(), this::convert));
@@ -1098,7 +1099,7 @@ public class ToCanonical {
             namespace = result.getTargetNamespace();
         }
         if (namespace == null) {
-            LOGGER.warn("Could not determine namespace for DataType {}. Imports may be incorrect!", name);
+            LOGGER.warn("Could not determine namespace for DataType {}. Imports may be incorrect!", id);
             return result;
         }
         TImport importDefinition = new TImport.Builder(Namespaces.XML_NS)
