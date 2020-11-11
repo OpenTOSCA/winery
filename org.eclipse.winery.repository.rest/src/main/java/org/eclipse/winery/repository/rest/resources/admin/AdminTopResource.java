@@ -37,14 +37,14 @@ import org.eclipse.winery.repository.backend.consistencycheck.ConsistencyChecker
 import org.eclipse.winery.repository.backend.consistencycheck.ConsistencyCheckerConfiguration;
 import org.eclipse.winery.repository.backend.consistencycheck.ConsistencyCheckerVerbosity;
 import org.eclipse.winery.repository.backend.consistencycheck.ConsistencyErrorCollector;
-import org.eclipse.winery.repository.rest.resources.admin.types.CheResponse;
+import org.eclipse.winery.repository.rest.resources.admin.types.che.CheResponse;
 import org.eclipse.winery.repository.rest.resources.admin.types.ConstraintTypesManager;
-import org.eclipse.winery.repository.rest.resources.admin.types.Machine;
+import org.eclipse.winery.repository.rest.resources.admin.types.che.Machine;
 import org.eclipse.winery.repository.rest.resources.admin.types.PlanLanguagesManager;
 import org.eclipse.winery.repository.rest.resources.admin.types.PlanTypesManager;
 import org.eclipse.winery.repository.rest.resources.admin.types.RepositoryConfigurationResponse;
-import org.eclipse.winery.repository.rest.resources.admin.types.Server;
-import org.eclipse.winery.repository.rest.resources.admin.types.WorkspaceResponse;
+import org.eclipse.winery.repository.rest.resources.admin.types.che.Server;
+import org.eclipse.winery.repository.rest.resources.admin.types.che.WorkspaceResponse;
 import org.eclipse.winery.repository.rest.resources.apiData.OAuthStateAndCodeApiData;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;

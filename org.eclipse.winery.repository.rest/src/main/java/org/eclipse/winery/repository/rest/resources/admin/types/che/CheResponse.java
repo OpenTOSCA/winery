@@ -11,11 +11,12 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR Apache-2.0
  *******************************************************************************/
-package org.eclipse.winery.repository.rest.resources.admin.types;
+package org.eclipse.winery.repository.rest.resources.admin.types.che;
 
-import java.util.Map;
+public class CheResponse {
+    public String url;
 
-public class Machine {
-    public Map<String, String> attributes;
-    public Map<String, Server> servers;
+    public CheResponse(String url) {
+        this.url = url;
+    }
 }

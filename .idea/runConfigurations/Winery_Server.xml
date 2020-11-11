@@ -20,6 +20,9 @@
     <RunnerSettings RunnerId="Debug">
       <option name="DEBUG_PORT" value="49380" />
     </RunnerSettings>
+    <RunnerSettings RunnerId="Debug with VisualVM">
+      <option name="DEBUG_PORT" value="46613" />
+    </RunnerSettings>
     <ConfigurationWrapper VM_VAR="JAVA_OPTS" RunnerId="Cover">
       <option name="USE_ENV_VARIABLES" value="true" />
       <STARTUP>
@@ -49,8 +52,68 @@
         <option name="VM_PARAMETERS" value="" />
         <option name="PROGRAM_PARAMETERS" value="" />
       </SHUTDOWN>
+      <EnvironmentVariables>
+        <option name="NAME" value="CHE_MACHINE_TOKEN" />
+        <option name="VALUE" value="eyJhbGciOiJSUzI1NiIsImtpbmQiOiJtYWNoaW5lX3Rva2VuIiwia2lkIjoid29ya3NwYWNlMmp6dWo5ZTNkaGZ2aHNvcyJ9.eyJ3c2lkIjoid29ya3NwYWNlMmp6dWo5ZTNkaGZ2aHNvcyIsInVpZCI6IjJmY2Q5MDEzLWQ2YjYtNDMxMi1iMjY5LWUwOTY0NTViYjIxNSIsImF1ZCI6IndvcmtzcGFjZTJqenVqOWUzZGhmdmhzb3MiLCJuYmYiOi0xLCJ1bmFtZSI6Im5mb2RlIiwiaXNzIjoid3NtYXN0ZXIiLCJleHAiOjE2MzU4MDkwNzYsImlhdCI6MTYwNDI3MzA3NiwianRpIjoiNmJlOTc4YzEtYjJlOC00OThiLWFhZDAtZTgyZGI1ZjI1YjM0In0.oOf_O9v6LZRl7XkMvwPcYkeMWnrUwi_OJicJRQa_tbHmrx9KX7mPGcsf79dJWjw6kQ7zMyclbnnfMqkvIXQnFMKEsfSAxzHhegCvLkNfa8Pbm-0V0abgx4BRrLaanQGxyBYtoLtQLV15o3bi-1CGDllFFRQIg0KSPNkxyXuRfPwYjTJ7kf-oS4tbXe8KVbcaTUZrxDbbJPFIoDBkbh_KfJ6ms_hDC9F1x7wOLkaep8Xewk6oNMS3iyd9_xjGsTy-r1M0iSmqVDFNamwMx6chzhisNQXBRdbZuImAW8cO-1uDGRbiqNdH3IlxXAvEDj_JJe4-oBwXAw1L8WpGhAcH4A" />
+        <option name="IS_PREDEFINED" value="false" />
+      </EnvironmentVariables>
+      <EnvironmentVariables>
+        <option name="NAME" value="CHE_API" />
+        <option name="VALUE" value="https://che.openshift.io/api" />
+        <option name="IS_PREDEFINED" value="false" />
+      </EnvironmentVariables>
+      <EnvironmentVariables>
+        <option name="NAME" value="CHE_WORKSPACE_ID" />
+        <option name="VALUE" value="workspace2jzuj9e3dhfvhsos" />
+        <option name="IS_PREDEFINED" value="false" />
+      </EnvironmentVariables>
+    </ConfigurationWrapper>
+    <ConfigurationWrapper VM_VAR="JAVA_OPTS" RunnerId="Debug with VisualVM">
+      <option name="USE_ENV_VARIABLES" value="true" />
+      <STARTUP>
+        <option name="USE_DEFAULT" value="true" />
+        <option name="SCRIPT" value="" />
+        <option name="VM_PARAMETERS" value="" />
+        <option name="PROGRAM_PARAMETERS" value="" />
+      </STARTUP>
+      <SHUTDOWN>
+        <option name="USE_DEFAULT" value="true" />
+        <option name="SCRIPT" value="" />
+        <option name="VM_PARAMETERS" value="" />
+        <option name="PROGRAM_PARAMETERS" value="" />
+      </SHUTDOWN>
     </ConfigurationWrapper>
     <ConfigurationWrapper VM_VAR="JAVA_OPTS" RunnerId="Run">
+      <option name="USE_ENV_VARIABLES" value="true" />
+      <STARTUP>
+        <option name="USE_DEFAULT" value="true" />
+        <option name="SCRIPT" value="" />
+        <option name="VM_PARAMETERS" value="" />
+        <option name="PROGRAM_PARAMETERS" value="" />
+      </STARTUP>
+      <SHUTDOWN>
+        <option name="USE_DEFAULT" value="true" />
+        <option name="SCRIPT" value="" />
+        <option name="VM_PARAMETERS" value="" />
+        <option name="PROGRAM_PARAMETERS" value="" />
+      </SHUTDOWN>
+      <EnvironmentVariables>
+        <option name="NAME" value="CHE_MACHINE_TOKEN" />
+        <option name="VALUE" value="eyJhbGciOiJSUzI1NiIsImtpbmQiOiJtYWNoaW5lX3Rva2VuIiwia2lkIjoid29ya3NwYWNlMmp6dWo5ZTNkaGZ2aHNvcyJ9.eyJ3c2lkIjoid29ya3NwYWNlMmp6dWo5ZTNkaGZ2aHNvcyIsInVpZCI6IjJmY2Q5MDEzLWQ2YjYtNDMxMi1iMjY5LWUwOTY0NTViYjIxNSIsImF1ZCI6IndvcmtzcGFjZTJqenVqOWUzZGhmdmhzb3MiLCJuYmYiOi0xLCJ1bmFtZSI6Im5mb2RlIiwiaXNzIjoid3NtYXN0ZXIiLCJleHAiOjE2MzU4MDkwNzYsImlhdCI6MTYwNDI3MzA3NiwianRpIjoiNmJlOTc4YzEtYjJlOC00OThiLWFhZDAtZTgyZGI1ZjI1YjM0In0.oOf_O9v6LZRl7XkMvwPcYkeMWnrUwi_OJicJRQa_tbHmrx9KX7mPGcsf79dJWjw6kQ7zMyclbnnfMqkvIXQnFMKEsfSAxzHhegCvLkNfa8Pbm-0V0abgx4BRrLaanQGxyBYtoLtQLV15o3bi-1CGDllFFRQIg0KSPNkxyXuRfPwYjTJ7kf-oS4tbXe8KVbcaTUZrxDbbJPFIoDBkbh_KfJ6ms_hDC9F1x7wOLkaep8Xewk6oNMS3iyd9_xjGsTy-r1M0iSmqVDFNamwMx6chzhisNQXBRdbZuImAW8cO-1uDGRbiqNdH3IlxXAvEDj_JJe4-oBwXAw1L8WpGhAcH4A" />
+        <option name="IS_PREDEFINED" value="false" />
+      </EnvironmentVariables>
+      <EnvironmentVariables>
+        <option name="NAME" value="CHE_API" />
+        <option name="VALUE" value="https://che.openshift.io/api" />
+        <option name="IS_PREDEFINED" value="false" />
+      </EnvironmentVariables>
+      <EnvironmentVariables>
+        <option name="NAME" value="CHE_WORKSPACE_ID" />
+        <option name="VALUE" value="workspace2jzuj9e3dhfvhsos" />
+        <option name="IS_PREDEFINED" value="false" />
+      </EnvironmentVariables>
+    </ConfigurationWrapper>
+    <ConfigurationWrapper VM_VAR="JAVA_OPTS" RunnerId="Run with VisualVM">
       <option name="USE_ENV_VARIABLES" value="true" />
       <STARTUP>
         <option name="USE_DEFAULT" value="true" />

@@ -65,7 +65,9 @@ export class InstanceHeaderComponent implements OnInit {
 
     constructor(private router: Router, public sharedData: InstanceService,
                 private configurationService: WineryRepositoryConfigurationService,
-                private modalService: BsModalService, private notify: WineryNotificationService, private che: CheService) {
+                private modalService: BsModalService,
+                private notify: WineryNotificationService,
+                private che: CheService) {
     }
 
     ngOnInit(): void {

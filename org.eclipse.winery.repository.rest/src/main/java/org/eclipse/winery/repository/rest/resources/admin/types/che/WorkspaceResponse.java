@@ -11,10 +11,11 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR Apache-2.0
  *******************************************************************************/
-package org.eclipse.winery.repository.rest.resources.admin.types;
 
-import java.util.Map;
+package org.eclipse.winery.repository.rest.resources.admin.types.che;
 
-public class Runtime {
-    public Map<String, Machine> machines;
+import org.eclipse.winery.repository.rest.resources.admin.types.che.Runtime;
+
+public class WorkspaceResponse {
+    public Runtime runtime;
 }
