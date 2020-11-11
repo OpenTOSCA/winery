@@ -19,7 +19,6 @@ import org.eclipse.winery.model.tosca.TTopologyTemplate;
 import org.eclipse.winery.repository.backend.RepositoryFactory;
 import org.eclipse.winery.repository.rest.resources.AbstractResourceTest;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -203,7 +202,7 @@ public class TopologyTemplateResourceTest extends AbstractResourceTest {
 
     @Test
     public void getAvailableFeaturesNoDeploymentTechnologyAnnotated() throws Exception {
-        this.setRevisionTo("9acae9f180a9516dc3fa54c2fd92d379e516252c");
+        this.setRevisionTo("origin/plain");
         this.assertGet("servicetemplates/http%253A%252F%252Fopentosca.org%252Fadd%252Fmanagement%252Fto%252Finstances%252Fservicetemplates/STWithBasicManagementOnly_noDeplTech-w1-wip1/topologytemplate/availablefeatures",
             "servicetemplates/topologytemplates/availableFeatures.json");
     }

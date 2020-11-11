@@ -143,7 +143,7 @@ public abstract class TEntityTemplate extends HasId implements HasType, HasName 
         , include = JsonTypeInfo.As.EXTERNAL_PROPERTY
         , property = "propertyType"
         , use = JsonTypeInfo.Id.NAME)
-    @JsonSubTypes({
+    @JsonSubTypes( {
         @JsonSubTypes.Type(value = XmlProperties.class, name = "XML"),
         @JsonSubTypes.Type(value = WineryKVProperties.class, name = "KV"),
         @JsonSubTypes.Type(value = YamlProperties.class, name = "YAML")
@@ -226,7 +226,7 @@ public abstract class TEntityTemplate extends HasId implements HasType, HasName 
     // Xml transformation is done by XmlJavaTypeAdapter, thus no XML configuration whatsoever
     @NonNullByDefault
     public static class YamlProperties extends Properties {
-        
+
         @JsonInclude()// defaults to always include to override ObjectMapper's NON_NULL specification
         private LinkedHashMap<String, Object> properties = new LinkedHashMap<>();
 
@@ -238,7 +238,7 @@ public abstract class TEntityTemplate extends HasId implements HasType, HasName 
             this.properties = properties;
         }
     }
-    
+
     @XmlAccessorType(XmlAccessType.FIELD)
     @XmlType(name = "", propOrder = {
         "propertyConstraint"

@@ -560,6 +560,18 @@ public abstract class ModelUtilities {
             }
         }
 
+        // add properties
+        WinerysPropertiesDefinition propDef = nodeType.getWinerysPropertiesDefinition();
+        if (propDef != null && propDef.getPropertyDefinitions() != null) {
+            Map<String, String> properties = new HashMap<>();
+            propDef.getPropertyDefinitions().forEach(propertyDefinition -> {
+                properties.put(propertyDefinition.getKey(), propertyDefinition.getDefaultValue());
+            });
+            TEntityTemplate.WineryKVProperties tProps = new TEntityTemplate.WineryKVProperties();
+            tProps.setKVProperties(new LinkedHashMap<>(properties));
+            nodeTemplate.setProperties(tProps);
+        }
+
         return nodeTemplate;
     }
 
@@ -827,7 +839,8 @@ public abstract class ModelUtilities {
                     || list.stream().anyMatch(
                     // To enable the usage of "technology" and "technologies", we only check for "technolog"
                     tag -> tag.getName().toLowerCase().contains("deploymentTechnolog".toLowerCase())
-                        && tag.getValue().toLowerCase().contains(deploymentTechnology.toLowerCase()))) {
+                        && (tag.getValue().toLowerCase().contains(deploymentTechnology.toLowerCase())
+                        || "*".equals(tag.getValue())))) {
                     list.stream()
                         .filter(tag -> "feature".equals(tag.getName().toLowerCase()))
                         .findFirst()
