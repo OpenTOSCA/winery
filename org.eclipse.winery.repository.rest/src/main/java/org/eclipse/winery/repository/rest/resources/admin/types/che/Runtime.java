@@ -15,8 +15,6 @@ package org.eclipse.winery.repository.rest.resources.admin.types.che;
 
 import java.util.Map;
 
-import org.eclipse.winery.repository.rest.resources.admin.types.che.Machine;
-
 public class Runtime {
     public Map<String, Machine> machines;
 }
