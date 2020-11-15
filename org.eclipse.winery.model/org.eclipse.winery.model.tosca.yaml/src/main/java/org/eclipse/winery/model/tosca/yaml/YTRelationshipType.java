@@ -130,10 +130,9 @@ public class YTRelationshipType extends YTEntityType {
             }
 
             if (this.validTargetTypes == null) {
-                this.validTargetTypes = new ArrayList<>(validTargetTypes);
-            } else {
-                this.validTargetTypes.addAll(validTargetTypes);
+                this.validTargetTypes = new ArrayList<>();
             }
+            this.validTargetTypes.addAll(validTargetTypes);
 
             return this;
         }

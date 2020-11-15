@@ -75,7 +75,8 @@ export class InstanceService {
             case ToscaTypes.RelationshipType:
                 if (this.configurationService.isYaml()) {
                     subMenu = [SubMenuItems.readme, SubMenuItems.documentation, SubMenuItems.license, SubMenuItems.appearance,
-                        SubMenuItems.files, SubMenuItems.interfacedefinitions, SubMenuItems.propertiesDefinition, SubMenuItems.inheritance];
+                        SubMenuItems.files, SubMenuItems.interfacedefinitions, SubMenuItems.propertiesDefinition, SubMenuItems.inheritance,
+                        SubMenuItems.validTargetTypes];
                 } else {
                     subMenu = [SubMenuItems.readme, SubMenuItems.documentation, SubMenuItems.license, SubMenuItems.appearance, SubMenuItems.instanceStates,
                         SubMenuItems.sourceInterfaces, SubMenuItems.interfaces, SubMenuItems.targetInterfaces, SubMenuItems.validSourcesAndTargets,
@@ -103,7 +104,7 @@ export class InstanceService {
             case ToscaTypes.CapabilityType:
                 if (this.configurationService.isYaml()) {
                     subMenu = [SubMenuItems.readme, SubMenuItems.license, SubMenuItems.propertiesDefinition, SubMenuItems.inheritance,
-                        SubMenuItems.capabilityTypeConstraints, SubMenuItems.documentation];
+                        SubMenuItems.validSourceTypes, SubMenuItems.documentation];
                 } else {
                     subMenu = [SubMenuItems.readme, SubMenuItems.license, SubMenuItems.propertiesDefinition, SubMenuItems.inheritance,
                         SubMenuItems.documentation, SubMenuItems.xml];

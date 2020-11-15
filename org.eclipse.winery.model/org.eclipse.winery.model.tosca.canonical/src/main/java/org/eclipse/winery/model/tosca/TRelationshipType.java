@@ -39,7 +39,8 @@ import org.eclipse.jdt.annotation.Nullable;
     "targetInterfaces",
     "interfaceDefinitions",
     "validSource",
-    "validTarget"
+    "validTarget",
+    "validTargetList"
 })
 public class TRelationshipType extends TEntityType {
 
@@ -57,9 +58,14 @@ public class TRelationshipType extends TEntityType {
     protected TRelationshipType.ValidSource validSource;
     @XmlElement(name = "ValidTarget")
     protected TRelationshipType.ValidTarget validTarget;
+    // related to YAML 1.3
+    // https://docs.oasis-open.org/tosca/TOSCA-Simple-Profile-YAML/v1.3/os/TOSCA-Simple-Profile-YAML-v1.3-os.html#DEFN_ENTITY_RELATIONSHIP_TYPE
+    @XmlElement(name = "ValidTargetList")
+    protected List<QName> validTargetList;
 
     @Deprecated // used for XML deserialization of API request content
-    public TRelationshipType() { }
+    public TRelationshipType() {
+    }
 
     public TRelationshipType(Builder builder) {
         super(builder);
@@ -70,7 +76,7 @@ public class TRelationshipType extends TEntityType {
         this.interfaceDefinitions = builder.interfaceDefinitions;
         this.validSource = builder.validSource;
         this.validTarget = builder.validTarget;
-        this.interfaceDefinitions = builder.interfaceDefinitions;
+        this.validTargetList = builder.validTargetList;
     }
 
     @Override
@@ -152,6 +158,15 @@ public class TRelationshipType extends TEntityType {
         this.validTarget = value;
     }
 
+    @Nullable
+    public List<QName> getValidTargetList() {
+        return validTargetList;
+    }
+
+    public void setValidTargetList(List<QName> validTargetList) {
+        this.validTargetList = validTargetList;
+    }
+
     @Override
     public void accept(Visitor visitor) {
         visitor.visit(this);
@@ -227,6 +242,7 @@ public class TRelationshipType extends TEntityType {
         private List<TInterfaceDefinition> interfaceDefinitions;
         private ValidSource validSource;
         private ValidTarget validTarget;
+        private List<QName> validTargetList;
 
         public Builder(String name) {
             super(name);
@@ -279,6 +295,32 @@ public class TRelationshipType extends TEntityType {
             TRelationshipType.ValidTarget tmp = new TRelationshipType.ValidTarget();
             tmp.setTypeRef(validTarget);
             return setValidTarget(tmp);
+        }
+
+        public Builder setValidTargetList(List<QName> validTargetList) {
+            this.validTargetList = validTargetList;
+            return this;
+        }
+
+        public Builder addValidTargetsToList(List<QName> validTargetList) {
+            if (validTargetList == null) {
+                return this;
+            }
+            if (this.validTargetList == null) {
+                this.validTargetList = validTargetList;
+            } else {
+                this.validTargetList.addAll(validTargetList);
+            }
+            return this;
+        }
+
+        public Builder addValidTargetToList(QName validTarget) {
+            if (validTarget == null) {
+                return this;
+            }
+
+            this.validTargetList.add(validTarget);
+            return this;
         }
 
         public Builder addInterfaces(TInterfaces interfaces) {

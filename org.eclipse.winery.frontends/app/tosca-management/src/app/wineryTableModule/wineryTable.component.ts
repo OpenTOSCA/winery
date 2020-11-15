@@ -11,7 +11,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR Apache-2.0
  *******************************************************************************/
-import { Component, DoCheck, EventEmitter, Input, IterableDiffer, IterableDiffers, OnInit, Output, ViewChild } from '@angular/core';
+import {
+    Component, DoCheck, EventEmitter, Input, IterableDiffer, IterableDiffers, OnInit, Output, ViewChild
+} from '@angular/core';
 
 /**
  * This component provides an easy and fast way to use the ng2-table with further modifications
@@ -187,7 +189,9 @@ export class WineryTableComponent implements OnInit, DoCheck {
         const filteredData = this.changeFilter(this.data, this.config);
         const sortedData = this.changeSort(filteredData, this.config);
         this.rows = (page && config.paging ? this.changePage(page, sortedData) : sortedData)
-            .map((r: any) => { return this.applyDisplay(r); });
+            .map((r: any) => {
+                return this.applyDisplay(r);
+            });
         this.length = sortedData.length;
     }
 
@@ -265,13 +269,7 @@ export class WineryTableComponent implements OnInit, DoCheck {
     }
 
     onCellClick(data: WineryRowData) {
-        // account for pagination to get the actual data
-        const rawIndex = this.rows.indexOf(data.row);
-        const index = this.page ? (this.page - 1) * this.itemsPerPage + rawIndex : rawIndex;
-
-        this.selectedRow = rawIndex;
-        // monkey-patch the data row
-        data.row = this.data[index];
+        this.selectedRow = this.rows.indexOf(data.row);
         this.cellSelected.emit(data);
         this.currentSelected = data.row;
         this.refreshRowHighlighting();

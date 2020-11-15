@@ -1,5 +1,5 @@
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ~ Copyright (c) 2019-2020 Contributors to the Eclipse Foundation
+  ~ Copyright (c) 2020 Contributors to the Eclipse Foundation
   ~
   ~ See the NOTICE file(s) distributed with this work for additional
   ~ information regarding copyright ownership.
@@ -11,7 +11,7 @@
   ~
   ~ SPDX-License-Identifier: EPL-2.0 OR Apache-2.0
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-<div [class.hidden]="!loading">
+<div *ngIf="loading" style="margin-top: 179px">
     <winery-loader></winery-loader>
 </div>
 <div *ngIf="!loading">
@@ -21,26 +21,23 @@
             Save
         </button>
     </div>
-
     <winery-table [columns]="columns"
                   [data]="validSourceTypes?.nodes"
                   (addBtnClicked)="onAddClick()"
                   (removeBtnClicked)="onRemoveClicked($event)">
     </winery-table>
-
 </div>
-
-
 <ng-template #addModal>
-    <winery-modal-header title="Add {{title}}" [modalRef]="addModalRef">
+    <winery-modal-header title="Add valid target types" [modalRef]="addModalRef">
     </winery-modal-header>
     <winery-modal-body>
         <form>
             <div class="form-group">
-                <label for="validNodeTypes" class="control-label">Node Types</label>
-                <ng-select id="validNodeTypes"
+                <label for="validTargetTypes" class="control-label">Capability Types</label>
+                <ng-select #select
+                           id="validTargetTypes"
                            [disabled]="!sharedData?.currentVersion?.editable"
-                           [items]="allPossibleValidTypes"
+                           [items]="sortedValidTypes"
                            (selected)="onSelectedValueChanged($event)"
                            [active]="initialActiveItem">
                 </ng-select>

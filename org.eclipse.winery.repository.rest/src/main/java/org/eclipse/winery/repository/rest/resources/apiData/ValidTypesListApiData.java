@@ -20,16 +20,19 @@ import java.util.stream.Collectors;
 
 import javax.xml.namespace.QName;
 
-public class ValidSourceTypesApiData {
+/***
+ * used for valid source and target types
+ */
+public class ValidTypesListApiData {
     private List<QNameApiData> nodes;
 
-    public ValidSourceTypesApiData() {
+    public ValidTypesListApiData() {
+
     }
 
-    public ValidSourceTypesApiData(List<QName> qNames) {
+    public ValidTypesListApiData(List<QName> qNames) {
         if (qNames != null) {
-            this.nodes = qNames
-                .stream()
+            this.nodes = qNames.stream()
                 .map(QNameApiData::fromQName)
                 .collect(Collectors.toList());
         } else {
@@ -39,6 +42,10 @@ public class ValidSourceTypesApiData {
 
     public List<QNameApiData> getNodes() {
         return nodes;
+    }
+
+    public List<QName> asQNames() {
+        return nodes.stream().map(QNameApiData::asQName).collect(Collectors.toList());
     }
 
     public void setNodes(List<QNameApiData> nodes) {

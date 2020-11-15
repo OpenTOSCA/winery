@@ -883,6 +883,16 @@ public interface IRepository extends IWineryRepositoryCommon {
             }
         }
 
+        List<QName> validTargetList = relationshipType.getValidTargetList();
+        if (validTargetList != null) {
+            for (QName typeRef : validTargetList) {
+                CapabilityTypeId capId = new CapabilityTypeId(typeRef);
+                if (this.exists(capId)) {
+                    ids.add(capId);
+                }
+            }
+        }
+
         TEntityType.PropertiesDefinition properties = relationshipType.getProperties();
         if (Objects.nonNull(properties)) {
             if (properties instanceof TEntityType.XmlElementDefinition
