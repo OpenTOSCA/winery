@@ -33,7 +33,7 @@ export class QName {
         const regex = /\{(.*?)\}(.*)/g;
         const res = regex.exec(this._qName);
 
-        if (res.length !== 3) {
+        if (!res || res.length !== 3) {
             throw new Error();
         }
         this._nameSpace = res[1];

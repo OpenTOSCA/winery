@@ -487,19 +487,9 @@ public class FromCanonical {
             nodeFullName,
             convert(node, new YTRelationshipType.Builder(), TRelationshipType.class)
                 .addInterfaces(convert(node.getInterfaceDefinitions()))
-                .addValidTargetTypes(convertTargets(node.getValidSource(), node.getValidTarget()))
+                .setValidTargetTypes(node.getValidTargetList())
                 .build()
         );
-    }
-
-    private List<QName> convertTargets(TRelationshipType.ValidSource validSource, TRelationshipType.ValidTarget validTarget) {
-        if (validSource != null && validTarget != null) {
-            List<QName> output = new ArrayList<>();
-            output.add(new QName(validSource.getTypeRef().getNamespaceURI(), validSource.getTypeRef().getLocalPart()));
-            output.add(new QName(validTarget.getTypeRef().getNamespaceURI(), validSource.getTypeRef().getLocalPart()));
-            return output;
-        }
-        return null;
     }
 
     public Map<String, YTInterfaceDefinition> convert(TInterfaces node, TRelationshipTypeImplementation implementation) {

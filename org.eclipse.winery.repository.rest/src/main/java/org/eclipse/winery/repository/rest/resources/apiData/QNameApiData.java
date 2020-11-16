@@ -14,6 +14,8 @@
 
 package org.eclipse.winery.repository.rest.resources.apiData;
 
+import java.util.Objects;
+
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.namespace.QName;
 
@@ -42,5 +44,19 @@ public class QNameApiData {
         result.namespace = original.getNamespaceURI();
 
         return result;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        QNameApiData that = (QNameApiData) o;
+        return localname.equals(that.localname) &&
+            namespace.equals(that.namespace);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(localname, namespace);
     }
 }

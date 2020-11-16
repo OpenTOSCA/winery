@@ -659,7 +659,7 @@ public class YamlRepository extends AbstractFileBasedRepository {
             LOGGER.error("Error converting service template. Reason: {}", e.getMessage(), e);
         }
     }
-    
+
     /**
      * Reads xml definition input stream converts it to yaml service template and writes it to input stream
      *
@@ -938,6 +938,7 @@ public class YamlRepository extends AbstractFileBasedRepository {
         oldRelationshipType.setDerivedFrom(newRelationshipType.getDerivedFrom());
         oldRelationshipType.setDescription(newRelationshipType.getDescription());
         oldRelationshipType.setInterfaces(newRelationshipType.getInterfaces());
+        oldRelationshipType.setValidTargetTypes(newRelationshipType.getValidTargetTypes());
         oldData.getRelationshipTypes().entrySet().iterator().next().setValue(oldRelationshipType);
         return oldData;
     }

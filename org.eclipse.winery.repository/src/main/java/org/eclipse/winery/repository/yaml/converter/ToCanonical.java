@@ -781,8 +781,7 @@ public class ToCanonical {
     }
 
     /**
-     * Converts TOSCA YAML RelationshipTypes to TOSCA XML RelationshipTypes Additional element valid_target_types
-     * (specifying Capability Types) is not converted
+     * Converts TOSCA YAML RelationshipTypes to TOSCA XML RelationshipTypes
      *
      * @param node TOSCA YAML RelationshipType
      * @return TOSCA XML RelationshipType
@@ -797,8 +796,10 @@ public class ToCanonical {
             .addSourceInterfaces(convert(node.getInterfaces(), "SourceInterfaces"))
             .addTargetInterfaces(convert(node.getInterfaces(), "TargetInterfaces"))
             .setInterfaceDefinitions(convert(node.getInterfaces()))
-            .setValidSource(convertValidTargetSource(node.getValidTargetTypes(), true))
+            // yaml Relationship Types do not contain valid sources
+            //.setValidSource(convertValidTargetSource(node.getValidTargetTypes(), true))
             .setValidTarget(convertValidTargetSource(node.getValidTargetTypes(), false))
+            .setValidTargetList(node.getValidTargetTypes())
             .build();
         // convertRelationshipTypeImplementation(node.getInterfaces(), id, node.getMetadata().get("targetNamespace"));
         return output;
