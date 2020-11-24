@@ -11,11 +11,10 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR Apache-2.0
  *******************************************************************************/
-
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { Subject, Subscription } from 'rxjs';
 import { KeyValueItem } from '../../../../../tosca-management/src/app/model/keyValueItem';
-import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { debounceTime } from 'rxjs/operators';
 import { Utils } from '../../../../../tosca-management/src/app/wineryUtils/utils';
 
 @Component({
@@ -28,24 +27,15 @@ export class KvPropertiesComponent implements OnInit, OnDestroy {
 
     @Output() propertyEdited: EventEmitter<KeyValueItem> = new EventEmitter<KeyValueItem>();
 
-    properties: Subject<string> = new Subject<string>();
-    keySubject: Subject<string> = new Subject<string>();
-
-    // local storage of the edited key for outgoing events
-    key: string;
+    debouncer: Subject<any> = new Subject<any>();
     subscriptions: Array<Subscription> = [];
 
     ngOnInit(): void {
-        // find out which row was edited by key
-        this.subscriptions.push(this.keySubject.pipe(debounceTime(200), distinctUntilChanged())
-            .subscribe(key => {
-                this.key = key;
-            }));
-        this.subscriptions.push(this.properties.pipe(debounceTime(300), distinctUntilChanged())
-            .subscribe(propertyValue => {
+        this.subscriptions.push(this.debouncer.pipe(debounceTime(50))
+            .subscribe(target => {
                 this.propertyEdited.emit({
-                    key: this.key,
-                    value: propertyValue,
+                    key: target.name,
+                    value: target.value,
                 });
             }));
     }
@@ -56,5 +46,9 @@ export class KvPropertiesComponent implements OnInit, OnDestroy {
 
     isEmpty(): boolean {
         return !this.nodeProperties || Utils.isEmpty(this.nodeProperties);
+    }
+
+    keyup(target: any): void {
+        this.debouncer.next(target);
     }
 }

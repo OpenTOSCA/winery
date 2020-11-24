@@ -21,8 +21,6 @@ import { JsPlumbService } from '../services/jsPlumb.service';
 import { PropertyDefinitionType } from '../models/enums';
 import { KeyValueItem } from '../../../../tosca-management/src/app/model/keyValueItem';
 import { TNodeTemplate, TRelationshipTemplate } from '../models/ttopology-template';
-import { isNullOrUndefined } from 'util';
-import { WineryRepositoryConfigurationService } from '../../../../tosca-management/src/app/wineryFeatureToggleModule/WineryRepositoryConfiguration.service';
 
 @Component({
     selector: 'winery-properties',
@@ -46,9 +44,7 @@ export class PropertiesComponent implements OnInit, OnChanges, OnDestroy {
 
     constructor(private $ngRedux: NgRedux<IWineryState>,
                 private actions: WineryActions,
-                private jsPlumbService: JsPlumbService,
-                private repoConfiguration: WineryRepositoryConfigurationService,
-                ) {
+                private jsPlumbService: JsPlumbService) {
     }
 
     /**
@@ -87,7 +83,9 @@ export class PropertiesComponent implements OnInit, OnChanges, OnDestroy {
             this.skipUpdate = false;
             return;
         }
-        const propertyData = template.properties || { propertyDefinitionType: PropertyDefinitionType.NONE, properties: {} };
+        const propertyData = template.properties || {
+            propertyDefinitionType: PropertyDefinitionType.NONE, properties: {}
+        };
 
         this.propertyDefinitionType = propertyData.propertyType;
         this.templateType = template.type;

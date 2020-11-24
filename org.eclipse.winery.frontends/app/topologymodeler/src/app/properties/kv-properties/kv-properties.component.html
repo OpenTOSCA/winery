@@ -33,9 +33,11 @@
                     placeholder="Edit your value here."
                     required
                     [disabled]="readonly"
+                    name="{{key.key}}"
                     value="{{key.value}}"
-                    (keyup)="properties.next($event.target.value)"
-                    (keyup)="keySubject.next(key.key)">
+                    (keyup)="keyup($event.target)"
+                    (blur)="keyup($event.target)"
+                    (focus)="keyup($event.target)">
                 </textarea>
         </td>
     </tr>
