@@ -209,6 +209,9 @@ public class ToCanonical {
 
     @Nullable
     private TEntityTemplate convertEntityTemplate(XTEntityTemplate xml) {
+        if (xml == null) {
+            return null;
+        }
         if (xml instanceof XRelationshipSourceOrTarget) {
             return convert((XRelationshipSourceOrTarget) xml);
         }
@@ -1087,9 +1090,7 @@ public class ToCanonical {
         throw new IllegalStateException("Attempted to convert unknown Extension to the TOSCA-Standard of the type " + xml.getClass().getName() + " to canonical");
     }
 
-    private <Builder extends OTPrmMapping.Builder<Builder>, Value extends XOTPrmMapping> void fillOTPrmMappingProperties(
-        Builder builder, Value value
-    ) {
+    private <Builder extends OTPrmMapping.Builder<Builder>, Value extends XOTPrmMapping> void fillOTPrmMappingProperties(Builder builder, Value value) {
         builder.setDetectorElement(convertEntityTemplate(value.getDetectorElement()));
         builder.setRefinementElement(convertEntityTemplate(value.getRefinementElement()));
         fillExtensibleElementsProperties(builder, value);

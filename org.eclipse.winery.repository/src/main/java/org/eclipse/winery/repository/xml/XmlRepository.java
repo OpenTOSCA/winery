@@ -75,6 +75,8 @@ public class XmlRepository extends AbstractFileBasedRepository {
         try {
             InputStream is = newInputStream(ref);
             Unmarshaller unmarshaller = XmlModelJAXBSupport.createUnmarshaller();
+            // Enable for debugging
+            // unmarshaller.setEventHandler(new javax.xml.bind.helpers.DefaultValidationEventHandler());
             definition = unmarshaller.unmarshal(is);
         } catch (Exception e) {
             LOGGER.info("Failed to read definitions from reference {}", ref, e);
