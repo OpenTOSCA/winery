@@ -30,9 +30,9 @@ export class VersionSliderService {
     getVersions(): Observable<WineryVersion[]> {
         const url = this.backendService.configuration.parentElementUrl + '?versions';
         return this.http.get<WineryVersion[]>(url)
-            // .map(array => array.reverse())
-            // // recreate class to access methods
-            // .map(array => array.map(v => VersionSliderService.toWineryVersion(v)));
+            .map(array => array.reverse())
+            // recreate class to access methods
+            .map(array => array.map(v => VersionSliderService.toWineryVersion(v)));
     }
 
     hasMultipleVersions(): Observable<boolean> {
