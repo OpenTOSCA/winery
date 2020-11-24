@@ -1,19 +1,19 @@
 ui:
   features:
-    accountability: false
-    completion: false
-    compliance: false
+    splitting: true
+    updateTemplates: false
+    edmmModeling: false
     freezeAndDefrost: false
     managementFeatureEnrichment: false
-    nfv: false
-    patternRefinement: false
     problemDetection: false
-    radon: false
-    splitting: false
+    patternRefinement: false
+    topologyFragmentRefinementModel: false
     testRefinement: false
+    completion: false
+    accountability: false
+    compliance: false   
     placement: false
-    edmmModeling: false
-    updateTemplates: false
+    radon: false
   endpoints:
     container: http://localhost:1337
     workflowmodeler: http://localhost:9527
