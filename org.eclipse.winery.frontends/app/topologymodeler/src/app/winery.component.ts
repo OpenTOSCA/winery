@@ -62,6 +62,8 @@ export class WineryComponent implements OnInit, AfterViewInit {
 
     detailsSidebarVisible: boolean;
 
+    showVersionSlider: boolean;
+
     public loaded: ILoaded;
     private loadedRelationshipVisuals = 0;
     private requiredRelationshipVisuals: number;
@@ -226,5 +228,6 @@ export class WineryComponent implements OnInit, AfterViewInit {
         } else {
             delete this.refiningType;
         }
+        this.showVersionSlider = currentButtonsState.buttonsState.versionSliderButton;
     }
 }
