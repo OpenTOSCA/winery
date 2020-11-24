@@ -222,6 +222,16 @@ public class FromCanonical {
         if (canonical.getValidTarget() != null) {
             builder.setValidTarget(canonical.getValidTarget().getTypeRef());
         }
+        if (canonical.getInstanceStates() != null) {
+            XTTopologyElementInstanceStates instanceStates = new XTTopologyElementInstanceStates();
+            instanceStates.getInstanceState().addAll(canonical.getInstanceStates().getInstanceState().stream()
+                .map(c -> {
+                    XTTopologyElementInstanceStates.InstanceState r = new XTTopologyElementInstanceStates.InstanceState();
+                    r.setState(c.getState());
+                    return r;
+                }).collect(Collectors.toList()));
+            builder.setInstanceStates(instanceStates);
+        }
         if (canonical.getInterfaceDefinitions() != null) {
             LOGGER.warn("Converting YAML InterfaceDefinitions to TOSCA XML is currently not supported");
         }
