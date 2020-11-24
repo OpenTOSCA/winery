@@ -43,6 +43,7 @@ export interface TopologyRendererState {
         cleanFreezableComponentsButton?: boolean;
         placeComponentsButton?: boolean;
         manageYamlPoliciesButton?: boolean;
+        versionSliderButton?: boolean;
         manageYamlGroupsButton?: boolean;
         yamlGroupsButton?: boolean;
     };
@@ -77,6 +78,7 @@ export const INITIAL_TOPOLOGY_RENDERER_STATE: TopologyRendererState = {
         cleanFreezableComponentsButton: false,
         placeComponentsButton: false,
         manageYamlPoliciesButton: false,
+        versionSliderButton: false,
         manageYamlGroupsButton: false,
         yamlGroupsButton: false,
     },
@@ -328,6 +330,14 @@ export const TopologyRendererReducer =
                     buttonsState: {
                         ...lastState.buttonsState,
                         manageYamlPoliciesButton: !lastState.buttonsState.manageYamlPoliciesButton
+                    }
+                };
+            case TopologyRendererActions.TOGGLE_VERSION_SLIDER:
+                return {
+                    ...lastState,
+                    buttonsState: {
+                        ...lastState.buttonsState,
+                        versionSliderButton: !lastState.buttonsState.versionSliderButton
                     }
                 };
         }

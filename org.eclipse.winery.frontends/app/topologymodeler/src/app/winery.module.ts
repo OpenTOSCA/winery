@@ -61,6 +61,9 @@ import { WineryDynamicTableModule } from '../../../tosca-management/src/app/wine
 import { WineryDuplicateValidatorModule } from '../../../tosca-management/src/app/wineryValidators/wineryDuplicateValidator.module';
 import { CollapseModule } from 'ngx-bootstrap';
 import { GroupViewPoliciesComponent } from './group-view/policies/policies.component';
+import { VersionSliderComponent } from './version-slider/version-slider.component';
+import { NgxSliderModule } from '@angular-slider/ngx-slider';
+import { VersionSliderService } from './version-slider/version-slider.service';
 
 @NgModule({
     declarations: [
@@ -72,6 +75,7 @@ import { GroupViewPoliciesComponent } from './group-view/policies/policies.compo
         ProblemDetectionComponent,
         EnricherComponent,
         EdmmTransformationCheckComponent,
+        VersionSliderComponent,
         GroupViewComponent,
         GroupViewPoliciesComponent,
     ],
@@ -106,6 +110,8 @@ import { GroupViewPoliciesComponent } from './group-view/policies/policies.compo
         WineryDynamicTableModule,
         WineryDuplicateValidatorModule,
         CollapseModule,
+        WineryTableModule,
+        NgxSliderModule
     ],
     providers: [
         // { provide: ToastOptions, useClass: WineryCustomOption },
@@ -124,7 +130,8 @@ import { GroupViewPoliciesComponent } from './group-view/policies/policies.compo
         StatefulAnnotationsService,
         PlaceComponentsService,
         ReqCapRelationshipService,
-        PolicyService
+        PolicyService,
+        VersionSliderService
     ],
     bootstrap: [WineryComponent]
 })

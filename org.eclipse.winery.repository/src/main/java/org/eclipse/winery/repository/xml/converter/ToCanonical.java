@@ -309,6 +309,16 @@ public class ToCanonical {
         if (xml.getValidTarget() != null) {
             builder.setValidTarget(xml.getValidTarget().getTypeRef());
         }
+        if (xml.getInstanceStates() != null) {
+            TTopologyElementInstanceStates instanceStates = new TTopologyElementInstanceStates();
+            instanceStates.getInstanceState().addAll(xml.getInstanceStates().getInstanceState().stream()
+                .map(c -> {
+                    TTopologyElementInstanceStates.InstanceState r = new TTopologyElementInstanceStates.InstanceState();
+                    r.setState(c.getState());
+                    return r;
+                }).collect(Collectors.toList()));
+            builder.setInstanceStates(instanceStates);
+        }
         fillEntityTypeProperties(builder, xml);
         return builder.build();
     }

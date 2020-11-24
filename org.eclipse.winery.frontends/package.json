@@ -26,6 +26,7 @@
     "license": "EPL-2.0 OR Apache-2.0",
     "dependencies": {
         "@angular-redux/store": "9.0.0",
+        "@angular-slider/ngx-slider": "2.0.3",
         "@angular/animations": "7.2.7",
         "@angular/common": "7.2.7",
         "@angular/compiler": "7.2.7",
