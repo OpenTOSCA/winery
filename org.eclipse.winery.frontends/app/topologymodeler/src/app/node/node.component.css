@@ -45,6 +45,8 @@ div.pattern {
 .patternImage {
     margin-top: 10px;
     margin-left: 3px;
+    max-width: 50px;
+    max-height: 50px;
 }
 
 .winery-image {
