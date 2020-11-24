@@ -77,6 +77,7 @@
     <div class="subMenu">
         <a *ngFor="let item of subMenu; index as i"
            class="styledTabMenuButton styledTabMenuButton2ndlevel"
+           [ngClass]="{'tab-menu-fix': requiresTabFix}"
            [routerLink]="['./' + item.urlFragment]"
            [routerLinkActive]="'selected'"
            (click)="selectedTab = item.displayName">

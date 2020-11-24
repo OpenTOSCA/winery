@@ -55,13 +55,14 @@ export class InstanceHeaderComponent implements OnInit {
     showManagementButtons = true;
     accountabilityEnabled: boolean;
     showEdmmExport: boolean;
+    requiresTabFix = false;
 
     toscaLightCompatibilityErrorReportModalRef: BsModalRef;
     toscaLightErrorKeys: string[];
     deleteConfirmationModalRef: BsModalRef;
 
     constructor(private router: Router, public sharedData: InstanceService,
-                private configurationService: WineryRepositoryConfigurationService,
+                public configurationService: WineryRepositoryConfigurationService,
                 private modalService: BsModalService, private notify: WineryNotificationService) {
     }
 
@@ -85,6 +86,11 @@ export class InstanceHeaderComponent implements OnInit {
         }
 
         this.showEdmmExport = this.toscaComponent.toscaType === ToscaTypes.ServiceTemplate && this.configurationService.configuration.features.edmmModeling;
+
+        if (this.toscaComponent.toscaType === ToscaTypes.Admin
+            || this.toscaComponent.toscaType === ToscaTypes.PolicyType) {
+            this.requiresTabFix = true;
+        }
     }
 
     removeConfirmed() {

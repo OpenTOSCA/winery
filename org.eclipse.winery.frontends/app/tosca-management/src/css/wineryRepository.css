@@ -221,8 +221,12 @@ div#mainMenuContainer {
 /* tabs */
 
 a.styledTabMenuButton {
-    margin-bottom: 5px;
+    margin-bottom: 3px;
     float: left;
+}
+
+a.tab-menu-fix {
+    margin-bottom: 5px !important;
 }
 
 a.styledTabMenuButton > div {
