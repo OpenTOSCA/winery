@@ -37,12 +37,12 @@ import org.eclipse.winery.repository.backend.consistencycheck.ConsistencyChecker
 import org.eclipse.winery.repository.backend.consistencycheck.ConsistencyCheckerConfiguration;
 import org.eclipse.winery.repository.backend.consistencycheck.ConsistencyCheckerVerbosity;
 import org.eclipse.winery.repository.backend.consistencycheck.ConsistencyErrorCollector;
-import org.eclipse.winery.repository.rest.resources.admin.types.che.CheResponse;
 import org.eclipse.winery.repository.rest.resources.admin.types.ConstraintTypesManager;
-import org.eclipse.winery.repository.rest.resources.admin.types.che.Machine;
 import org.eclipse.winery.repository.rest.resources.admin.types.PlanLanguagesManager;
 import org.eclipse.winery.repository.rest.resources.admin.types.PlanTypesManager;
 import org.eclipse.winery.repository.rest.resources.admin.types.RepositoryConfigurationResponse;
+import org.eclipse.winery.repository.rest.resources.admin.types.che.CheResponse;
+import org.eclipse.winery.repository.rest.resources.admin.types.che.Machine;
 import org.eclipse.winery.repository.rest.resources.admin.types.che.Server;
 import org.eclipse.winery.repository.rest.resources.admin.types.che.WorkspaceResponse;
 import org.eclipse.winery.repository.rest.resources.apiData.OAuthStateAndCodeApiData;
@@ -127,18 +127,26 @@ public class AdminTopResource {
         String cheApiEndpoint = System.getenv("CHE_API");
         String cheMachineToken = System.getenv("CHE_MACHINE_TOKEN");
         String cheWorkspaceId = System.getenv("CHE_WORKSPACE_ID");
+        if (cheApiEndpoint == null || cheMachineToken == null || cheWorkspaceId == null) {
+            return Response.status(500, "Server environment is not correctly configured").build();
+        }
         HttpGet httpGet = new HttpGet(cheApiEndpoint + "/workspace/" + cheWorkspaceId);
         httpGet.setHeader("Authorization", "Bearer " + cheMachineToken);
 
-        HttpResponse
-            response = httpclient.execute(httpGet);
+        HttpResponse response = httpclient.execute(httpGet);
 
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         WorkspaceResponse workspace = mapper.readValue(response.getEntity().getContent(), WorkspaceResponse.class);
         Optional<Machine> machine = workspace.runtime.machines.values().stream().filter(x -> "theia-editor".equals(x.attributes.get("component"))).findFirst();
+        if (!machine.isPresent()) {
+            return Response.status(500, "Eclipse Che is not correctly configured").build();
+        }
 
         Optional<Server> runningServer = machine.get().servers.values().stream().filter(x -> x.status.equals("RUNNING")).findFirst();
+        if (!runningServer.isPresent()) {
+            return Response.status(500, "Eclipse Che is not correctly configured").build();
+        }
 
         return Response
             .status(response.getStatusLine().getStatusCode())
