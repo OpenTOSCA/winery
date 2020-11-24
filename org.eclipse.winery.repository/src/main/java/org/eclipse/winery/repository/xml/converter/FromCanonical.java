@@ -652,7 +652,11 @@ public class FromCanonical {
         return builder.build();
     }
 
-    private XTTag convert(TGroupDefinition group) {
+    @Nullable
+    private XTTag convert(@Nullable TGroupDefinition group) {
+        if (group == null) {
+            return null;
+        }
         String name = "group:" + group.getName();
         String value = group.getMembers().stream()
             .map(QName::toString)

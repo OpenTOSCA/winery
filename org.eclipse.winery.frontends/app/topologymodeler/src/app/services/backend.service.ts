@@ -14,7 +14,9 @@
 
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs/Subject';
-import { Entity, EntityType, TArtifactType, TDataType, TPolicyType, TTopologyTemplate, VisualEntityType } from '../models/ttopology-template';
+import {
+    Entity, EntityType, TArtifactType, TDataType, TPolicyType, TTopologyTemplate, VisualEntityType
+} from '../models/ttopology-template';
 import { QNameWithTypeApiData } from '../models/generateArtifactApiData';
 import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
 import { urlElement } from '../models/enums';
@@ -125,12 +127,16 @@ export class BackendService {
         this.initEntityType(entityTypes[7], 'relationshipTypes');
         this.initEntityType(entityTypes[8], 'unGroupedNodeTypes');
         this.initEntityType(entityTypes[9], 'versionElements');
-        this.initEntityType(entityTypes[10], 'dataTypes');
-        // init YAML policies if they exist
-        if (this.topologyTemplate.policies) {
-            this.initEntityType(this.topologyTemplate.policies.policy, 'yamlPolicies');
-        } else {
-            this.initEntityType([], 'yamlPolicies');
+
+        // handle YAML specifics
+        if (this.configurationService.isYaml()) {
+            this.initEntityType(entityTypes[10], 'dataTypes');
+            // init YAML policies if they exist
+            if (this.topologyTemplate.policies) {
+                this.initEntityType(this.topologyTemplate.policies.policy, 'yamlPolicies');
+            } else {
+                this.initEntityType([], 'yamlPolicies');
+            }
         }
 
         this.model$.next(this.storedModel);

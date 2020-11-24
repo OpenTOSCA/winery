@@ -91,7 +91,7 @@
                     [style.background-color]="getStyle(navbarButtonsState.buttonsState.requirementsCapabilitiesButton)">
                 Requirements & Capabilities
             </button>
-            <button class="btn btn-sm align-middle dark-button-style"
+            <button class="btn btn-sm align-middle dark-button-style" *wineryRepositoryShowOnFeature="configEnum.Yaml"
                     type="button"
                     id="yamlGroups"
                     (click)="toggleButton($event)"
@@ -239,6 +239,14 @@
             <button class="btn btn-sm align-middle dark-button-style"
                     (click)="openChe()">
                 Open Eclipse Che
+            </button>
+        </div>
+
+        <div *ngIf="showVersionSliderButton" class="btn-group button-group" data-toggle="buttons">
+            <button class="btn btn-sm align-middle dark-button-style" id="versionSlider"
+                    (click)="toggleButton($event)"
+                    [style.background-color]="getStyle(navbarButtonsState.buttonsState.versionSliderButton)">
+                Version Slider
             </button>
         </div>
 
