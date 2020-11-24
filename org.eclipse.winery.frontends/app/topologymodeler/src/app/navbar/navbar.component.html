@@ -91,7 +91,7 @@
                     [style.background-color]="getStyle(navbarButtonsState.buttonsState.requirementsCapabilitiesButton)">
                 Requirements & Capabilities
             </button>
-            <button class="btn btn-sm align-middle dark-button-style"
+            <button class="btn btn-sm align-middle dark-button-style" *wineryRepositoryShowOnFeature="configEnum.Yaml"
                     type="button"
                     id="yamlGroups"
                     (click)="toggleButton($event)"
