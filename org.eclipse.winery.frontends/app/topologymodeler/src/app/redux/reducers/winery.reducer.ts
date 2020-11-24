@@ -541,7 +541,7 @@ export const WineryReducer =
                                 relationshipTemplate.targetElement.ref !== deletedNodeId),
                         // we check if the targets of YAML policies include the deleted node template<
                         policies: {
-                            policy: lastState.currentJsonTopology.policies.policy.map(pol => {
+                            policy: lastState.currentJsonTopology.policies.policy && lastState.currentJsonTopology.policies.policy.map(pol => {
                                 if (pol.targets) {
                                     pol.targets = pol.targets.filter(target => target !== deletedNodeId);
                                     // to keep a consistent behavior, if no targets remain, remove the field.
@@ -549,12 +549,11 @@ export const WineryReducer =
                                         pol.targets = undefined;
                                     }
                                 }
-
                                 return pol;
                             })
                         },
                         // update groups
-                        groups: lastState.currentJsonTopology.groups.map((group) => {
+                        groups: lastState.currentJsonTopology.groups && lastState.currentJsonTopology.groups.map((group) => {
                             group.members = group.members.filter((member) => member !== deletedNodeId);
                             return group;
                         }),

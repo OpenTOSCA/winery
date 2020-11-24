@@ -2474,6 +2474,9 @@ export class CanvasComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
     }
 
     getYamlPoliciesTableData() {
+        if (!this.entityTypes.yamlPolicies) {
+            return [];
+        }
         return this.entityTypes.yamlPolicies.map(policy => {
             const result:
                 {
