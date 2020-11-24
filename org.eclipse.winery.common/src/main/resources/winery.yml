@@ -1,7 +1,7 @@
 ui:
   features:
-    splitting: true
-    updateTemplates: false
+    updateTemplates: true
+    splitting: false
     edmmModeling: false
     freezeAndDefrost: false
     managementFeatureEnrichment: false
