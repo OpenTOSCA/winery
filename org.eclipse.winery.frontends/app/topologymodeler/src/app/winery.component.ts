@@ -126,7 +126,6 @@ export class WineryComponent implements OnInit, AfterViewInit {
     }
 
     initiateLocalRendering(tmData: TopologyModelerInputDataFormat): void {
-        console.log('initiating local rendering with explicitly passed data');
         const nodeTemplateArray: Array<TNodeTemplate>
             = tmData.topologyTemplate.nodeTemplates;
         const relationshipTemplateArray: Array<TRelationshipTemplate>

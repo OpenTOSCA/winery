@@ -113,7 +113,6 @@ export class TNodeTemplate extends AbstractTEntity {
                 };
                 nodeTemplate.otherAttributes = otherAttributes;
             }
-            console.log(nodeTemplate);
         } else if (updatedAttribute === ('minInstances') || updatedAttribute === ('maxInstances')) {
             if (Number.isNaN(+updatedValue)) {
                 nodeTemplate[updatedAttribute] = updatedValue;
@@ -121,9 +120,7 @@ export class TNodeTemplate extends AbstractTEntity {
                 nodeTemplate[updatedAttribute] = +updatedValue;
             }
         } else {
-            console.log(updatedValue);
             nodeTemplate[updatedAttribute] = updatedValue;
-            console.log(nodeTemplate);
         }
         return nodeTemplate;
     }
