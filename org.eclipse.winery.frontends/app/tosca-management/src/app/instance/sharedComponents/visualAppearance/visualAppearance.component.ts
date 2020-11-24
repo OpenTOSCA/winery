@@ -52,7 +52,7 @@ export class VisualAppearanceComponent implements OnInit {
         if (this.isRelationshipType) {
             this.getRelationshipData();
         } else {
-            this.getNodeTypeData();
+            this.getData();
         }
     }
 
@@ -119,14 +119,14 @@ export class VisualAppearanceComponent implements OnInit {
         );
     }
 
-    getNodeTypeData() {
+    getData() {
         this.service.getData().subscribe(
-            data => this.handleColorData(data),
+            data => this.handleData(data),
             error => this.handleError(error)
         );
     }
 
-    handleColorData(data: any) {
+    handleData(data: any) {
         this.nodeTypeData = new NodeTypesVisualsApiData(data);
         this.loading = false;
     }
@@ -141,7 +141,7 @@ export class VisualAppearanceComponent implements OnInit {
         if (this.isRelationshipType) {
             this.getRelationshipData();
         } else {
-            this.getNodeTypeData();
+            this.getData();
         }
     }
 
@@ -178,5 +178,4 @@ export class VisualAppearanceComponent implements OnInit {
         this.loading = false;
         this.notify.error(error.message);
     }
-
 }
