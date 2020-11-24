@@ -41,7 +41,7 @@ export class CheService {
         try {
             const theiaUrl = await this.getCheTheiaUrl(backendUrl).toPromise();
             const repositoryConfiguration = await this.configurationService.getRepositoryConfiguration().toPromise();
-            const pathToOpen = theiaUrl + `/${repositoryConfiguration.repositoryRoot}/${type}/${namespace}/${id}#/projects`;
+            const pathToOpen = theiaUrl + `/?path=${repositoryConfiguration.repositoryRoot}/${type}/${namespace}/${id}#/projects`;
             window.open(pathToOpen, '_blank');
         } catch (err) {
             if (err instanceof HttpErrorResponse) {
