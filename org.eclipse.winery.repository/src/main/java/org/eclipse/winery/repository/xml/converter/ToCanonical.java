@@ -1112,14 +1112,14 @@ public class ToCanonical {
         return builder.build();
     }
 
-    private <Builder extends OTTopologyFragmentRefinementModel.RefinementBuilder<Builder>, Value extends XOTTopologyFragmentRefinementModel> void
-    fillOTTopologyFragmentRefinementModelProperties(Builder builder, Value value) {
+    private <Builder extends OTTopologyFragmentRefinementModel.RefinementBuilder<Builder>, Value extends XOTTopologyFragmentRefinementModel> void fillOTTopologyFragmentRefinementModelProperties(Builder builder, Value value) {
         builder.setRefinementStructure(convert(value.getRefinementStructure()));
         builder.setDeploymentArtifactMappings(convertList(value.getDeploymentArtifactMappings(), this::convert));
         builder.setStayMappings(convertList(value.getStayMappings(), this::convert));
         builder.setPermutationMappings(convertList(value.getPermutationMappings(), this::convert));
         builder.setPermutationOptions(convertList(value.getPermutationOptions(), this::convert));
         builder.setAttributeMappings(convertList(value.getAttributeMappings(), this::convert));
+        builder.setComponentSets(convertList(value.getComponentSets(), this::convert));
         fillOTRefinementModelProperties(builder, value);
     }
 
@@ -1129,6 +1129,7 @@ public class ToCanonical {
         builder.setDetector(convert(value.getDetector()));
         builder.setTargetNamespace(value.getTargetNamespace());
         builder.setRelationMappings(convertList(value.getRelationMappings(), this::convert));
+        builder.setPermutationMappings(convertList(value.getPermutationMappings(), this::convert));
         fillExtensibleElementsProperties(builder, value);
     }
 

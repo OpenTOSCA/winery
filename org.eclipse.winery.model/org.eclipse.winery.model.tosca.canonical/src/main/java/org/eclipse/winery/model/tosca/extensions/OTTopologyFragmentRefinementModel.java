@@ -58,7 +58,8 @@ public class OTTopologyFragmentRefinementModel extends OTRefinementModel {
     protected List<OTStringList> componentSets;
 
     @Deprecated // used for XML deserialization of API request content
-    public OTTopologyFragmentRefinementModel() { }
+    public OTTopologyFragmentRefinementModel() {
+    }
 
     public OTTopologyFragmentRefinementModel(RefinementBuilder<? extends RefinementBuilder<?>> builder) {
         super(builder);
@@ -68,6 +69,7 @@ public class OTTopologyFragmentRefinementModel extends OTRefinementModel {
         this.deploymentArtifactMappings = builder.deploymentArtifactMappings;
         this.permutationOptions = builder.permutationOptions;
         this.permutationMappings = builder.permutationMappings;
+        this.componentSets = builder.componentSets;
     }
 
     @NonNull
@@ -139,6 +141,7 @@ public class OTTopologyFragmentRefinementModel extends OTRefinementModel {
         private List<OTAttributeMapping> attributeMappings;
         private List<OTStayMapping> stayMappings;
         private List<OTDeploymentArtifactMapping> deploymentArtifactMappings;
+        private List<OTStringList> componentSets;
 
         public RefinementBuilder() {
         }
@@ -170,6 +173,11 @@ public class OTTopologyFragmentRefinementModel extends OTRefinementModel {
 
         public T setPermutationMappings(List<OTPermutationMapping> permutationMappings) {
             this.permutationMappings = permutationMappings;
+            return self();
+        }
+
+        public T setComponentSets(List<OTStringList> componentSets) {
+            this.componentSets = componentSets;
             return self();
         }
     }

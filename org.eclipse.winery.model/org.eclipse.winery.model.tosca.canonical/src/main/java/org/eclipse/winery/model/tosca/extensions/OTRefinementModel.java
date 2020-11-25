@@ -50,7 +50,8 @@ public abstract class OTRefinementModel extends TExtensibleElements implements H
     protected List<OTPermutationMapping> permutationMappings;
 
     @Deprecated // used for XML deserialization of API request content
-    public OTRefinementModel() { }
+    public OTRefinementModel() {
+    }
 
     @SuppressWarnings("unchecked")
     public OTRefinementModel(Builder builder) {
@@ -59,6 +60,7 @@ public abstract class OTRefinementModel extends TExtensibleElements implements H
         this.targetNamespace = builder.targetNamespace;
         this.detector = builder.detector;
         this.relationMappings = builder.relationMappings;
+        this.permutationMappings = builder.permutationMappings;
     }
 
     @Override
@@ -129,6 +131,7 @@ public abstract class OTRefinementModel extends TExtensibleElements implements H
         private String targetNamespace;
         private TTopologyTemplate detector;
         private List<OTRelationMapping> relationMappings;
+        private List<OTPermutationMapping> permutationMappings;
 
         public Builder() {
         }
@@ -150,6 +153,11 @@ public abstract class OTRefinementModel extends TExtensibleElements implements H
 
         public T setRelationMappings(List<OTRelationMapping> relationMappings) {
             this.relationMappings = relationMappings;
+            return self();
+        }
+
+        public T setPermutationMappings(List<OTPermutationMapping> permutationMappings) {
+            this.permutationMappings = permutationMappings;
             return self();
         }
     }
