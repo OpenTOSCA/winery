@@ -14,18 +14,21 @@
 
 package org.eclipse.winery.repository.driverspecificationandinjection;
 
-import org.eclipse.winery.model.ids.definitions.ArtifactTypeId;
-import org.eclipse.winery.model.ids.definitions.ServiceTemplateId;
-import org.eclipse.winery.model.tosca.*;
-import org.eclipse.winery.repository.TestWithGitBackedRepository;
-
-import javax.xml.namespace.QName;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
+
+import javax.xml.namespace.QName;
+
+import org.eclipse.winery.model.ids.definitions.ArtifactTypeId;
+import org.eclipse.winery.model.ids.definitions.ServiceTemplateId;
+import org.eclipse.winery.model.tosca.TArtifactType;
+import org.eclipse.winery.model.tosca.TDeploymentArtifact;
+import org.eclipse.winery.model.tosca.TNodeTemplate;
+import org.eclipse.winery.model.tosca.TRelationshipTemplate;
+import org.eclipse.winery.model.tosca.TTopologyTemplate;
+import org.eclipse.winery.repository.TestWithGitBackedRepository;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Test;

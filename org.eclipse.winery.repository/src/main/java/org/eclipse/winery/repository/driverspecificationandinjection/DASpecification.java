@@ -14,22 +14,27 @@
 
 package org.eclipse.winery.repository.driverspecificationandinjection;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import javax.xml.namespace.QName;
+
 import org.eclipse.winery.model.ids.definitions.ArtifactTypeId;
 import org.eclipse.winery.model.ids.definitions.NodeTypeImplementationId;
 import org.eclipse.winery.model.ids.definitions.RelationshipTypeId;
-import org.eclipse.winery.model.tosca.*;
+import org.eclipse.winery.model.tosca.TArtifactType;
+import org.eclipse.winery.model.tosca.TDeploymentArtifact;
+import org.eclipse.winery.model.tosca.TNodeTemplate;
+import org.eclipse.winery.model.tosca.TNodeTypeImplementation;
+import org.eclipse.winery.model.tosca.TRelationshipTemplate;
+import org.eclipse.winery.model.tosca.TRelationshipType;
+import org.eclipse.winery.model.tosca.TTopologyTemplate;
 import org.eclipse.winery.model.tosca.utils.ModelUtilities;
 import org.eclipse.winery.repository.backend.IRepository;
 import org.eclipse.winery.repository.backend.RepositoryFactory;
-
-import javax.xml.namespace.QName;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -118,7 +123,6 @@ public class DASpecification {
                 TNodeTemplate targetNodeTemplate = ModelUtilities.getTargetNodeTemplateOfRelationshipTemplate(topologyTemplate, relationshipTemplate);
                 return getNodesWithSuitableConcreteDAs(targetNodeTemplate, deploymentArtifact, topologyTemplate);
             }
-
         } else {
             return nodeTemplate;
         }
