@@ -80,7 +80,7 @@ public abstract class AbstractRefinement extends AbstractSubstitution {
             List<RefinementCandidate> candidates = new ArrayList<>();
             this.refinementModels.forEach(prm -> {
                 ToscaGraph detectorGraph = ToscaTransformer.createTOSCAGraph(prm.getDetector());
-                IToscaMatcher matcher = getMatcher(prm);
+                IToscaMatcher matcher = this.getMatcher(prm);
                 Iterator<GraphMapping<ToscaNode, ToscaEdge>> matches = isomorphismMatcher.findMatches(detectorGraph, topologyGraph, matcher);
 
                 matches.forEachRemaining(mapping -> {

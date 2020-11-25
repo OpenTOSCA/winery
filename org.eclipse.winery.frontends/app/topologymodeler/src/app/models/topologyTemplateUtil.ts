@@ -41,6 +41,7 @@ export abstract class TopologyTemplateUtil {
             nodeTemplates: [],
             policies: { policy: new Array<TPolicy>() },
             groups: [],
+            participants: [],
         };
         // Prepare for saving by updating the existing topology with the current topology state inside the Redux store
         topologySkeleton.nodeTemplates = topologyTemplate.nodeTemplates;
@@ -55,6 +56,7 @@ export abstract class TopologyTemplateUtil {
         });
         topologySkeleton.policies = topologyTemplate.policies;
         topologySkeleton.groups = topologyTemplate.groups;
+        topologySkeleton.participants = topologyTemplate.participants;
 
         return topologySkeleton;
     }
@@ -66,11 +68,11 @@ export abstract class TopologyTemplateUtil {
         if (node.properties) {
             properties = node.properties;
         }
-
         let nameSpace: string;
         let targetLocationKey: string;
         let providerKey: string;
         let regionKey: string;
+        let participantKey: string;
         let otherAttributes;
         for (const key in node.otherAttributes) {
             if (node.otherAttributes.hasOwnProperty(key)) {
@@ -85,10 +87,14 @@ export abstract class TopologyTemplateUtil {
                     if (key.substring(key.indexOf('}') + 1) === 'region') {
                         regionKey = key;
                     }
+                    if (key.substring(key.indexOf('}') + 1) === 'participant') {
+                        participantKey = key;
+                    }
                     otherAttributes = {
                         [nameSpace + 'location']: node.otherAttributes[targetLocationKey],
                         [nameSpace + 'provider']: node.otherAttributes[providerKey],
                         [nameSpace + 'region']: node.otherAttributes[regionKey],
+                        [nameSpace + 'participant']: node.otherAttributes[participantKey],
                         [nameSpace + 'x']: node.x,
                         [nameSpace + 'y']: node.y
                     };

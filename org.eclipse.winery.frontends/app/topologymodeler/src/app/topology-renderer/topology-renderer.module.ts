@@ -46,7 +46,7 @@ import { WineryFeatureToggleModule } from '../../../../tosca-management/src/app/
 import { WineryTableModule } from '../../../../tosca-management/src/app/wineryTableModule/wineryTable.module';
 import { Ng2TableModule } from 'ng2-table';
 import { GroupsComponent } from '../node/groups/groups.component';
-import { GroupViewPoliciesComponent } from '../group-view/policies/policies.component';
+import { AssignParticipantsComponent } from '../participants/assign-participants.component';
 
 @NgModule({
     imports: [
@@ -84,6 +84,7 @@ import { GroupViewPoliciesComponent } from '../group-view/policies/policies.comp
         LocalnamePipe,
         VersionsComponent,
         GroupsComponent,
+        AssignParticipantsComponent,
     ],
     exports: [
         TopologyRendererComponent,

@@ -62,7 +62,8 @@ public class TServiceTemplate extends HasId implements HasName, HasTargetNamespa
     protected QName substitutableNodeType;
 
     @Deprecated // used for XML deserialization of API request content
-    public TServiceTemplate() { }
+    public TServiceTemplate() {
+    }
 
     public TServiceTemplate(Builder builder) {
         super(builder);
@@ -92,7 +93,11 @@ public class TServiceTemplate extends HasId implements HasName, HasTargetNamespa
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), tags, boundaryDefinitions, topologyTemplate, plans, name, targetNamespace, substitutableNodeType);
+        return Objects.hash(
+            super.hashCode(),
+            tags, boundaryDefinitions, topologyTemplate,
+            plans, name, targetNamespace, substitutableNodeType
+        );
     }
 
     @Nullable

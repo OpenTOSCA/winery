@@ -112,6 +112,20 @@
         <div *wineryRepositoryFeatureToggle="configEnum.Splitting" class="btn-group button-group" data-toggle="buttons">
             <button class="btn btn-sm align-middle dark-button-style"
                     type="button"
+                    id="manageParticipants"
+                    (click)="toggleButton($event)"
+                    [style.background-color]="getStyle(navbarButtonsState.buttonsState.manageParticipantsButton)">
+                Manage Participants
+            </button>
+            <button class="btn btn-sm align-middle dark-button-style"
+                    type="button"
+                    id="assignParticipants"
+                    (click)="toggleButton($event)"
+                    [style.background-color]="getStyle(navbarButtonsState.buttonsState.assignParticipantsButton)">
+                Assign Participants
+            </button>
+            <button class="btn btn-sm align-middle dark-button-style"
+                    type="button"
                     id="targetLocations"
                     (click)="toggleButton($event)"
                     [style.background-color]="getStyle(navbarButtonsState.buttonsState.targetLocationsButton)">

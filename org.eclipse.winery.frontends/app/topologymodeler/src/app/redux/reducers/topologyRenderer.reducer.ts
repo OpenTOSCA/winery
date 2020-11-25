@@ -49,6 +49,8 @@ export interface TopologyRendererState {
         versionSliderButton?: boolean;
         manageYamlGroupsButton?: boolean;
         yamlGroupsButton?: boolean;
+        manageParticipantsButton?: boolean;
+        assignParticipantsButton?: boolean;
     };
     nodesToSelect?: string[];
 }
@@ -87,6 +89,7 @@ export const INITIAL_TOPOLOGY_RENDERER_STATE: TopologyRendererState = {
         versionSliderButton: false,
         manageYamlGroupsButton: false,
         yamlGroupsButton: false,
+        manageParticipantsButton: false,
     },
 };
 /**
@@ -117,6 +120,22 @@ export const TopologyRendererReducer =
                     buttonsState: {
                         ...lastState.buttonsState,
                         manageYamlGroupsButton: !lastState.buttonsState.manageYamlGroupsButton
+                    }
+                };
+            case TopologyRendererActions.TOGGLE_MANAGE_PARTICIPANTS:
+                return {
+                    ...lastState,
+                    buttonsState: {
+                        ...lastState.buttonsState,
+                        manageParticipantsButton: !lastState.buttonsState.manageParticipantsButton
+                    }
+                };
+            case TopologyRendererActions.TOGGLE_ASSIGN_PARTICIPANTS:
+                return {
+                    ...lastState,
+                    buttonsState: {
+                        ...lastState.buttonsState,
+                        assignParticipantsButton: !lastState.buttonsState.assignParticipantsButton
                     }
                 };
             case TopologyRendererActions.TOGGLE_POLICIES:

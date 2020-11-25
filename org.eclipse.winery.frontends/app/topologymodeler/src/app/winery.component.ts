@@ -13,7 +13,7 @@
  ********************************************************************************/
 
 import { AfterViewInit, Component, Input, OnInit } from '@angular/core';
-import { TGroupDefinition, TNodeTemplate, TRelationshipTemplate, TTopologyTemplate } from './models/ttopology-template';
+import { TNodeTemplate, TRelationshipTemplate, TTopologyTemplate } from './models/ttopology-template';
 import { ILoaded, LoadedService } from './services/loaded.service';
 import { AppReadyEventService } from './services/app-ready-event.service';
 import { BackendService } from './services/backend.service';
@@ -173,10 +173,6 @@ export class WineryComponent implements OnInit, AfterViewInit {
             this.configurationService.isYaml(), this.topologyDifferences);
     }
 
-    initGroupDefinitions(groups: TGroupDefinition[]) {
-        this.ngRedux.dispatch(this.uiActions.updateGroupDefinitions(groups));
-    }
-
     initiateData(): void {
         // TODO well, this is a mess
         this.backendService.model$.subscribe(m => {
@@ -188,7 +184,10 @@ export class WineryComponent implements OnInit, AfterViewInit {
         this.backendService.topTemplate$
             .subscribe((template) => {
                 this.initTopologyTemplateForRendering(template.nodeTemplates, template.relationshipTemplates);
-                this.initGroupDefinitions(template.groups);
+                // init groups
+                this.ngRedux.dispatch(this.uiActions.updateGroupDefinitions(template.groups));
+                // init participants
+                this.ngRedux.dispatch(this.uiActions.updateParticipants(template.participants));
             });
         this.backendService.loaded$
             .subscribe(l => {

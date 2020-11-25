@@ -14,7 +14,9 @@
 
 import { Action, ActionCreator } from 'redux';
 import { Injectable } from '@angular/core';
-import { TArtifact, TGroupDefinition, TNodeTemplate, TRelationshipTemplate } from '../../models/ttopology-template';
+import {
+    OTParticipant, TArtifact, TGroupDefinition, TNodeTemplate, TRelationshipTemplate
+} from '../../models/ttopology-template';
 import { TDeploymentArtifact } from '../../models/artifactsModalData';
 import { TPolicy } from '../../models/policiesModalData';
 import { Visuals } from '../../models/visuals';
@@ -185,12 +187,17 @@ export interface ChangeYamlPoliciesAction extends Action {
     };
 }
 
-export interface UpdateGroupDefinitionAction extends Action {
-    groups: TGroupDefinition[];
+export interface UpdateParticipantsAction extends Action {
+    participants: OTParticipant[];
 }
 
-export interface AddGroupDefinitionAction extends Action {
-    group: TGroupDefinition;
+export interface AssignParticipantAction extends Action {
+    node: TNodeTemplate;
+    participant: OTParticipant;
+}
+
+export interface UpdateGroupDefinitionAction extends Action {
+    groups: TGroupDefinition[];
 }
 
 export interface SetTargetLocation extends Action {
@@ -253,6 +260,8 @@ export class WineryActions {
     static SEND_CURRENT_NODE_ID = 'SEND_CURRENT_NODE_ID';
     static SET_NODE_VISUALS = 'SET_NODE_VISUALS';
     static UPDATE_GROUP_DEFINITIONS = 'UPDATE_GROUP_DEFINITIONS';
+    static UPDATE_PARTICIPANTS = 'UPDATE_PARTICIPANTS';
+    static ASSIGN_PARTICIPANT = 'ASSIGN_PARTICIPANT';
 
     addEntityTypes: ActionCreator<AddEntityTypesAction> = ((entityTypes) => ({
         type: WineryActions.ADD_ENTITY_TYPES,
@@ -397,6 +406,17 @@ export class WineryActions {
         ((groups) => ({
             type: WineryActions.UPDATE_GROUP_DEFINITIONS,
             groups,
+        }));
+    updateParticipants: ActionCreator<UpdateParticipantsAction> =
+        ((participants) => ({
+            type: WineryActions.UPDATE_PARTICIPANTS,
+            participants,
+        }));
+    assignParticipant: ActionCreator<AssignParticipantAction> =
+        ((node, participant) => ({
+            type: WineryActions.ASSIGN_PARTICIPANT,
+            node: node,
+            participant: participant,
         }));
     setTargetLocation: ActionCreator<SetTargetLocation> =
         ((newTargetLocation) => ({
