@@ -133,28 +133,25 @@ public class TopologyFragmentRefinement extends AbstractRefinement {
             );
 
         // iterate over the detector nodes
-        refinement.getDetectorGraph().vertexSet()
-            .forEach(vertex -> {
-                // get the matching node in the topology
-                TNodeTemplate matchingNode = refinement.getGraphMapping().getVertexCorrespondence(vertex, false).getTemplate();
+        refinement.getDetectorGraph().vertexSet().forEach(vertex -> {
+            // get the matching node in the topology
+            TNodeTemplate matchingNode = refinement.getGraphMapping().getVertexCorrespondence(vertex, false).getTemplate();
 
-                this.redirectInternalRelations(prm, vertex.getTemplate(), matchingNode, topology);
-                this.redirectExternalRelations(refinement, vertex.getTemplate(), matchingNode, topology, idMapping);
+            this.redirectInternalRelations(prm, vertex.getTemplate(), matchingNode, topology);
+            this.redirectExternalRelations(refinement, vertex.getTemplate(), matchingNode, topology, idMapping);
 
-                this.applyPropertyMappings(refinement, vertex.getId(), matchingNode, topology, idMapping);
-                this.applyDeploymentArtifactMapping(refinement, vertex.getTemplate(), matchingNode, topology, idMapping);
+            this.applyPropertyMappings(refinement, vertex.getId(), matchingNode, topology, idMapping);
+            this.applyDeploymentArtifactMapping(refinement, vertex.getTemplate(), matchingNode, topology, idMapping);
 
-                if (!getStayMappingsOfCurrentElement(prm, vertex.getTemplate()).findFirst().isPresent()) {
-                    topology.getNodeTemplateOrRelationshipTemplate()
-                        .remove(matchingNode);
-                } else if (vertex.getTemplate().getPolicies() != null && matchingNode.getPolicies() != null) {
-                    vertex.getTemplate().getPolicies().getPolicy()
-                        .forEach(detectorPolicy ->
-                            matchingNode.getPolicies().getPolicy()
-                                .removeIf(matchingPolicy -> matchingPolicy.getPolicyType().equals(detectorPolicy.getPolicyType()))
-                        );
-                }
-            });
+            if (!getStayMappingsOfCurrentElement(prm, vertex.getTemplate()).findFirst().isPresent()) {
+                topology.getNodeTemplateOrRelationshipTemplate().remove(matchingNode);
+            } else if (vertex.getTemplate().getPolicies() != null && matchingNode.getPolicies() != null) {
+                vertex.getTemplate().getPolicies().getPolicy().forEach(detectorPolicy ->
+                    matchingNode.getPolicies().getPolicy()
+                        .removeIf(matchingPolicy -> matchingPolicy.getPolicyType().equals(detectorPolicy.getPolicyType()))
+                );
+            }
+        });
         refinement.getDetectorGraph().edgeSet()
             .forEach(edge -> {
                 TRelationshipTemplate relationshipTemplate = refinement.getGraphMapping().getEdgeCorrespondence(edge, false).getTemplate();
@@ -162,8 +159,7 @@ public class TopologyFragmentRefinement extends AbstractRefinement {
                 this.applyPropertyMappings(refinement, edge.getId(), relationshipTemplate, topology, idMapping);
 
                 if (!getStayMappingsOfCurrentElement(prm, edge.getTemplate()).findFirst().isPresent()) {
-                    topology.getNodeTemplateOrRelationshipTemplate()
-                        .remove(relationshipTemplate);
+                    topology.getNodeTemplateOrRelationshipTemplate().remove(relationshipTemplate);
                 }
             });
     }

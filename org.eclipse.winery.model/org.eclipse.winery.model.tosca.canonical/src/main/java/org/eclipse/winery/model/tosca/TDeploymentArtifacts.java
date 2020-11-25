@@ -101,6 +101,19 @@ public class TDeploymentArtifacts implements Serializable {
             .orElse(null);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TDeploymentArtifacts that = (TDeploymentArtifacts) o;
+        return Objects.equals(deploymentArtifact, that.deploymentArtifact);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(deploymentArtifact);
+    }
+
     public static class Builder {
         private final List<TDeploymentArtifact> deploymentArtifact;
 

@@ -157,6 +157,7 @@ public abstract class TEntityTemplate extends HasId implements HasType, HasName 
     @XmlJavaTypeAdapter(PropertiesAdapter.class)
     @XmlRootElement
     public static abstract class Properties implements Serializable {
+
     }
 
     @XmlAccessorType(XmlAccessType.FIELD)
@@ -165,6 +166,7 @@ public abstract class TEntityTemplate extends HasId implements HasType, HasName 
     @XmlJavaTypeAdapter(value = PropertiesAdapter.class, type = XmlProperties.class)
     // Xml transformation is done by XmlJavaTypeAdapter, thus no XML configuration whatsoever
     public static class XmlProperties extends Properties {
+
         @XmlAnyElement(lax = true)
         protected Object any;
 
@@ -176,12 +178,26 @@ public abstract class TEntityTemplate extends HasId implements HasType, HasName 
         public void setAny(Object any) {
             this.any = any;
         }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            XmlProperties that = (XmlProperties) o;
+            return Objects.equals(any, that.any);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(any);
+        }
     }
 
     @XmlJavaTypeAdapter(value = PropertiesAdapter.class, type = Properties.class)
     @XmlType(name = "", namespace = Namespaces.TOSCA_NAMESPACE)
     // Xml transformation is done by XmlJavaTypeAdapter, thus no XML configuration whatsoever
     public static class WineryKVProperties extends Properties {
+
         @JsonIgnore
         @Nullable
         private String namespace = null;
@@ -219,6 +235,21 @@ public abstract class TEntityTemplate extends HasId implements HasType, HasName 
         public void setElementName(@Nullable String elementName) {
             this.elementName = elementName;
         }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            WineryKVProperties that = (WineryKVProperties) o;
+            return Objects.equals(namespace, that.namespace) &&
+                Objects.equals(elementName, that.elementName) &&
+                KVProperties.equals(that.KVProperties);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(namespace, elementName, KVProperties);
+        }
     }
 
     @XmlType(name = "", namespace = Namespaces.TOSCA_NAMESPACE)
@@ -236,6 +267,19 @@ public abstract class TEntityTemplate extends HasId implements HasType, HasName 
 
         public void setProperties(LinkedHashMap<String, Object> properties) {
             this.properties = properties;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            YamlProperties that = (YamlProperties) o;
+            return properties.equals(that.properties);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(properties);
         }
     }
 
