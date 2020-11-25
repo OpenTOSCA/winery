@@ -73,6 +73,7 @@ public class XTRelationshipTemplate extends XTEntityTemplate implements XHasPoli
         this.targetElement = builder.targetElement;
         this.relationshipConstraints = builder.relationshipConstraints;
         this.name = builder.name;
+        this.policies = builder.policies;
     }
 
     @Override
@@ -284,6 +285,7 @@ public class XTRelationshipTemplate extends XTEntityTemplate implements XHasPoli
         private final SourceOrTargetElement sourceElement;
         private final SourceOrTargetElement targetElement;
         private RelationshipConstraints relationshipConstraints;
+        private XTPolicies policies;
         private String name;
 
         public Builder(String id, QName type, XTRelationshipTemplate.SourceOrTargetElement sourceElement, XTRelationshipTemplate.SourceOrTargetElement targetElement) {
@@ -333,6 +335,11 @@ public class XTRelationshipTemplate extends XTEntityTemplate implements XHasPoli
             XTRelationshipTemplate.RelationshipConstraints tmp = new XTRelationshipTemplate.RelationshipConstraints();
             tmp.getRelationshipConstraint().add(relationshipConstraints);
             return addRelationshipConstraints(tmp);
+        }
+        
+        public Builder addPolicies(XTPolicies policies) {
+            this.policies = policies;
+            return self();
         }
 
         @Override

@@ -896,6 +896,10 @@ public class FromCanonical {
                 .map(this::convert).collect(Collectors.toList()));
             builder.setRelationshipConstraints(constraints);
         }
+        if (canonical.getPolicies() != null) {
+            XTPolicies xtPolicies = new XTPolicies(convertList(canonical.getPolicies().getPolicy(), this::convert));
+            builder.addPolicies(xtPolicies);
+        }
         fillEntityTemplateProperties(builder, canonical);
         return builder.build();
     }
