@@ -25,9 +25,13 @@ import org.eclipse.winery.repository.backend.RepositoryFactory;
 import javax.xml.namespace.QName;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.tuple.Pair;
 
 public class DASpecification {
 
@@ -76,12 +80,12 @@ public class DASpecification {
      * @param topologyTemplate
      * @return
      */
-    public static Map<TRelationshipTemplate, TNodeTemplate> getNodesWithSuitableConcreteDAAndTheDirectlyConnectedNode
+    public static Set<Pair<TRelationshipTemplate, TNodeTemplate>> getNodesWithSuitableConcreteDAAndTheDirectlyConnectedNode
     (TNodeTemplate nodeTemplate, TDeploymentArtifact deploymentArtifact, TTopologyTemplate topologyTemplate) {
 
         // key is the node template the nodeTemplate is directly connected to this is the indicator from which connection the concrete DA is coming from
         // value is the node template which has a concrete DA attached to substiute the abstract DA of the nodeTemplate
-        Map<TRelationshipTemplate, TNodeTemplate> nodeTemplateWithConcreteDAAndDirectlyConnectedNode = new HashMap<>();
+        Set<Pair<TRelationshipTemplate, TNodeTemplate>> nodeTemplateWithConcreteDAAndDirectlyConnectedNode = new HashSet<>();
         List<TRelationshipTemplate> outgoingRelationshipTemplates = ModelUtilities.getOutgoingRelationshipTemplates(topologyTemplate, nodeTemplate);
 
         //concrete DAs could be find in the hostedOn stack or the connected stacks, but just in directly connected stacks
@@ -90,7 +94,7 @@ public class DASpecification {
             //In each directly connected stack a node with matching concrete DA is looked up
             TNodeTemplate nodesWithSuitableDA = getNodesWithSuitableConcreteDAs(targetNodeTemplate, deploymentArtifact, topologyTemplate);
             if (nodesWithSuitableDA != null) {
-                nodeTemplateWithConcreteDAAndDirectlyConnectedNode.put(outgoingRelationship, nodesWithSuitableDA);
+                nodeTemplateWithConcreteDAAndDirectlyConnectedNode.add(Pair.of(outgoingRelationship, nodesWithSuitableDA));
             }
         }
         return nodeTemplateWithConcreteDAAndDirectlyConnectedNode;

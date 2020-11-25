@@ -53,7 +53,8 @@ public class TPolicy extends TExtensibleElements implements HasName {
     protected List<QName> targets;
 
     @Deprecated // used for XML deserialization of API request content
-    public TPolicy() { }
+    public TPolicy() {
+    }
 
     public TPolicy(Builder builder) {
         super(builder);
@@ -67,7 +68,7 @@ public class TPolicy extends TExtensibleElements implements HasName {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof TPolicy)) return false;
+        if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         TPolicy tPolicy = (TPolicy) o;
         return Objects.equals(name, tPolicy.name) &&
@@ -127,7 +128,7 @@ public class TPolicy extends TExtensibleElements implements HasName {
     public void setTargets(List<QName> targets) {
         this.targets = targets;
     }
-    
+
     public void accept(Visitor visitor) {
         visitor.visit(this);
     }
@@ -152,7 +153,7 @@ public class TPolicy extends TExtensibleElements implements HasName {
             this.policyRef = policyRef;
             return this;
         }
-        
+
         public Builder setProperties(TEntityTemplate.Properties properties) {
             this.properties = properties;
             return self();

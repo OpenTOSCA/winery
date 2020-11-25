@@ -84,18 +84,19 @@ public class TRelationshipTemplate extends TEntityTemplate implements HasPolicie
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof TRelationshipTemplate)) return false;
+        if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         TRelationshipTemplate that = (TRelationshipTemplate) o;
         return Objects.equals(sourceElement, that.sourceElement) &&
             Objects.equals(targetElement, that.targetElement) &&
             Objects.equals(relationshipConstraints, that.relationshipConstraints) &&
+            Objects.equals(policies, that.policies) &&
             Objects.equals(name, that.name);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), sourceElement, targetElement, relationshipConstraints, name);
+        return Objects.hash(super.hashCode(), sourceElement, targetElement, relationshipConstraints, policies, name);
     }
 
     public TRelationshipTemplate.@NonNull SourceOrTargetElement getSourceElement() {

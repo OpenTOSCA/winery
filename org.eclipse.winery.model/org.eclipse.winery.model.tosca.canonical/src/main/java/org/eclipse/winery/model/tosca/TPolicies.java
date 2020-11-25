@@ -36,7 +36,8 @@ public class TPolicies implements Serializable {
     protected List<TPolicy> policy;
 
     @Deprecated // used for XML deserialization of API request content
-    public TPolicies() { }
+    public TPolicies() {
+    }
 
     public TPolicies(List<TPolicy> policies) {
         this.policy = policies;

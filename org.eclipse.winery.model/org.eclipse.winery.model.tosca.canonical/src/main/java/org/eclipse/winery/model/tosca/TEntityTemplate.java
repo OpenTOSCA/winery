@@ -243,7 +243,7 @@ public abstract class TEntityTemplate extends HasId implements HasType, HasName 
             WineryKVProperties that = (WineryKVProperties) o;
             return Objects.equals(namespace, that.namespace) &&
                 Objects.equals(elementName, that.elementName) &&
-                KVProperties.equals(that.KVProperties);
+                Objects.equals(KVProperties, that.KVProperties);
         }
 
         @Override
@@ -274,7 +274,7 @@ public abstract class TEntityTemplate extends HasId implements HasType, HasName 
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
             YamlProperties that = (YamlProperties) o;
-            return properties.equals(that.properties);
+            return Objects.equals(properties, that.properties);
         }
 
         @Override
