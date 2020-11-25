@@ -34,7 +34,6 @@ import org.eclipse.winery.topologygraph.model.ToscaEntity;
 import org.eclipse.winery.topologygraph.model.ToscaGraph;
 import org.eclipse.winery.topologygraph.model.ToscaNode;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.jdt.annotation.NonNull;
 
 public class ToscaTransformer {
@@ -43,17 +42,17 @@ public class ToscaTransformer {
         ToscaGraph graph = new ToscaGraph();
         @NonNull List<TRelationshipTemplate> relationshipTemplates = topologyTemplate.getRelationshipTemplates();
         @NonNull List<TNodeTemplate> nodeTemplates = topologyTemplate.getNodeTemplates();
-        Map<String, Pair<TNodeTemplate, ToscaNode>> nodes = new HashMap<>();
+        Map<String, ToscaNode> nodes = new HashMap<>();
         for (TNodeTemplate nodeTemplate : nodeTemplates) {
             ToscaNode node = createAndInitializeTOSCANode(nodeTemplate);
-            nodes.put(nodeTemplate.getId(), Pair.of(nodeTemplate, node));
+            nodes.put(nodeTemplate.getId(), node);
             graph.addVertex(node);
         }
         for (TRelationshipTemplate tRelationshipTemplate : relationshipTemplates) {
-            Pair<TNodeTemplate, ToscaNode> source = nodes.get(tRelationshipTemplate.getSourceElement().getRef().getId());
-            Pair<TNodeTemplate, ToscaNode> target = nodes.get(tRelationshipTemplate.getTargetElement().getRef().getId());
-            ToscaEdge edge = new ToscaEdge(source.getRight(), target.getRight());
-            graph.addEdge(source.getRight(), target.getRight(), edge);
+            ToscaNode source = nodes.get(tRelationshipTemplate.getSourceElement().getRef().getId());
+            ToscaNode target = nodes.get(tRelationshipTemplate.getTargetElement().getRef().getId());
+            ToscaEdge edge = new ToscaEdge(source, target);
+            graph.addEdge(source, target, edge);
             initializeTOSCAEdge(tRelationshipTemplate, edge);
         }
         return graph;
