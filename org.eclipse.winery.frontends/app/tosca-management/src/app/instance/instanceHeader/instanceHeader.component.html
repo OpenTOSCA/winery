@@ -22,10 +22,13 @@
                                 [multipleVersionsAvailable]="versions?.length > 0"></winery-property-rename>
     </div>
     <div class="managementButtons row" *ngIf="showManagementButtons">
-        <button class="btn btn-danger col-lg-4" (click)="openDeleteConfirmationModel()">Delete</button>
+        <button class="btn btn-danger" (click)="openDeleteConfirmationModel()">Delete</button>
+        <button *wineryRepositoryShowOnFeature="'radon'" (click)="openChe()" class="btn btn-info">
+            Open in IDE
+        </button>
         <div *ngIf="!this.configurationService.isYaml(); then xmlExport else yamlExport"></div>
         <ng-template #xmlExport>
-            <div class="btn-group col-lg-4" dropdown>
+            <div class="btn-group" dropdown>
                 <button dropdownToggle type="button" class="btn btn-info dropdown-toggle dropdown-toggle-split">
                     Export <span class="caret"></span>
                 </button>
@@ -52,7 +55,7 @@
             </div>
         </ng-template>
         <ng-template #yamlExport>
-            <div class="btn-group col-lg-4" dropdown>
+            <div class="btn-group" dropdown>
                 <button dropdownToggle type="button" class="btn btn-info dropdown-toggle dropdown-toggle-split">
                     Export <span class="caret"></span>
                 </button>
@@ -69,7 +72,7 @@
                 </ul>
             </div>
         </ng-template>
-        <winery-version class="col-lg-4" [versions]="versions"></winery-version>
+        <winery-version class="" [versions]="versions"></winery-version>
         <div *ngIf="typeUrl">
             <span style="white-space: pre">{{ typeOf }} <a [routerLink]="typeUrl">{{ typeId }}</a></span>
         </div>

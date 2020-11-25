@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017 Contributors to the Eclipse Foundation
+ * Copyright (c) 2020 Contributors to the Eclipse Foundation
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information regarding copyright ownership.
@@ -11,27 +11,12 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR Apache-2.0
  *******************************************************************************/
-:host {
-    height: 200px;
-}
 
-.nodeTypeImageIcon {
-    z-index: 2;
-    position: absolute;
-    margin-top: 32px;
-    margin-left: 27px;
-    height: 40px;
-    width: 40px;
-}
+package org.eclipse.winery.repository.rest.resources.admin.types;
 
-.toscaLightCompatible {
-    z-index: 2;
-    position: absolute;
-    margin-top: 26px;
-    margin-left: 21px;
-    max-height: 53px;
-}
-
-.managementButtons .btn {
-    margin-right: 5px;
+public class RepositoryConfigurationResponse {
+    public String repositoryRoot;
+    public RepositoryConfigurationResponse(String repositoryRoot) {
+        this.repositoryRoot = repositoryRoot;
+    }
 }

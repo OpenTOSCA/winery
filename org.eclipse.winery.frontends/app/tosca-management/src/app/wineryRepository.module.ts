@@ -50,6 +50,7 @@ import { WineryRepositoryConfigurationService } from './wineryFeatureToggleModul
 import { TopologyFragmentRefinementModelModule } from './wineryMainModules/topologyFragmentRefinementModel/topologyFragmentRefinementModel.module';
 import { WineryFeatureToggleModule } from './wineryFeatureToggleModule/winery-feature-toggle.module';
 import { DataTypeModule } from './wineryMainModules/dataTypes/dataType.module';
+import { CheService } from '../../../topologymodeler/src/app/services/che.service';
 
 @NgModule({
     imports: [
@@ -94,7 +95,8 @@ import { DataTypeModule } from './wineryMainModules/dataTypes/dataType.module';
     ],
     providers: [
         ExistService,
-        WineryRepositoryConfigurationService
+        WineryRepositoryConfigurationService,
+        CheService
     ],
     bootstrap: [WineryRepositoryComponent]
 })
