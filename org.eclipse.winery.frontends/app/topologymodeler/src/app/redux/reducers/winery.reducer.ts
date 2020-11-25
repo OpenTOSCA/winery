@@ -184,7 +184,7 @@ export const WineryReducer =
                         ...lastState.currentJsonTopology,
                         nodeTemplates: lastState.currentJsonTopology.nodeTemplates
                             .map(nodeTemplate => nodeTemplate.id === node.id ?
-                                nodeTemplate.generateNewNodeTemplateWithUpdatedAttribute('participant', participant.name)
+                                nodeTemplate.generateNewNodeTemplateWithUpdatedAttribute('participant', participant)
                                 : nodeTemplate
                             )
                     }

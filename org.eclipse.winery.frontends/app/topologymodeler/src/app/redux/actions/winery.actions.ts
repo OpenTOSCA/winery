@@ -193,7 +193,7 @@ export interface UpdateParticipantsAction extends Action {
 
 export interface AssignParticipantAction extends Action {
     node: TNodeTemplate;
-    participant: OTParticipant;
+    participant: string;
 }
 
 export interface UpdateGroupDefinitionAction extends Action {

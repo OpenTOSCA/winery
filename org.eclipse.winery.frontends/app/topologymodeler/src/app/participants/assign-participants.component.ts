@@ -47,19 +47,42 @@ export class AssignParticipantsComponent implements OnInit {
     isMember(participant: OTParticipant) {
         const value = this.node.otherAttributes[AssignParticipantsComponent.NAMESPACE + 'participant'];
         if (value) {
+            console.log(value);
             if (value.indexOf(',') > -1) {
                 return value.split(',').indexOf(participant.name) > -1;
             } else {
                 return participant.name === value;
             }
         }
-        console.log(this.node);
         return false;
     }
 
     toggleMembership(participant: OTParticipant) {
-        // TODO handle remove
-        this.ngRedux.dispatch(this.ngActions.assignParticipant(this.node, participant));
+        const value = this.node.otherAttributes[AssignParticipantsComponent.NAMESPACE + 'participant'];
+        if (this.isMember(participant)) {
+            if (value.indexOf(',') > -1) {
+                const arr = value.split(',');
+                const index = arr.findIndex((p) => p === participant.name);
+                arr.splice(index, 1);
+                this.ngRedux.dispatch(this.ngActions.assignParticipant(this.node, arr.join(',')));
+            } else {
+                this.ngRedux.dispatch(this.ngActions.assignParticipant(this.node, ''));
+            }
+        } else {
+            if (value) {
+                if (value.indexOf(',') > -1) {
+                    this.ngRedux.dispatch(this.ngActions.assignParticipant(
+                        this.node, value.split(',').push(participant.name).concat(',')
+                    ));
+                } else {
+                    this.ngRedux.dispatch(this.ngActions.assignParticipant(
+                        this.node, value + ',' + participant.name
+                    ));
+                }
+            } else {
+                this.ngRedux.dispatch(this.ngActions.assignParticipant(this.node, participant.name));
+            }
+        }
     }
 
     isEmpty(): boolean {
