@@ -55,6 +55,10 @@ public class TExportedOperation implements HasName, Serializable {
     @Deprecated // used for XML deserialization of API request content
     public TExportedOperation() { }
 
+    public TExportedOperation(String name) {
+        this.name = name;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

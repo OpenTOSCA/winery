@@ -47,6 +47,11 @@ public class TExportedInterface implements HasName, Serializable {
     @Deprecated // used for XML deserialization of API request content
     public TExportedInterface() { }
 
+    public TExportedInterface(String name, List<TExportedOperation> operation) {
+        this.operation = operation;
+        this.name = name;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

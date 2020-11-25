@@ -77,6 +77,7 @@ public class TRelationshipTemplate extends TEntityTemplate implements HasPolicie
         this.sourceElement = builder.sourceElement;
         this.targetElement = builder.targetElement;
         this.relationshipConstraints = builder.relationshipConstraints;
+        this.policies = builder.policies;
         this.name = builder.name;
     }
 
@@ -291,6 +292,7 @@ public class TRelationshipTemplate extends TEntityTemplate implements HasPolicie
         private final SourceOrTargetElement targetElement;
         private RelationshipConstraints relationshipConstraints;
         private String name;
+        private TPolicies policies;
 
         public Builder(String id, QName type, TRelationshipTemplate.SourceOrTargetElement sourceElement, TRelationshipTemplate.SourceOrTargetElement targetElement) {
             super(id, type);
@@ -348,6 +350,10 @@ public class TRelationshipTemplate extends TEntityTemplate implements HasPolicie
 
         public TRelationshipTemplate build() {
             return new TRelationshipTemplate(this);
+        }
+
+        public void setPolicies(TPolicies policies) {
+            this.policies = policies;
         }
     }
 }

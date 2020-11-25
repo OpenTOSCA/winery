@@ -812,8 +812,7 @@ public class ToCanonical {
             builder.setCapabilities(caps);
         }
         if (xml.getPolicies() != null) {
-            TPolicies policies = new TPolicies();
-            policies.getPolicy().addAll(convertList(xml.getPolicies().getPolicy(), this::convert));
+            TPolicies policies = new TPolicies(convertList(xml.getPolicies().getPolicy(), this::convert));
             builder.setPolicies(policies);
         }
         if (xml.getInterfaces() != null) {
@@ -830,15 +829,13 @@ public class ToCanonical {
     }
 
     private TExportedInterface convert(XTExportedInterface xml) {
-        TExportedInterface exportedInterface = new TExportedInterface();
-        exportedInterface.setName(xml.getName());
-        exportedInterface.getOperation().addAll(xml.getOperation().stream().map(this::convert).collect(Collectors.toList()));
-        return exportedInterface;
+        return new TExportedInterface(
+            xml.getName(),
+            convertList(xml.getOperation(), this::convert));
     }
 
     private TExportedOperation convert(XTExportedOperation xml) {
-        TExportedOperation canonical = new TExportedOperation();
-        canonical.setName(xml.getName());
+        TExportedOperation canonical = new TExportedOperation(xml.getName());
         if (xml.getNodeOperation() != null) {
             canonical.setNodeOperation(convert(xml.getNodeOperation()));
         }
@@ -947,26 +944,23 @@ public class ToCanonical {
         TNodeTemplate.Builder builder = new TNodeTemplate.Builder(xml.getId(), xml.getType());
         if (xml.getRequirements() != null) {
             TNodeTemplate.Requirements reqs = new TNodeTemplate.Requirements();
-            reqs.getRequirement().addAll(xml.getRequirements().getRequirement().stream()
-                .map(this::convert).collect(Collectors.toList()));
+            reqs.getRequirement().addAll(convertList(xml.getRequirements().getRequirement(), this::convert));
             builder.setRequirements(reqs);
         }
         if (xml.getCapabilities() != null) {
             TNodeTemplate.Capabilities caps = new TNodeTemplate.Capabilities();
-            caps.getCapability().addAll(xml.getCapabilities().getCapability().stream()
-                .map(this::convert).collect(Collectors.toList()));
+            caps.getCapability().addAll(convertList(xml.getCapabilities().getCapability(), this::convert));
             builder.setCapabilities(caps);
         }
         if (xml.getPolicies() != null) {
-            TPolicies policies = new TPolicies();
-            policies.getPolicy().addAll(xml.getPolicies().getPolicy().stream()
-                .map(this::convert).collect(Collectors.toList()));
+            TPolicies policies = new TPolicies(convertList(xml.getPolicies().getPolicy(), this::convert));
             builder.setPolicies(policies);
         }
         if (xml.getDeploymentArtifacts() != null) {
-            TDeploymentArtifacts artifacts = new TDeploymentArtifacts();
-            artifacts.getDeploymentArtifact().addAll(xml.getDeploymentArtifacts().getDeploymentArtifact().stream()
-                .map(this::convert).collect(Collectors.toList()));
+            TDeploymentArtifacts artifacts = new TDeploymentArtifacts.Builder(
+                convertList(xml.getDeploymentArtifacts().getDeploymentArtifact(), this::convert)
+            )
+                .build();
             builder.setDeploymentArtifacts(artifacts);
         }
         builder.setName(xml.getName());
@@ -987,6 +981,10 @@ public class ToCanonical {
             constraints.getRelationshipConstraint().addAll(xml.getRelationshipConstraints().getRelationshipConstraint().stream()
                 .map(this::convert).collect(Collectors.toList()));
             builder.setRelationshipConstraints(constraints);
+        }
+        if (xml.getPolicies() != null) {
+            TPolicies policies = new TPolicies(convertList(xml.getPolicies().getPolicy(), this::convert));
+            builder.setPolicies(policies);
         }
         fillEntityTemplateProperties(builder, xml);
         return builder.build();
