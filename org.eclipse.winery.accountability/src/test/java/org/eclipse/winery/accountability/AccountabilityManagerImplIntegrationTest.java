@@ -108,7 +108,7 @@ class AccountabilityManagerImplIntegrationTest {
         String file0 = "myTestFile.tosca";
         String manifest = "TOSCA-Meta-Version: 1.0\n" +
             "CSAR-Version: 1.0\n" +
-            "Created-By: Winery 2.0.0-SNAPSHOT\n" +
+            "Created-By: Winery 3.0.0-SNAPSHOT\n" +
             "Entry-Definitions: Definitions/servicetemplates1__MyTinyToDo_Bare_Docker.tosca\n" +
             "\n" +
             "Name: " + file0 + "\n" +
