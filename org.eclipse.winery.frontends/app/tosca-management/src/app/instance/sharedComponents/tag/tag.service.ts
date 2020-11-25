@@ -36,7 +36,7 @@ export class TagService {
     removeTagData(data: TagsAPIData): Observable<HttpResponse<string>> {
         return this.http
             .delete(
-                this.path + '/' + data.id + '/',
+                this.path + data.id + '/',
                 { observe: 'response', responseType: 'text' }
             );
     }

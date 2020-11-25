@@ -48,6 +48,7 @@ import { WineryModalModule } from '../../../tosca-management/src/app/wineryModal
 import { EnricherComponent } from './enricher/enricher.component';
 import { WineryFeatureToggleModule } from '../../../tosca-management/src/app/wineryFeatureToggleModule/winery-feature-toggle.module';
 import { PlaceComponentsService } from './services/placement.service';
+import { MultiParticipantsComponent } from './multi-participants/multi-participants.component';
 import { ReqCapRelationshipService } from './services/req-cap-relationship.service';
 import { WineryTableModule } from '../../../tosca-management/src/app/wineryTableModule/wineryTable.module';
 import { EdmmTransformationCheckComponent } from './edmmTransformationCheck/edmmTransformationCheck.component';
@@ -64,6 +65,7 @@ import { GroupViewPoliciesComponent } from './group-view/policies/policies.compo
 import { VersionSliderComponent } from './version-slider/version-slider.component';
 import { NgxSliderModule } from '@angular-slider/ngx-slider';
 import { VersionSliderService } from './version-slider/version-slider.service';
+import { MultiParticipantsService } from './services/multi-participants.service';
 
 @NgModule({
     declarations: [
@@ -74,6 +76,7 @@ import { VersionSliderService } from './version-slider/version-slider.service';
         RefinementSidebarComponent,
         ProblemDetectionComponent,
         EnricherComponent,
+        MultiParticipantsComponent,
         EdmmTransformationCheckComponent,
         VersionSliderComponent,
         GroupViewComponent,
@@ -131,7 +134,8 @@ import { VersionSliderService } from './version-slider/version-slider.service';
         PlaceComponentsService,
         ReqCapRelationshipService,
         PolicyService,
-        VersionSliderService
+        VersionSliderService,
+        MultiParticipantsService
     ],
     bootstrap: [WineryComponent]
 })

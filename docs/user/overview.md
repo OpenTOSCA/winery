@@ -103,7 +103,6 @@ This supports the user to model valid service templates.
   This functionality allows the grouping of node templates in the TOSCA topology model editor.
   It enables the possibility to model groups within a topology, e.g., to describe that a policy only applies to a certain group of node templates, but not to all node templates of a topology template.
 
-
 ## Features
 
 - [Splitting](features/splitting.md) - Splitting functionality

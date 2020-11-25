@@ -38,6 +38,9 @@ export interface TopologyRendererState {
         refinePatternsButton?: boolean;
         refineTopologyButton?: boolean;
         refineTopologyWithTestsButton?: boolean;
+        generateGDM?: boolean;
+        extractLDM?: boolean;
+        generatePlaceholderSubs?: boolean;
         determineStatefulComponents?: boolean;
         determineFreezableComponentsButton?: boolean;
         cleanFreezableComponentsButton?: boolean;
@@ -74,6 +77,9 @@ export const INITIAL_TOPOLOGY_RENDERER_STATE: TopologyRendererState = {
         refineTopologyButton: false,
         refineTopologyWithTestsButton: false,
         determineStatefulComponents: false,
+        generateGDM: false,
+        extractLDM: false,
+        generatePlaceholderSubs: false,
         determineFreezableComponentsButton: false,
         cleanFreezableComponentsButton: false,
         placeComponentsButton: false,
@@ -135,6 +141,14 @@ export const TopologyRendererReducer =
                     buttonsState: {
                         ...lastState.buttonsState,
                         propertiesButton: !lastState.buttonsState.propertiesButton
+                    }
+                };
+            case TopologyRendererActions.EXTRACT_LDM:
+                return {
+                    ...lastState,
+                    buttonsState: {
+                        ...lastState.buttonsState,
+                        extractLDM: !lastState.buttonsState.extractLDM
                     }
                 };
             case TopologyRendererActions.TOGGLE_REQUIREMENTS_CAPABILITIES:
@@ -279,6 +293,22 @@ export const TopologyRendererReducer =
                     buttonsState: {
                         ...lastState.buttonsState,
                         refineTopologyWithTestsButton: !lastState.buttonsState.refineTopologyWithTestsButton
+                    }
+                };
+            case TopologyRendererActions.GENERATE_GDM:
+                return {
+                    ...lastState,
+                    buttonsState: {
+                        ...lastState.buttonsState,
+                        generateGDM: !lastState.buttonsState.generateGDM
+                    }
+                };
+            case TopologyRendererActions.GENERATE_PLACEHOLDER_SUBS:
+                return {
+                    ...lastState,
+                    buttonsState: {
+                        ...lastState.buttonsState,
+                        generatePlaceholderSubs: !lastState.buttonsState.generatePlaceholderSubs
                     }
                 };
             case TopologyRendererActions.HIGHLIGHT_NODES:

@@ -125,8 +125,6 @@
                     [disabled]="splittingOngoing">
                 {{splittingOngoing ? 'Splitting...' : 'Split'}}
             </button>
-        </div>
-        <div *wineryRepositoryFeatureToggle="configEnum.Splitting" class="btn-group button-group" data-toggle="buttons">
             <button class="btn btn-sm align-middle dark-button-style"
                     type="button"
                     id="match"
@@ -136,6 +134,7 @@
                 {{matchingOngoing ? 'Matching...' : 'Match'}}
             </button>
         </div>
+        
         <div *wineryRepositoryFeatureToggle="configEnum.Placement" class="btn-group button-group" data-toggle="buttons">
             <button class="btn btn-sm align-middle dark-button-style"
                     type="button"
@@ -248,6 +247,36 @@
                     [style.background-color]="getStyle(navbarButtonsState.buttonsState.versionSliderButton)">
                 Version Slider
             </button>
+        </div>
+
+        <div *ngIf="!readonly" class="btn-group button-group" dropdown>
+            <button dropdownToggle type="button"
+                   class="btn btn-sm dark-button-style align-middle dropdown-toggle">
+                Multi-Participant Features <span class="caret"></span>
+            </button>
+            <ul *dropdownMenu class="dropdown-menu" role="menu">
+                <!--<li role="menuitem"><a class="dropdown-item" href="#">Complete Topology</a></li>-->
+                <li role="menuitem">
+                    <button style="cursor: pointer" id="generateGDM" target="_blank"
+                            tooltip="Generate placeholder for the application-specific components."
+                            placement="left" class="dropdown-item" (click)="toggleButton($event)">Generate GDM
+                    </button>
+                </li>
+                <li role="menuitem">
+                    <button style="cursor: pointer" id="extractLDM" target="_blank"
+                            tooltip="Generate for each Participant a Service Template."
+                            class="dropdown-item" (click)="toggleButton($event)">Extract Partner LDM
+                    </button>
+                </li>
+                <li role="menuitem">
+                    <button
+                        style="..." class="dropdown-item" id="generatePlaceholderSubs" target="_blank"
+                        tooltip="Substitute Placeholders that belong to the Participant."
+                        class="dropdown-item" (click)="toggleButton($event)">
+                        Substitute Placeholder
+                    </button>
+                </li>
+            </ul>
         </div>
 
         <div *ngIf="!readonly" class="btn-group button-group" dropdown>
