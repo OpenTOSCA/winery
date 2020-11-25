@@ -737,7 +737,9 @@ public class ToCanonical {
         }
 
         // handle participant extension
-        builder.addParticipants(convertList(xml.getTags().getTag(), this::convertToParticipant));
+        if (topologyTemplate != null && xml.getTags() != null) {
+            topologyTemplate.setParticipants(convertList(xml.getTags().getTag(), this::convertToParticipant));
+        }
 
         return builder.build();
     }

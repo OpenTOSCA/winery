@@ -38,6 +38,11 @@ export class TGroupDefinition extends AbstractTEntity {
     }
 }
 
+export interface OTParticipant {
+    name: string;
+    url: string;
+}
+
 /**
  * This is the datamodel for node Templates and relationship templates
  */
@@ -46,6 +51,7 @@ export class TTopologyTemplate extends AbstractTEntity {
     relationshipTemplates: Array<TRelationshipTemplate> = [];
     policies: { policy: Array<TPolicy> };
     groups: Array<TGroupDefinition> = [];
+    participants: Array<OTParticipant> = [];
 }
 
 /**
