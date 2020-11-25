@@ -1,12 +1,11 @@
 import { Injectable } from '@angular/core';
-import { TopologyModelerConfiguration } from '../models/topologyModelerConfiguration';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { BackendService } from './backend.service';
 import { Observable } from 'rxjs';
 
 @Injectable()
 export class MultiParticipantsService {
-    
+
     private readonly httpHeaders: HttpHeaders;
 
     constructor(private httpClient: HttpClient,
@@ -41,7 +40,6 @@ export class MultiParticipantsService {
     }
 
     postSubstituteVersion(): Observable<any> {
-        debugger
         const url = this.backendService.configuration.repositoryURL
             + '/servicetemplates/'
             + encodeURIComponent(encodeURIComponent(this.backendService.configuration.ns))

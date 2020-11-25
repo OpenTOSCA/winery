@@ -38,7 +38,6 @@ export class MultiParticipantsComponent implements OnInit {
 
     private checkButtonsState(currentButtonsState: TopologyRendererState) {
         // check if Generate Placeholder Button is clicked
-        debugger
         if (currentButtonsState.buttonsState.generateGDM) {
             this.multiParticipantsService.postNewVersion().subscribe(
                 newVersion => {

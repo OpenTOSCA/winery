@@ -272,7 +272,7 @@ export const WineryReducer =
                 const newDepArt: any = (<SetDeploymentArtifactAction>action).nodeDeploymentArtifact;
                 const newDeploymentArtifact: TDeploymentArtifact = newDepArt.newDeploymentArtifact;
                 const indexOfNodeDepArt = lastState.currentJsonTopology.nodeTemplates
-                    .map(node => node.id).indexOf(newDepArt.nodeId);
+                    .map(n => n.id).indexOf(newDepArt.nodeId);
                 const nodeDepArtTemplate = lastState.currentJsonTopology.nodeTemplates
                     .find(nodeTemplate => nodeTemplate.id === newDepArt.nodeId);
                 const depArtExist = nodeDepArtTemplate.deploymentArtifacts && nodeDepArtTemplate.deploymentArtifacts.deploymentArtifact;
@@ -301,7 +301,7 @@ export const WineryReducer =
                 const newArtActionData: any = (<SetYamlArtifactAction>action).nodeYamlArtifact;
                 const newYamlArtifact: TArtifact = newArtActionData.newYamlArtifact;
                 const indexOfContainingNodeTemplate = lastState.currentJsonTopology.nodeTemplates
-                    .map(node => node.id).indexOf(newArtActionData.nodeId);
+                    .map(n => n.id).indexOf(newArtActionData.nodeId);
                 const containingNodeTemplate = lastState.currentJsonTopology.nodeTemplates
                     .find(nodeTemplate => nodeTemplate.id === newArtActionData.nodeId);
                 const artifactsExistInNodeTemplate = containingNodeTemplate.artifacts && containingNodeTemplate.artifacts.artifact;
@@ -331,9 +331,7 @@ export const WineryReducer =
             case WineryActions.DELETE_DEPLOYMENT_ARTIFACT:
                 const deletedDeploymentArtifact: any = (<DeleteDeploymentArtifactAction>action).nodeDeploymentArtifact.deletedDeploymentArtifact;
                 const indexOfNodeWithDeletedDeploymentArtifact = lastState.currentJsonTopology.nodeTemplates
-                    .map((node) => {
-                        return node.id;
-                    })
+                    .map((n) => n.id)
                     .indexOf((<DeleteDeploymentArtifactAction>action).nodeDeploymentArtifact.nodeId);
 
                 return <WineryState>{
@@ -356,7 +354,7 @@ export const WineryReducer =
             case WineryActions.DELETE_YAML_ARTIFACT:
                 const deletedYamlArtifactId: any = (<DeleteYamlArtifactAction>action).nodeYamlArtifact.deletedYamlArtifactId;
                 const indexOfNodeWithDeletedYamlArtifact = lastState.currentJsonTopology.nodeTemplates
-                    .map(node => node.id)
+                    .map(n => n.id)
                     .indexOf((<DeleteYamlArtifactAction>action).nodeYamlArtifact.nodeId);
 
                 return <WineryState>{
@@ -381,7 +379,7 @@ export const WineryReducer =
                 const newPolicy: any = (<SetPolicyAction>action).nodePolicy;
                 const policy = newPolicy.newPolicy;
                 const indexOfNodePolicy = lastState.currentJsonTopology.nodeTemplates
-                    .map(node => node.id).indexOf(newPolicy.nodeId);
+                    .map(n => n.id).indexOf(newPolicy.nodeId);
                 const nodePolicyTemplate = lastState.currentJsonTopology.nodeTemplates
                     .find(nodeTemplate => nodeTemplate.id === newPolicy.nodeId);
                 const policyExist = nodePolicyTemplate.policies && nodePolicyTemplate.policies.policy;
@@ -434,7 +432,7 @@ export const WineryReducer =
                 const newRelPolicy: any = (<SetPolicyAction>action).nodePolicy;
                 const relPolicy = newRelPolicy.newPolicy;
                 const indexOfRelationshipPolicy = lastState.currentJsonTopology.relationshipTemplates
-                    .map(node => node.id).indexOf(newRelPolicy.nodeId);
+                    .map(n => n.id).indexOf(newRelPolicy.nodeId);
                 const relationshipPolicyTemplate = lastState.currentJsonTopology.relationshipTemplates
                     .find(relationshipTemplate => relationshipTemplate.id === newRelPolicy.nodeId);
                 const policyExistCheck = relationshipPolicyTemplate.policies && relationshipPolicyTemplate.policies.policy;
@@ -476,9 +474,7 @@ export const WineryReducer =
             case WineryActions.DELETE_POLICY:
                 const deletedPolicy: any = (<DeletePolicyAction>action).nodePolicy.deletedPolicy;
                 const indexOfNodeWithDeletedPolicy = lastState.currentJsonTopology.nodeTemplates
-                    .map((node) => {
-                        return node.id;
-                    })
+                    .map((n) => n.id)
                     .indexOf((<DeletePolicyAction>action).nodePolicy.nodeId);
 
                 return <WineryState>{
