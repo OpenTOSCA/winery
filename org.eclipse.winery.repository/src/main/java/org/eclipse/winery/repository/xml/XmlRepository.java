@@ -70,7 +70,7 @@ public class XmlRepository extends AbstractFileBasedRepository {
     }
 
     @Override
-    public org.eclipse.winery.model.tosca.TDefinitions definitionsFromRef(RepositoryFileReference ref) throws IOException {
+    public org.eclipse.winery.model.tosca.TDefinitions definitionsFromRef(RepositoryFileReference ref) {
         final Object definition;
         try {
             InputStream is = newInputStream(ref);
