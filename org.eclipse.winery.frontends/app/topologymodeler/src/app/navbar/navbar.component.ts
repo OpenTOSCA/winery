@@ -264,6 +264,9 @@ export class NavbarComponent implements OnDestroy {
             case 'manageParticipants':
                 this.ngRedux.dispatch(this.actions.toggleManageParticipants());
                 break;
+            case 'assignParticipants':
+                this.ngRedux.dispatch(this.actions.toggleAssignParticipants());
+                break;
         }
     }
 

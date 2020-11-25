@@ -14,14 +14,14 @@
 
 import { Action } from 'redux';
 import {
-    AddEntityTypesAction, ChangeYamlPoliciesAction, DecMaxInstances, DecMinInstances, DeleteDeploymentArtifactAction,
-    DeleteNodeAction, DeletePolicyAction, DeleteRelationshipAction, DeleteYamlArtifactAction,
-    HideNavBarAndPaletteAction, IncMaxInstances, IncMinInstances, SaveNodeTemplateAction, SaveRelationshipAction,
-    SendCurrentNodeIdAction, SendPaletteOpenedAction, SetCapabilityAction, SetDeploymentArtifactAction, SetNodeVisuals,
-    SetPolicyAction, SetPropertyAction, SetRequirementAction, SetTargetLocation, SetYamlArtifactAction,
-    SidebarChangeNodeName, SidebarMaxInstanceChanges, SidebarMinInstanceChanges, SidebarStateAction,
-    UpdateGroupDefinitionAction, UpdateNodeCoordinatesAction, UpdateParticipantsAction, UpdateRelationshipNameAction,
-    WineryActions
+    AddEntityTypesAction, AssignParticipantAction, ChangeYamlPoliciesAction, DecMaxInstances, DecMinInstances,
+    DeleteDeploymentArtifactAction, DeleteNodeAction, DeletePolicyAction, DeleteRelationshipAction,
+    DeleteYamlArtifactAction, HideNavBarAndPaletteAction, IncMaxInstances, IncMinInstances, SaveNodeTemplateAction,
+    SaveRelationshipAction, SendCurrentNodeIdAction, SendPaletteOpenedAction, SetCapabilityAction,
+    SetDeploymentArtifactAction, SetNodeVisuals, SetPolicyAction, SetPropertyAction, SetRequirementAction,
+    SetTargetLocation, SetYamlArtifactAction, SidebarChangeNodeName, SidebarMaxInstanceChanges,
+    SidebarMinInstanceChanges, SidebarStateAction, UpdateGroupDefinitionAction, UpdateNodeCoordinatesAction,
+    UpdateParticipantsAction, UpdateRelationshipNameAction, WineryActions
 } from '../actions/winery.actions';
 import { TArtifact, TNodeTemplate, TRelationshipTemplate, TTopologyTemplate } from '../../models/ttopology-template';
 import { TDeploymentArtifact } from '../../models/artifactsModalData';
@@ -171,6 +171,20 @@ export const WineryReducer =
                             .map(nodeTemplate => nodeTemplate.id === id_incMaxInstances ?
                                 nodeTemplate.generateNewNodeTemplateWithUpdatedAttribute('maxInstances',
                                     (Number(lastState.currentJsonTopology.nodeTemplates[indexIncMaxInstances].maxInstances) + 1).toString())
+                                : nodeTemplate
+                            )
+                    }
+                };
+            case WineryActions.ASSIGN_PARTICIPANT:
+                const node = (<AssignParticipantAction>action).node;
+                const participant = (<AssignParticipantAction>action).participant;
+                return <WineryState>{
+                    ...lastState,
+                    currentJsonTopology: {
+                        ...lastState.currentJsonTopology,
+                        nodeTemplates: lastState.currentJsonTopology.nodeTemplates
+                            .map(nodeTemplate => nodeTemplate.id === node.id ?
+                                nodeTemplate.generateNewNodeTemplateWithUpdatedAttribute('participant', participant.name)
                                 : nodeTemplate
                             )
                     }

@@ -191,6 +191,11 @@ export interface UpdateParticipantsAction extends Action {
     participants: OTParticipant[];
 }
 
+export interface AssignParticipantAction extends Action {
+    node: TNodeTemplate;
+    participant: OTParticipant;
+}
+
 export interface UpdateGroupDefinitionAction extends Action {
     groups: TGroupDefinition[];
 }
@@ -256,6 +261,7 @@ export class WineryActions {
     static SET_NODE_VISUALS = 'SET_NODE_VISUALS';
     static UPDATE_GROUP_DEFINITIONS = 'UPDATE_GROUP_DEFINITIONS';
     static UPDATE_PARTICIPANTS = 'UPDATE_PARTICIPANTS';
+    static ASSIGN_PARTICIPANT = 'ASSIGN_PARTICIPANT';
 
     addEntityTypes: ActionCreator<AddEntityTypesAction> = ((entityTypes) => ({
         type: WineryActions.ADD_ENTITY_TYPES,
@@ -405,6 +411,12 @@ export class WineryActions {
         ((participants) => ({
             type: WineryActions.UPDATE_PARTICIPANTS,
             participants,
+        }));
+    assignParticipant: ActionCreator<AssignParticipantAction> =
+        ((node, participant) => ({
+            type: WineryActions.ASSIGN_PARTICIPANT,
+            node: node,
+            participant: participant,
         }));
     setTargetLocation: ActionCreator<SetTargetLocation> =
         ((newTargetLocation) => ({

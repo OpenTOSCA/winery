@@ -125,6 +125,32 @@ export class TNodeTemplate extends AbstractTEntity {
             } else {
                 nodeTemplate[updatedAttribute] = +updatedValue;
             }
+        } else if (updatedAttribute === 'participant') {
+            // let newOtherAttributesAssigned: boolean;
+            let nameSpace: string;
+            for (const key in nodeTemplate.otherAttributes) {
+                if (nodeTemplate.otherAttributes.hasOwnProperty(key)) {
+                    nameSpace = key.substring(key.indexOf('{'), key.indexOf('}') + 1);
+                    if (nameSpace) {
+                        if (nodeTemplate.otherAttributes[nameSpace + 'participant']) {
+                            nodeTemplate.otherAttributes[nameSpace + 'participant']
+                                = nodeTemplate.otherAttributes[nameSpace + 'participant'] + ',' + updatedValue;
+                        } else {
+                            nodeTemplate.otherAttributes[nameSpace + 'participant'] = updatedValue;
+                        }
+                        // newOtherAttributesAssigned = true;
+                        break;
+                    }
+                }
+            }
+            // if (!newOtherAttributesAssigned) {
+            //     if (nodeTemplate.otherAttributes[wineryExtensionNamespace + 'participant']) {
+            //         nodeTemplate.otherAttributes[wineryExtensionNamespace + 'participant']
+            //             = nodeTemplate.otherAttributes[wineryExtensionNamespace + 'participant'] + ',' + updatedValue;
+            //     } else {
+            //         nodeTemplate.otherAttributes[wineryExtensionNamespace + updatedAttribute] = updatedValue;
+            //     }
+            // }
         } else {
             nodeTemplate[updatedAttribute] = updatedValue;
         }

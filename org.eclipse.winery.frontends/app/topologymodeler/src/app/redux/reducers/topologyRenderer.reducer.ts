@@ -47,6 +47,7 @@ export interface TopologyRendererState {
         manageYamlGroupsButton?: boolean;
         yamlGroupsButton?: boolean;
         manageParticipantsButton?: boolean;
+        assignParticipantsButton?: boolean;
     };
     nodesToSelect?: string[];
 }
@@ -121,6 +122,14 @@ export const TopologyRendererReducer =
                     buttonsState: {
                         ...lastState.buttonsState,
                         manageParticipantsButton: !lastState.buttonsState.manageParticipantsButton
+                    }
+                };
+            case TopologyRendererActions.TOGGLE_ASSIGN_PARTICIPANTS:
+                return {
+                    ...lastState,
+                    buttonsState: {
+                        ...lastState.buttonsState,
+                        assignParticipantsButton: !lastState.buttonsState.assignParticipantsButton
                     }
                 };
             case TopologyRendererActions.TOGGLE_POLICIES:

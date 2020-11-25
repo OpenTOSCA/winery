@@ -64,7 +64,7 @@ import { GroupViewPoliciesComponent } from './group-view/policies/policies.compo
 import { VersionSliderComponent } from './version-slider/version-slider.component';
 import { NgxSliderModule } from '@angular-slider/ngx-slider';
 import { VersionSliderService } from './version-slider/version-slider.service';
-import { ParticipantsComponent } from './participants/participants.component';
+import { ManageParticipantsComponent } from './participants/manage-participants.component';
 
 @NgModule({
     declarations: [
@@ -79,7 +79,7 @@ import { ParticipantsComponent } from './participants/participants.component';
         VersionSliderComponent,
         GroupViewComponent,
         GroupViewPoliciesComponent,
-        ParticipantsComponent,
+        ManageParticipantsComponent,
     ],
     exports: [WineryComponent],
     imports: [

@@ -68,11 +68,11 @@ export abstract class TopologyTemplateUtil {
         if (node.properties) {
             properties = node.properties;
         }
-
         let nameSpace: string;
         let targetLocationKey: string;
         let providerKey: string;
         let regionKey: string;
+        let participantKey: string;
         let otherAttributes;
         for (const key in node.otherAttributes) {
             if (node.otherAttributes.hasOwnProperty(key)) {
@@ -87,10 +87,14 @@ export abstract class TopologyTemplateUtil {
                     if (key.substring(key.indexOf('}') + 1) === 'region') {
                         regionKey = key;
                     }
+                    if (key.substring(key.indexOf('}') + 1) === 'participant') {
+                        participantKey = key;
+                    }
                     otherAttributes = {
                         [nameSpace + 'location']: node.otherAttributes[targetLocationKey],
                         [nameSpace + 'provider']: node.otherAttributes[providerKey],
                         [nameSpace + 'region']: node.otherAttributes[regionKey],
+                        [nameSpace + 'participant']: node.otherAttributes[participantKey],
                         [nameSpace + 'x']: node.x,
                         [nameSpace + 'y']: node.y
                     };

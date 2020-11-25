@@ -9,10 +9,10 @@ import { WineryDynamicFormModalComponent } from '../../../../tosca-management/sr
 
 @Component({
     selector: 'winery-manage-participants',
-    templateUrl: './participants.component.html',
-    styleUrls: ['./participants.component.css']
+    templateUrl: './manage-participants.component.html',
+    styleUrls: ['./manage-participants.component.css']
 })
-export class ParticipantsComponent implements OnInit {
+export class ManageParticipantsComponent implements OnInit {
 
     visible = false;
     participants: OTParticipant[] = [];

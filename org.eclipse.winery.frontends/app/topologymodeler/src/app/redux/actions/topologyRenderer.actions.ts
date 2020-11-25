@@ -57,6 +57,7 @@ export class TopologyRendererActions {
     static TOGGLE_MANAGE_YAML_GROUPS = 'TOGGLE_MANAGE_YAML_GROUPS';
     static TOGGLE_YAML_GROUPS = 'TOGGLE_YAML_GROUPS';
     static TOGGLE_MANAGE_PARTICIPANTS = 'TOGGLE_MANAGE_PARTICIPANTS';
+    static TOGGLE_ASSIGN_PARTICIPANTS = 'TOGGLE_ASSIGN_PARTICIPANTS';
 
     togglePolicies(): Action {
         return { type: TopologyRendererActions.TOGGLE_POLICIES };
@@ -189,5 +190,9 @@ export class TopologyRendererActions {
 
     toggleManageParticipants(): Action {
         return { type: TopologyRendererActions.TOGGLE_MANAGE_PARTICIPANTS };
+    }
+
+    toggleAssignParticipants(): Action {
+        return { type: TopologyRendererActions.TOGGLE_ASSIGN_PARTICIPANTS };
     }
 }
