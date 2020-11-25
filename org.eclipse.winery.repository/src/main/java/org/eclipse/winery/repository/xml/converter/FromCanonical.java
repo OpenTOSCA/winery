@@ -20,8 +20,6 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import javax.xml.namespace.QName;
-
 import org.eclipse.winery.model.tosca.HasId;
 import org.eclipse.winery.model.tosca.RelationshipSourceOrTarget;
 import org.eclipse.winery.model.tosca.TArtifact;
@@ -75,6 +73,7 @@ import org.eclipse.winery.model.tosca.TTopologyTemplate;
 import org.eclipse.winery.model.tosca.extensions.OTAttributeMapping;
 import org.eclipse.winery.model.tosca.extensions.OTComplianceRule;
 import org.eclipse.winery.model.tosca.extensions.OTDeploymentArtifactMapping;
+import org.eclipse.winery.model.tosca.extensions.OTParticipant;
 import org.eclipse.winery.model.tosca.extensions.OTPatternRefinementModel;
 import org.eclipse.winery.model.tosca.extensions.OTPermutationMapping;
 import org.eclipse.winery.model.tosca.extensions.OTPrmMapping;
@@ -649,6 +648,11 @@ public class FromCanonical {
             builder.addTags(convertList(canonical.getTopologyTemplate().getGroups(), this::convert));
         }
 
+        // handle participant extension
+        if (canonical.getParticipants() != null) {
+            builder.addTags(convertList(canonical.getParticipants().getParticipant(), this::convert));
+        }
+
         return builder.build();
     }
 
@@ -658,9 +662,17 @@ public class FromCanonical {
             return null;
         }
         String name = "group:" + group.getName();
-        String value = group.getMembers().stream()
-            .map(QName::toString)
-            .collect(Collectors.joining(";"));
+        String value = group.getDescription() == null ? "" : group.getDescription();
+        return new XTTag.Builder().setName(name).setValue(value).build();
+    }
+
+    @Nullable
+    private XTTag convert(@Nullable OTParticipant participant) {
+        if (participant == null) {
+            return null;
+        }
+        String name = "participant:" + participant.getName();
+        String value = participant.getUrl() == null ? "" : participant.getUrl();
         return new XTTag.Builder().setName(name).setValue(value).build();
     }
 

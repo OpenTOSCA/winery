@@ -25,6 +25,8 @@ import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.namespace.QName;
 
+import org.eclipse.winery.model.tosca.extensions.OTParticipant;
+import org.eclipse.winery.model.tosca.extensions.OTParticipants;
 import org.eclipse.winery.model.tosca.utils.RemoveEmptyLists;
 import org.eclipse.winery.model.tosca.visitor.Visitor;
 
@@ -35,7 +37,8 @@ import org.eclipse.jdt.annotation.Nullable;
     "tags",
     "boundaryDefinitions",
     "topologyTemplate",
-    "plans"
+    "plans",
+    "participants"
 })
 public class TServiceTemplate extends HasId implements HasName, HasTargetNamespace, HasTags {
 
@@ -61,8 +64,12 @@ public class TServiceTemplate extends HasId implements HasName, HasTargetNamespa
     @XmlAttribute(name = "substitutableNodeType")
     protected QName substitutableNodeType;
 
+    @XmlElement(name = "Participants")
+    protected OTParticipants participants;
+
     @Deprecated // used for XML deserialization of API request content
-    public TServiceTemplate() { }
+    public TServiceTemplate() {
+    }
 
     public TServiceTemplate(Builder builder) {
         super(builder);
@@ -73,6 +80,7 @@ public class TServiceTemplate extends HasId implements HasName, HasTargetNamespa
         this.name = builder.name;
         this.targetNamespace = builder.targetNamespace;
         this.substitutableNodeType = builder.substitutableNodeType;
+        this.participants = builder.participants;
     }
 
     @Override
@@ -87,12 +95,18 @@ public class TServiceTemplate extends HasId implements HasName, HasTargetNamespa
             Objects.equals(plans, that.plans) &&
             Objects.equals(name, that.name) &&
             Objects.equals(targetNamespace, that.targetNamespace) &&
-            Objects.equals(substitutableNodeType, that.substitutableNodeType);
+            Objects.equals(substitutableNodeType, that.substitutableNodeType) &&
+            Objects.equals(participants, that.participants);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), tags, boundaryDefinitions, topologyTemplate, plans, name, targetNamespace, substitutableNodeType);
+        return Objects.hash(
+            super.hashCode(),
+            tags, boundaryDefinitions, topologyTemplate,
+            plans, name, targetNamespace, substitutableNodeType,
+            participants
+        );
     }
 
     @Nullable
@@ -166,6 +180,15 @@ public class TServiceTemplate extends HasId implements HasName, HasTargetNamespa
         this.substitutableNodeType = value;
     }
 
+    @Nullable
+    public OTParticipants getParticipants() {
+        return participants;
+    }
+
+    public void setParticipants(@Nullable OTParticipants participants) {
+        this.participants = participants;
+    }
+
     public void accept(Visitor visitor) {
         visitor.visit(this);
     }
@@ -179,6 +202,7 @@ public class TServiceTemplate extends HasId implements HasName, HasTargetNamespa
         private String name;
         private String targetNamespace;
         private QName substitutableNodeType;
+        private OTParticipants participants;
 
         public Builder(String id) {
             super(id);
@@ -251,6 +275,37 @@ public class TServiceTemplate extends HasId implements HasName, HasTargetNamespa
             TTags tmp = new TTags();
             tmp.getTag().add(tags);
             return addTags(tmp);
+        }
+
+        public Builder addParticipants(OTParticipants participants) {
+            if (participants == null || participants.getParticipant().isEmpty()) {
+                return this;
+            }
+            if (this.participants == null) {
+                this.participants = participants;
+            } else {
+                this.participants.getParticipant().addAll(participants.getParticipant());
+            }
+            return this;
+        }
+
+        public Builder addParticipants(List<OTParticipant> participant) {
+            if (participant == null) {
+                return this;
+            }
+
+            OTParticipants tmp = new OTParticipants();
+            tmp.getParticipant().addAll(participant);
+            return addParticipants(tmp);
+        }
+
+        public Builder addParticipants(OTParticipant participant) {
+            if (participant == null) {
+                return this;
+            }
+            OTParticipants tmp = new OTParticipants();
+            tmp.getParticipant().add(participant);
+            return addParticipants(tmp);
         }
 
         @Override

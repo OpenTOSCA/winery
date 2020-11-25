@@ -14,7 +14,6 @@
 
 package org.eclipse.winery.repository.xml.converter;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -83,6 +82,7 @@ import org.eclipse.winery.model.tosca.extensions.OTAttributeMapping;
 import org.eclipse.winery.model.tosca.extensions.OTAttributeMappingType;
 import org.eclipse.winery.model.tosca.extensions.OTComplianceRule;
 import org.eclipse.winery.model.tosca.extensions.OTDeploymentArtifactMapping;
+import org.eclipse.winery.model.tosca.extensions.OTParticipant;
 import org.eclipse.winery.model.tosca.extensions.OTPatternRefinementModel;
 import org.eclipse.winery.model.tosca.extensions.OTPermutationMapping;
 import org.eclipse.winery.model.tosca.extensions.OTPrmMapping;
@@ -736,18 +736,28 @@ public class ToCanonical {
             topologyTemplate.setGroups(convertList(xml.getTags().getTag(), this::convertToGroup));
         }
 
+        // handle participant extension
+        builder.addParticipants(convertList(xml.getTags().getTag(), this::convertToParticipant));
+
         return builder.build();
     }
 
     private TGroupDefinition convertToGroup(XTTag xml) {
         if (xml.getName().startsWith("group:")) {
             String name = xml.getName().split(":")[1];
-            List<QName> members = Arrays.stream(xml.getValue().split(";"))
-                .map(QName::valueOf)
-                .collect(Collectors.toList());
+            String description = xml.getValue();
             return new TGroupDefinition.Builder(name, QName.valueOf("{tosca.groups}Root"))
-                .addMembers(members)
+                .setDescription(description)
                 .build();
+        }
+        return null;
+    }
+
+    private OTParticipant convertToParticipant(XTTag xml) {
+        if (xml.getName().startsWith("participant:")) {
+            String name = xml.getName().split(":")[1];
+            String url = xml.getValue();
+            return new OTParticipant.Builder().setName(name).setUrl(url).build();
         }
         return null;
     }
