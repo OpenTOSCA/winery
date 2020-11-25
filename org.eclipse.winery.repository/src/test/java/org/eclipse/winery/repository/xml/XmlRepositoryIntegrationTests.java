@@ -38,6 +38,7 @@ import org.junit.platform.commons.util.Preconditions;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class XmlRepositoryIntegrationTests extends TestWithGitBackedRepository {
@@ -77,7 +78,7 @@ public class XmlRepositoryIntegrationTests extends TestWithGitBackedRepository {
         assertNotNull(nodeTemplate);
 
         TGroupDefinition testGroup = new TGroupDefinition.Builder("test", QName.valueOf("{tosca.groups}Root"))
-            .addMembers(QName.valueOf(nodeTemplate.getId()))
+            .setDescription("test")
             .build();
 
         if (element.getTags() == null) {
@@ -96,7 +97,7 @@ public class XmlRepositoryIntegrationTests extends TestWithGitBackedRepository {
         assertEquals(1, element.getTopologyTemplate().getGroups().size());
         TGroupDefinition actualGroup = element.getTopologyTemplate().getGroups().get(0);
         assertEquals(testGroup.getDescription(), actualGroup.getDescription());
-        assertEquals(testGroup.getMembers().get(0), actualGroup.getMembers().get(0));
+        assertTrue(testGroup.getMembers().isEmpty());
 
         assertNotNull(element.getTags());
         assertEquals(1, element.getTags().getTag().size());
