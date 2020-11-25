@@ -14,11 +14,14 @@
 
 import { Action } from 'redux';
 import {
-    AddEntityTypesAction, ChangeYamlPoliciesAction, DecMaxInstances, DecMinInstances, DeleteDeploymentArtifactAction, DeleteNodeAction, DeletePolicyAction,
-    DeleteRelationshipAction, DeleteYamlArtifactAction, HideNavBarAndPaletteAction, IncMaxInstances, IncMinInstances, SaveNodeTemplateAction,
-    SaveRelationshipAction, SendCurrentNodeIdAction, SendPaletteOpenedAction, SetCapabilityAction, SetDeploymentArtifactAction, SetNodeVisuals, SetPolicyAction,
-    SetPropertyAction, SetRequirementAction, SetTargetLocation, SetYamlArtifactAction, SidebarChangeNodeName, SidebarMaxInstanceChanges,
-    SidebarMinInstanceChanges, SidebarStateAction, UpdateGroupDefinitionAction, UpdateNodeCoordinatesAction, UpdateRelationshipNameAction, WineryActions
+    AddEntityTypesAction, ChangeYamlPoliciesAction, DecMaxInstances, DecMinInstances, DeleteDeploymentArtifactAction,
+    DeleteNodeAction, DeletePolicyAction, DeleteRelationshipAction, DeleteYamlArtifactAction,
+    HideNavBarAndPaletteAction, IncMaxInstances, IncMinInstances, SaveNodeTemplateAction, SaveRelationshipAction,
+    SendCurrentNodeIdAction, SendPaletteOpenedAction, SetCapabilityAction, SetDeploymentArtifactAction, SetNodeVisuals,
+    SetPolicyAction, SetPropertyAction, SetRequirementAction, SetTargetLocation, SetYamlArtifactAction,
+    SidebarChangeNodeName, SidebarMaxInstanceChanges, SidebarMinInstanceChanges, SidebarStateAction,
+    UpdateGroupDefinitionAction, UpdateNodeCoordinatesAction, UpdateParticipantsAction, UpdateRelationshipNameAction,
+    WineryActions
 } from '../actions/winery.actions';
 import { TArtifact, TNodeTemplate, TRelationshipTemplate, TTopologyTemplate } from '../../models/ttopology-template';
 import { TDeploymentArtifact } from '../../models/artifactsModalData';
@@ -397,7 +400,6 @@ export const WineryReducer =
                         policies: (<ChangeYamlPoliciesAction>action).yamlPolicies.policies
                     }
                 };
-
             case WineryActions.UPDATE_GROUP_DEFINITIONS:
                 return <WineryState>{
                     ...lastState,
@@ -406,7 +408,14 @@ export const WineryReducer =
                         groups: (<UpdateGroupDefinitionAction>action).groups
                     }
                 };
-
+            case WineryActions.UPDATE_PARTICIPANTS:
+                return <WineryState>{
+                    ...lastState,
+                    currentJsonTopology: {
+                        ...lastState.currentJsonTopology,
+                        participants: (<UpdateParticipantsAction>action).participants
+                    }
+                };
             case WineryActions.SET_POLICY_FOR_RELATIONSHIP:
                 const newRelPolicy: any = (<SetPolicyAction>action).nodePolicy;
                 const relPolicy = newRelPolicy.newPolicy;

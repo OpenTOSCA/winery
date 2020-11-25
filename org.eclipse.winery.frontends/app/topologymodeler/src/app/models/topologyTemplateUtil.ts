@@ -41,6 +41,7 @@ export abstract class TopologyTemplateUtil {
             nodeTemplates: [],
             policies: { policy: new Array<TPolicy>() },
             groups: [],
+            participants: [],
         };
         // Prepare for saving by updating the existing topology with the current topology state inside the Redux store
         topologySkeleton.nodeTemplates = topologyTemplate.nodeTemplates;
@@ -55,6 +56,7 @@ export abstract class TopologyTemplateUtil {
         });
         topologySkeleton.policies = topologyTemplate.policies;
         topologySkeleton.groups = topologyTemplate.groups;
+        topologySkeleton.participants = topologyTemplate.participants;
 
         return topologySkeleton;
     }

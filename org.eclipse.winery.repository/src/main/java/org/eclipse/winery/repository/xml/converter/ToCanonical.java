@@ -717,6 +717,7 @@ public class ToCanonical {
         if (xml.getTags() != null) {
             xml.getTags().getTag().stream()
                 .filter(t -> !t.getName().startsWith("group:")) // filter group definitions
+                .filter(t -> !t.getName().startsWith("participant:")) // filter participants
                 .map(this::convert).forEach(builder::addTags);
         }
         if (xml.getBoundaryDefinitions() != null) {

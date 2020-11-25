@@ -23,6 +23,9 @@ public class OTParticipant extends HasId {
     private String name;
     private String url;
 
+    public OTParticipant() {
+    }
+
     protected OTParticipant(Builder builder) {
         super(builder);
         this.name = builder.name;

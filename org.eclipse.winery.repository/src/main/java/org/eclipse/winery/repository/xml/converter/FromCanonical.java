@@ -650,6 +650,7 @@ public class FromCanonical {
 
         // handle participant extension
         if (canonical.getTopologyTemplate() != null && canonical.getTopologyTemplate().getParticipants() != null) {
+
             builder.addTags(convertList(canonical.getTopologyTemplate().getParticipants(), this::convert));
         }
 
