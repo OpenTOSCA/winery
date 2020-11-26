@@ -608,23 +608,19 @@ public abstract class ModelUtilities {
      * lower case.
      */
     public static Optional<String> getTargetLabel(TNodeTemplate nodeTemplate) {
-        if (nodeTemplate == null) {
-            return Optional.empty();
-        }
-        Map<QName, String> otherAttributes = nodeTemplate.getOtherAttributes();
-        String targetLabel = otherAttributes.get(QNAME_LOCATION);
-        if (targetLabel != null && (targetLabel.equals("undefined") || targetLabel.equals(""))) {
-            return Optional.empty();
-        }
-        return Optional.ofNullable(targetLabel).map(String::toLowerCase);
+        return getOtherAttributeValue(nodeTemplate, QNAME_LOCATION);
     }
 
     public static Optional<String> getParticipant(TNodeTemplate nodeTemplate) {
+        return getOtherAttributeValue(nodeTemplate, QNAME_PARTICIPANT);
+    }
+
+    private static Optional<String> getOtherAttributeValue(TNodeTemplate nodeTemplate, QName otherAttribute) {
         if (nodeTemplate == null) {
             return Optional.empty();
         }
         Map<QName, String> otherAttributes = nodeTemplate.getOtherAttributes();
-        String participant = otherAttributes.get(QNAME_PARTICIPANT);
+        String participant = otherAttributes.get(otherAttribute);
         if (participant != null && (participant.equals("undefined") || participant.equals(""))) {
             return Optional.empty();
         }
@@ -650,8 +646,7 @@ public abstract class ModelUtilities {
                     && nt.getRequirements().getRequirement().contains(requirement))
                 .findAny().get();
         } else {
-            TNodeTemplate sourceNodeTemplate = (TNodeTemplate) relationshipTemplate.getSourceElement().getRef();
-            return sourceNodeTemplate;
+            return (TNodeTemplate) relationshipTemplate.getSourceElement().getRef();
         }
     }
 

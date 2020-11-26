@@ -65,7 +65,7 @@ public class Splitting {
     // counter for relationships starts at 100 because all TRelationshipTemplate should have a 3 digit number in their id
     private static int newRelationshipIdCounter = 100;
     private static int IdCounter = 1;
-    private static int newcapabilityCounter = 1;
+    private static int newCapabilityCounter = 1;
 
     // Required variables for the following computation of the transitive closure of a given topology
     private Map<TNodeTemplate, Set<TNodeTemplate>> initDirectSuccessors = new HashMap<>();
@@ -312,12 +312,12 @@ public class Splitting {
         boolean uniqueID = false;
         id = "0";
         while (!uniqueID) {
-            if (!ids.contains("cap" + newcapabilityCounter)) {
-                id = "cap_" + newcapabilityCounter;
-                newcapabilityCounter++;
+            if (!ids.contains("cap" + newCapabilityCounter)) {
+                id = "cap_" + newCapabilityCounter;
+                newCapabilityCounter++;
                 uniqueID = true;
             } else {
-                newcapabilityCounter++;
+                newCapabilityCounter++;
             }
         }
         capa.setId(id);
