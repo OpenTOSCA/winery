@@ -113,7 +113,7 @@ public class ServiceTemplateResource extends AbstractComponentInstanceResourceCo
     private static final Logger LOGGER = LoggerFactory.getLogger(ServiceTemplateResource.class);
 
     private static final QName QNAME_LOCATION = new QName(Namespaces.TOSCA_WINERY_EXTENSIONS_NAMESPACE, "location");
-    public static final QName QNAME_PARTICIPANT = new QName(Namespaces.TOSCA_WINERY_EXTENSIONS_NAMESPACE, "participant");
+    private static final QName QNAME_PARTICIPANT = new QName(Namespaces.TOSCA_WINERY_EXTENSIONS_NAMESPACE, "participant");
 
     public ServiceTemplateResource(ServiceTemplateId id) {
         super(id);
