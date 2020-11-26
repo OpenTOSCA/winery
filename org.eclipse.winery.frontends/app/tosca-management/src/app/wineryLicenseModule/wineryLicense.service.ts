@@ -21,13 +21,14 @@ import { WineryRepositoryConfigurationService } from '../wineryFeatureToggleModu
 
 @Injectable()
 export class WineryLicenseService {
+
     private _allLicences: WineryLicense[];
 
     constructor(private http: HttpClient, private sharedData: InstanceService, private configurationService: WineryRepositoryConfigurationService) {
         this._allLicences = [
             new WineryLicense('Apache-2.0', '/assets/licenses/Apache-2.0.txt'),
             new WineryLicense('EPL-2.0', '/assets/licenses/EPL-2.0.txt'),
-            new WineryLicense('Proprietary', '/assets/licenses/Proprietary.txt')
+            new WineryLicense('Proprietary', '/assets/licenses/Proprietary.txt'),
         ];
         if (configurationService.configuration.features.radon) {
             this._allLicences.push(new WineryLicense('RADON', '/assets/licenses/RADON.txt'));

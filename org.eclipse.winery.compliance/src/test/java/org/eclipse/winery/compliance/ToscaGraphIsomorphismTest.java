@@ -15,7 +15,6 @@ package org.eclipse.winery.compliance;
 
 import java.io.IOException;
 import java.io.StringWriter;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -27,24 +26,18 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.namespace.QName;
 
-import org.eclipse.winery.model.ids.definitions.ComplianceRuleId;
-import org.eclipse.winery.model.ids.definitions.DefinitionsChildId;
-import org.eclipse.winery.model.ids.definitions.NodeTypeId;
-import org.eclipse.winery.model.ids.definitions.RelationshipTypeId;
-import org.eclipse.winery.model.ids.definitions.ServiceTemplateId;
-import org.eclipse.winery.compliance.checking.ComplianceCheckingException;
-import org.eclipse.winery.compliance.checking.ComplianceRuleChecker;
 import org.eclipse.winery.compliance.checking.ServiceTemplateCheckingResult;
 import org.eclipse.winery.compliance.checking.ServiceTemplateComplianceRuleRuleChecker;
 import org.eclipse.winery.compliance.checking.ToscaComplianceRuleMatcher;
-import org.eclipse.winery.model.tosca.extensions.OTComplianceRule;
+import org.eclipse.winery.model.ids.extensions.ComplianceRuleId;
+import org.eclipse.winery.model.ids.definitions.DefinitionsChildId;
+import org.eclipse.winery.model.ids.definitions.NodeTypeId;
+import org.eclipse.winery.model.ids.definitions.ServiceTemplateId;
 import org.eclipse.winery.model.tosca.TExtensibleElements;
 import org.eclipse.winery.model.tosca.TNodeTemplate;
 import org.eclipse.winery.model.tosca.TNodeType;
-import org.eclipse.winery.model.tosca.TRelationshipTemplate;
-import org.eclipse.winery.model.tosca.TRelationshipType;
 import org.eclipse.winery.model.tosca.TServiceTemplate;
-import org.eclipse.winery.model.tosca.TTopologyTemplate;
+import org.eclipse.winery.model.tosca.extensions.OTComplianceRule;
 import org.eclipse.winery.repository.TestWithGitBackedRepository;
 import org.eclipse.winery.repository.backend.BackendUtils;
 import org.eclipse.winery.topologygraph.matching.ToscaIsomorphismMatcher;
@@ -52,9 +45,7 @@ import org.eclipse.winery.topologygraph.model.ToscaEdge;
 import org.eclipse.winery.topologygraph.model.ToscaGraph;
 import org.eclipse.winery.topologygraph.model.ToscaNode;
 
-import org.apache.commons.lang3.StringUtils;
 import org.jgrapht.GraphMapping;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static com.google.common.collect.Lists.newArrayList;
@@ -67,38 +58,20 @@ import static org.eclipse.winery.compliance.ToscaModelHelper.createTNodeType;
 import static org.eclipse.winery.compliance.ToscaModelHelper.createTOSCANode;
 import static org.eclipse.winery.compliance.ToscaModelHelper.createTOSCANodeOnlyProperties;
 import static org.eclipse.winery.compliance.ToscaModelHelper.createTOSCANodeOnlyTypes;
-import static org.eclipse.winery.compliance.ToscaModelHelper.createTRelationshipTemplate;
-import static org.eclipse.winery.compliance.ToscaModelHelper.createTRelationshipType;
 import static org.eclipse.winery.compliance.ToscaModelHelper.createTServiceTemplate;
 import static org.eclipse.winery.compliance.ToscaModelHelper.createTTopologyTemplate;
 import static org.eclipse.winery.compliance.ToscaModelHelper.setDerivedFrom;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ToscaGraphIsomorphismTest extends TestWithGitBackedRepository {
-
-    // TODO update this to include test cases that are not solely based on WineryKVProperties created from the ToscaModelPropertiesBuilder
-    // TODO revise
-//    private final IRepository repository = initializeRepository();
-//
-//    private IRepository initializeRepository() {
-//        Path path = Paths.get(System.getProperty("java.io.tmpdir")).resolve("test-repository");
-//        return RepositoryFactory.getRepository(new FileBasedRepositoryConfiguration(path));
-//    }
 
     private void persist(HashMap<DefinitionsChildId, TExtensibleElements> allEntities) throws IOException {
         for (Map.Entry<DefinitionsChildId, TExtensibleElements> entry : allEntities.entrySet()) {
             repository.setElement(entry.getKey(), entry.getValue());
         }
     }
-
-    // TODO revise
-//    @BeforeEach
-//    public void cleanUp() {
-//        repository.doClear();
-//    }
 
     @Test
     public void testTComplianceRulePersistence() throws Exception {
@@ -197,25 +170,12 @@ public class ToscaGraphIsomorphismTest extends TestWithGitBackedRepository {
 
         // other way round
         assertFalse(matcher.isPropertiesCompatible(createTOSCANodeOnlyProperties(bldrRight), createTOSCANodeOnlyProperties(bldrLeft)));
-
-//		String repositoryURI = "http://localhost:8080/winery";
-//
-//		boolean USE_PROXY = false;
-//
-//		IWineryRepositoryClient client = new WineryRepositoryClient(USE_PROXY);
-//
-//		client.addRepository(repositoryURI);
-//
-//		TTopologyTemplate testTemplate = client.getTopologyTemplate(new QName( "http://opentosca.org/compliancerules","TestTemplate"));
-//		
-//		TNodeTemplate.Policies leftPolicies;
-//		TPolicy policy;
-
     }
 
     @Test
-    @Disabled // TODO Fix this test using the repo test superclass
-    public void testServiceTemplateComplianceRuleChecker() throws IOException {
+    public void testServiceTemplateComplianceRuleChecker() throws Exception {
+        this.setRevisionTo("origin/plain");
+
         HashMap<DefinitionsChildId, TExtensibleElements> allEntities = new HashMap<>();
 
         TServiceTemplate tServiceTemplate = createTServiceTemplate("ServiceTemplateTestId", TEST_TARGET_NAMESPACE);
