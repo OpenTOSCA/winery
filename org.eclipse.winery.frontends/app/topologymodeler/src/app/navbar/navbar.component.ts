@@ -28,6 +28,7 @@ import { FeatureEnum } from '../../../../tosca-management/src/app/wineryFeatureT
 import { WineryRepositoryConfigurationService } from '../../../../tosca-management/src/app/wineryFeatureToggleModule/WineryRepositoryConfiguration.service';
 import { TTopologyTemplate } from '../models/ttopology-template';
 import { VersionSliderService } from '../version-slider/version-slider.service';
+import { CheService } from '../services/che.service';
 
 /**
  * The navbar of the topologymodeler.
@@ -74,7 +75,8 @@ export class NavbarComponent implements OnDestroy {
                 private statefulService: StatefulAnnotationsService,
                 private hotkeysService: HotkeysService,
                 private versionSliderService: VersionSliderService,
-                public configurationService: WineryRepositoryConfigurationService) {
+                public configurationService: WineryRepositoryConfigurationService,
+                private che: CheService) {
         this.subscriptions.push(ngRedux.select(state => state.topologyRendererState)
             .subscribe(newButtonsState => this.setButtonsState(newButtonsState)));
         this.subscriptions.push(ngRedux.select(currentState => currentState.wineryState.currentJsonTopology)
@@ -305,6 +307,11 @@ export class NavbarComponent implements OnDestroy {
     }
 
     openChe() {
-        window.open(this.configurationService.configuration.endpoints.eclipseChe, '_blank');
+        this.che.openChe(
+            this.backendService.configuration.repositoryURL,
+            this.backendService.configuration.id,
+            this.backendService.configuration.ns,
+            'servicetemplates'
+        );
     }
 }

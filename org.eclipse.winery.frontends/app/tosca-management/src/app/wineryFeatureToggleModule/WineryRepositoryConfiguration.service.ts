@@ -45,6 +45,10 @@ export interface WineryConfiguration {
     };
 }
 
+export interface WineryRepositoryConfiguration {
+    repositoryRoot: String;
+}
+
 @Injectable()
 export class WineryRepositoryConfigurationService {
     configuration: WineryConfiguration;
@@ -71,6 +75,10 @@ export class WineryRepositoryConfigurationService {
                 }
             );
         return subject.asObservable();
+    }
+
+    getRepositoryConfiguration(): Observable<WineryRepositoryConfiguration> {
+        return this.http.get<WineryRepositoryConfiguration>(backendBaseURL + '/admin/repository-config');
     }
 
     isYaml(): boolean {
