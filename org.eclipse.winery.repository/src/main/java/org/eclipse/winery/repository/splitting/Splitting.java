@@ -56,7 +56,6 @@ import org.eclipse.winery.repository.common.Util;
 import org.eclipse.winery.repository.driverspecificationandinjection.DASpecification;
 import org.eclipse.winery.repository.driverspecificationandinjection.DriverInjection;
 
-import org.bouncycastle.math.raw.Mod;
 import org.slf4j.LoggerFactory;
 
 public class Splitting {
