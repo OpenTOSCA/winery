@@ -47,7 +47,6 @@ export class AssignParticipantsComponent implements OnInit {
     isMember(participant: OTParticipant) {
         const value = this.node.otherAttributes[AssignParticipantsComponent.NAMESPACE + 'participant'];
         if (value) {
-            console.log(value);
             if (value.indexOf(',') > -1) {
                 return value.split(',').indexOf(participant.name) > -1;
             } else {
@@ -71,8 +70,10 @@ export class AssignParticipantsComponent implements OnInit {
         } else {
             if (value) {
                 if (value.indexOf(',') > -1) {
+                    const arr = value.split(',');
+                    arr.push(participant.name);
                     this.ngRedux.dispatch(this.ngActions.assignParticipant(
-                        this.node, value.split(',').push(participant.name).concat(',')
+                        this.node, arr.join(',')
                     ));
                 } else {
                     this.ngRedux.dispatch(this.ngActions.assignParticipant(
