@@ -249,13 +249,13 @@
             </button>
         </div>
 
-        <div *ngIf="!readonly" class="btn-group button-group" dropdown>
+        <!-- TODO introduce new feature to toggle this -->
+        <div class="btn-group button-group" dropdown>
             <button dropdownToggle type="button"
                     class="btn btn-sm dark-button-style align-middle dropdown-toggle">
                 Multi-Participant Features <span class="caret"></span>
             </button>
             <ul *dropdownMenu class="dropdown-menu" role="menu">
-                <!--<li role="menuitem"><a class="dropdown-item" href="#">Complete Topology</a></li>-->
                 <li role="menuitem">
                     <button id="manageParticipants" style="cursor: pointer" class="dropdown-item"
                             tooltip="Add or remove participants to the Topology."
