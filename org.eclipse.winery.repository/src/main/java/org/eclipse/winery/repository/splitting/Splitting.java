@@ -56,6 +56,7 @@ import org.eclipse.winery.repository.common.Util;
 import org.eclipse.winery.repository.driverspecificationandinjection.DASpecification;
 import org.eclipse.winery.repository.driverspecificationandinjection.DriverInjection;
 
+import org.bouncycastle.math.raw.Mod;
 import org.slf4j.LoggerFactory;
 
 public class Splitting {
@@ -755,11 +756,9 @@ public class Splitting {
         String choreoValue = "";
         // iterate over node templates and check if their target location == current participant
         for (TNodeTemplate tNodeTemplate : nodeTemplateList) {
-            for (Map.Entry<QName, String> entry : tNodeTemplate.getOtherAttributes().entrySet()) {
-                if (entry.getValue().toLowerCase().equals(participantName.toLowerCase())) {
-                    // add to choregraphy value
-                    choreoValue += tNodeTemplate.getId() + ",";
-                }
+            Optional<String> nodeOwner = ModelUtilities.getParticipant(tNodeTemplate);
+            if (nodeOwner.isPresent() && nodeOwner.get().contains(participantName)) {
+                choreoValue += tNodeTemplate.getId() + ",";
             }
         }
 
