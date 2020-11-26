@@ -28,6 +28,7 @@ export interface WineryConfiguration {
         problemDetection: boolean;
         radon: boolean;
         splitting: boolean;
+        multiParticipant: boolean;
         testRefinement: boolean;
         topologyFragmentRefinementModel: boolean;
         placement: boolean;

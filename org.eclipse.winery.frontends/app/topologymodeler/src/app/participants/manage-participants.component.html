@@ -13,7 +13,7 @@
     <table class="table table-striped table-bordered table-condensed" *ngIf="!isEmpty()">
         <tr>
             <th>Name</th>
-            <th>Description</th>
+            <th>URL</th>
             <th style="width: 25px"></th>
         </tr>
         <tbody *ngFor="let o of participants">
@@ -30,7 +30,7 @@
     </table>
     <winery-dynamic-form-modal #generatedModal
                                [config]="formMetadata"
-                               [modalTitle]="'Add Group Definition'"
+                               [modalTitle]="'Add Participant Definition'"
                                (saveClicked)="save($event)">
     </winery-dynamic-form-modal>
 </div>

@@ -24,6 +24,7 @@ import java.util.stream.Stream;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlType;
 
@@ -63,7 +64,8 @@ public class TTopologyTemplate extends TExtensibleElements {
     @JsonProperty("outputs")
     protected List<ParameterDefinition> outputs;
 
-    @XmlElement(name = "Participants")
+    @XmlElementWrapper(name = "Participants")
+    @XmlElement(name = "Participant")
     protected List<OTParticipant> participants;
 
     @Deprecated // used for XML deserialization of API request content

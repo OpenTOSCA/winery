@@ -53,6 +53,10 @@
            [checked]="config.features.splitting">
     <label for="splitting">Splitting</label>
     <br>
+    <input type="checkbox" [(ngModel)]="config.features.multiParticipant" id="multiParticipant" name="splitting"
+           [checked]="config.features.multiParticipant">
+    <label for="splitting">Multi-Participant Support</label>
+    <br>
     <input type="checkbox" [(ngModel)]="config.features.testRefinement" id="testRefinement" name="testRefinement"
            [checked]="config.features.testRefinement">
     <label for="testRefinement">Test Refinement</label>
