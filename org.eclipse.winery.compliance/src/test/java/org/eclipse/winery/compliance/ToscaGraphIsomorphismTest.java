@@ -29,7 +29,7 @@ import javax.xml.namespace.QName;
 import org.eclipse.winery.compliance.checking.ServiceTemplateCheckingResult;
 import org.eclipse.winery.compliance.checking.ServiceTemplateComplianceRuleRuleChecker;
 import org.eclipse.winery.compliance.checking.ToscaComplianceRuleMatcher;
-import org.eclipse.winery.model.ids.definitions.ComplianceRuleId;
+import org.eclipse.winery.model.ids.extensions.ComplianceRuleId;
 import org.eclipse.winery.model.ids.definitions.DefinitionsChildId;
 import org.eclipse.winery.model.ids.definitions.NodeTypeId;
 import org.eclipse.winery.model.ids.definitions.ServiceTemplateId;

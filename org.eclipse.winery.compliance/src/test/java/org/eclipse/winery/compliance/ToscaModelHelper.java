@@ -17,7 +17,7 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
-import org.eclipse.winery.model.ids.definitions.ComplianceRuleId;
+import org.eclipse.winery.model.ids.extensions.ComplianceRuleId;
 import org.eclipse.winery.model.ids.definitions.NodeTypeId;
 import org.eclipse.winery.model.tosca.TEntityType;
 import org.eclipse.winery.model.tosca.TNodeTemplate;

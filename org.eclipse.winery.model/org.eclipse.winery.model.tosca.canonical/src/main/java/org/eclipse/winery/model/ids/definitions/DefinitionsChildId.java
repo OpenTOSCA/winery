@@ -25,6 +25,7 @@ import org.eclipse.winery.model.ids.IdUtil;
 import org.eclipse.winery.model.ids.Namespace;
 import org.eclipse.winery.model.ids.XmlId;
 import org.eclipse.winery.common.version.VersionUtils;
+import org.eclipse.winery.model.ids.extensions.ComplianceRuleId;
 import org.eclipse.winery.model.ids.extensions.PatternRefinementModelId;
 import org.eclipse.winery.model.ids.extensions.TestRefinementModelId;
 import org.eclipse.winery.model.ids.extensions.TopologyFragmentRefinementModelId;
