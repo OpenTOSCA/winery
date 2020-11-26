@@ -112,20 +112,6 @@
         <div *wineryRepositoryFeatureToggle="configEnum.Splitting" class="btn-group button-group" data-toggle="buttons">
             <button class="btn btn-sm align-middle dark-button-style"
                     type="button"
-                    id="manageParticipants"
-                    (click)="toggleButton($event)"
-                    [style.background-color]="getStyle(navbarButtonsState.buttonsState.manageParticipantsButton)">
-                Manage Participants
-            </button>
-            <button class="btn btn-sm align-middle dark-button-style"
-                    type="button"
-                    id="assignParticipants"
-                    (click)="toggleButton($event)"
-                    [style.background-color]="getStyle(navbarButtonsState.buttonsState.assignParticipantsButton)">
-                Assign Participants
-            </button>
-            <button class="btn btn-sm align-middle dark-button-style"
-                    type="button"
                     id="targetLocations"
                     (click)="toggleButton($event)"
                     [style.background-color]="getStyle(navbarButtonsState.buttonsState.targetLocationsButton)">
@@ -148,7 +134,7 @@
                 {{matchingOngoing ? 'Matching...' : 'Match'}}
             </button>
         </div>
-        
+
         <div *wineryRepositoryFeatureToggle="configEnum.Placement" class="btn-group button-group" data-toggle="buttons">
             <button class="btn btn-sm align-middle dark-button-style"
                     type="button"
@@ -265,28 +251,43 @@
 
         <div *ngIf="!readonly" class="btn-group button-group" dropdown>
             <button dropdownToggle type="button"
-                   class="btn btn-sm dark-button-style align-middle dropdown-toggle">
+                    class="btn btn-sm dark-button-style align-middle dropdown-toggle">
                 Multi-Participant Features <span class="caret"></span>
             </button>
             <ul *dropdownMenu class="dropdown-menu" role="menu">
                 <!--<li role="menuitem"><a class="dropdown-item" href="#">Complete Topology</a></li>-->
                 <li role="menuitem">
-                    <button style="cursor: pointer" id="generateGDM" target="_blank"
+                    <button id="manageParticipants" style="cursor: pointer" class="dropdown-item"
+                            tooltip="Add or remove participants to the Topology."
+                            (click)="toggleButton($event)">
+                        Manage Participants
+                    </button>
+                </li>
+                <li role="menuitem">
+                    <button id="assignParticipants" style="cursor: pointer" class="dropdown-item"
+                            tooltip="Assign which nodes belong to which participant."
+                            (click)="toggleButton($event)">
+                        Assign Participants
+                    </button>
+                </li>
+                <li role="menuitem">
+                    <button id="generateGDM" style="cursor: pointer" class="dropdown-item"
                             tooltip="Generate placeholder for the application-specific components."
-                            placement="left" class="dropdown-item" (click)="toggleButton($event)">Generate GDM
+                            (click)="toggleButton($event)">
+                        Generate GDM
                     </button>
                 </li>
                 <li role="menuitem">
-                    <button style="cursor: pointer" id="extractLDM" target="_blank"
+                    <button id="extractLDM" style="cursor: pointer" class="dropdown-item"
                             tooltip="Generate for each Participant a Service Template."
-                            class="dropdown-item" (click)="toggleButton($event)">Extract Partner LDM
+                            (click)="toggleButton($event)">
+                        Extract Partner LDM
                     </button>
                 </li>
                 <li role="menuitem">
-                    <button
-                        style="..." class="dropdown-item" id="generatePlaceholderSubs" target="_blank"
-                        tooltip="Substitute Placeholders that belong to the Participant."
-                        class="dropdown-item" (click)="toggleButton($event)">
+                    <button id="generatePlaceholderSubs" style="cursor: pointer" class="dropdown-item"
+                            tooltip="Substitute Placeholders that belong to the Participant."
+                            (click)="toggleButton($event)">
                         Substitute Placeholder
                     </button>
                 </li>
