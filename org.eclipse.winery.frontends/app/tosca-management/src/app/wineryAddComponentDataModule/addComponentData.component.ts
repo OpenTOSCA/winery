@@ -166,12 +166,11 @@ export class WineryAddComponentDataComponent {
     }
 
     createNoteTypeImplementationName(fullName: SelectData) {
-        const name = fullName.text.substring(0, fullName.text.lastIndexOf('_'));
-        const newVersion = fullName.text.slice(fullName.text.indexOf('_'), fullName.text.length);
-        this.newComponentVersion.componentVersion = newVersion.substring(1, newVersion.indexOf('-'));
-        this.newComponentName = name + '-Impl';
-        this.newComponentFinalName = this.newComponentName + newVersion;
-        this.createUrlAndCheck();
+        const version = Utils.getVersionFromString(fullName.text);
+        this.newComponentVersion.componentVersion = version ? version.toString() : '';
+        // we need to set both as it is required in the determineFinalName
+        this.newComponentFinalName = this.newComponentName = Utils.getNameWithoutVersion(fullName.text) + '-Impl';
+        this.determineFinalName();
     }
 
     createArtifactName(toscaComponent: ToscaComponent, nodeTypeQName: string, operation: string,
