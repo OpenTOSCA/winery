@@ -14,68 +14,60 @@
 package org.eclipse.winery.compliance;
 
 import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Properties;
-
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 
 import org.eclipse.winery.model.tosca.TEntityTemplate;
 
 import org.eclipse.jdt.annotation.NonNull;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Text;
 
 public class ToscaModelPropertiesBuilder {
 
-	LinkedHashMap<String, String> properties = new LinkedHashMap<>();
-	@NonNull
-	public static String namespaceURI;
-	@NonNull
-	public static String prefix = "rnd";
-	@NonNull
-	public static String localName;
+    LinkedHashMap<String, String> properties = new LinkedHashMap<>();
+    @NonNull
+    public static String namespaceURI;
+    @NonNull
+    public static String prefix = "rnd";
+    @NonNull
+    public static String localName;
 
-	public ToscaModelPropertiesBuilder(@NonNull String namespaceURI, @NonNull String localName) {
-		this.namespaceURI = namespaceURI;
-		this.localName = localName;
-	}
+    public ToscaModelPropertiesBuilder(@NonNull String namespaceURI, @NonNull String localName) {
+        this.namespaceURI = namespaceURI;
+        this.localName = localName;
+    }
 
-	public ToscaModelPropertiesBuilder addProperty(@NonNull String key, @NonNull String value) {
-		properties.put(key, value);
-		return this;
-	}
+    public ToscaModelPropertiesBuilder addProperty(@NonNull String key, @NonNull String value) {
+        properties.put(key, value);
+        return this;
+    }
 
-	public TEntityTemplate.Properties build() {
-	    TEntityTemplate.WineryKVProperties result = new TEntityTemplate.WineryKVProperties();
-	    result.setNamespace(namespaceURI);
-	    result.setElementName(localName);
-	    result.setKVProperties(properties);
-		return result;
-	}
+    public TEntityTemplate.Properties build() {
+        TEntityTemplate.WineryKVProperties result = new TEntityTemplate.WineryKVProperties();
+        result.setNamespace(namespaceURI);
+        result.setElementName(localName);
+        result.setKVProperties(properties);
+        return result;
+    }
 
-	public String getNamespaceURI() {
-		return namespaceURI;
-	}
+    public String getNamespaceURI() {
+        return namespaceURI;
+    }
 
-	public void setNamespaceURI(String namespaceURI) {
-		this.namespaceURI = namespaceURI;
-	}
+    public void setNamespaceURI(String namespaceURI) {
+        this.namespaceURI = namespaceURI;
+    }
 
-	public String getPrefix() {
-		return prefix;
-	}
+    public String getPrefix() {
+        return prefix;
+    }
 
-	public void setPrefix(String prefix) {
-		this.prefix = prefix;
-	}
+    public void setPrefix(String prefix) {
+        this.prefix = prefix;
+    }
 
-	public String getLocalName() {
-		return localName;
-	}
+    public String getLocalName() {
+        return localName;
+    }
 
-	public void setLocalName(String localName) {
-		this.localName = localName;
-	}
+    public void setLocalName(String localName) {
+        this.localName = localName;
+    }
 }
