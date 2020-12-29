@@ -15,6 +15,15 @@
 import { Action } from 'redux';
 import { HighlightNodesAction, TopologyRendererActions } from '../actions/topologyRenderer.actions';
 
+export type PossibleResearchPlugins =
+    'REFINEMENT'
+    | 'PROBLEM_DETECTION'
+    | 'ENRICHER'
+    | 'EDDM_TRANSFORM'
+    | 'GROUP_VIEW'
+    | 'MNG_PARTICIPANTS'
+    | 'MULTI_PARTICIPANTS';
+
 export interface TopologyRendererState {
     buttonsState: {
         targetLocationsButton?: boolean;
@@ -52,7 +61,9 @@ export interface TopologyRendererState {
         manageParticipantsButton?: boolean;
         assignParticipantsButton?: boolean;
     };
+    activeResearchPlugin: PossibleResearchPlugins;
     nodesToSelect?: string[];
+
 }
 
 export const INITIAL_TOPOLOGY_RENDERER_STATE: TopologyRendererState = {
@@ -91,6 +102,7 @@ export const INITIAL_TOPOLOGY_RENDERER_STATE: TopologyRendererState = {
         yamlGroupsButton: false,
         manageParticipantsButton: false,
     },
+    activeResearchPlugin: undefined,
 };
 /**
  * Reducer for the TopologyRenderer
@@ -98,13 +110,28 @@ export const INITIAL_TOPOLOGY_RENDERER_STATE: TopologyRendererState = {
 export const TopologyRendererReducer =
     function (lastState: TopologyRendererState = INITIAL_TOPOLOGY_RENDERER_STATE, action: Action): TopologyRendererState {
         switch (action.type) {
+            // disables all research plugins globally
+            case TopologyRendererActions.DISABLE_RESEARCH_PLUGIN:
+                return {
+                    ...lastState,
+                    buttonsState: {
+                        ...lastState.buttonsState,
+                        manageYamlGroupsButton: false,
+                        manageParticipantsButton: false,
+                        problemDetectionButton: false,
+                        enrichmentButton: false,
+                        edmmTransformationCheck: false,
+
+                    },
+                    activeResearchPlugin: undefined
+                };
             case TopologyRendererActions.TOGGLE_YAML_GROUPS:
                 return {
                     ...lastState,
                     buttonsState: {
                         ...lastState.buttonsState,
-                        yamlGroupsButton: !lastState.buttonsState.yamlGroupsButton
-                    }
+                        yamlGroupsButton: !lastState.buttonsState.yamlGroupsButton,
+                    },
                 };
             case TopologyRendererActions.SHOW_MANAGE_YAML_GROUPS:
                 return {
@@ -112,7 +139,8 @@ export const TopologyRendererReducer =
                     buttonsState: {
                         ...lastState.buttonsState,
                         manageYamlGroupsButton: true
-                    }
+                    },
+                    activeResearchPlugin: 'GROUP_VIEW'
                 };
             case TopologyRendererActions.TOGGLE_MANAGE_YAML_GROUPS:
                 return {
@@ -120,7 +148,8 @@ export const TopologyRendererReducer =
                     buttonsState: {
                         ...lastState.buttonsState,
                         manageYamlGroupsButton: !lastState.buttonsState.manageYamlGroupsButton
-                    }
+                    },
+                    activeResearchPlugin: !lastState.buttonsState.manageYamlGroupsButton ? 'GROUP_VIEW' : undefined,
                 };
             case TopologyRendererActions.TOGGLE_MANAGE_PARTICIPANTS:
                 return {
@@ -128,7 +157,8 @@ export const TopologyRendererReducer =
                     buttonsState: {
                         ...lastState.buttonsState,
                         manageParticipantsButton: !lastState.buttonsState.manageParticipantsButton
-                    }
+                    },
+                    activeResearchPlugin: !lastState.buttonsState.manageParticipantsButton ? 'MNG_PARTICIPANTS' : undefined,
                 };
             case TopologyRendererActions.TOGGLE_ASSIGN_PARTICIPANTS:
                 return {
@@ -208,7 +238,8 @@ export const TopologyRendererReducer =
                     buttonsState: {
                         ...lastState.buttonsState,
                         edmmTransformationCheck: !lastState.buttonsState.edmmTransformationCheck
-                    }
+                    },
+                    activeResearchPlugin: !lastState.buttonsState.edmmTransformationCheck ? 'EDDM_TRANSFORM' : undefined,
                 };
             case TopologyRendererActions.EXECUTE_LAYOUT:
                 return {
@@ -272,7 +303,8 @@ export const TopologyRendererReducer =
                     buttonsState: {
                         ...lastState.buttonsState,
                         problemDetectionButton: !lastState.buttonsState.problemDetectionButton
-                    }
+                    },
+                    activeResearchPlugin: !lastState.buttonsState.problemDetectionButton ? 'PROBLEM_DETECTION' : undefined,
                 };
             case TopologyRendererActions.ENRICH_NODE_TEMPLATES:
                 return {
@@ -280,7 +312,8 @@ export const TopologyRendererReducer =
                     buttonsState: {
                         ...lastState.buttonsState,
                         enrichmentButton: !lastState.buttonsState.enrichmentButton
-                    }
+                    },
+                    activeResearchPlugin: !lastState.buttonsState.enrichmentButton ? 'ENRICHER' : undefined,
                 };
             case TopologyRendererActions.SUBSTITUTE_TOPOLOGY:
                 return {
