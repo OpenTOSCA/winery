@@ -99,7 +99,7 @@ public class ServiceTemplatesResource extends AbstractComponentsWithoutTypeRefer
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     public Response createFromArtifact(@FormDataParam("file") InputStream uploadedInputStream,
                                        @FormDataParam("file") FormDataContentDisposition fileDetail,
-                                       @FormDataParam("file") FormDataBodyPart body, 
+                                       @FormDataParam("file") FormDataBodyPart body,
                                        @FormDataParam("artifactType") QName artifactType,
                                        @FormDataParam("nodeTypes") List<FormDataBodyPart> nodeTypesList,
                                        @FormDataParam("infrastructureNodeType") QName infrastructureNodeType,

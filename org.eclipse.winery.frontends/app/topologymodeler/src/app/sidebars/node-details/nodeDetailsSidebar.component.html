@@ -13,8 +13,11 @@
    -->
 <div id="NTPropertiesView"
      class="sidebar-root"
-     style="display: block;">
-    <div id="nodeTemplateInformationSection" style="margin: 8px"  *ngIf="sidebarState.template">
+     style="display: block;"
+     [@sidebarAnimationStatus]="sidebarAnimationStatus"
+     [style.top.px]="this.top"
+     *ngIf="sidebarState.visible">
+    <div id="nodeTemplateInformationSection" style="margin: 8px" *ngIf="sidebarState.template">
         <button type="button" class="close" style="color: #000000" aria-label="Close" (click)="closeSidebar()" closeSidebar>
             <span aria-hidden="true">&times;</span>
         </button>
@@ -47,7 +50,9 @@
                 <winery-properties
                     [templateId]="sidebarState.template.id"
                     [readonly]="readonly"
-                    [isNode]="sidebarState.nodeClicked">
+                    [isNode]="sidebarState.nodeClicked"
+                [nodeId]="sidebarState.template.id"
+                [currentNodeData]="sidebarState.nodeData">
                 </winery-properties>
             </div>
             <div *ngIf="sidebarState.nodeClicked == false">
@@ -162,7 +167,6 @@
                             </div>
                         </div>
                     </div>
-
                 </div>
             </div>
             <div class="row">

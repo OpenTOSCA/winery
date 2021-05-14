@@ -32,12 +32,15 @@ import { Threat, ThreatAssessmentApiData } from '../models/threatModelingModalDa
 import { Visuals } from '../models/visuals';
 import { VersionElement } from '../models/versionElement';
 import { WineryRepositoryConfigurationService } from '../../../../tosca-management/src/app/wineryFeatureToggleModule/WineryRepositoryConfiguration.service';
-import { takeLast } from 'rxjs/operators';
 import { TPolicy } from '../models/policiesModalData';
 import { EntityTypesModel } from '../models/entityTypesModel';
 import { ToscaUtils } from '../models/toscaUtils';
 import { TopologyTemplateUtil } from '../models/topologyTemplateUtil';
 import { SubMenuItems } from '../../../../tosca-management/src/app/model/subMenuItem';
+import { takeLast, tap } from 'rxjs/operators';
+import { NgRedux } from '@angular-redux/store';
+import { IWineryState } from '../redux/store/winery.store';
+import { WineryActions } from '../redux/actions/winery.actions';
 import { DeploymentTechnology } from '../models/deployment-technology';
 
 /**
@@ -72,7 +75,9 @@ export class BackendService {
     constructor(private http: HttpClient,
                 private alert: ToastrService,
                 private errorHandler: ErrorHandlerService,
-                private configurationService: WineryRepositoryConfigurationService) {
+                private configurationService: WineryRepositoryConfigurationService,
+                private ngRedux: NgRedux<IWineryState>,
+                private wineryActions: WineryActions) {
     }
 
     public configure(params: TopologyModelerConfiguration) {
@@ -441,10 +446,28 @@ export class BackendService {
     }
 
     /**
+     * This method retrieves a Topology Template from the backend.
+     */
+    requestTopologyTemplate(serviceTemplateId?: string): Observable<TTopologyTemplate> {
+        if (this.configuration) {
+            if (serviceTemplateId) {
+                const url = this.configuration.parentUrl
+                    + encodeURIComponent(encodeURIComponent(this.configuration.ns)) + '/'
+                    + serviceTemplateId + '/topologytemplate';
+                return this.http.get<TTopologyTemplate>(url);
+            } else {
+                return this.http.get<TTopologyTemplate>(this.configuration.elementUrl);
+            }
+        }
+        return null;
+    }
+
+    /**
      * Saves the topologyTemplate back to the repository
      */
     saveTopologyTemplate(topologyTemplate: TTopologyTemplate): Observable<HttpResponse<string>> {
         if (this.configuration) {
+            const topologyToBeSaved = this.prepareTopologyTemplateForExport(topologyTemplate);
             let url = '';
             if (this.configuration.elementPath === SubMenuItems.graficPrmModelling.urlFragment) {
                 url = this.configuration.parentElementUrl + 'graphicPrmTopology';
@@ -455,8 +478,55 @@ export class BackendService {
             return this.http.put(url,
                 TopologyTemplateUtil.prepareSave(topologyTemplate),
                 { headers: headers, responseType: 'text', observe: 'response' }
+            ).pipe(
+                tap((resp) => {
+                    if (resp.ok) {
+                        this.ngRedux.dispatch(this.wineryActions.setLastSavedJsonTopology(topologyTemplate));
+                    }
+                })
             );
         }
+    }
+
+    /**
+     * Creates new service template version for live-modeling.
+     */
+    createLiveModelingServiceTemplate(): Observable<any> {
+        if (this.configuration) {
+            const headers = new HttpHeaders().set('Content-Type', 'application/json');
+            return this.http.post(this.configuration.parentElementUrl + 'createlivemodelingversion',
+                null,
+                { headers: headers }
+            );
+        }
+    }
+
+    /**
+     * Prepare topology by removing properties that are not recognizable by the REST API
+     * @param topologyTemplate
+     */
+    private prepareTopologyTemplateForExport(topologyTemplate: any) {
+        return {
+            documentation: [],
+            any: [],
+            otherAttributes: {},
+            relationshipTemplates: topologyTemplate.relationshipTemplates.map((relationship) => {
+                const clone = Object.assign({}, relationship);
+                delete clone.state;
+                return clone;
+            }),
+            // remove the 'Color' field from all nodeTemplates as the REST Api does not recognize it.
+            nodeTemplates: topologyTemplate.nodeTemplates.map((nodeTemplate) => {
+                const clone = Object.assign({}, nodeTemplate);
+                delete clone._state;
+                delete clone.instanceState;
+                delete clone.valid;
+                delete clone.working;
+                delete clone.visuals;
+                return clone;
+            }),
+            policies: topologyTemplate.policies,
+        };
     }
 
     saveYamlArtifact(topology: TTopologyTemplate,
@@ -736,12 +806,6 @@ export class BackendService {
     private requestDataTypes(): Observable<EntityType[]> {
         if (this.configuration) {
             return this.http.get<EntityType[]>(this.configuration.repositoryURL + '/datatypes?full', { headers: this.headers });
-        }
-    }
-
-    private requestTopologyTemplate(): Observable<TTopologyTemplate> {
-        if (this.configuration) {
-            return this.http.get<TTopologyTemplate>(this.configuration.elementUrl);
         }
     }
 

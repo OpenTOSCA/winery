@@ -17,6 +17,7 @@ export class DetailsSidebarState {
     constructor(
         public visible: boolean,
         public nodeClicked?: boolean,
+        public nodeData?: any,
         public template?: SidebarEntityTemplate,
         public relationshipTemplate?: TRelationshipTemplate,
         public minInstances?: number,

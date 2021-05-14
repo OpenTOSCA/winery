@@ -65,6 +65,7 @@ export interface TopologyRendererState {
         yamlGroupsButton?: boolean;
         manageParticipantsButton?: boolean;
         assignParticipantsButton?: boolean;
+        checkNodePropertiesButton?: boolean;
         assignDeploymentTechnologyButton?: boolean;
         hideDependsOnRelations?: boolean;
     };
@@ -111,6 +112,7 @@ export const INITIAL_TOPOLOGY_RENDERER_STATE: TopologyRendererState = {
         yamlGroupsButton: false,
         manageParticipantsButton: false,
         assignDeploymentTechnologyButton: false,
+        checkNodePropertiesButton: false,
     },
     activeResearchPlugin: undefined,
 };
@@ -473,6 +475,15 @@ export const TopologyRendererReducer =
                 } else {
                     delete lastState.mappingType;
                 }
+                break;
+            case TopologyRendererActions.TOGGLE_CHECK_NODE_PROPERTIES:
+                return {
+                    ...lastState,
+                    buttonsState: {
+                        ...lastState.buttonsState,
+                        checkNodePropertiesButton: !lastState.buttonsState.checkNodePropertiesButton
+                    }
+                };
         }
         return lastState;
     };

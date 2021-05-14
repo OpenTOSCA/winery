@@ -14,6 +14,8 @@ ui:
     compliance: false   
     placement: false
     radon: false
+    liveModeling: true
+    propertyCheck: true
   endpoints:
     container: http://localhost:1337
     workflowmodeler: http://localhost:9527
